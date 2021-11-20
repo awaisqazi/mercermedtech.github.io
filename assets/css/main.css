@@ -1933,7 +1933,7 @@ input, select, textarea {
 		input[type="button"]:hover,
 		button:hover,
 		.button:hover {
-			background-color: rgba(255, 255, 255, 0.075);
+			background-color: rgba(227, 118, 222, 0.075);
 		}
 
 		input[type="submit"]:active,
@@ -2353,7 +2353,7 @@ input, select, textarea {
 	}
 
 		.icon.alt:hover {
-			background-color: rgba(255, 255, 255, 0.075);
+			background-color: rgba(227, 118, 222, 0.075);
 		}
 
 		.icon.alt:active {
@@ -3293,7 +3293,7 @@ input, select, textarea {
 				}
 
 					#nav ul li a:hover {
-						background-color: rgba(222, 222, 222, 0.25);
+						background-color: rgba(227, 118, 222, 0.25);
 					}
 
 					#nav ul li a.active {
@@ -3387,7 +3387,7 @@ input, select, textarea {
 			#main input[type="button"]:hover,
 			#main button:hover,
 			#main .button:hover {
-				background-color: rgba(222, 222, 222, 0.25);
+				background-color: rgba(227, 118, 222, 0.25);
 			}
 
 			#main input[type="submit"]:active,
@@ -3529,7 +3529,7 @@ input, select, textarea {
 		}
 
 			#main .icon.alt:hover {
-				background-color: rgba(222, 222, 222, 0.25);
+				background-color: rgba(227, 118, 222, 0.25);
 			}
 
 			#main .icon.alt:active {
