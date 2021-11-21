@@ -1986,6 +1986,13 @@ input, select, textarea {
 				color: #ffffff !important;
 			}
 
+			.button.footer:hover {
+				background-color: rgba(0, 0, 254, 0.075);
+			}
+
+
+			
+
 	
 
 /* Form */
