@@ -97,6 +97,11 @@
 		body.modal-active {
 			overflow: hidden;
 		}
+		.hero-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 1rem;
+		}
 		.scrolling-wrapper {
 			overflow: hidden;
 			width: 100%;
@@ -141,6 +146,11 @@
 			}
 			100% {
 				transform: translateX(-50%);
+			}
+		}
+		@media (max-width: 968px) {
+			.hero-actions {
+				justify-content: center;
 			}
 		}
 	</style>
