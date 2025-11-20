@@ -21,8 +21,15 @@
 	<link rel="stylesheet" href="assets/css/modern.css" />
 	<link rel="shortcut icon" href="favicon.ico" type="image/x-xicon">
 	<style>
+		.carousel-wrapper {
+			touch-action: pan-y;
+			-webkit-user-select: none;
+			user-select: none;
+		}
+
 		.carousel-track {
-			touch-action: manipulation;
+			touch-action: pan-y;
+			-webkit-user-select: none;
 			user-select: none;
 		}
 
@@ -581,6 +588,7 @@
 	</div>
 
 	<!-- Scripts -->
+	<script src="assets/js/swiper-bundle.min.js"></script>
 	<script>
 		// Carousel Functionality
 		class Carousel {
@@ -596,7 +604,9 @@
 				this.currentIndex = 0;
 				this.isDragging = false;
 				this.touchStartX = 0;
+				this.touchStartY = 0;
 				this.touchMoveX = 0;
+				this.touchMoveY = 0;
 				
 				this.init();
 			}
@@ -605,13 +615,13 @@
 				this.prevBtn?.addEventListener('click', () => this.prev());
 				this.nextBtn?.addEventListener('click', () => this.next());
 				
-				this.track.addEventListener('touchstart', (e) => this.handleTouchStart(e));
-				this.track.addEventListener('touchmove', (e) => this.handleTouchMove(e));
-				this.track.addEventListener('touchend', (e) => this.handleTouchEnd(e));
+				this.track.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
+				this.track.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+				this.track.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
 
 				window.addEventListener('resize', () => {
-					this.updateCarousel(false); // Update position without transition
-					this.setupDots(); // Re-build dots if needed
+					this.updateCarousel(false);
+					this.setupDots();
 				});
 				
 				this.setupDots();
@@ -659,7 +669,6 @@
 				
 				let offset = -this.currentIndex * (slideWidth + gap);
 
-				// Center single slide on mobile
 				if (itemsPerView === 1) {
 					const wrapperWidth = this.track.parentElement.offsetWidth;
 					const centeringOffset = (wrapperWidth - slideWidth) / 2;
@@ -687,7 +696,7 @@
 				if (this.currentIndex < maxIndex) {
 					this.currentIndex++;
 				} else {
-					this.currentIndex = 0; // Loop back to start
+					this.currentIndex = 0;
 				}
 				this.updateCarousel();
 			}
@@ -700,7 +709,7 @@
 				if (this.currentIndex > 0) {
 					this.currentIndex--;
 				} else {
-					this.currentIndex = maxIndex; // Loop to end
+					this.currentIndex = maxIndex;
 				}
 				this.updateCarousel();
 			}
@@ -716,14 +725,31 @@
 
 			handleTouchStart(e) {
 				this.isDragging = true;
-				this.touchStartX = e.touches[0].screenX;
+				this.touchStartX = e.touches[0].clientX;
+				this.touchStartY = e.touches[0].clientY;
+				this.touchMoveX = this.touchStartX;
+				this.touchMoveY = this.touchStartY;
 				this.track.style.transition = 'none';
 			}
 
 			handleTouchMove(e) {
 				if (!this.isDragging) return;
-				e.preventDefault(); // Prevent default scrolling to allow carousel swiping
-				this.touchMoveX = e.touches[0].screenX;
+				
+				this.touchMoveX = e.touches[0].clientX;
+				this.touchMoveY = e.touches[0].clientY;
+				
+				const diffX = Math.abs(this.touchMoveX - this.touchStartX);
+				const diffY = Math.abs(this.touchMoveY - this.touchStartY);
+				
+				// Only handle horizontal swipes - if vertical movement is greater, let it scroll
+				if (diffY > diffX) {
+					this.isDragging = false;
+					return;
+				}
+				
+				// Prevent default scrolling for horizontal swipes
+				e.preventDefault();
+				
 				const diff = this.touchMoveX - this.touchStartX;
 				
 				const trackStyle = window.getComputedStyle(this.track);
@@ -731,7 +757,6 @@
 				const slideWidth = this.slides.length > 0 ? this.slides[0].offsetWidth : 0;
 				const baseOffset = -this.currentIndex * (slideWidth + gap);
 				
-				// Center single slide on mobile
 				let centeringOffset = 0;
 				if (this.getItemsPerView() === 1) {
 					const wrapperWidth = this.track.parentElement.offsetWidth;
@@ -745,12 +770,12 @@
 				if (!this.isDragging) return;
 				this.isDragging = false;
 				
-				const touchEndX = e.changedTouches[0].screenX;
+				const touchEndX = e.changedTouches[0].clientX;
 				const diff = touchEndX - this.touchStartX;
 
 				this.track.style.transition = 'transform 0.5s cubic-bezier(0.215, 0.61, 0.355, 1)';
 
-				if (Math.abs(diff) > 50) { // Swipe threshold
+				if (Math.abs(diff) > 50) {
 					if (diff < 0) {
 						this.next();
 					} else {
