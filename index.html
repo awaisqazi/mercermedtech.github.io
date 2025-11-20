@@ -555,8 +555,9 @@
 				this.nextBtn = document.querySelector('.carousel-next');
 				
 				this.currentIndex = 0;
+				this.isDragging = false;
 				this.touchStartX = 0;
-				this.touchEndX = 0;
+				this.touchMoveX = 0;
 				
 				this.init();
 			}
@@ -565,8 +566,9 @@
 				this.prevBtn?.addEventListener('click', () => this.prev());
 				this.nextBtn?.addEventListener('click', () => this.next());
 				
-				this.track.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
-				this.track.addEventListener('touchend', (e) => this.handleTouchEnd(e), false);
+				this.track.addEventListener('touchstart', (e) => this.handleTouchStart(e));
+				this.track.addEventListener('touchmove', (e) => this.handleTouchMove(e));
+				this.track.addEventListener('touchend', (e) => this.handleTouchEnd(e));
 
 				window.addEventListener('resize', () => {
 					this.updateCarousel(false); // Update position without transition
@@ -674,22 +676,48 @@
 			}
 
 			handleTouchStart(e) {
-				this.touchStartX = e.changedTouches[0].screenX;
+				this.isDragging = true;
+				this.touchStartX = e.touches[0].screenX;
+				this.track.style.transition = 'none';
+			}
+
+			handleTouchMove(e) {
+				if (!this.isDragging) return;
+				this.touchMoveX = e.touches[0].screenX;
+				const diff = this.touchMoveX - this.touchStartX;
+				
+				const trackStyle = window.getComputedStyle(this.track);
+				const gap = parseFloat(trackStyle.gap) || 0;
+				const slideWidth = this.slides.length > 0 ? this.slides[0].offsetWidth : 0;
+				const baseOffset = -this.currentIndex * (slideWidth + gap);
+				
+				// Center single slide on mobile
+				let centeringOffset = 0;
+				if (this.getItemsPerView() === 1) {
+					const wrapperWidth = this.track.parentElement.offsetWidth;
+					centeringOffset = (wrapperWidth - slideWidth) / 2;
+				}
+
+				this.track.style.transform = `translateX(${baseOffset + diff + centeringOffset}px)`;
 			}
 
 			handleTouchEnd(e) {
-				this.touchEndX = e.changedTouches[0].screenX;
-				this.handleSwipe();
-			}
+				if (!this.isDragging) return;
+				this.isDragging = false;
+				
+				const touchEndX = e.changedTouches[0].screenX;
+				const diff = touchEndX - this.touchStartX;
 
-			handleSwipe() {
-				const diff = this.touchStartX - this.touchEndX;
-				if (Math.abs(diff) > 40) { // Threshold for swipe
-					if (diff > 0) {
+				this.track.style.transition = 'transform 0.5s cubic-bezier(0.215, 0.61, 0.355, 1)';
+
+				if (Math.abs(diff) > 50) { // Swipe threshold
+					if (diff < 0) {
 						this.next();
 					} else {
 						this.prev();
 					}
+				} else {
+					this.updateCarousel();
 				}
 			}
 		}
