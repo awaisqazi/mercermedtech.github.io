@@ -373,7 +373,7 @@ img {
 }
 
 .carousel-slide {
-    flex: 0 0 calc((100% - 0rem) / 3);
+    flex: 0 0 calc((100% - 4rem) / 3);
     min-width: 0;
 }
 
