@@ -17,9 +17,15 @@
 
 	<!-- Styles -->
 	<link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+	<link rel="stylesheet" href="assets/css/swiper-bundle.min.css" />
 	<link rel="stylesheet" href="assets/css/modern.css" />
-	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-xicon">
 	<style>
+		.carousel-track {
+			touch-action: manipulation;
+			user-select: none;
+		}
+
 		.modal {
 			position: fixed;
 			top: 0;
@@ -716,6 +722,7 @@
 
 			handleTouchMove(e) {
 				if (!this.isDragging) return;
+				e.preventDefault(); // Prevent default scrolling to allow carousel swiping
 				this.touchMoveX = e.touches[0].screenX;
 				const diff = this.touchMoveX - this.touchStartX;
 				
