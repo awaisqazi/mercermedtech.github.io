@@ -670,8 +670,22 @@ img {
         flex: 0 0 90%;
     }
 
+    .carousel-container {
+        padding: 0 50px;
+    }
+
     .carousel-btn {
-        display: none;
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+
+    .carousel-prev {
+        left: 5px;
+    }
+
+    .carousel-next {
+        right: 5px;
     }
 
     .footer-grid {

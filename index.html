@@ -19,17 +19,23 @@
 	<link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
 	<link rel="stylesheet" href="assets/css/swiper-bundle.min.css" />
 	<link rel="stylesheet" href="assets/css/modern.css" />
-	<link rel="shortcut icon" href="favicon.ico" type="image/x-xicon">
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 	<style>
 		.carousel-wrapper {
-			touch-action: pan-y;
-			-webkit-user-select: none;
-			user-select: none;
+			touch-action: none;
+			overflow: hidden;
 		}
 
 		.carousel-track {
-			touch-action: pan-y;
+			touch-action: none;
+			user-select: none;
 			-webkit-user-select: none;
+			-webkit-touch-callout: none;
+		}
+
+	<style>
+		.carousel-track {
+			touch-action: manipulation;
 			user-select: none;
 		}
 
@@ -315,19 +321,6 @@
 				<!-- Carousel Dots -->
 				<div class="carousel-dots"></div>
 			</div>
-
-			<div class="data-source-note" style="margin-top: 3rem; padding: 1.5rem; background-color: var(--surface-2); border-radius: var(--radius-lg); text-align: left; max-width: 750px; margin-left: auto; margin-right: auto; display: flex; gap: 1.25rem; align-items: flex-start;">
-				<div style="font-size: 1.5rem; color: var(--primary); margin-top: 0.1rem;">
-					<i class="fas fa-info-circle"></i>
-				</div>
-				<div>
-					<h4 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.75rem;">A Note on Our Data</h4>
-					<div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
-						<p><strong>Wages &amp; Growth:</strong> Data is primarily sourced from the Bureau of Labor Statistics (BLS).</p>
-						<p style="margin-top: 0.5rem;"><strong>EKG Technician Salaries:</strong> The BLS often groups EKG Technicians with degree-holding "Cardiovascular Technologists." Our range of $42k–$54k is adjusted to accurately reflect earnings for Certificate holders.</p>
-					</div>
-				</div>
-			</div>
 		</div>
 	</section>
 
@@ -588,7 +581,6 @@
 	</div>
 
 	<!-- Scripts -->
-	<script src="assets/js/swiper-bundle.min.js"></script>
 	<script>
 		// Carousel Functionality
 		class Carousel {
@@ -603,10 +595,10 @@
 				
 				this.currentIndex = 0;
 				this.isDragging = false;
+				this.isHorizontalScroll = false;
 				this.touchStartX = 0;
 				this.touchStartY = 0;
 				this.touchMoveX = 0;
-				this.touchMoveY = 0;
 				
 				this.init();
 			}
@@ -615,9 +607,9 @@
 				this.prevBtn?.addEventListener('click', () => this.prev());
 				this.nextBtn?.addEventListener('click', () => this.next());
 				
-				this.track.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
-				this.track.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
-				this.track.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: false });
+				this.track.addEventListener('touchstart', (e) => this.handleTouchStart(e), false);
+				this.track.addEventListener('touchmove', (e) => this.handleTouchMove(e), false);
+				this.track.addEventListener('touchend', (e) => this.handleTouchEnd(e), false);
 
 				window.addEventListener('resize', () => {
 					this.updateCarousel(false);
@@ -669,6 +661,7 @@
 				
 				let offset = -this.currentIndex * (slideWidth + gap);
 
+				// Center single slide on mobile
 				if (itemsPerView === 1) {
 					const wrapperWidth = this.track.parentElement.offsetWidth;
 					const centeringOffset = (wrapperWidth - slideWidth) / 2;
@@ -725,31 +718,36 @@
 
 			handleTouchStart(e) {
 				this.isDragging = true;
-				this.touchStartX = e.touches[0].clientX;
-				this.touchStartY = e.touches[0].clientY;
-				this.touchMoveX = this.touchStartX;
-				this.touchMoveY = this.touchStartY;
+				this.isHorizontalScroll = false;
+				this.touchStartX = e.touches[0].screenX;
+				this.touchStartY = e.touches[0].screenY;
 				this.track.style.transition = 'none';
 			}
 
 			handleTouchMove(e) {
 				if (!this.isDragging) return;
 				
-				this.touchMoveX = e.touches[0].clientX;
-				this.touchMoveY = e.touches[0].clientY;
+				const currentX = e.touches[0].screenX;
+				const currentY = e.touches[0].screenY;
+				const diffX = Math.abs(currentX - this.touchStartX);
+				const diffY = Math.abs(currentY - this.touchStartY);
 				
-				const diffX = Math.abs(this.touchMoveX - this.touchStartX);
-				const diffY = Math.abs(this.touchMoveY - this.touchStartY);
-				
-				// Only handle horizontal swipes - if vertical movement is greater, let it scroll
-				if (diffY > diffX) {
-					this.isDragging = false;
-					return;
+				// Only trigger horizontal scroll if movement is clearly horizontal
+				if (!this.isHorizontalScroll) {
+					if (diffX > diffY && diffX > 5) {
+						this.isHorizontalScroll = true;
+						e.preventDefault();
+					} else if (diffY > diffX && diffY > 5) {
+						this.isDragging = false;
+						return;
+					} else {
+						return;
+					}
+				} else {
+					e.preventDefault();
 				}
 				
-				// Prevent default scrolling for horizontal swipes
-				e.preventDefault();
-				
+				this.touchMoveX = currentX;
 				const diff = this.touchMoveX - this.touchStartX;
 				
 				const trackStyle = window.getComputedStyle(this.track);
@@ -770,7 +768,7 @@
 				if (!this.isDragging) return;
 				this.isDragging = false;
 				
-				const touchEndX = e.changedTouches[0].clientX;
+				const touchEndX = e.changedTouches[0].screenX;
 				const diff = touchEndX - this.touchStartX;
 
 				this.track.style.transition = 'transform 0.5s cubic-bezier(0.215, 0.61, 0.355, 1)';
