@@ -1,272 +1,803 @@
 <!DOCTYPE HTML>
-<!--
-	Stellar by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Mercer Med Tech</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-	</head>
-	<body class="is-preload">
+<html lang="en">
 
-		<!-- Wrapper -->
-			<div id="wrapper">
+<head>
+	<title>Mercer Med Tech | Allied Health Education</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="description"
+		content="Launch your career in healthcare with Mercer Med Tech. Premier allied health training in NJ.">
 
-				<!-- Header -->
-					<header id="header" class="alt">
-						<span class="logo"><img src="images/Logo with Border.png" alt="" /></span>
-					</header>
+	<!-- Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+		rel="stylesheet">
 
-				<!-- Nav -->
-					<nav id="nav">
-						<ul>
-							<li><a href="#intro" class="active">Home</a></li>
-							<li><a href="#about">About Us</a></li>
-							<li><a href="#programs">Programs</a></li>
-							<li><a href="#grants">Grants</a></li>
-							<li><a href="#faculty">Faculty</a></li>
-							<li><a href="#affiliations">Affiliated Organizations</a></li>
-							<li><a href="#links">Related Links</a></li>
-							<li><a href="#contact">Contact Us</a></li>
-						</ul>
-					</nav>
+	<!-- Styles -->
+	<link rel="stylesheet" href="assets/css/fontawesome-all.min.css" />
+	<link rel="stylesheet" href="assets/css/modern.css" />
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<style>
+		.modal {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.6);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 2000;
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0.3s ease, visibility 0.3s ease;
+		}
+		.modal.active {
+			opacity: 1;
+			visibility: visible;
+		}
+		.modal-content {
+			background-color: white;
+			padding: 2.5rem;
+			border-radius: var(--radius-lg);
+			width: 90%;
+			max-width: 800px;
+			max-height: 90vh;
+			overflow-y: auto;
+			position: relative;
+			transform: translateY(-50px);
+			transition: transform 0.3s ease;
+		}
+		.modal.active .modal-content {
+			transform: translateY(0);
+		}
+		.modal-close {
+			position: absolute;
+			top: 1rem;
+			right: 1rem;
+			background: none;
+			border: none;
+			font-size: 1.75rem;
+			color: var(--text-light);
+			cursor: pointer;
+			transition: color 0.3s ease;
+		}
+		.modal-close:hover {
+			color: var(--text-main);
+		}
+		.modal-header {
+			border-bottom: 1px solid var(--border);
+			padding-bottom: 1rem;
+			margin-bottom: 1.5rem;
+		}
+		.modal-header h2 {
+			font-size: 2rem;
+			margin-bottom: 0.25rem;
+		}
+		.modal-header p {
+			color: var(--text-muted);
+			font-weight: 600;
+		}
+		.modal-body h4 {
+			font-size: 1.1rem;
+			color: var(--primary);
+			margin-top: 1.5rem;
+			margin-bottom: 0.75rem;
+		}
+		.modal-body ul {
+			list-style-type: disc;
+			padding-left: 20px;
+		}
+		.modal-body li {
+			margin-bottom: 0.5rem;
+		}
+		body.modal-active {
+			overflow: hidden;
+		}
+		.scrolling-wrapper {
+			overflow: hidden;
+			width: 100%;
+			position: relative;
+			margin-top: 3rem;
+		}
+		.scrolling-wrapper::before, .scrolling-wrapper::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			width: 150px;
+			height: 100%;
+			z-index: 2;
+		}
+		.scrolling-wrapper::before {
+			left: 0;
+			background: linear-gradient(to right, var(--surface-1) 0%, rgba(255,255,255,0) 100%);
+		}
+		.scrolling-wrapper::after {
+			right: 0;
+			background: linear-gradient(to left, var(--surface-1) 0%, rgba(255,255,255,0) 100%);
+		}
+		.scrolling-content {
+			display: flex;
+			width: fit-content;
+			animation: scroll 40s linear infinite;
+		}
+		.scrolling-content .org-item {
+			flex-shrink: 0;
+			padding: 1rem 2.5rem;
+			font-weight: 600;
+			color: var(--text-muted);
+			font-size: 1.1rem;
+			white-space: nowrap;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		@keyframes scroll {
+			0% {
+				transform: translateX(0);
+			}
+			100% {
+				transform: translateX(-50%);
+			}
+		}
+	</style>
+</head>
 
-				<!-- Main -->
-					<div id="main">
+<body>
 
-						<!-- Introduction -->
-							<section id="intro" class="main">
-								<div class="spotlight">
-									<div class="content">
-										<header class="major">
-											<h2>Mercer Med Tech</h2>
-										</header>
-										<p>The Medical Assistant plays an important role as a member of the Healthcare team in a physician's office or clinic. Theory and practical application in the fundamentals of medical diagnostic and laboratory techniques are taught. Medical Assistant students are introduced to the anatomy and physiology of the body systems. In addition, students are engaged in "hands-on" training with regard to Veni-puncture, injections, urinalysis, electrocardiography, measurement of vital signs, and preparation for physical and specialty exams. Students are taught basic medical office administrative procedures. The graduates are equipped with skills and knowledge necessary to meet the requirements of an entry-level Medical Assistant. This program provides the background which enables a student to assume a responsible entry level position as a Medical Assistant. Required laboratory skills and administrative procedures are taught for use in a physician's office or clinic. Graduates of the program receive a National Certificate in preparation for such entry-level positions as: Clinical Medical Assistant, Phlebotomist and EKG technician, by providing an up-to-date education on the most current medical equipments.</p>
-										<ul class="actions">
-											<li><a href="#about" class="button">About Us</a></li>
-										</ul>
-									</div>
-									<span class="image"><img src="images/home.png" alt="" /></span>
-								</div>
-							</section>
+	<!-- Navigation -->
+	<header class="site-header">
+		<div class="container">
+			<a href="#" class="logo">
+				<img src="images/logo-modern.png" alt="Mercer Med Tech Logo">
+			</a>
 
+			<button class="mobile-menu-toggle" aria-label="Toggle navigation">
+				<i class="fas fa-bars"></i>
+			</button>
 
-						<!-- About Us -->
-						<section id="about" class="main">
-							<div class="spotlight">
-								<div class="content">
-									<header class="major">
-										<h2>Mercer Med Tech</h2>
-									</header>
-									<p>Mercer Med Tech (MMT) is the educational provider on Allied Health Sciences (AHS). Its rich market niche, characterized by corporate clients with large budgets, significant training needs and receptiveness to new technology, include Healthcare Providers, Academic institutions, Hospitals and Alternative Health Industries. Modern technology has made possible to gather and present this information economically and efficiently and MMT is leading the effort to marry technology and information dissemination through three strategic technology alliances which allow to register, enroll, teach, test, grade and certify distance learners in a seamless fashion. MMT is focusing its resources in the Allied Health Science learning business. According to the US Labor Department allied health sciences staff will be in great demand with average growth of 22% in next ten years, as the baby boomers size increase.</p>
-									<ul class="actions">
-										<li><a href="#programs" class="button">Programs</a></li>
-									</ul>
-								</div>
-								<span class="image"><img src="images/about.png" alt="" /></span>
-							</div>
-						</section>
+			<nav class="nav-menu">
+				<a href="#hero" class="nav-link active">Home</a>
+				<a href="#about" class="nav-link">About</a>
+				<a href="#programs" class="nav-link">Programs</a>
+				<a href="#faculty" class="nav-link">Faculty</a>
+				<a href="#contact" class="btn btn-primary btn-sm">Contact Us</a>
+			</nav>
+		</div>
+	</header>
 
-						<!-- Programs -->
-							<section id="programs" class="main special">
-								<header class="major">
-									<h2>Programs</h2>
-								</header>
-								<ul class="features">
-									<li>
-										<span class="icon solid major style1 fa-user-nurse"></span>
-										<h3>CERTIFIED NURSING ASSISTANT* - CNA (CIP-51 3902) - 90 hours</h3>
-										<p>The Certified Nursing Assistant (CNA) training program, provides basic understanding and skills required for nursing assistants working in nursing homes, hospitals, medical clinics, home care agencies, and more. The CNA training program from Mercer Med Tech includes lecture and hands on practice all within a caring and supportive learning environment. All sections include 50 hours lecture/lab and 40 hours clinical experience in a skilled nursing facility for a total of 90 hours. After completion of the program, the student will take a skill exam at our school and a written exam administered by the Department of Health at a local PSI Testing Center.
-											<br>*Availability is subject to minimum 20 students.</p>
-									</li>
-									<li>
-										<span class="icon solid major style1 fa-stethoscope"></span>
-										<h3>CERTIFIED MEDICAL ASSISTANT- CMA (CIP-51 0801) - 480 hours</h3>
-										<p>In medical assistant course the students are taught about the clinical and administrative work in physician’s office or hospitals. The program usually lasts for 8-12 months. Course covers anatomy, physiology, medical terminology; record keeping, accounting insurance processing as well as typing .Students learn laboratory techniques, clinical and diagnostic procedures, pharmaceutical principles, first aid. They study office practices, patient relations, medical law and ethics. They are trained to take medical history and recording vital signs, explaining treatment procedures to patients, preparing patient for examination. Sterilization of instruments, drawing blood for lab tests, prepare for x- rays, take electrocardiograms, remove sutures and change dressings are also taught. This program also includes externship in physician’s office hospitals, or other health care facilities. After completing the course they are certified and have good opportunity to get jobs. They earn annually $20,000-$30,000.The lowest is $18,800. The pre request for this course is High school diploma or its equivalent. It is the fastest growing occupation, particularly those with formal training or experience and certification. The instructor provides hand outs, training in medical office. And give lectures concerned with the topics. Medical assistants may advance to other occupations through experience or additional training for example, to become nurses other health care workers and office managers. After completion of the program, the student will have the choice to take the exam from the National Healthcare Association (NHA) online or MedCa certification in person. Both are approved by the Department of Labor and accepted by all employers as a Medical Assistant Certification. </p>
-									</li>
-									<li>
-										<span class="icon solid major style1 fa-syringe"></span>
-										<h3>PHLEBOTOMY/PHLEBOTOMIST (CIP-51 1009) - 120 hours</h3>
-										<p>Phlebotomy course covers essential practices and procedures for phlebotomist. The students are taught universal precautions and principles of infection control, patient’s rights, education, positioning and safety. Instruction covers capillary sticks, skin puncture, and preparing lab studies, butterfly techniques and multiple tube drawings. The main course covers anatomy related to phlebotomy, medical terminology, body systems, equipments required for venipuncture, procedure transportation of specimens, medical law and ethics, confidentiality of patients record, skin puncture and arterial blood draw for blood gases. Knowledge of different departments where the specimens are sent is also given. After completion of this course they are certified. There are good chances of getting jobs in labs, blood bank, doctor’s office and other health facilities. The instructor explains each chapter with illustrated charts and gives hand out notes, gives on hand training in doctor’s office in venipuncture, labeling packing the specimen with patient’s demographic and billing informations. After completion of the course the student will successfully perform venipuncture and obtain lab samples for testing as directed by a physician. Certified phlebotomists have good opportunity for the jobs and they earn 30,000 to 50,000 annually. There is a great demand for this in health care departments. After completion of the program, the student will have the choice to take the exam from the National Healthcare Association (NHA) online or MedCa certification in person.</p>
-									</li>
-									<li>
-										<span class="icon solid major style1 fa-heartbeat"></span>
-										<h3>ELECTROCARDIOGRAPH TECHNICIAN- EKG (CIP-51 0902) - 120 hours</h3>
-										<p>The duration of the course is 6 weeks. The course covers Anatomy, physiology of cardiovascular system and circulation of blood through the heart and lungs, medical terminology, EKG graph, EKG machine, cardiac diseases, pharmacology of cardiac diseases, surgical treatment procedures and artifacts Technical performance of EKG are taught and practiced in detail along with patient’s rights, education and safety. EKG leads placement and 12 leads, 3 channel EKG instructions is given both in theory and practice. After completion of the course they are certified and have good opportunity to get jobs in doctor’s office, hospitals, and other health facilities. They earn annually $30,000to $50,000.They can upgrade through their experience and CE .The instructor teaches through lectures, hand out notes, on hand practice in doctor’s office. This also includes externship of 100 hrs. After completion of the program, the student will have the choice to take the exam from the National Healthcare Association (NHA) online or MedCa certification in person.</p>
-									</li>
-								</ul>
-								<footer class="major">
-									<ul class="actions special">
-										<li><a href="#grants" class="button">Grants</a></li>
-									</ul>
-								</footer>
-							</section>
-
-						<!-- Grants -->
-						<section id="grants" class="main special">
-							<header class="major">
-								<h2>Grants</h2>
-								<p>MMT does not award grants or scholarships at this time. We do honor grants and scholarships that our students have been awarded from outside organizations. We may assist our students with obtaining student loans.</p>
-								<p>Note: Students who have obtained a school assisted loan and withdraw from the school or have had their enrollment terminated must notify the loan institution of their withdrawal. Mercer Med Tech, Inc will reimburse the loan institution for balances due in accordance with the school’s refund policy. The student will be responsible for any balances due on the student loan. Students are responsible for repaying their loan for received instruction.</p>
-								<p>It should be noted that student loans with the bank must be satisfied regardless of the success or lack of success at Mercer Med Tech, Inc. When a student is given a loan he or she signs a promissory note with the bank. This loan is the same as any other loan and the student has full responsibility for managing the loan and its repayment.</p>
-							</header>
-							<footer class="major">
-								<ul class="actions special">
-									<li><a href="#faculty" class="button">Faculty</a></li>
-								</ul>
-							</footer>
-						</section>
-						
-						<!-- Faculty -->
-						<section id="faculty" class="main special">
-							<header class="major">
-								<h2>Faculty</h2>
-							</header>
-							<ul class="features">
-								<li>
-									<span class="icon solid major style1 fa-user-md"></span>
-									<h1>Shazia Qazi:</h1> <h2>Program Director</h2>
-									<p>Shazia Qazi is a well experienced medical assistant who has graduated from National Health Association in the US. She has extensive experience working in a medical office, with insurance companies and dealing with billing and coding. Her devoted work for many charitable camps and clinics reflects her cooperative and helping nature. She has worked across the continents of Asia and Middle East for nonprofit organizations and has arranged many charitable activities. She has a passion for teaching and makes the students perfect in their practical life.</p>
-								</li>
-								
-							</ul>
-							<footer class="major">
-								<ul class="actions special">
-									<li><a href="#links" class="button">Related Links</a></li>
-								</ul>
-							</footer>
-						</section>
-						
-						<!-- Related Links -->
-						<section id="links" class="main special">
-							<header class="major">
-								<h2>Related Links</h2>
-								<p><a href="http://www.bls.gov/oco/ocos100.htm">1. US Department of Labor - Bureau of Labor Statistics</a></p>
-							</header>
-							<footer class="major">
-								<ul class="actions special">
-									<li><a href="#affiliations" class="button">Affiliated Organizations</a></li>
-								</ul>
-							</footer>
-						</section>
-
-						<!-- Affiliated Organizations -->
-						<section id="affiliations" class="main special">
-							<header class="major">
-								<h2>Affiliated Organizations</h2>
-								<p>New Jersey Department of Health</p>
-								<p>New Jersey Department of Labor</p>
-								<p>Department of Labor Opportunity Partnership Grant</p>
-								<p>New Jersey Board of Nursing</p>
-								<p>National Healthcare Association</p>
-								<p>PSI Test Centers</p>
-								<p>MedCA Certifications</p>
-								<p>CNJHS LLC</p>
-							</header>
-							<footer class="major">
-								<ul class="actions special">
-									<li><a href="#contact" class="button">Let's get in touch!</a></li>
-								</ul>
-							</footer>
-						</section>
-
-						<!-- Second Section 
-							<section id="second" class="main special">
-								<header class="major">
-									<h2>Ipsum consequat</h2>
-									<p>Donec imperdiet consequat consequat. Suspendisse feugiat congue<br />
-									posuere. Nulla massa urna, fermentum eget quam aliquet.</p>
-								</header>
-								<ul class="statistics">
-									<li class="style1">
-										<span class="icon solid fa-code-branch"></span>
-										<strong>5,120</strong> Etiam
-									</li>
-									<li class="style2">
-										<span class="icon fa-folder-open"></span>
-										<strong>8,192</strong> Magna
-									</li>
-									<li class="style3">
-										<span class="icon solid fa-signal"></span>
-										<strong>2,048</strong> Tempus
-									</li>
-									<li class="style4">
-										<span class="icon solid fa-laptop"></span>
-										<strong>4,096</strong> Aliquam
-									</li>
-									<li class="style5">
-										<span class="icon fa-gem"></span>
-										<strong>1,024</strong> Nullam
-									</li>
-								</ul>
-								<p class="content">Nam elementum nisl et mi a commodo porttitor. Morbi sit amet nisl eu arcu faucibus hendrerit vel a risus. Nam a orci mi, elementum ac arcu sit amet, fermentum pellentesque et purus. Integer maximus varius lorem, sed convallis diam accumsan sed. Etiam porttitor placerat sapien, sed eleifend a enim pulvinar faucibus semper quis ut arcu. Ut non nisl a mollis est efficitur vestibulum. Integer eget purus nec nulla mattis et accumsan ut magna libero. Morbi auctor iaculis porttitor. Sed ut magna ac risus et hendrerit scelerisque. Praesent eleifend lacus in lectus aliquam porta. Cras eu ornare dui curabitur lacinia.</p>
-								<footer class="major">
-									<ul class="actions special">
-										<li><a href="generic.html" class="button">Learn More</a></li>
-									</ul>
-								</footer>
-							</section> -->
-
-						<!-- Get Started -->
-							<section id="contact" class="main special">
-								<header class="major">
-									<h2>Let's get in touch!</h2>
-									<p>Reach out to us via email or phone to get started on your new career journey!</p>
-								</header>
-								<footer class="major">
-									<ul class="actions special">
-										<li><a href="#footer" class="button primary">Contact Us</a></li>
-										<li><a href="#programs" class="button">Learn More</a></li>
-									</ul>
-								</footer>
-							</section>
-
+	<!-- Hero Section -->
+	<section id="hero" class="hero">
+		<div class="container">
+			<div class="hero-grid">
+				<div class="hero-content">
+					<h1>Launch Your Career in <span class="text-gradient">Healthcare</span> Today</h1>
+					<p>Join a leading Allied Health Sciences education provider. We equip you with the practical
+						skills and certification needed for a thriving career in the medical field.</p>
+					<div class="hero-actions">
+						<a href="#programs" class="btn btn-primary">Explore Programs</a>
+						<a href="#about" class="btn btn-secondary">Learn More</a>
 					</div>
+				</div>
+				<div class="hero-image-wrapper">
+					<div class="hero-blob"></div>
+					<img src="images/hero-modern.png" alt="Medical Students Learning" class="hero-image">
+				</div>
+			</div>
+		</div>
+	</section>
 
-				<!-- Footer -->
-					<footer id="footer">
-						<section>
-							<h2 style="color: #000000;">Reach out to learn how we can help you!</h2>
-							<p>If you're interested in our programs but are worried about the cost, please give us a call and we can talk you through different opportunities including grants, payment plans, and more to enable you to achieve your goals!</p>
-							<ul class="actions">
-								<li><a href="#grants" class="button footer">Learn More</a></li>
-							</ul>
-						</section>
-						<section>
-							<h2 style="color: #000000;">Connect with us!</h2>
-							<dl class="alt">
-								<dt>Address</dt>
-								<dd>1418 South Broad Street &bull; Trenton, NJ 08610 &bull; USA</dd>
-								<dt>Phone</dt>
-								<dd><a href="tel:+16097125499">(609) 712-5499</a></dd>
-								<dt>Email</dt>
-								<dd><a href="mailto:mercermedtech@gmail.com">mercermedtech@gmail.com</a></dd>
-							</dl>
-							<ul class="icons">
-								<li><a href="https://www.facebook.com/mercermedtech" class="icon alt brands fa-facebook-f alt"><span class="label">Facebook</span></a></li>
-							</ul>
-						</section>
-						<p class="copyright">&copy; Awais Qazi. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
-					</footer>
+	<!-- About Section -->
+	<section id="about" class="section-padding about-section">
+		<div class="container">
+			<div class="hero-grid">
+				<div class="hero-image-wrapper">
+					<img src="images/about-modern.png" alt="About Mercer Med Tech Facility" class="hero-image">
+				</div>
+				<div class="hero-content">
+					<h2 class="section-title">About Mercer Med Tech</h2>
+					<p>Mercer Med Tech (MMT) is a premier educational provider in Allied Health Sciences. We cater to a
+						diverse range of clients including Healthcare Providers, Academic Institutions, and Hospitals.
+					</p>
+					<p>With the demand for allied health professionals projected to grow by 22% over the next decade, we
+						are dedicated to preparing our students for success through cutting-edge technology and hands-on
+						training.</p>
+					<div style="margin-top: 2rem;">
+						<a href="#programs" class="btn btn-primary">View Our Programs</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
+	<!-- Programs Section -->
+	<section id="programs" class="section-padding">
+		<div class="container">
+			<div class="section-header text-center">
+				<h2>Our Programs</h2>
+				<p class="text-muted">Comprehensive training programs designed to get you certified and job-ready.</p>
 			</div>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+			<div class="carousel-container">
+				<div class="carousel-wrapper">
+					<div class="carousel-track">
+						<!-- CNA -->
+						<article class="program-card carousel-slide">
+							<div class="program-icon">
+								<i class="fas fa-user-nurse"></i>
+							</div>
+							<h3>Certified Nursing Assistant</h3>
+							<p>90-hour program covering basic nursing skills, patient care, and clinical experience in skilled
+								nursing facilities.</p>
+							<a href="#" class="btn btn-secondary full-width" data-modal-target="#cna-modal">Learn More</a>
+						</article>
 
-	</body>
+						<!-- CMA -->
+						<article class="program-card carousel-slide">
+							<div class="program-icon">
+								<i class="fas fa-stethoscope"></i>
+							</div>
+							<h3>Certified Medical Assistant</h3>
+							<p>480-hour comprehensive course covering clinical and administrative duties, phlebotomy, EKG, and
+								more.</p>
+							<a href="#" class="btn btn-secondary full-width" data-modal-target="#cma-modal">Learn More</a>
+						</article>
+
+						<!-- Phlebotomy -->
+						<article class="program-card carousel-slide">
+							<div class="program-icon">
+								<i class="fas fa-syringe"></i>
+							</div>
+							<h3>Phlebotomy Technician</h3>
+							<p>120-hour specialized training in venipuncture, specimen handling, and lab safety procedures.</p>
+							<a href="#" class="btn btn-secondary full-width" data-modal-target="#phlebotomy-modal">Learn More</a>
+						</article>
+
+						<!-- EKG -->
+						<article class="program-card carousel-slide">
+							<div class="program-icon">
+								<i class="fas fa-heartbeat"></i>
+							</div>
+							<h3>EKG Technician</h3>
+							<p>120-hour course focusing on cardiovascular anatomy, EKG machine operation, and interpretation.
+							</p>
+							<a href="#" class="btn btn-secondary full-width" data-modal-target="#ekg-modal">Learn More</a>
+						</article>
+					</div>
+				</div>
+
+				<!-- Carousel Controls -->
+				<button class="carousel-btn carousel-prev" aria-label="Previous program">
+					<i class="fas fa-chevron-left"></i>
+				</button>
+				<button class="carousel-btn carousel-next" aria-label="Next program">
+					<i class="fas fa-chevron-right"></i>
+				</button>
+
+				<!-- Mobile Swipe Indicator -->
+				<div class="swipe-indicator">
+					<i class="fas fa-hand-pointer"></i>
+					<span>Swipe to see more</span>
+				</div>
+
+				<!-- Carousel Dots -->
+				<div class="carousel-dots"></div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Grants Section -->
+	<section id="grants" class="section-padding bg-surface-1">
+		<div class="container">
+			<div class="hero-grid">
+				<div class="hero-image-wrapper">
+					<img src="images/pic04.png" alt="Financial Aid" class="hero-image" style="border-radius: var(--radius-lg);">
+					<!-- User note: Consider replacing 'pic04.jpg' with a more relevant image for financial aid. -->
+				</div>
+				                <div class="hero-content">
+									<h2 class="section-title">Financial Aid & Grants</h2>
+									<p>While Mercer Med Tech does not directly award grants or scholarships, we are committed to helping you navigate your financial options. We proudly honor funding from outside organizations and can assist you in understanding student loan opportunities.</p>
+									
+									<ul class="fa-ul" style="margin-left: 1.5rem; margin-top: 1.5rem; margin-bottom: 2rem;">
+										<li style="padding-bottom: 1rem;"><span class="fa-li"><i class="fas fa-award text-primary"></i></span>Accepts External Scholarships & Grants</li>
+										<li style="padding-bottom: 1rem;"><span class="fa-li"><i class="fas fa-comments-dollar text-primary"></i></span>Student Loan Information & Assistance</li>
+									</ul>
+				
+									<div class="financial-aid-footer" style="background-color: var(--surface-2); padding: 2.5rem; border-radius: var(--radius-md); margin-top: 2rem; text-align: center;">
+										<h4 style="margin-bottom: 1rem;">Important Loan Information</h4>
+										<p style="font-size: 0.9rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem auto;">
+											Students who obtain a school-assisted loan are responsible for repaying it in full, regardless of their academic progress or withdrawal. If you withdraw, you must notify your loan institution. MMT will issue any applicable refunds to the lender according to our refund policy, but you remain responsible for any outstanding balance on your promissory note with the bank.
+										</p>
+										<p style="font-size: 1.1rem; font-weight: 500; color: var(--text-main); margin-bottom: 1.5rem; margin-top: 2rem;">
+											Worried about the cost? Reach out to learn how we can help you achieve your goals!
+										</p>
+										<a href="#contact" class="btn btn-primary">Talk to Us</a>
+									</div>
+								</div>			</div>
+		</div>
+	</section>
+
+	<!-- Faculty Section -->
+	<section id="faculty" class="section-padding bg-surface-2">
+		<div class="container">
+			<div class="section-header text-center">
+				<h2>Meet Our Faculty</h2>
+			</div>
+			<div class="faculty-wrapper">
+				<div class="program-card faculty-card text-center">
+					<div class="program-icon faculty-icon">
+						<i class="fas fa-user-md"></i>
+					</div>
+					<h3>Shazia Qazi</h3>
+					<p class="text-primary font-bold mb-2">Program Director</p>
+					<p>Shazia Qazi is a well-experienced medical assistant and graduate of the National Health
+						Association. With extensive experience in medical office management, billing, and coding, she
+						brings real-world expertise to the classroom.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Affiliated Organizations Section -->
+	<section id="organizations" class="section-padding bg-surface-1">
+		<div class="container">
+			<div class="section-header text-center">
+				<h2>Affiliated Organizations</h2>
+			</div>
+			<div class="scrolling-wrapper">
+				<div class="scrolling-content">
+					<div class="org-item"><p>New Jersey Department of Health</p></div>
+					<div class="org-item"><p>New Jersey Department of Labor</p></div>
+					<div class="org-item"><p>Department of Labor Opportunity Partnership Grant</p></div>
+					<div class="org-item"><p>New Jersey Board of Nursing</p></div>
+					<div class="org-item"><p>National Healthcare Association</p></div>
+					<div class="org-item"><p>PSI Test Centers</p></div>
+					<div class="org-item"><p>MedCA Certifications</p></div>
+					<div class="org-item"><p>CNJHS LLC</p></div>
+					<!-- Repeat for seamless scroll -->
+					<div class="org-item"><p>New Jersey Department of Health</p></div>
+					<div class="org-item"><p>New Jersey Department of Labor</p></div>
+					<div class="org-item"><p>Department of Labor Opportunity Partnership Grant</p></div>
+					<div class="org-item"><p>New Jersey Board of Nursing</p></div>
+					<div class="org-item"><p>National Healthcare Association</p></div>
+					<div class="org-item"><p>PSI Test Centers</p></div>
+					<div class="org-item"><p>MedCA Certifications</p></div>
+					<div class="org-item"><p>CNJHS LLC</p></div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Footer -->
+	<footer id="contact" class="site-footer">
+		<div class="container">
+			<div class="footer-grid">
+				<div class="footer-brand">
+					<img src="images/logo-modern.png" alt="Mercer Med Tech"
+						style="height: 40px; margin-bottom: 1rem; filter: brightness(0) invert(1);">
+					<p>Empowering the next generation of healthcare professionals with quality education and practical
+						skills.</p>
+				</div>
+				<div class="footer-col">
+					<h4>Quick Links</h4>
+					<ul class="footer-links">
+						<li><a href="#hero">Home</a></li>
+						<li><a href="#about">About Us</a></li>
+						<li><a href="#programs">Programs</a></li>
+						<li><a href="#contact">Contact</a></li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>Contact Us</h4>
+					<ul class="footer-links">
+						<li>
+							<a href="tel:+16097125499" style="display: flex; align-items: center; gap: 0.5rem;">
+								<i class="fas fa-phone-alt"></i>
+								<span>(609) 712-5499</span>
+							</a>
+						</li>
+						<li>
+							<a href="mailto:mercermedtech@gmail.com" style="display: flex; align-items: center; gap: 0.5rem;">
+								<i class="fas fa-envelope"></i>
+								<span>mercermedtech@gmail.com</span>
+							</a>
+						</li>
+						<li>
+							<a href="https://www.google.com/maps/search/?api=1&query=1418%20South%20Broad%20Street%2C%20Trenton%2C%20NJ%2008610" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: flex-start; gap: 0.5rem;">
+								<i class="fas fa-map-marker-alt" style="margin-top: 0.25em;"></i>
+								<div>
+									1418 South Broad Street<br>Trenton, NJ 08610
+								</div>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class="footer-col">
+					<h4>Follow Us</h4>
+					<ul class="footer-links">
+						<li>
+							<a href="https://www.facebook.com/mercermedtech" style="display: flex; align-items: center; gap: 0.5rem;">
+								<i class="fab fa-facebook-f"></i>
+								<span>Facebook</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="footer-bottom">
+				<p>&copy; 2025 Mercer Med Tech. All rights reserved.</p>
+			</div>
+		</div>
+	</footer>
+
+	<!-- Program Modals -->
+	<div id="cna-modal" class="modal">
+		<div class="modal-content">
+			<button class="modal-close" aria-label="Close modal">&times;</button>
+			<div class="modal-header">
+				<h2>Certified Nursing Assistant (CNA)</h2>
+				<p>CIP: 51.3902 | 90 Hours</p>
+			</div>
+			<div class="modal-body">
+				<p>This program provides the basic understanding and skills required for nursing assistants working in nursing homes, hospitals, medical clinics, and home care agencies.</p>
+				<h4>Program Structure</h4>
+				<ul>
+					<li>50 hours of lecture and lab work.</li>
+					<li>40 hours of clinical experience in a skilled nursing facility.</li>
+				</ul>
+				<h4>Certification</h4>
+				<p>Upon completion, students are eligible to take a state-administered skills exam at our school and a written exam at a local PSI Testing Center.</p>
+				<h4>Please Note</h4>
+				<p>Program availability is subject to a minimum enrollment of 20 students.</p>
+			</div>
+		</div>
+	</div>
+
+	<div id="cma-modal" class="modal">
+		<div class="modal-content">
+			<button class="modal-close" aria-label="Close modal">&times;</button>
+			<div class="modal-header">
+				<h2>Certified Medical Assistant (CMA)</h2>
+				<p>CIP: 51.0801 | 480 Hours (8-12 Months)</p>
+			</div>
+			<div class="modal-body">
+				<p>This comprehensive program prepares students for both clinical and administrative roles in a medical setting. The course includes a valuable externship in a physician’s office, hospital, or other healthcare facility.</p>
+				<h4>Key Skills Covered</h4>
+				<ul>
+					<li>Anatomy, Physiology, and Medical Terminology</li>
+					<li>Record Keeping, Insurance Processing, and Office Practices</li>
+					<li>Laboratory Techniques, Phlebotomy, and EKG</li>
+					<li>Patient Relations, Medical Law, and Ethics</li>
+					<li>Taking Medical Histories, Recording Vital Signs, and First Aid</li>
+				</ul>
+				<h4>Certification</h4>
+				<p>Graduates can choose to take their certification exam online through the National Healthcare Association (NHA) or in-person via MedCa.</p>
+				<h4>Career Outlook</h4>
+				<p>Medical Assisting is one of the fastest-growing occupations. With formal training and certification, graduates can expect to earn between $20,000 - $30,000 annually, with opportunities for advancement into nursing or office management roles.</p>
+			</div>
+		</div>
+	</div>
+
+	<div id="phlebotomy-modal" class="modal">
+		<div class="modal-content">
+			<button class="modal-close" aria-label="Close modal">&times;</button>
+			<div class="modal-header">
+				<h2>Phlebotomy Technician</h2>
+				<p>CIP: 51.1009 | 120 Hours</p>
+			</div>
+			<div class="modal-body">
+				<p>This course covers the essential practices and procedures for phlebotomists, focusing on the safe and effective collection of blood samples.</p>
+				<h4>Key Skills Covered</h4>
+				<ul>
+					<li>Universal Precautions and Infection Control</li>
+					<li>Capillary Sticks, Skin Puncture, and Venipuncture</li>
+					<li>Butterfly Techniques and Multiple Tube Drawings</li>
+					<li>Specimen Handling, Transportation, and Processing</li>
+					<li>Medical Law, Ethics, and Patient Confidentiality</li>
+				</ul>
+				<h4>Certification</h4>
+				<p>Graduates can choose to take their certification exam online through the National Healthcare Association (NHA) or in-person via MedCa.</p>
+				<h4>Career Outlook</h4>
+				<p>Certified phlebotomists are in high demand in labs, blood banks, and hospitals. The typical annual salary ranges from $30,000 to $50,000.</p>
+			</div>
+		</div>
+	</div>
+
+	<div id="ekg-modal" class="modal">
+		<div class="modal-content">
+			<button class="modal-close" aria-label="Close modal">&times;</button>
+			<div class="modal-header">
+				<h2>EKG Technician</h2>
+				<p>CIP: 51.0902 | 120 Hours (6 Weeks)</p>
+			</div>
+			<div class="modal-body">
+				<p>This 6-week course focuses on the technical skills required to perform electrocardiograms (EKGs), including machine operation and interpretation. The program includes a 100-hour externship.</p>
+				<h4>Key Skills Covered</h4>
+				<ul>
+					<li>Cardiovascular Anatomy and Physiology</li>
+					<li>EKG Machine Operation and Graph Interpretation</li>
+					<li>12-Lead EKG Placement and Artifact Recognition</li>
+					<li>Pharmacology of Cardiac Diseases</li>
+					<li>Patient Education and Safety</li>
+				</ul>
+				<h4>Certification</h4>
+				<p>Graduates can choose to take their certification exam online through the National Healthcare Association (NHA) or in-person via MedCa.</p>
+				<h4>Career Outlook</h4>
+				<p>EKG Technicians find opportunities in hospitals and physicians' offices, with an average annual salary of $30,000 to $50,000. Advancement is possible with experience and continuing education.</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- Scripts -->
+	<script>
+		// Carousel Functionality
+		class Carousel {
+			constructor() {
+				this.track = document.querySelector('.carousel-track');
+				if (!this.track) return;
+
+				this.slides = Array.from(this.track.children);
+				this.dotsContainer = document.querySelector('.carousel-dots');
+				this.prevBtn = document.querySelector('.carousel-prev');
+				this.nextBtn = document.querySelector('.carousel-next');
+				
+				this.currentIndex = 0;
+				this.touchStartX = 0;
+				this.touchEndX = 0;
+				
+				this.init();
+			}
+
+			init() {
+				this.prevBtn?.addEventListener('click', () => this.prev());
+				this.nextBtn?.addEventListener('click', () => this.next());
+				
+				this.track.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
+				this.track.addEventListener('touchend', (e) => this.handleTouchEnd(e), false);
+
+				window.addEventListener('resize', () => {
+					this.updateCarousel(false); // Update position without transition
+					this.setupDots(); // Re-build dots if needed
+				});
+				
+				this.setupDots();
+				this.updateCarousel();
+			}
+
+			setupDots() {
+				const itemsPerView = this.getItemsPerView();
+				const slideCount = this.slides.length;
+				const dotsNeeded = Math.max(0, slideCount - itemsPerView + 1);
+
+				if (this.dots?.length === dotsNeeded) {
+					this.updateDots();
+					return;
+				}
+
+				this.dotsContainer.innerHTML = '';
+				for (let i = 0; i < dotsNeeded; i++) {
+					const dot = document.createElement('button');
+					dot.classList.add('dot');
+					dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+					dot.addEventListener('click', () => this.goToSlide(i));
+					this.dotsContainer.appendChild(dot);
+				}
+				this.dots = Array.from(this.dotsContainer.children);
+				this.updateDots();
+			}
+
+			getItemsPerView() {
+				if (window.innerWidth <= 640) return 1;
+				if (window.innerWidth <= 968) return 2;
+				return 3;
+			}
+
+			updateCarousel(transition = true) {
+				const itemsPerView = this.getItemsPerView();
+				const slideCount = this.slides.length;
+				const maxIndex = Math.max(0, slideCount - itemsPerView);
+				
+				this.currentIndex = Math.min(this.currentIndex, maxIndex);
+
+				const trackStyle = window.getComputedStyle(this.track);
+				const gap = parseFloat(trackStyle.gap) || 0;
+				const slideWidth = this.slides.length > 0 ? this.slides[0].offsetWidth : 0;
+				
+				let offset = -this.currentIndex * (slideWidth + gap);
+
+				// Center single slide on mobile
+				if (itemsPerView === 1) {
+					const wrapperWidth = this.track.parentElement.offsetWidth;
+					const centeringOffset = (wrapperWidth - slideWidth) / 2;
+					offset += centeringOffset;
+				}
+				
+				this.track.style.transition = transition ? 'transform 0.5s cubic-bezier(0.215, 0.61, 0.355, 1)' : 'none';
+				this.track.style.transform = `translateX(${offset}px)`;
+				
+				this.updateDots();
+			}
+
+			updateDots() {
+				if (!this.dots) return;
+				this.dots.forEach((dot, index) => {
+					dot.classList.toggle('active', index === this.currentIndex);
+				});
+			}
+
+			next() {
+				const itemsPerView = this.getItemsPerView();
+				const slideCount = this.slides.length;
+				const maxIndex = Math.max(0, slideCount - itemsPerView);
+				
+				if (this.currentIndex < maxIndex) {
+					this.currentIndex++;
+				} else {
+					this.currentIndex = 0; // Loop back to start
+				}
+				this.updateCarousel();
+			}
+
+			prev() {
+				const itemsPerView = this.getItemsPerView();
+				const slideCount = this.slides.length;
+				const maxIndex = Math.max(0, slideCount - itemsPerView);
+
+				if (this.currentIndex > 0) {
+					this.currentIndex--;
+				} else {
+					this.currentIndex = maxIndex; // Loop to end
+				}
+				this.updateCarousel();
+			}
+
+			goToSlide(index) {
+				const itemsPerView = this.getItemsPerView();
+				const slideCount = this.slides.length;
+				const maxIndex = Math.max(0, slideCount - itemsPerView);
+				
+				this.currentIndex = Math.min(index, maxIndex);
+				this.updateCarousel();
+			}
+
+			handleTouchStart(e) {
+				this.touchStartX = e.changedTouches[0].screenX;
+			}
+
+			handleTouchEnd(e) {
+				this.touchEndX = e.changedTouches[0].screenX;
+				this.handleSwipe();
+			}
+
+			handleSwipe() {
+				const diff = this.touchStartX - this.touchEndX;
+				if (Math.abs(diff) > 40) { // Threshold for swipe
+					if (diff > 0) {
+						this.next();
+					} else {
+						this.prev();
+					}
+				}
+			}
+		}
+
+		// Sticky Header & Mobile Menu
+		document.addEventListener('DOMContentLoaded', () => {
+			const header = document.querySelector('.site-header');
+			const menuToggle = document.querySelector('.mobile-menu-toggle');
+			const navMenu = document.querySelector('.nav-menu');
+			const navLinks = document.querySelectorAll('.nav-link');
+			
+			// Initialize Carousel
+			const carousel = new Carousel();
+
+			// Modal Functionality
+			const modalTriggers = document.querySelectorAll('[data-modal-target]');
+			const modals = document.querySelectorAll('.modal');
+			const modalCloses = document.querySelectorAll('.modal-close');
+
+			modalTriggers.forEach(trigger => {
+				trigger.addEventListener('click', (e) => {
+					e.preventDefault();
+					const modalId = trigger.getAttribute('data-modal-target');
+					const modal = document.querySelector(modalId);
+					if (modal) {
+						openModal(modal);
+					}
+				});
+			});
+
+			modalCloses.forEach(button => {
+				button.addEventListener('click', () => {
+					const modal = button.closest('.modal');
+					closeModal(modal);
+				});
+			});
+
+			modals.forEach(modal => {
+				modal.addEventListener('click', (e) => {
+					if (e.target === modal) {
+						closeModal(modal);
+					}
+				});
+			});
+
+			document.addEventListener('keydown', (e) => {
+				if (e.key === 'Escape') {
+					const activeModal = document.querySelector('.modal.active');
+					if (activeModal) {
+						closeModal(activeModal);
+					}
+				}
+			});
+
+			function openModal(modal) {
+				if (modal == null) return;
+				modal.classList.add('active');
+				document.body.classList.add('modal-active');
+			}
+
+			function closeModal(modal) {
+				if (modal == null) return;
+				modal.classList.remove('active');
+				document.body.classList.remove('modal-active');
+			}
+
+			// Sticky Header
+			window.addEventListener('scroll', () => {
+				if (window.scrollY > 20) {
+					header.classList.add('scrolled');
+				} else {
+					header.classList.remove('scrolled');
+				}
+			});
+
+			// Mobile Menu
+			if (menuToggle) {
+				menuToggle.addEventListener('click', () => {
+					navMenu.classList.toggle('active');
+					const icon = menuToggle.querySelector('i');
+					icon.classList.toggle('fa-bars');
+					icon.classList.toggle('fa-times');
+				});
+			}
+
+			// Close menu on link click
+			navLinks.forEach(link => {
+				link.addEventListener('click', () => {
+					if (navMenu.classList.contains('active')) {
+						navMenu.classList.remove('active');
+						const icon = menuToggle.querySelector('i');
+						icon.classList.add('fa-bars');
+						icon.classList.remove('fa-times');
+					}
+				});
+			});
+
+			// Smooth Scroll for anchor links
+			document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+				anchor.addEventListener('click', function (e) {
+					e.preventDefault();
+					const targetId = this.getAttribute('href');
+					const target = document.querySelector(targetId);
+					if (target) {
+						// Smooth scroll to target
+						const headerOffset = document.querySelector('.site-header').offsetHeight;
+						const elementPosition = target.getBoundingClientRect().top;
+						const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+						window.scrollTo({
+							top: offsetPosition,
+							behavior: 'smooth'
+						});
+					}
+				});
+			});
+		});
+	</script>
+</body>
+
 </html>
-
-

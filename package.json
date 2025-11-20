@@ -1,0 +1,25 @@
+{
+  "name": "mercermedtech.github.io",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awaisqazi/mercermedtech.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/awaisqazi/mercermedtech.github.io/issues"
+  },
+  "homepage": "https://github.com/awaisqazi/mercermedtech.github.io#readme",
+  "devDependencies": {
+    "vite": "^7.2.2"
+  }
+}
