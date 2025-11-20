@@ -94,6 +94,12 @@
 		.modal-body li {
 			margin-bottom: 0.5rem;
 		}
+		.modal-footer {
+			border-top: 1px solid var(--border);
+			padding-top: 1.5rem;
+			margin-top: 1.5rem;
+			text-align: center;
+		}
 		body.modal-active {
 			overflow: hidden;
 		}
@@ -463,6 +469,9 @@
 				<h4>Please Note</h4>
 				<p>Program availability is subject to a minimum enrollment of 20 students.</p>
 			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary modal-close-bottom">Close</button>
+			</div>
 		</div>
 	</div>
 
@@ -487,6 +496,9 @@
 				<p>Graduates can choose to take their certification exam online through the National Healthcare Association (NHA) or in-person via MedCa.</p>
 				<h4>Career Outlook</h4>
 				<p>Medical Assisting is one of the fastest-growing occupations. With formal training and certification, graduates can expect to earn between $20,000 - $30,000 annually, with opportunities for advancement into nursing or office management roles.</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary modal-close-bottom">Close</button>
 			</div>
 		</div>
 	</div>
@@ -513,6 +525,9 @@
 				<h4>Career Outlook</h4>
 				<p>Certified phlebotomists are in high demand in labs, blood banks, and hospitals. The typical annual salary ranges from $30,000 to $50,000.</p>
 			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary modal-close-bottom">Close</button>
+			</div>
 		</div>
 	</div>
 
@@ -537,6 +552,9 @@
 				<p>Graduates can choose to take their certification exam online through the National Healthcare Association (NHA) or in-person via MedCa.</p>
 				<h4>Career Outlook</h4>
 				<p>EKG Technicians find opportunities in hospitals and physicians' offices, with an average annual salary of $30,000 to $50,000. Advancement is possible with experience and continuing education.</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary modal-close-bottom">Close</button>
 			</div>
 		</div>
 	</div>
@@ -735,7 +753,7 @@
 			// Modal Functionality
 			const modalTriggers = document.querySelectorAll('[data-modal-target]');
 			const modals = document.querySelectorAll('.modal');
-			const modalCloses = document.querySelectorAll('.modal-close');
+			const modalCloses = document.querySelectorAll('.modal-close, .modal-close-bottom');
 
 			modalTriggers.forEach(trigger => {
 				trigger.addEventListener('click', (e) => {
