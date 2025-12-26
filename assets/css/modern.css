@@ -726,11 +726,11 @@ img {
 
 @media (max-width: 640px) {
     .carousel-slide {
-        flex: 0 0 90%;
+        flex: 0 0 100%;
     }
 
     .carousel-container {
-        padding: 0 45px;
+        padding: 0 35px;
     }
 
     .carousel-btn {
@@ -740,11 +740,11 @@ img {
     }
 
     .carousel-prev {
-        left: -25px;
+        left: -20px;
     }
 
     .carousel-next {
-        right: -25px;
+        right: -20px;
     }
 
     .footer-grid {
@@ -994,6 +994,8 @@ img {
         0 0 0 1px rgba(255, 255, 255, 0.4) inset,
         var(--glass-card-glow),
         0 25px 60px -10px rgba(0, 0, 0, 0.08);
+    /* Allow touch swiping on the entire carousel area */
+    touch-action: pan-y pinch-zoom;
 }
 
 /* Glass reflection on container */
@@ -1344,13 +1346,13 @@ img {
     }
 
     .programs-carousel-glass {
-        padding: 1.25rem;
+        padding: 0.75rem;
         border-radius: var(--radius-md);
     }
 
     .program-card-glass {
         padding: 1.5rem;
-        min-height: 360px;
+        min-height: 400px;
     }
 
     .program-card-glass .program-icon {
@@ -1381,19 +1383,23 @@ img {
     .programs-floating-element {
         display: none;
     }
+
+    .programs-section .carousel-container {
+        padding: 0 25px;
+    }
 }
 
 /* Small Mobile */
 @media (max-width: 480px) {
     .programs-section {
-        padding-left: max(1rem, var(--safe-area-left));
-        padding-right: max(1rem, var(--safe-area-right));
+        padding-left: max(0.75rem, var(--safe-area-left));
+        padding-right: max(0.75rem, var(--safe-area-right));
     }
 
     .programs-carousel-glass {
-        padding: 1rem;
-        margin-left: -0.5rem;
-        margin-right: -0.5rem;
+        padding: 0.5rem;
+        margin-left: -0.25rem;
+        margin-right: -0.25rem;
     }
 
     .program-card-glass {
@@ -1403,6 +1409,10 @@ img {
     .programs-pill-badge {
         font-size: 0.8rem;
         padding: 0.4rem 1rem;
+    }
+
+    .programs-section .carousel-container {
+        padding: 0 20px;
     }
 }
 

@@ -787,6 +787,7 @@
 				this.track = document.querySelector('.carousel-track');
 				if (!this.track) return;
 
+				this.wrapper = document.querySelector('.carousel-wrapper');
 				this.slides = Array.from(this.track.children);
 				this.dotsContainer = document.querySelector('.carousel-dots');
 				this.prevBtn = document.querySelector('.carousel-prev');
@@ -806,9 +807,11 @@
 				this.prevBtn?.addEventListener('click', () => this.prev());
 				this.nextBtn?.addEventListener('click', () => this.next());
 
-				this.track.addEventListener('touchstart', (e) => this.handleTouchStart(e), false);
-				this.track.addEventListener('touchmove', (e) => this.handleTouchMove(e), false);
-				this.track.addEventListener('touchend', (e) => this.handleTouchEnd(e), false);
+				// Attach touch events to wrapper for full area swiping on mobile
+				const touchTarget = this.wrapper || this.track;
+				touchTarget.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
+				touchTarget.addEventListener('touchmove', (e) => this.handleTouchMove(e), { passive: false });
+				touchTarget.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: true });
 
 				window.addEventListener('resize', () => {
 					this.updateCarousel(false);
