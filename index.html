@@ -33,12 +33,6 @@
 			-webkit-touch-callout: none;
 		}
 
-	<style>
-		.carousel-track {
-			touch-action: manipulation;
-			user-select: none;
-		}
-
 		.modal {
 			position: fixed;
 			top: 0;
@@ -54,12 +48,20 @@
 			visibility: hidden;
 			transition: opacity 0.3s ease, visibility 0.3s ease;
 		}
+
 		.modal.active {
 			opacity: 1;
 			visibility: visible;
 		}
+
 		.modal-content {
-			background-color: white;
+			/* Liquid Glass Effect - Teal-tinted glassmorphism */
+			background: linear-gradient(135deg,
+					rgba(255, 255, 255, 0.92) 0%,
+					rgba(224, 247, 246, 0.88) 50%,
+					rgba(255, 255, 255, 0.92) 100%);
+			-webkit-backdrop-filter: blur(32px) saturate(180%);
+			backdrop-filter: blur(32px) saturate(180%);
 			padding: 2.5rem;
 			border-radius: var(--radius-lg);
 			width: 90%;
@@ -67,12 +69,40 @@
 			max-height: 90vh;
 			overflow-y: auto;
 			position: relative;
-			transform: translateY(-50px);
-			transition: transform 0.3s ease;
+			transform: translateY(-50px) scale(0.95);
+			transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+				box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+			/* Liquid glass border with gradient */
+			border: 1px solid rgba(0, 166, 156, 0.2);
+			box-shadow:
+				0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+				0 25px 50px -12px rgba(0, 0, 0, 0.15),
+				0 0 60px rgba(0, 166, 156, 0.1);
 		}
+
+		/* Glass reflection effect */
+		.modal-content::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 50%;
+			background: linear-gradient(180deg,
+					rgba(255, 255, 255, 0.4) 0%,
+					rgba(255, 255, 255, 0) 100%);
+			border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+			pointer-events: none;
+		}
+
 		.modal.active .modal-content {
-			transform: translateY(0);
+			transform: translateY(0) scale(1);
+			box-shadow:
+				0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+				0 30px 60px -15px rgba(0, 0, 0, 0.2),
+				0 0 80px rgba(0, 166, 156, 0.15);
 		}
+
 		.modal-close {
 			position: absolute;
 			top: 1rem;
@@ -84,56 +114,69 @@
 			cursor: pointer;
 			transition: color 0.3s ease;
 		}
+
 		.modal-close:hover {
 			color: var(--text-main);
 		}
+
 		.modal-header {
 			border-bottom: 1px solid var(--border);
 			padding-bottom: 1rem;
 			margin-bottom: 1.5rem;
 		}
+
 		.modal-header h2 {
 			font-size: 2rem;
 			margin-bottom: 0.25rem;
 		}
+
 		.modal-header p {
 			color: var(--text-muted);
 			font-weight: 600;
 		}
+
 		.modal-body h4 {
 			font-size: 1.1rem;
 			color: var(--primary);
 			margin-top: 1.5rem;
 			margin-bottom: 0.75rem;
 		}
+
 		.modal-body ul {
 			list-style-type: disc;
 			padding-left: 20px;
 		}
+
 		.modal-body li {
 			margin-bottom: 0.5rem;
 		}
+
 		.modal-footer {
 			border-top: 1px solid var(--border);
 			padding-top: 1.5rem;
 			margin-top: 1.5rem;
 			text-align: center;
 		}
+
 		body.modal-active {
 			overflow: hidden;
 		}
+
 		.hero-actions {
 			display: flex;
 			flex-wrap: wrap;
 			gap: 1rem;
 		}
+
 		.scrolling-wrapper {
 			overflow: hidden;
 			width: 100%;
 			position: relative;
 			margin-top: 3rem;
 		}
-		.scrolling-wrapper::before, .scrolling-wrapper::after {
+
+		.scrolling-wrapper::before,
+		.scrolling-wrapper::after {
 			content: '';
 			position: absolute;
 			top: 0;
@@ -141,19 +184,23 @@
 			height: 100%;
 			z-index: 2;
 		}
+
 		.scrolling-wrapper::before {
 			left: 0;
-			background: linear-gradient(to right, var(--surface-1) 0%, rgba(255,255,255,0) 100%);
+			background: linear-gradient(to right, var(--surface-1) 0%, rgba(255, 255, 255, 0) 100%);
 		}
+
 		.scrolling-wrapper::after {
 			right: 0;
-			background: linear-gradient(to left, var(--surface-1) 0%, rgba(255,255,255,0) 100%);
+			background: linear-gradient(to left, var(--surface-1) 0%, rgba(255, 255, 255, 0) 100%);
 		}
+
 		.scrolling-content {
 			display: flex;
 			width: fit-content;
 			animation: scroll 40s linear infinite;
 		}
+
 		.scrolling-content .org-item {
 			flex-shrink: 0;
 			padding: 1rem 2.5rem;
@@ -165,14 +212,17 @@
 			align-items: center;
 			justify-content: center;
 		}
+
 		@keyframes scroll {
 			0% {
 				transform: translateX(0);
 			}
+
 			100% {
 				transform: translateX(-50%);
 			}
 		}
+
 		@media (max-width: 968px) {
 			.hero-actions {
 				justify-content: center;
@@ -248,117 +298,188 @@
 		</div>
 	</section>
 
-	<!-- Programs Section -->
-	<section id="programs" class="section-padding">
+	<!-- Programs Section - Apple-Style iOS-Optimized -->
+	<section id="programs" class="programs-section">
+		<!-- Animated Gradient Mesh Background -->
+		<div class="programs-gradient-mesh" aria-hidden="true"></div>
+
+		<!-- Floating Decorative Elements -->
+		<div class="programs-floating-element" aria-hidden="true"></div>
+		<div class="programs-floating-element" aria-hidden="true"></div>
+		<div class="programs-floating-element" aria-hidden="true"></div>
+
 		<div class="container">
+			<!-- Section Header with Animated Pill Badge -->
 			<div class="section-header text-center">
+				<div class="programs-pill-badge">
+					<i class="fas fa-graduation-cap"></i>
+					<span>Career Training</span>
+				</div>
 				<h2>Our Programs</h2>
 				<p class="text-muted">Comprehensive training programs designed to get you certified and job-ready.</p>
 			</div>
 
-			<div class="carousel-container">
-				<div class="carousel-wrapper">
-					<div class="carousel-track">
-						<!-- CNA -->
-						<article class="program-card carousel-slide">
-							<div class="program-icon">
-								<i class="fas fa-user-nurse"></i>
-							</div>
-							<h3>Certified Nursing Assistant</h3>
-							<p>90-hour program covering basic nursing skills, patient care, and clinical experience in skilled
-								nursing facilities.</p>
-							<a href="#" class="btn btn-secondary full-width" data-modal-target="#cna-modal">Learn More</a>
-						</article>
+			<!-- Glassmorphism Carousel Container -->
+			<div class="programs-carousel-glass">
+				<div class="carousel-container">
+					<div class="carousel-wrapper">
 
-						<!-- CMA -->
-						<article class="program-card carousel-slide">
-							<div class="program-icon">
-								<i class="fas fa-stethoscope"></i>
-							</div>
-							<h3>Certified Medical Assistant</h3>
-							<p>480-hour comprehensive course covering clinical and administrative duties, phlebotomy, EKG, and
-								more.</p>
-							<a href="#" class="btn btn-secondary full-width" data-modal-target="#cma-modal">Learn More</a>
-						</article>
+						<div class="carousel-track">
+							<!-- CNA -->
+							<article class="program-card-glass carousel-slide">
+								<div class="program-icon">
+									<i class="fas fa-user-nurse"></i>
+								</div>
+								<div class="program-stats-badge">
+									<i class="fas fa-clock"></i>
+									<span>90 Hours</span>
+								</div>
+								<h3>Certified Nursing Assistant</h3>
+								<p>Comprehensive program covering basic nursing skills, patient care, and hands-on
+									clinical experience in skilled nursing facilities.</p>
+								<a href="#" class="btn btn-secondary full-width" data-modal-target="#cna-modal">
+									Learn More <i class="fas fa-arrow-right"
+										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+								</a>
+							</article>
 
-						<!-- Phlebotomy -->
-						<article class="program-card carousel-slide">
-							<div class="program-icon">
-								<i class="fas fa-syringe"></i>
-							</div>
-							<h3>Phlebotomy Technician</h3>
-							<p>120-hour specialized training in venipuncture, specimen handling, and lab safety procedures.</p>
-							<a href="#" class="btn btn-secondary full-width" data-modal-target="#phlebotomy-modal">Learn More</a>
-						</article>
+							<!-- CMA -->
+							<article class="program-card-glass carousel-slide">
+								<div class="program-icon">
+									<i class="fas fa-stethoscope"></i>
+								</div>
+								<div class="program-stats-badge">
+									<i class="fas fa-clock"></i>
+									<span>480 Hours</span>
+								</div>
+								<h3>Certified Medical Assistant</h3>
+								<p>Comprehensive course covering clinical and administrative duties, phlebotomy, EKG,
+									and patient care fundamentals.</p>
+								<a href="#" class="btn btn-secondary full-width" data-modal-target="#cma-modal">
+									Learn More <i class="fas fa-arrow-right"
+										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+								</a>
+							</article>
 
-						<!-- EKG -->
-						<article class="program-card carousel-slide">
-							<div class="program-icon">
-								<i class="fas fa-heartbeat"></i>
-							</div>
-							<h3>EKG Technician</h3>
-							<p>120-hour course focusing on cardiovascular anatomy, EKG machine operation, and interpretation.
-							</p>
-							<a href="#" class="btn btn-secondary full-width" data-modal-target="#ekg-modal">Learn More</a>
-						</article>
+							<!-- Phlebotomy -->
+							<article class="program-card-glass carousel-slide">
+								<div class="program-icon">
+									<i class="fas fa-syringe"></i>
+								</div>
+								<div class="program-stats-badge">
+									<i class="fas fa-clock"></i>
+									<span>120 Hours</span>
+								</div>
+								<h3>Phlebotomy Technician</h3>
+								<p>Specialized training in venipuncture, specimen handling, and laboratory safety
+									procedures with practical experience.</p>
+								<a href="#" class="btn btn-secondary full-width" data-modal-target="#phlebotomy-modal">
+									Learn More <i class="fas fa-arrow-right"
+										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+								</a>
+							</article>
+
+							<!-- EKG -->
+							<article class="program-card-glass carousel-slide">
+								<div class="program-icon">
+									<i class="fas fa-heartbeat"></i>
+								</div>
+								<div class="program-stats-badge">
+									<i class="fas fa-clock"></i>
+									<span>120 Hours</span>
+								</div>
+								<h3>EKG Technician</h3>
+								<p>Focused course on cardiovascular anatomy, EKG machine operation, and graph
+									interpretation for cardiac monitoring.</p>
+								<a href="#" class="btn btn-secondary full-width" data-modal-target="#ekg-modal">
+									Learn More <i class="fas fa-arrow-right"
+										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+								</a>
+							</article>
+						</div>
+					</div>
+
+					<!-- Carousel Controls -->
+					<button class="carousel-btn carousel-prev" aria-label="Previous program">
+						<i class="fas fa-chevron-left"></i>
+					</button>
+					<button class="carousel-btn carousel-next" aria-label="Next program">
+						<i class="fas fa-chevron-right"></i>
+					</button>
+
+					<!-- Carousel Dots -->
+					<div class="carousel-dots"></div>
+
+					<!-- Mobile Scroll Progress -->
+					<div class="programs-scroll-progress" aria-hidden="true">
+						<div class="programs-scroll-progress-bar"></div>
+					</div>
+
+					<!-- Mobile Swipe Indicator -->
+					<div class="swipe-indicator">
+						<i class="fas fa-hand-pointer"></i>
+						<span>Swipe to explore</span>
 					</div>
 				</div>
-
-				<!-- Carousel Controls -->
-				<button class="carousel-btn carousel-prev" aria-label="Previous program">
-					<i class="fas fa-chevron-left"></i>
-				</button>
-				<button class="carousel-btn carousel-next" aria-label="Next program">
-					<i class="fas fa-chevron-right"></i>
-				</button>
-
-				<!-- Mobile Swipe Indicator -->
-				<div class="swipe-indicator">
-					<i class="fas fa-hand-pointer"></i>
-					<span>Swipe to see more</span>
-				</div>
-
-				<!-- Carousel Dots -->
-				<div class="carousel-dots"></div>
 			</div>
 
 			<!-- Data Source Notes -->
 			<div class="data-source-notes">
 				<h5>Note on Data Sources</h5>
-				<p><strong>Wages & Growth:</strong> Data primarily sourced from the Bureau of Labor Statistics (BLS) Occupational Outlook Handbook (May 2024 data).</p>
-				<p><strong>EKG Note:</strong> The BLS often groups EKG Technicians with "Cardiovascular Technologists," who earn significantly higher ($67k+). The figure provided ($42k–$54k) is adjusted to reflect the accurate entry-level range for Certificate holders (CIP 51.0902) rather than Associate degree holders.</p>
+				<p><strong>Wages & Growth:</strong> Data primarily sourced from the Bureau of Labor Statistics (BLS)
+					Occupational Outlook Handbook (May 2024 data).</p>
+				<p><strong>EKG Note:</strong> The BLS often groups EKG Technicians with "Cardiovascular Technologists,"
+					who earn significantly higher ($67k+). The figure provided ($42k–$54k) is adjusted to reflect the
+					accurate entry-level range for Certificate holders (CIP 51.0902) rather than Associate degree
+					holders.</p>
 			</div>
 		</div>
 	</section>
+
 
 	<!-- Grants Section -->
 	<section id="grants" class="section-padding bg-surface-1">
 		<div class="container">
 			<div class="hero-grid">
 				<div class="hero-image-wrapper">
-					<img src="images/pic04.png" alt="Financial Aid" class="hero-image" style="border-radius: var(--radius-lg);">
+					<img src="images/pic04.png" alt="Financial Aid" class="hero-image"
+						style="border-radius: var(--radius-lg);">
 					<!-- User note: Consider replacing 'pic04.jpg' with a more relevant image for financial aid. -->
 				</div>
-				                <div class="hero-content">
-									<h2 class="section-title">Financial Aid & Grants</h2>
-									<p>While Mercer Med Tech does not directly award grants or scholarships, we are committed to helping you navigate your financial options. We proudly honor funding from outside organizations and can assist you in understanding student loan opportunities.</p>
-									
-									<ul class="fa-ul" style="margin-left: 1.5rem; margin-top: 1.5rem; margin-bottom: 2rem;">
-										<li style="padding-bottom: 1rem;"><span class="fa-li"><i class="fas fa-award text-primary"></i></span>Accepts External Scholarships & Grants</li>
-										<li style="padding-bottom: 1rem;"><span class="fa-li"><i class="fas fa-comments-dollar text-primary"></i></span>Student Loan Information & Assistance</li>
-									</ul>
-				
-									<div class="financial-aid-footer" style="background-color: var(--surface-2); padding: 2.5rem; border-radius: var(--radius-md); margin-top: 2rem; text-align: center;">
-										<h4 style="margin-bottom: 1rem;">Important Loan Information</h4>
-										<p style="font-size: 0.9rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem auto;">
-											Students who obtain a school-assisted loan are responsible for repaying it in full, regardless of their academic progress or withdrawal. If you withdraw, you must notify your loan institution. MMT will issue any applicable refunds to the lender according to our refund policy, but you remain responsible for any outstanding balance on your promissory note with the bank.
-										</p>
-										<p style="font-size: 1.1rem; font-weight: 500; color: var(--text-main); margin-bottom: 1.5rem; margin-top: 2rem;">
-											Worried about the cost? Reach out to learn how we can help you achieve your goals!
-										</p>
-										<a href="#contact" class="btn btn-primary">Talk to Us</a>
-									</div>
-								</div>			</div>
+				<div class="hero-content">
+					<h2 class="section-title">Financial Aid & Grants</h2>
+					<p>While Mercer Med Tech does not directly award grants or scholarships, we are committed to helping
+						you navigate your financial options. We proudly honor funding from outside organizations and can
+						assist you in understanding student loan opportunities.</p>
+
+					<ul class="fa-ul" style="margin-left: 1.5rem; margin-top: 1.5rem; margin-bottom: 2rem;">
+						<li style="padding-bottom: 1rem;"><span class="fa-li"><i
+									class="fas fa-award text-primary"></i></span>Accepts External Scholarships & Grants
+						</li>
+						<li style="padding-bottom: 1rem;"><span class="fa-li"><i
+									class="fas fa-comments-dollar text-primary"></i></span>Student Loan Information &
+							Assistance</li>
+					</ul>
+
+					<div class="financial-aid-footer"
+						style="background-color: var(--surface-2); padding: 2.5rem; border-radius: var(--radius-md); margin-top: 2rem; text-align: center;">
+						<h4 style="margin-bottom: 1rem;">Important Loan Information</h4>
+						<p
+							style="font-size: 0.9rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem auto;">
+							Students who obtain a school-assisted loan are responsible for repaying it in full,
+							regardless of their academic progress or withdrawal. If you withdraw, you must notify your
+							loan institution. MMT will issue any applicable refunds to the lender according to our
+							refund policy, but you remain responsible for any outstanding balance on your promissory
+							note with the bank.
+						</p>
+						<p
+							style="font-size: 1.1rem; font-weight: 500; color: var(--text-main); margin-bottom: 1.5rem; margin-top: 2rem;">
+							Worried about the cost? Reach out to learn how we can help you achieve your goals!
+						</p>
+						<a href="#contact" class="btn btn-primary">Talk to Us</a>
+					</div>
+				</div>
+			</div>
 		</div>
 	</section>
 
@@ -391,23 +512,55 @@
 			</div>
 			<div class="scrolling-wrapper">
 				<div class="scrolling-content">
-					<div class="org-item"><p>New Jersey Department of Health</p></div>
-					<div class="org-item"><p>New Jersey Department of Labor</p></div>
-					<div class="org-item"><p>Department of Labor Opportunity Partnership Grant</p></div>
-					<div class="org-item"><p>New Jersey Board of Nursing</p></div>
-					<div class="org-item"><p>National Healthcareer Association</p></div>
-					<div class="org-item"><p>PSI Test Centers</p></div>
-					<div class="org-item"><p>MedCA Certifications</p></div>
-					<div class="org-item"><p>CNJHS LLC</p></div>
+					<div class="org-item">
+						<p>New Jersey Department of Health</p>
+					</div>
+					<div class="org-item">
+						<p>New Jersey Department of Labor</p>
+					</div>
+					<div class="org-item">
+						<p>Department of Labor Opportunity Partnership Grant</p>
+					</div>
+					<div class="org-item">
+						<p>New Jersey Board of Nursing</p>
+					</div>
+					<div class="org-item">
+						<p>National Healthcareer Association</p>
+					</div>
+					<div class="org-item">
+						<p>PSI Test Centers</p>
+					</div>
+					<div class="org-item">
+						<p>MedCA Certifications</p>
+					</div>
+					<div class="org-item">
+						<p>CNJHS LLC</p>
+					</div>
 					<!-- Repeat for seamless scroll -->
-					<div class="org-item"><p>New Jersey Department of Health</p></div>
-					<div class="org-item"><p>New Jersey Department of Labor</p></div>
-					<div class="org-item"><p>Department of Labor Opportunity Partnership Grant</p></div>
-					<div class="org-item"><p>New Jersey Board of Nursing</p></div>
-					<div class="org-item"><p>National Healthcareer Association</p></div>
-					<div class="org-item"><p>PSI Test Centers</p></div>
-					<div class="org-item"><p>MedCA Certifications</p></div>
-					<div class="org-item"><p>CNJHS LLC</p></div>
+					<div class="org-item">
+						<p>New Jersey Department of Health</p>
+					</div>
+					<div class="org-item">
+						<p>New Jersey Department of Labor</p>
+					</div>
+					<div class="org-item">
+						<p>Department of Labor Opportunity Partnership Grant</p>
+					</div>
+					<div class="org-item">
+						<p>New Jersey Board of Nursing</p>
+					</div>
+					<div class="org-item">
+						<p>National Healthcareer Association</p>
+					</div>
+					<div class="org-item">
+						<p>PSI Test Centers</p>
+					</div>
+					<div class="org-item">
+						<p>MedCA Certifications</p>
+					</div>
+					<div class="org-item">
+						<p>CNJHS LLC</p>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -442,13 +595,16 @@
 							</a>
 						</li>
 						<li>
-							<a href="mailto:mercermedtech@gmail.com" style="display: flex; align-items: center; gap: 0.5rem;">
+							<a href="mailto:mercermedtech@gmail.com"
+								style="display: flex; align-items: center; gap: 0.5rem;">
 								<i class="fas fa-envelope"></i>
 								<span>mercermedtech@gmail.com</span>
 							</a>
 						</li>
 						<li>
-							<a href="https://www.google.com/maps/search/?api=1&query=1418%20South%20Broad%20Street%2C%20Trenton%2C%20NJ%2008610" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: flex-start; gap: 0.5rem;">
+							<a href="https://www.google.com/maps/search/?api=1&query=1418%20South%20Broad%20Street%2C%20Trenton%2C%20NJ%2008610"
+								target="_blank" rel="noopener noreferrer"
+								style="display: flex; align-items: flex-start; gap: 0.5rem;">
 								<i class="fas fa-map-marker-alt" style="margin-top: 0.25em;"></i>
 								<div>
 									1418 South Broad Street<br>Trenton, NJ 08610
@@ -461,7 +617,8 @@
 					<h4>Follow Us</h4>
 					<ul class="footer-links">
 						<li>
-							<a href="https://www.facebook.com/mercermedtech" style="display: flex; align-items: center; gap: 0.5rem;">
+							<a href="https://www.facebook.com/mercermedtech"
+								style="display: flex; align-items: center; gap: 0.5rem;">
 								<i class="fab fa-facebook-f"></i>
 								<span>Facebook</span>
 							</a>
@@ -475,7 +632,7 @@
 		</div>
 	</footer>
 
-		<!-- Program Modals -->
+	<!-- Program Modals -->
 	<div id="cna-modal" class="modal">
 		<div class="modal-content">
 			<button class="modal-close" aria-label="Close modal">&times;</button>
@@ -484,18 +641,24 @@
 				<p>CIP: 51.3902 | 90 Hours</p>
 			</div>
 			<div class="modal-body">
-				<p>This program provides the basic understanding and skills required for nursing assistants working in nursing homes, hospitals, medical clinics, and home care agencies.</p>
+				<p>This program provides the basic understanding and skills required for nursing assistants working in
+					nursing homes, hospitals, medical clinics, and home care agencies.</p>
 				<h4>Program Structure</h4>
 				<ul>
 					<li>50 hours of lecture and lab work.</li>
 					<li>40 hours of clinical experience in a skilled nursing facility.</li>
 				</ul>
 				<h4>Certification</h4>
-				<p>Upon completion, students are eligible to take a state-administered skills exam at our school and a written exam at a local PSI Testing Center.</p>
+				<p>Upon completion, students are eligible to take a state-administered skills exam at our school and a
+					written exam at a local PSI Testing Center.</p>
 				<h4>Salary Expectation</h4>
-				<p>Graduates can expect to earn a median annual wage of approximately $39,400 (roughly $19 per hour).</p>
+				<p>Graduates can expect to earn a median annual wage of approximately $39,400 (roughly $19 per hour).
+				</p>
 				<h4>Career Outlook</h4>
-				<p>Nursing Assisting is a foundational healthcare occupation with steady demand. While employment growth is projected at 2% over the next decade, the volume of openings remains high at approximately 211,800 per year, offering a reliable entry point into healthcare with clear opportunities for advancement into Licensed Practical Nursing (LPN) or Registered Nursing (RN) roles.</p>
+				<p>Nursing Assisting is a foundational healthcare occupation with steady demand. While employment growth
+					is projected at 2% over the next decade, the volume of openings remains high at approximately
+					211,800 per year, offering a reliable entry point into healthcare with clear opportunities for
+					advancement into Licensed Practical Nursing (LPN) or Registered Nursing (RN) roles.</p>
 				<h4>Please Note</h4>
 				<p>Program availability is subject to a minimum enrollment of 20 students.</p>
 			</div>
@@ -513,7 +676,9 @@
 				<p>CIP: 51.0801 | 480 Hours (8-12 Months)</p>
 			</div>
 			<div class="modal-body">
-				<p>This comprehensive program prepares students for both clinical and administrative roles in a medical setting. The course includes a valuable externship in a physician’s office, hospital, or other healthcare facility.</p>
+				<p>This comprehensive program prepares students for both clinical and administrative roles in a medical
+					setting. The course includes a valuable externship in a physician’s office, hospital, or other
+					healthcare facility.</p>
 				<h4>Key Skills Covered</h4>
 				<ul>
 					<li>Anatomy, Physiology, and Medical Terminology</li>
@@ -523,11 +688,17 @@
 					<li>Taking Medical Histories, Recording Vital Signs, and First Aid</li>
 				</ul>
 				<h4>Certification</h4>
-				<p>Graduates can choose to take their certification exam online through the National Healthcare Association (NHA) or in-person via MedCa.</p>
+				<p>Graduates can choose to take their certification exam online through the National Healthcare
+					Association (NHA) or in-person via MedCa.</p>
 				<h4>Salary Expectation</h4>
-				<p>Graduates can expect a median annual wage of approximately $44,200 (roughly $21 per hour), with experienced earners exceeding $56,000.</p>
+				<p>Graduates can expect a median annual wage of approximately $44,200 (roughly $21 per hour), with
+					experienced earners exceeding $56,000.</p>
 				<h4>Career Outlook</h4>
-				<p>Medical Assisting is one of the fastest-growing healthcare occupations, with employment projected to grow 12% over the next decade—much faster than the national average. This growth is expected to result in approximately 112,300 job openings each year and offers dynamic opportunities for advancement into healthcare administration, specialized clinical nursing, or office management roles.</p>
+				<p>Medical Assisting is one of the fastest-growing healthcare occupations, with employment projected to
+					grow 12% over the next decade—much faster than the national average. This growth is expected to
+					result in approximately 112,300 job openings each year and offers dynamic opportunities for
+					advancement into healthcare administration, specialized clinical nursing, or office management
+					roles.</p>
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-secondary modal-close-bottom">Close</button>
@@ -543,7 +714,8 @@
 				<p>CIP: 51.1009 | 120 Hours</p>
 			</div>
 			<div class="modal-body">
-				<p>This course covers the essential practices and procedures for phlebotomists, focusing on the safe and effective collection of blood samples.</p>
+				<p>This course covers the essential practices and procedures for phlebotomists, focusing on the safe and
+					effective collection of blood samples.</p>
 				<h4>Key Skills Covered</h4>
 				<ul>
 					<li>Universal Precautions and Infection Control</li>
@@ -553,11 +725,17 @@
 					<li>Medical Law, Ethics, and Patient Confidentiality</li>
 				</ul>
 				<h4>Certification</h4>
-				<p>Graduates can choose to take their certification exam online through the National Healthcare Association (NHA) or in-person via MedCa.</p>
+				<p>Graduates can choose to take their certification exam online through the National Healthcare
+					Association (NHA) or in-person via MedCa.</p>
 				<h4>Salary Expectation</h4>
-				<p>Graduates can expect to earn a median annual wage of approximately $43,600 (roughly $21 per hour).</p>
+				<p>Graduates can expect to earn a median annual wage of approximately $43,600 (roughly $21 per hour).
+				</p>
 				<h4>Career Outlook</h4>
-				<p>Phlebotomy is a rapidly expanding field, with employment projected to grow 6% over the next decade—faster than the average for all occupations. This growth is expected to result in about 18,400 job openings each year. As an essential part of diagnostic teams, phlebotomists have excellent opportunities for advancement into roles such as Medical Laboratory Technician, Histotechnician, or Registered Nurse.</p>
+				<p>Phlebotomy is a rapidly expanding field, with employment projected to grow 6% over the next
+					decade—faster than the average for all occupations. This growth is expected to result in about
+					18,400 job openings each year. As an essential part of diagnostic teams, phlebotomists have
+					excellent opportunities for advancement into roles such as Medical Laboratory Technician,
+					Histotechnician, or Registered Nurse.</p>
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-secondary modal-close-bottom">Close</button>
@@ -573,7 +751,8 @@
 				<p>CIP: 51.0902 | 120 Hours (6 Weeks)</p>
 			</div>
 			<div class="modal-body">
-				<p>This 6-week course focuses on the technical skills required to perform electrocardiograms (EKGs), including machine operation and interpretation. The program includes a 100-hour externship.</p>
+				<p>This 6-week course focuses on the technical skills required to perform electrocardiograms (EKGs),
+					including machine operation and interpretation. The program includes a 100-hour externship.</p>
 				<h4>Key Skills Covered</h4>
 				<ul>
 					<li>Cardiovascular Anatomy and Physiology</li>
@@ -583,11 +762,16 @@
 					<li>Patient Education and Safety</li>
 				</ul>
 				<h4>Certification</h4>
-				<p>Graduates can choose to take their certification exam online through the National Healthcare Association (NHA) or in-person via MedCa.</p>
+				<p>Graduates can choose to take their certification exam online through the National Healthcare
+					Association (NHA) or in-person via MedCa.</p>
 				<h4>Salary Expectation</h4>
-				<p>Graduates typically earn between $42,000 and $54,000 annually (roughly $20 - $26 per hour), depending on the facility.</p>
+				<p>Graduates typically earn between $42,000 and $54,000 annually (roughly $20 - $26 per hour), depending
+					on the facility.</p>
 				<h4>Career Outlook</h4>
-				<p>EKG Technology is a specialized technical field with employment projected to grow 3% over the next decade. The role serves as a vital stepping stone in cardiac care, offering clear pathways for advancement into higher-level positions such as Cardiovascular Technologist, Telemetry Technician, or Cardiac Monitor Technician.</p>
+				<p>EKG Technology is a specialized technical field with employment projected to grow 3% over the next
+					decade. The role serves as a vital stepping stone in cardiac care, offering clear pathways for
+					advancement into higher-level positions such as Cardiovascular Technologist, Telemetry Technician,
+					or Cardiac Monitor Technician.</p>
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-secondary modal-close-bottom">Close</button>
@@ -607,21 +791,21 @@
 				this.dotsContainer = document.querySelector('.carousel-dots');
 				this.prevBtn = document.querySelector('.carousel-prev');
 				this.nextBtn = document.querySelector('.carousel-next');
-				
+
 				this.currentIndex = 0;
 				this.isDragging = false;
 				this.isHorizontalScroll = false;
 				this.touchStartX = 0;
 				this.touchStartY = 0;
 				this.touchMoveX = 0;
-				
+
 				this.init();
 			}
 
 			init() {
 				this.prevBtn?.addEventListener('click', () => this.prev());
 				this.nextBtn?.addEventListener('click', () => this.next());
-				
+
 				this.track.addEventListener('touchstart', (e) => this.handleTouchStart(e), false);
 				this.track.addEventListener('touchmove', (e) => this.handleTouchMove(e), false);
 				this.track.addEventListener('touchend', (e) => this.handleTouchEnd(e), false);
@@ -630,7 +814,7 @@
 					this.updateCarousel(false);
 					this.setupDots();
 				});
-				
+
 				this.setupDots();
 				this.updateCarousel();
 			}
@@ -667,13 +851,13 @@
 				const itemsPerView = this.getItemsPerView();
 				const slideCount = this.slides.length;
 				const maxIndex = Math.max(0, slideCount - itemsPerView);
-				
+
 				this.currentIndex = Math.min(this.currentIndex, maxIndex);
 
 				const trackStyle = window.getComputedStyle(this.track);
 				const gap = parseFloat(trackStyle.gap) || 0;
 				const slideWidth = this.slides.length > 0 ? this.slides[0].offsetWidth : 0;
-				
+
 				let offset = -this.currentIndex * (slideWidth + gap);
 
 				// Center single slide on mobile
@@ -682,10 +866,10 @@
 					const centeringOffset = (wrapperWidth - slideWidth) / 2;
 					offset += centeringOffset;
 				}
-				
+
 				this.track.style.transition = transition ? 'transform 0.5s cubic-bezier(0.215, 0.61, 0.355, 1)' : 'none';
 				this.track.style.transform = `translateX(${offset}px)`;
-				
+
 				this.updateDots();
 			}
 
@@ -700,7 +884,7 @@
 				const itemsPerView = this.getItemsPerView();
 				const slideCount = this.slides.length;
 				const maxIndex = Math.max(0, slideCount - itemsPerView);
-				
+
 				if (this.currentIndex < maxIndex) {
 					this.currentIndex++;
 				} else {
@@ -726,7 +910,7 @@
 				const itemsPerView = this.getItemsPerView();
 				const slideCount = this.slides.length;
 				const maxIndex = Math.max(0, slideCount - itemsPerView);
-				
+
 				this.currentIndex = Math.min(index, maxIndex);
 				this.updateCarousel();
 			}
@@ -741,12 +925,12 @@
 
 			handleTouchMove(e) {
 				if (!this.isDragging) return;
-				
+
 				const currentX = e.touches[0].screenX;
 				const currentY = e.touches[0].screenY;
 				const diffX = Math.abs(currentX - this.touchStartX);
 				const diffY = Math.abs(currentY - this.touchStartY);
-				
+
 				// Only trigger horizontal scroll if movement is clearly horizontal
 				if (!this.isHorizontalScroll) {
 					if (diffX > diffY && diffX > 5) {
@@ -761,15 +945,15 @@
 				} else {
 					e.preventDefault();
 				}
-				
+
 				this.touchMoveX = currentX;
 				const diff = this.touchMoveX - this.touchStartX;
-				
+
 				const trackStyle = window.getComputedStyle(this.track);
 				const gap = parseFloat(trackStyle.gap) || 0;
 				const slideWidth = this.slides.length > 0 ? this.slides[0].offsetWidth : 0;
 				const baseOffset = -this.currentIndex * (slideWidth + gap);
-				
+
 				let centeringOffset = 0;
 				if (this.getItemsPerView() === 1) {
 					const wrapperWidth = this.track.parentElement.offsetWidth;
@@ -782,7 +966,7 @@
 			handleTouchEnd(e) {
 				if (!this.isDragging) return;
 				this.isDragging = false;
-				
+
 				const touchEndX = e.changedTouches[0].screenX;
 				const diff = touchEndX - this.touchStartX;
 
@@ -806,7 +990,7 @@
 			const menuToggle = document.querySelector('.mobile-menu-toggle');
 			const navMenu = document.querySelector('.nav-menu');
 			const navLinks = document.querySelectorAll('.nav-link');
-			
+
 			// Initialize Carousel
 			const carousel = new Carousel();
 
@@ -912,6 +1096,92 @@
 					}
 				});
 			});
+
+			// ============================================
+			// PROGRAMS SECTION - Apple-Style Enhancements
+			// ============================================
+
+			// Parallax effect for gradient mesh (desktop only)
+			const gradientMesh = document.querySelector('.programs-gradient-mesh');
+			const programsSection = document.querySelector('.programs-section');
+
+			if (gradientMesh && programsSection && !('ontouchstart' in window)) {
+				// Mouse-follow parallax for gradient mesh on desktop
+				programsSection.addEventListener('mousemove', (e) => {
+					const rect = programsSection.getBoundingClientRect();
+					const x = (e.clientX - rect.left) / rect.width - 0.5;
+					const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+					// Subtle parallax movement
+					gradientMesh.style.transform = `translate(${x * 20}px, ${y * 20}px)`;
+				});
+
+				programsSection.addEventListener('mouseleave', () => {
+					gradientMesh.style.transition = 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+					gradientMesh.style.transform = 'translate(0, 0)';
+					setTimeout(() => {
+						gradientMesh.style.transition = '';
+					}, 500);
+				});
+			}
+
+			// Scroll progress bar for mobile
+			const scrollProgressBar = document.querySelector('.programs-scroll-progress-bar');
+			const carouselForProgress = document.querySelector('.programs-section .carousel-track');
+
+			if (scrollProgressBar && carouselForProgress) {
+				const updateScrollProgress = () => {
+					const slides = carouselForProgress.querySelectorAll('.carousel-slide');
+					const carouselInstance = window.carouselInstance;
+
+					if (carouselInstance && slides.length > 0) {
+						const itemsPerView = carouselInstance.getItemsPerView();
+						const maxIndex = Math.max(0, slides.length - itemsPerView);
+						const progress = maxIndex > 0 ? (carouselInstance.currentIndex / maxIndex) * 100 : 0;
+						const barWidth = 100 / (maxIndex + 1);
+
+						scrollProgressBar.style.width = `${barWidth}%`;
+						scrollProgressBar.style.transform = `translateX(${progress * (maxIndex)}%)`;
+					}
+				};
+
+				// Store carousel instance globally for progress bar updates
+				window.carouselInstance = carousel;
+
+				// Update progress on carousel change
+				const originalUpdateCarousel = carousel.updateCarousel.bind(carousel);
+				carousel.updateCarousel = function (transition = true) {
+					originalUpdateCarousel(transition);
+					updateScrollProgress();
+				};
+
+				// Initial progress update
+				updateScrollProgress();
+			}
+
+			// Floating elements scroll parallax
+			const floatingElements = document.querySelectorAll('.programs-floating-element');
+			if (floatingElements.length > 0 && !('ontouchstart' in window)) {
+				let ticking = false;
+
+				window.addEventListener('scroll', () => {
+					if (!ticking) {
+						requestAnimationFrame(() => {
+							const scrollY = window.scrollY;
+							const sectionTop = programsSection ? programsSection.offsetTop : 0;
+							const relativeScroll = (scrollY - sectionTop) * 0.1;
+
+							floatingElements.forEach((el, index) => {
+								const speed = 0.02 + (index * 0.01);
+								el.style.transform = `translateY(${relativeScroll * speed}px)`;
+							});
+
+							ticking = false;
+						});
+						ticking = true;
+					}
+				});
+			}
 		});
 	</script>
 </body>
