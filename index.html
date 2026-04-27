@@ -2,11 +2,93 @@
 <html lang="en">
 
 <head>
-	<title>Mercer Med Tech | Allied Health Education</title>
+	<title>Mercer Med Tech | Allied Health Training in Lawrenceville, NJ</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<meta name="description"
-		content="Launch your career in healthcare with Mercer Med Tech. Premier allied health training in NJ.">
+		content="Mercer Med Tech is a state-approved allied health training school in Lawrenceville, NJ. Now enrolling for Summer 2026 (July 5): CNA, Medical Assistant, Phlebotomy, EKG Technician, Patient Care Technician (PCT), Home Health Aide, and Medication Aide programs. Call (609) 712-5499.">
+	<meta name="keywords"
+		content="Mercer Med Tech, allied health training, Lawrenceville NJ, medical assistant, phlebotomy, EKG technician, patient care technician, PCT, CNA, home health aide, CHHA, medication aide, healthcare training NJ">
+	<link rel="canonical" href="https://www.mercermedtech.com/">
+
+	<!-- Open Graph / Social -->
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="Mercer Med Tech">
+	<meta property="og:title" content="Mercer Med Tech | Allied Health Training in Lawrenceville, NJ">
+	<meta property="og:description"
+		content="Now enrolling for Summer 2026 at our new Lawrenceville, NJ location. Hands-on training for Phlebotomy, Medical Assistant, PCT, and EKG programs.">
+	<meta property="og:url" content="https://www.mercermedtech.com/">
+	<meta property="og:image" content="https://www.mercermedtech.com/images/logo-modern.png">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="Mercer Med Tech | Allied Health Training in Lawrenceville, NJ">
+	<meta name="twitter:description"
+		content="Now enrolling for Summer 2026 at our new Lawrenceville, NJ location.">
+
+	<!-- Geo metadata -->
+	<meta name="geo.region" content="US-NJ">
+	<meta name="geo.placename" content="Lawrenceville, New Jersey">
+	<meta name="geo.position" content="40.2937;-74.7429">
+	<meta name="ICBM" content="40.2937, -74.7429">
+
+	<!-- Structured Data: EducationalOrganization with new address -->
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": ["EducationalOrganization", "LocalBusiness"],
+		"name": "Mercer Med Tech",
+		"alternateName": "MMT",
+		"description": "Mercer Med Tech is a premier allied health training school in Lawrenceville, NJ offering hands-on programs in Phlebotomy, Medical Assisting, Patient Care Technician (PCT), and EKG Technician.",
+		"url": "https://www.mercermedtech.com/",
+		"logo": "https://www.mercermedtech.com/images/logo-modern.png",
+		"image": "https://www.mercermedtech.com/images/hero-modern.png",
+		"telephone": "+1-609-712-5499",
+		"email": "mercermedtech@gmail.com",
+		"priceRange": "$$",
+		"address": {
+			"@type": "PostalAddress",
+			"streetAddress": "168 Franklin Corner Rd, Bldg 2, Suite #140",
+			"addressLocality": "Lawrenceville",
+			"addressRegion": "NJ",
+			"postalCode": "08648",
+			"addressCountry": "US"
+		},
+		"geo": {
+			"@type": "GeoCoordinates",
+			"latitude": 40.2937,
+			"longitude": -74.7429
+		},
+		"sameAs": [
+			"https://www.facebook.com/mercermedtech"
+		],
+		"openingHoursSpecification": [
+			{
+				"@type": "OpeningHoursSpecification",
+				"dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+				"opens": "08:00",
+				"closes": "21:00"
+			},
+			{
+				"@type": "OpeningHoursSpecification",
+				"dayOfWeek": "Saturday",
+				"opens": "08:30",
+				"closes": "14:00"
+			}
+		],
+		"hasOfferCatalog": {
+			"@type": "OfferCatalog",
+			"name": "Allied Health Training Programs",
+			"itemListElement": [
+				{ "@type": "Course", "name": "Certified Medical Assistant (CMA)", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
+				{ "@type": "Course", "name": "Phlebotomy Technician", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
+				{ "@type": "Course", "name": "EKG Technician", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
+				{ "@type": "Course", "name": "Certified Nursing Assistant (CNA)", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
+				{ "@type": "Course", "name": "Patient Care Technician (PCT)", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
+				{ "@type": "Course", "name": "Certified Home Health Aide (CHHA)", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
+				{ "@type": "Course", "name": "Certified Medication Aide", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } }
+			]
+		}
+	}
+	</script>
 
 	<!-- Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -228,6 +310,1050 @@
 				justify-content: center;
 			}
 		}
+
+		/* ===== Now Enrolling Announcement Section ===== */
+		.enroll-section {
+			position: relative;
+			padding: 5rem 0 3rem;
+			overflow: hidden;
+			scroll-margin-top: var(--header-height);
+		}
+
+		.enroll-section::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background:
+				radial-gradient(circle at 15% 20%, rgba(0, 166, 156, 0.12) 0%, transparent 45%),
+				radial-gradient(circle at 85% 80%, rgba(32, 201, 151, 0.10) 0%, transparent 45%);
+			pointer-events: none;
+			z-index: 0;
+		}
+
+		.enroll-card {
+			position: relative;
+			z-index: 1;
+			background: linear-gradient(135deg,
+					rgba(255, 255, 255, 0.85) 0%,
+					rgba(224, 247, 246, 0.78) 50%,
+					rgba(255, 255, 255, 0.85) 100%);
+			-webkit-backdrop-filter: blur(28px) saturate(180%);
+			backdrop-filter: blur(28px) saturate(180%);
+			border: 1px solid rgba(0, 166, 156, 0.25);
+			border-radius: var(--radius-lg);
+			padding: 3rem 3rem 2.75rem;
+			box-shadow:
+				0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+				0 25px 60px -15px rgba(0, 166, 156, 0.18),
+				0 0 80px rgba(0, 166, 156, 0.08);
+			overflow: hidden;
+		}
+
+		/* Shimmering top sheen */
+		.enroll-card::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: -100%;
+			width: 60%;
+			height: 100%;
+			background: linear-gradient(120deg,
+					transparent 0%,
+					rgba(255, 255, 255, 0.35) 50%,
+					transparent 100%);
+			animation: enrollShimmer 8s ease-in-out infinite;
+			pointer-events: none;
+		}
+
+		@keyframes enrollShimmer {
+			0%, 15% { left: -100%; }
+			55%, 100% { left: 200%; }
+		}
+
+		/* Glow ring around card */
+		.enroll-card::after {
+			content: '';
+			position: absolute;
+			inset: -2px;
+			border-radius: var(--radius-lg);
+			padding: 2px;
+			background: linear-gradient(135deg,
+					rgba(0, 166, 156, 0.4),
+					rgba(32, 201, 151, 0.1),
+					rgba(0, 166, 156, 0.4));
+			-webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+			mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+			-webkit-mask-composite: xor;
+			mask-composite: exclude;
+			pointer-events: none;
+			opacity: 0.6;
+		}
+
+		.enroll-badge {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.5rem;
+			padding: 0.4rem 0.9rem;
+			background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+			color: #fff;
+			font-size: 0.78rem;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			border-radius: var(--radius-full);
+			box-shadow: 0 6px 16px rgba(0, 166, 156, 0.35);
+			margin-bottom: 1.25rem;
+			position: relative;
+		}
+
+		.enroll-badge .pulse-dot {
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background: #fff;
+			position: relative;
+		}
+
+		.enroll-badge .pulse-dot::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: 50%;
+			background: #fff;
+			animation: enrollPulse 1.8s ease-out infinite;
+		}
+
+		@keyframes enrollPulse {
+			0% { transform: scale(1); opacity: 0.8; }
+			100% { transform: scale(2.6); opacity: 0; }
+		}
+
+		.enroll-title {
+			font-family: 'Outfit', sans-serif;
+			font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+			font-weight: 700;
+			line-height: 1.15;
+			margin-bottom: 0.75rem;
+			color: var(--text-main);
+		}
+
+		.enroll-title .text-gradient {
+			background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+			-webkit-background-clip: text;
+			background-clip: text;
+			-webkit-text-fill-color: transparent;
+		}
+
+		.enroll-subtitle {
+			font-size: 1.05rem;
+			color: var(--text-muted);
+			margin-bottom: 1.75rem;
+			max-width: 56ch;
+		}
+
+		.enroll-programs {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 0.75rem;
+			margin-bottom: 1.75rem;
+		}
+
+		.enroll-program {
+			display: flex;
+			align-items: center;
+			gap: 0.75rem;
+			padding: 0.85rem 1.1rem;
+			background: linear-gradient(135deg,
+					rgba(0, 166, 156, 0.08) 0%,
+					rgba(32, 201, 151, 0.04) 100%);
+			border: 1px solid rgba(0, 166, 156, 0.18);
+			border-radius: var(--radius-md);
+			font-weight: 600;
+			color: var(--text-main);
+			font-size: 0.95rem;
+			transition: transform 0.3s var(--spring-gentle),
+				box-shadow 0.3s var(--spring-gentle),
+				background 0.3s ease;
+		}
+
+		.enroll-program:hover {
+			transform: translateY(-2px);
+			background: linear-gradient(135deg,
+					rgba(0, 166, 156, 0.14) 0%,
+					rgba(32, 201, 151, 0.08) 100%);
+			box-shadow: 0 8px 20px rgba(0, 166, 156, 0.12);
+		}
+
+		.enroll-program i {
+			color: var(--primary);
+			font-size: 1.1rem;
+			width: 24px;
+			text-align: center;
+		}
+
+		.enroll-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 1rem;
+			margin-bottom: 2rem;
+		}
+
+		.enroll-chip {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.85rem;
+			padding: 1rem 1.1rem;
+			background: rgba(255, 255, 255, 0.65);
+			border: 1px solid rgba(0, 166, 156, 0.18);
+			border-radius: var(--radius-md);
+			transition: transform 0.35s var(--spring-gentle),
+				box-shadow 0.35s var(--spring-gentle),
+				background 0.35s ease;
+		}
+
+		.enroll-chip:hover {
+			transform: translateY(-3px);
+			background: rgba(255, 255, 255, 0.85);
+			box-shadow: 0 12px 28px rgba(0, 166, 156, 0.15);
+		}
+
+		.enroll-chip-icon {
+			flex-shrink: 0;
+			width: 40px;
+			height: 40px;
+			display: grid;
+			place-items: center;
+			background: linear-gradient(135deg, rgba(0, 166, 156, 0.15), rgba(32, 201, 151, 0.08));
+			color: var(--primary);
+			border-radius: var(--radius-sm);
+			font-size: 1.05rem;
+		}
+
+		.enroll-chip-label {
+			font-size: 0.72rem;
+			font-weight: 600;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+			color: var(--text-light);
+			margin-bottom: 0.15rem;
+		}
+
+		.enroll-chip-value {
+			font-size: 0.98rem;
+			font-weight: 600;
+			color: var(--text-main);
+			line-height: 1.35;
+		}
+
+		.enroll-chip-value a {
+			color: inherit;
+		}
+
+		.enroll-chip-value a:hover {
+			color: var(--primary);
+		}
+
+		.enroll-features {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.6rem;
+			margin-bottom: 1.75rem;
+		}
+
+		.enroll-features span {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4rem;
+			padding: 0.4rem 0.85rem;
+			background: rgba(0, 166, 156, 0.08);
+			color: var(--primary-dark);
+			border-radius: var(--radius-full);
+			font-size: 0.85rem;
+			font-weight: 600;
+		}
+
+		.enroll-features span i {
+			font-size: 0.75rem;
+		}
+
+		.enroll-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.85rem;
+			align-items: center;
+		}
+
+		.enroll-actions .btn {
+			min-height: 48px;
+		}
+
+		.enroll-actions .meta {
+			color: var(--text-muted);
+			font-size: 0.9rem;
+		}
+
+		@media (max-width: 768px) {
+			.enroll-section {
+				padding: 3.5rem 0 1.5rem;
+			}
+
+			.enroll-card {
+				padding: 2rem 1.5rem 1.75rem;
+			}
+
+			.enroll-chip {
+				padding: 0.85rem 0.95rem;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.enroll-card::before,
+			.enroll-badge .pulse-dot::after {
+				animation: none;
+			}
+		}
+
+		/* Term Schedule */
+		.term-schedule {
+			margin-top: 2rem;
+			padding: 1.25rem 1.5rem;
+			background: rgba(255, 255, 255, 0.55);
+			border: 1px solid rgba(0, 166, 156, 0.16);
+			border-radius: var(--radius-md);
+		}
+
+		.term-schedule-header {
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
+			font-size: 0.78rem;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: var(--primary-dark);
+			margin-bottom: 0.85rem;
+		}
+
+		.term-schedule-header i {
+			color: var(--primary);
+		}
+
+		.term-list {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			gap: 0.5rem;
+		}
+
+		.term-list li {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			padding: 0.6rem 0.35rem;
+			background: rgba(255, 255, 255, 0.7);
+			border: 1px solid rgba(0, 0, 0, 0.05);
+			border-radius: var(--radius-sm);
+			text-align: center;
+			gap: 0.15rem;
+		}
+
+		.term-list li.term-current {
+			background: linear-gradient(135deg, rgba(0, 166, 156, 0.14), rgba(32, 201, 151, 0.08));
+			border-color: rgba(0, 166, 156, 0.3);
+			box-shadow: 0 4px 12px rgba(0, 166, 156, 0.15);
+		}
+
+		.term-name {
+			font-size: 0.72rem;
+			font-weight: 600;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+			color: var(--text-light);
+		}
+
+		.term-list li.term-current .term-name {
+			color: var(--primary-dark);
+		}
+
+		.term-date {
+			font-family: 'Outfit', sans-serif;
+			font-size: 1.05rem;
+			font-weight: 700;
+			color: var(--text-main);
+		}
+
+		@media (max-width: 640px) {
+			.term-list {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+
+		/* ===== Global Polish ===== */
+		:focus-visible {
+			outline: 2px solid var(--primary);
+			outline-offset: 3px;
+			border-radius: 4px;
+		}
+
+		.btn:focus-visible {
+			outline-offset: 4px;
+		}
+
+		@media (max-width: 768px) {
+			.section-padding {
+				padding: 4.5rem 0;
+			}
+		}
+
+		/* ===== Contact / Request Info Section ===== */
+		.contact-section {
+			background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface-1) 100%);
+			position: relative;
+			overflow: hidden;
+		}
+
+		.contact-section::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background:
+				radial-gradient(circle at 90% 10%, rgba(0, 166, 156, 0.08) 0%, transparent 40%),
+				radial-gradient(circle at 10% 90%, rgba(32, 201, 151, 0.06) 0%, transparent 40%);
+			pointer-events: none;
+		}
+
+		.contact-grid {
+			position: relative;
+			display: grid;
+			grid-template-columns: 1fr 1.15fr;
+			gap: 4rem;
+			align-items: start;
+		}
+
+		.contact-eyebrow {
+			display: inline-block;
+			padding: 0.4rem 0.9rem;
+			background: rgba(0, 166, 156, 0.1);
+			color: var(--primary-dark);
+			font-size: 0.78rem;
+			font-weight: 700;
+			letter-spacing: 0.1em;
+			text-transform: uppercase;
+			border-radius: var(--radius-full);
+			margin-bottom: 1.25rem;
+		}
+
+		.contact-intro p {
+			color: var(--text-muted);
+			font-size: 1.05rem;
+			max-width: 480px;
+			margin-bottom: 2.5rem;
+		}
+
+		.contact-direct {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			display: grid;
+			gap: 1.25rem;
+		}
+
+		.contact-direct li {
+			display: flex;
+			align-items: flex-start;
+			gap: 1rem;
+		}
+
+		.contact-direct i {
+			flex-shrink: 0;
+			width: 44px;
+			height: 44px;
+			display: grid;
+			place-items: center;
+			background: linear-gradient(135deg, rgba(0, 166, 156, 0.12), rgba(32, 201, 151, 0.06));
+			color: var(--primary);
+			border-radius: var(--radius-sm);
+			font-size: 1rem;
+		}
+
+		.contact-direct-label {
+			font-size: 0.75rem;
+			font-weight: 600;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+			color: var(--text-light);
+			margin-bottom: 0.15rem;
+		}
+
+		.contact-direct a {
+			color: var(--text-main);
+			font-weight: 600;
+			line-height: 1.4;
+		}
+
+		.contact-direct a:hover {
+			color: var(--primary);
+		}
+
+		.contact-card {
+			background: linear-gradient(135deg,
+					rgba(255, 255, 255, 0.92) 0%,
+					rgba(224, 247, 246, 0.78) 100%);
+			-webkit-backdrop-filter: blur(28px) saturate(180%);
+			backdrop-filter: blur(28px) saturate(180%);
+			border: 1px solid rgba(0, 166, 156, 0.18);
+			border-radius: var(--radius-lg);
+			padding: 2.5rem;
+			box-shadow:
+				0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+				0 25px 60px -15px rgba(0, 166, 156, 0.18);
+		}
+
+		.contact-form {
+			display: grid;
+			gap: 1.25rem;
+		}
+
+		.form-row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 1rem;
+		}
+
+		.form-field {
+			display: flex;
+			flex-direction: column;
+			gap: 0.45rem;
+		}
+
+		.form-label {
+			font-size: 0.85rem;
+			font-weight: 600;
+			color: var(--text-main);
+			letter-spacing: 0.01em;
+		}
+
+		.form-label .req {
+			color: var(--primary);
+			margin-left: 0.15rem;
+		}
+
+		.form-label .optional {
+			color: var(--text-light);
+			font-weight: 500;
+		}
+
+		.contact-form input,
+		.contact-form select,
+		.contact-form textarea {
+			width: 100%;
+			padding: 0.85rem 1rem;
+			background: rgba(255, 255, 255, 0.85);
+			border: 1px solid rgba(0, 0, 0, 0.08);
+			border-radius: var(--radius-sm);
+			font-family: inherit;
+			font-size: 0.98rem;
+			color: var(--text-main);
+			transition: border-color 0.2s ease,
+				box-shadow 0.2s ease,
+				background 0.2s ease;
+		}
+
+		.contact-form input::placeholder,
+		.contact-form textarea::placeholder {
+			color: var(--text-light);
+		}
+
+		.contact-form input:focus,
+		.contact-form select:focus,
+		.contact-form textarea:focus {
+			outline: none;
+			border-color: var(--primary);
+			background: #fff;
+			box-shadow: 0 0 0 4px rgba(0, 166, 156, 0.15);
+		}
+
+		.contact-form textarea {
+			resize: vertical;
+			min-height: 110px;
+		}
+
+		.contact-form select {
+			appearance: none;
+			-webkit-appearance: none;
+			background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'><path d='M1 1.5L6 6.5L11 1.5' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+			background-repeat: no-repeat;
+			background-position: right 1rem center;
+			background-color: rgba(255, 255, 255, 0.85);
+			padding-right: 2.75rem;
+		}
+
+		.form-consent {
+			margin-top: 0.25rem;
+		}
+
+		.form-consent label {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.65rem;
+			font-size: 0.88rem;
+			color: var(--text-muted);
+			line-height: 1.5;
+			cursor: pointer;
+		}
+
+		.form-consent input[type="checkbox"] {
+			margin-top: 0.15rem;
+			width: 18px;
+			height: 18px;
+			accent-color: var(--primary);
+			flex-shrink: 0;
+		}
+
+		.form-submit {
+			margin-top: 0.5rem;
+			width: 100%;
+			padding: 1.05rem 2rem;
+			min-height: 52px;
+			font-size: 0.95rem;
+		}
+
+		.form-submit[disabled] {
+			opacity: 0.7;
+			cursor: not-allowed;
+			transform: none !important;
+		}
+
+		.form-submit-label {
+			transition: opacity 0.2s ease;
+		}
+
+		.form-submit.is-loading .form-submit-label::after {
+			content: '...';
+		}
+
+		.form-success {
+			display: none;
+			align-items: flex-start;
+			gap: 0.85rem;
+			padding: 1rem 1.15rem;
+			background: rgba(32, 201, 151, 0.12);
+			border: 1px solid rgba(32, 201, 151, 0.3);
+			border-radius: var(--radius-md);
+			color: var(--primary-dark);
+		}
+
+		.form-success.is-visible {
+			display: flex;
+			animation: enrollPulse 0s, formSuccessIn 0.4s var(--spring-bounce);
+		}
+
+		@keyframes formSuccessIn {
+			from { opacity: 0; transform: translateY(8px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		.form-success i {
+			font-size: 1.5rem;
+			flex-shrink: 0;
+			color: var(--accent);
+		}
+
+		.form-success strong {
+			display: block;
+			color: var(--primary-dark);
+			font-family: 'Outfit', sans-serif;
+			font-size: 1.05rem;
+			margin-bottom: 0.15rem;
+		}
+
+		.form-success span {
+			color: var(--text-muted);
+			font-size: 0.92rem;
+		}
+
+		.form-note {
+			font-size: 0.8rem;
+			color: var(--text-light);
+			text-align: center;
+			margin: 0;
+		}
+
+		@media (max-width: 968px) {
+			.contact-grid {
+				grid-template-columns: 1fr;
+				gap: 2.5rem;
+			}
+
+			.contact-intro p {
+				max-width: none;
+			}
+		}
+
+		@media (max-width: 640px) {
+			.contact-card {
+				padding: 1.75rem 1.25rem;
+			}
+
+			.form-row {
+				grid-template-columns: 1fr;
+			}
+		}
+
+		/* ===== Tuition at a Glance ===== */
+		.visually-hidden {
+			position: absolute;
+			width: 1px;
+			height: 1px;
+			padding: 0;
+			margin: -1px;
+			overflow: hidden;
+			clip: rect(0, 0, 0, 0);
+			white-space: nowrap;
+			border: 0;
+		}
+
+		.tuition-table-wrap {
+			margin-top: 3rem;
+			background: var(--surface-1);
+			border: 1px solid rgba(0, 166, 156, 0.12);
+			border-radius: var(--radius-lg);
+			overflow: hidden;
+			box-shadow: 0 18px 40px -20px rgba(0, 166, 156, 0.18);
+		}
+
+		.tuition-table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 0.98rem;
+		}
+
+		.tuition-table thead {
+			background: linear-gradient(135deg, rgba(0, 166, 156, 0.08), rgba(32, 201, 151, 0.04));
+		}
+
+		.tuition-table th,
+		.tuition-table td {
+			text-align: left;
+			padding: 1.1rem 1.5rem;
+			border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+			vertical-align: middle;
+		}
+
+		.tuition-table thead th {
+			font-family: 'Outfit', sans-serif;
+			font-size: 0.78rem;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: var(--primary-dark);
+			border-bottom: 1px solid rgba(0, 166, 156, 0.18);
+		}
+
+		.tuition-table tbody th {
+			font-weight: 600;
+			color: var(--text-main);
+		}
+
+		.tuition-table td {
+			color: var(--text-muted);
+		}
+
+		.tuition-table .num {
+			text-align: right;
+			color: var(--text-main);
+			font-variant-numeric: tabular-nums;
+		}
+
+		.tuition-table thead .num {
+			text-align: right;
+		}
+
+		.tuition-table tbody tr:last-child th,
+		.tuition-table tbody tr:last-child td {
+			border-bottom: none;
+		}
+
+		.tuition-table tbody tr {
+			transition: background 0.2s ease;
+		}
+
+		.tuition-table tbody tr:hover {
+			background: rgba(0, 166, 156, 0.03);
+		}
+
+		.tuition-note {
+			max-width: 720px;
+			margin: 1.75rem auto 0;
+			text-align: center;
+			font-size: 0.88rem;
+			color: var(--text-muted);
+			line-height: 1.55;
+		}
+
+		.tuition-cta {
+			display: flex;
+			gap: 1rem;
+			justify-content: center;
+			flex-wrap: wrap;
+			margin-top: 2rem;
+		}
+
+		@media (max-width: 720px) {
+			.tuition-table-wrap {
+				background: transparent;
+				border: none;
+				box-shadow: none;
+			}
+
+			.tuition-table,
+			.tuition-table thead,
+			.tuition-table tbody,
+			.tuition-table tr,
+			.tuition-table th,
+			.tuition-table td {
+				display: block;
+				width: 100%;
+			}
+
+			.tuition-table thead {
+				display: none;
+			}
+
+			.tuition-table tbody tr {
+				background: var(--surface-1);
+				border: 1px solid rgba(0, 166, 156, 0.12);
+				border-radius: var(--radius-md);
+				padding: 1.25rem 1.25rem 0.75rem;
+				margin-bottom: 1rem;
+				box-shadow: 0 8px 20px -12px rgba(0, 166, 156, 0.12);
+			}
+
+			.tuition-table tbody th {
+				padding: 0 0 0.75rem;
+				border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+				margin-bottom: 0.5rem;
+				font-family: 'Outfit', sans-serif;
+				font-size: 1.05rem;
+			}
+
+			.tuition-table tbody td {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 0.4rem 0;
+				border: none;
+				gap: 1rem;
+			}
+
+			.tuition-table tbody td::before {
+				content: attr(data-label);
+				font-size: 0.75rem;
+				font-weight: 700;
+				letter-spacing: 0.06em;
+				text-transform: uppercase;
+				color: var(--text-light);
+			}
+
+			.tuition-table .num {
+				text-align: right;
+			}
+		}
+
+		/* ===== Why Mercer Med Tech ===== */
+		.why-section {
+			position: relative;
+		}
+
+		.why-grid {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+			gap: 1.25rem;
+			margin-top: 3rem;
+		}
+
+		.why-card {
+			background: var(--surface-1);
+			border: 1px solid rgba(0, 166, 156, 0.12);
+			border-radius: var(--radius-md);
+			padding: 1.75rem 1.5rem;
+			transition: transform 0.3s var(--spring-gentle),
+				box-shadow 0.3s var(--spring-gentle),
+				border-color 0.3s ease;
+		}
+
+		.why-card:hover {
+			transform: translateY(-4px);
+			box-shadow: 0 14px 32px rgba(0, 166, 156, 0.12);
+			border-color: rgba(0, 166, 156, 0.25);
+		}
+
+		.why-icon {
+			width: 48px;
+			height: 48px;
+			display: grid;
+			place-items: center;
+			background: linear-gradient(135deg, rgba(0, 166, 156, 0.15), rgba(32, 201, 151, 0.06));
+			color: var(--primary);
+			border-radius: var(--radius-sm);
+			font-size: 1.15rem;
+			margin-bottom: 1rem;
+		}
+
+		.why-card h3 {
+			font-size: 1.1rem;
+			margin-bottom: 0.4rem;
+			color: var(--text-main);
+		}
+
+		.why-card p {
+			font-size: 0.95rem;
+			color: var(--text-muted);
+			line-height: 1.55;
+			margin: 0;
+		}
+
+		/* Admissions Block */
+		.admissions-block {
+			margin-top: 4rem;
+			padding: 2.5rem;
+			background: linear-gradient(135deg,
+					rgba(255, 255, 255, 0.85) 0%,
+					rgba(224, 247, 246, 0.6) 100%);
+			-webkit-backdrop-filter: blur(20px) saturate(170%);
+			backdrop-filter: blur(20px) saturate(170%);
+			border: 1px solid rgba(0, 166, 156, 0.18);
+			border-radius: var(--radius-lg);
+		}
+
+		.admissions-header {
+			text-align: center;
+			margin-bottom: 2rem;
+		}
+
+		.admissions-header h3 {
+			font-size: 1.75rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.admissions-header p {
+			color: var(--text-muted);
+			margin: 0;
+		}
+
+		.admissions-list {
+			list-style: none;
+			padding: 0;
+			margin: 0 0 2rem;
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+			gap: 1.25rem;
+		}
+
+		.admissions-list li {
+			display: flex;
+			align-items: flex-start;
+			gap: 1rem;
+			padding: 1rem 1.1rem;
+			background: rgba(255, 255, 255, 0.7);
+			border: 1px solid rgba(0, 0, 0, 0.04);
+			border-radius: var(--radius-md);
+		}
+
+		.admissions-list i {
+			flex-shrink: 0;
+			width: 40px;
+			height: 40px;
+			display: grid;
+			place-items: center;
+			background: linear-gradient(135deg, rgba(0, 166, 156, 0.15), rgba(32, 201, 151, 0.06));
+			color: var(--primary);
+			border-radius: var(--radius-sm);
+			font-size: 1rem;
+		}
+
+		.admissions-list strong {
+			display: block;
+			font-family: 'Outfit', sans-serif;
+			font-size: 1rem;
+			color: var(--text-main);
+			margin-bottom: 0.15rem;
+		}
+
+		.admissions-list span {
+			font-size: 0.9rem;
+			color: var(--text-muted);
+			line-height: 1.45;
+		}
+
+		.admissions-cta {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-wrap: wrap;
+			gap: 1.25rem;
+			text-align: center;
+		}
+
+		.admissions-cta .meta {
+			color: var(--text-muted);
+			font-size: 0.92rem;
+		}
+
+		.admissions-cta .meta a {
+			color: var(--primary);
+			font-weight: 600;
+		}
+
+		@media (max-width: 640px) {
+			.admissions-block {
+				padding: 1.75rem 1.25rem;
+			}
+		}
+
+		/* ===== Floating Mobile Call CTA ===== */
+		.floating-call {
+			position: fixed;
+			right: max(1rem, var(--safe-area-right));
+			bottom: max(1rem, var(--safe-area-bottom));
+			z-index: 950;
+			display: none;
+			align-items: center;
+			gap: 0.5rem;
+			padding: 0.85rem 1.25rem;
+			background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+			color: #fff;
+			border-radius: var(--radius-full);
+			font-weight: 700;
+			font-size: 0.9rem;
+			letter-spacing: 0.02em;
+			box-shadow:
+				0 12px 28px rgba(0, 166, 156, 0.4),
+				0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+			text-decoration: none;
+			transition: transform 0.25s var(--spring-gentle),
+				box-shadow 0.25s ease;
+		}
+
+		.floating-call:hover,
+		.floating-call:focus-visible {
+			transform: translateY(-2px) scale(1.02);
+			color: #fff;
+			box-shadow: 0 16px 32px rgba(0, 166, 156, 0.5);
+		}
+
+		.floating-call i {
+			font-size: 1rem;
+		}
+
+		@media (max-width: 768px) {
+			.floating-call {
+				display: inline-flex;
+			}
+		}
 	</style>
 </head>
 
@@ -244,12 +1370,13 @@
 				<i class="fas fa-bars"></i>
 			</button>
 
-			<nav class="nav-menu">
+			<nav class="nav-menu" aria-label="Primary">
 				<a href="#hero" class="nav-link active">Home</a>
 				<a href="#about" class="nav-link">About</a>
 				<a href="#programs" class="nav-link">Programs</a>
+				<a href="#enroll" class="nav-link">Enroll</a>
 				<a href="#faculty" class="nav-link">Faculty</a>
-				<a href="#contact" class="btn btn-primary btn-sm">Contact Us</a>
+				<a href="#contact" class="btn btn-primary btn-sm">Request Info</a>
 			</nav>
 		</div>
 	</header>
@@ -259,17 +1386,116 @@
 		<div class="container">
 			<div class="hero-grid">
 				<div class="hero-content">
-					<h1>Launch Your Career in <span class="text-gradient">Healthcare</span> Today</h1>
-					<p>Join a leading Allied Health Sciences education provider. We equip you with the practical
-						skills and certification needed for a thriving career in the medical field.</p>
+					<h1>Launch Your Career in <span class="text-gradient">Healthcare</span></h1>
+					<p>Allied Health Sciences training in Lawrenceville, NJ. Hands-on instruction, small class
+						sizes, and the certifications you need to start working in the medical field.</p>
 					<div class="hero-actions">
 						<a href="#programs" class="btn btn-primary">Explore Programs</a>
-						<a href="#about" class="btn btn-secondary">Learn More</a>
+						<a href="#contact" class="btn btn-secondary">Request Information</a>
 					</div>
 				</div>
 				<div class="hero-image-wrapper">
 					<div class="hero-blob"></div>
 					<img src="images/hero-modern.png" alt="Medical Students Learning" class="hero-image">
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Now Enrolling Announcement -->
+	<section id="enroll" class="enroll-section" aria-labelledby="enroll-title">
+		<div class="container">
+			<div class="enroll-card">
+				<span class="enroll-badge">
+					<span class="pulse-dot" aria-hidden="true"></span>
+					Now Enrolling · Summer Term 2026
+				</span>
+				<h2 id="enroll-title" class="enroll-title">
+					Summer 2026 <span class="text-gradient">Healthcare Training</span> Programs
+				</h2>
+				<p class="enroll-subtitle">
+					Our Summer term begins July 5, 2026 at our new Lawrenceville location.
+					Start your career in the medical field with hands-on training from experienced instructors.
+				</p>
+
+				<div class="enroll-programs" aria-label="Programs offered">
+					<div class="enroll-program">
+						<i class="fas fa-syringe" aria-hidden="true"></i>
+						<span>Phlebotomy Technician</span>
+					</div>
+					<div class="enroll-program">
+						<i class="fas fa-stethoscope" aria-hidden="true"></i>
+						<span>Medical Assistant</span>
+					</div>
+					<div class="enroll-program">
+						<i class="fas fa-user-nurse" aria-hidden="true"></i>
+						<span>Patient Care Technician (PCT)</span>
+					</div>
+					<div class="enroll-program">
+						<i class="fas fa-heartbeat" aria-hidden="true"></i>
+						<span>EKG Technician</span>
+					</div>
+				</div>
+
+				<div class="enroll-grid">
+					<div class="enroll-chip">
+						<div class="enroll-chip-icon"><i class="fas fa-laptop-medical" aria-hidden="true"></i></div>
+						<div>
+							<div class="enroll-chip-label">Format</div>
+							<div class="enroll-chip-value">In-Person &amp; Online Assistance</div>
+						</div>
+					</div>
+					<div class="enroll-chip">
+						<div class="enroll-chip-icon"><i class="fas fa-calendar-day" aria-hidden="true"></i></div>
+						<div>
+							<div class="enroll-chip-label">Next Session Begins</div>
+							<div class="enroll-chip-value">July 5, 2026 (Summer Term)</div>
+						</div>
+					</div>
+					<div class="enroll-chip">
+						<div class="enroll-chip-icon"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></div>
+						<div>
+							<div class="enroll-chip-label">New Location</div>
+							<div class="enroll-chip-value">
+								<a href="https://www.google.com/maps/search/?api=1&amp;query=168%20Franklin%20Corner%20Rd%2C%20Bldg%202%2C%20Suite%20140%2C%20Lawrenceville%2C%20NJ%2008648"
+									target="_blank" rel="noopener noreferrer">
+									168 Franklin Corner Rd, Bldg 2, Suite #140<br>Lawrenceville, NJ 08648
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="enroll-features" aria-label="Program highlights">
+					<span><i class="fas fa-users" aria-hidden="true"></i> Small Class Sizes</span>
+					<span><i class="fas fa-hands-helping" aria-hidden="true"></i> Hands-on Clinical Training</span>
+					<span><i class="fas fa-clock" aria-hidden="true"></i> Flexible Schedules</span>
+					<span><i class="fas fa-certificate" aria-hidden="true"></i> Completion Certificates</span>
+					<span><i class="fas fa-briefcase" aria-hidden="true"></i> Job Placement Assistance</span>
+				</div>
+
+				<div class="enroll-actions">
+					<a href="tel:+16097125499" class="btn btn-primary">
+						<i class="fas fa-phone-alt" aria-hidden="true" style="margin-right: 0.5rem;"></i>
+						Call (609) 712-5499
+					</a>
+					<a href="#contact" class="btn btn-secondary">
+						Request Class Dates &amp; Pricing
+					</a>
+					<span class="meta">Seats are limited. Enroll early to secure your spot.</span>
+				</div>
+
+				<div class="term-schedule" aria-label="2026 term start dates">
+					<div class="term-schedule-header">
+						<i class="fas fa-calendar-alt" aria-hidden="true"></i>
+						<span>2026 Term Start Dates</span>
+					</div>
+					<ul class="term-list">
+						<li><span class="term-name">Winter</span><span class="term-date">January 1</span></li>
+						<li><span class="term-name">Spring</span><span class="term-date">April 2</span></li>
+						<li class="term-current"><span class="term-name">Summer</span><span class="term-date">July 5</span></li>
+						<li><span class="term-name">Fall</span><span class="term-date">October 2</span></li>
+					</ul>
 				</div>
 			</div>
 		</div>
@@ -284,12 +1510,14 @@
 				</div>
 				<div class="hero-content">
 					<h2 class="section-title">About Mercer Med Tech</h2>
-					<p>Mercer Med Tech (MMT) is a premier educational provider in Allied Health Sciences. We cater to a
-						diverse range of clients including Healthcare Providers, Academic Institutions, and Hospitals.
-					</p>
-					<p>With the demand for allied health professionals projected to grow by 22% over the next decade, we
-						are dedicated to preparing our students for success through cutting-edge technology and hands-on
-						training.</p>
+					<p>Mercer Med Tech, Inc. (MMT) is a state-approved private vocational school in
+						Lawrenceville, NJ, licensed by the New Jersey Department of Labor &amp; Workforce
+						Development. We focus exclusively on Allied Health Sciences training, and we partner with
+						local healthcare providers, hospitals, and assisted-living facilities to give every student
+						real clinical experience.</p>
+					<p>With demand for allied health professionals projected to grow by 22% over the next decade,
+						our mission is simple: equip you with the practical skills, certifications, and confidence
+						to thrive in today's healthcare workforce.</p>
 					<div style="margin-top: 2rem;">
 						<a href="#programs" class="btn btn-primary">View Our Programs</a>
 					</div>
@@ -379,6 +1607,24 @@
 								</a>
 							</article>
 
+							<!-- PCT -->
+							<article class="program-card-glass carousel-slide">
+								<div class="program-icon">
+									<i class="fas fa-user-nurse"></i>
+								</div>
+								<div class="program-stats-badge">
+									<i class="fas fa-clock"></i>
+									<span>300 Hours</span>
+								</div>
+								<h3>Patient Care Technician</h3>
+								<p>Advanced patient care skills covering vital signs, EKG, phlebotomy, oxygen
+									and medication administration across hospital and long-term care settings.</p>
+								<a href="#" class="btn btn-secondary full-width" data-modal-target="#pct-modal">
+									Learn More <i class="fas fa-arrow-right"
+										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+								</a>
+							</article>
+
 							<!-- EKG -->
 							<article class="program-card-glass carousel-slide">
 								<div class="program-icon">
@@ -392,6 +1638,42 @@
 								<p>Focused course on cardiovascular anatomy, EKG machine operation, and graph
 									interpretation for cardiac monitoring.</p>
 								<a href="#" class="btn btn-secondary full-width" data-modal-target="#ekg-modal">
+									Learn More <i class="fas fa-arrow-right"
+										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+								</a>
+							</article>
+
+							<!-- CHHA -->
+							<article class="program-card-glass carousel-slide">
+								<div class="program-icon">
+									<i class="fas fa-house-user"></i>
+								</div>
+								<div class="program-stats-badge">
+									<i class="fas fa-clock"></i>
+									<span>76 Hours</span>
+								</div>
+								<h3>Certified Home Health Aide</h3>
+								<p>Direct care training for in-home settings: personal care, ambulation,
+									medication assistance, and reporting client needs to nursing supervisors.</p>
+								<a href="#" class="btn btn-secondary full-width" data-modal-target="#chha-modal">
+									Learn More <i class="fas fa-arrow-right"
+										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+								</a>
+							</article>
+
+							<!-- Certified Medication Aide -->
+							<article class="program-card-glass carousel-slide">
+								<div class="program-icon">
+									<i class="fas fa-pills"></i>
+								</div>
+								<div class="program-stats-badge">
+									<i class="fas fa-clock"></i>
+									<span>40 Hours</span>
+								</div>
+								<h3>Certified Medication Aide</h3>
+								<p>Advanced certification for active CNAs and CHHAs to assist residents with
+									medication in assisted-living and personal care settings.</p>
+								<a href="#" class="btn btn-secondary full-width" data-modal-target="#medaide-modal">
 									Learn More <i class="fas fa-arrow-right"
 										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
 								</a>
@@ -429,13 +1711,203 @@
 				<p><strong>Wages & Growth:</strong> Data primarily sourced from the Bureau of Labor Statistics (BLS)
 					Occupational Outlook Handbook (May 2024 data).</p>
 				<p><strong>EKG Note:</strong> The BLS often groups EKG Technicians with "Cardiovascular Technologists,"
-					who earn significantly higher ($67k+). The figure provided ($42k–$54k) is adjusted to reflect the
+					who earn significantly higher ($67k+). The figure provided ($42k to $54k) is adjusted to reflect the
 					accurate entry-level range for Certificate holders (CIP 51.0902) rather than Associate degree
 					holders.</p>
 			</div>
 		</div>
 	</section>
 
+
+	<!-- Tuition at a Glance Section -->
+	<section id="tuition" class="tuition-section section-padding bg-surface-1" aria-labelledby="tuition-title">
+		<div class="container">
+			<div class="section-header text-center">
+				<div class="programs-pill-badge">
+					<i class="fas fa-coins"></i>
+					<span>Investment in Your Career</span>
+				</div>
+				<h2 id="tuition-title">Tuition at a Glance</h2>
+				<p class="text-muted">Transparent program pricing. Financial aid assistance is available, and many
+					of our programs are WIA-eligible.</p>
+			</div>
+
+			<div class="tuition-table-wrap">
+				<table class="tuition-table">
+					<caption class="visually-hidden">Tuition and program length for Mercer Med Tech programs</caption>
+					<thead>
+						<tr>
+							<th scope="col">Program</th>
+							<th scope="col">Hours</th>
+							<th scope="col">Length</th>
+							<th scope="col" class="num">Total Tuition</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="row">Certified Medical Assistant (CMA)</th>
+							<td data-label="Hours">480</td>
+							<td data-label="Length">8 to 12 months</td>
+							<td data-label="Total Tuition" class="num"><strong>$5,000</strong></td>
+						</tr>
+						<tr>
+							<th scope="row">Patient Care Technician (PCT)</th>
+							<td data-label="Hours">300</td>
+							<td data-label="Length">5 to 6 months</td>
+							<td data-label="Total Tuition" class="num"><strong>$4,000</strong></td>
+						</tr>
+						<tr>
+							<th scope="row">Phlebotomy Technician</th>
+							<td data-label="Hours">120</td>
+							<td data-label="Length">~6 weeks</td>
+							<td data-label="Total Tuition" class="num">Contact admissions</td>
+						</tr>
+						<tr>
+							<th scope="row">EKG Technician</th>
+							<td data-label="Hours">120</td>
+							<td data-label="Length">6 weeks</td>
+							<td data-label="Total Tuition" class="num">Contact admissions</td>
+						</tr>
+						<tr>
+							<th scope="row">Certified Nursing Assistant (CNA)</th>
+							<td data-label="Hours">90</td>
+							<td data-label="Length">~6 weeks</td>
+							<td data-label="Total Tuition" class="num">Contact admissions</td>
+						</tr>
+						<tr>
+							<th scope="row">Certified Home Health Aide (CHHA)</th>
+							<td data-label="Hours">76</td>
+							<td data-label="Length">4 to 11 weeks</td>
+							<td data-label="Total Tuition" class="num"><strong>$800</strong></td>
+						</tr>
+						<tr>
+							<th scope="row">Certified Medication Aide</th>
+							<td data-label="Hours">40</td>
+							<td data-label="Length">~1 week</td>
+							<td data-label="Total Tuition" class="num"><strong>$600</strong></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<p class="tuition-note">
+				CMA tuition includes a $150 non-refundable administrative fee, $100 books, and a $150 exam fee.
+				Final pricing for Phlebotomy, EKG, and CNA is confirmed at registration. Refund schedule is
+				detailed in the school catalog and Enrollment Agreement.
+			</p>
+
+			<div class="tuition-cta">
+				<a href="#contact" class="btn btn-primary">Request Pricing &amp; Class Dates</a>
+				<a href="#grants" class="btn btn-secondary">Financial Aid Options</a>
+			</div>
+		</div>
+	</section>
+
+	<!-- Why Mercer Med Tech / Student Support Section -->
+	<section id="why" class="why-section section-padding bg-surface-2">
+		<div class="container">
+			<div class="section-header text-center">
+				<div class="programs-pill-badge">
+					<i class="fas fa-shield-alt"></i>
+					<span>Student Support</span>
+				</div>
+				<h2>Why Mercer Med Tech</h2>
+				<p class="text-muted">A state-approved private vocational school built around real instructors,
+					real outcomes, and the support you need to succeed.</p>
+			</div>
+
+			<div class="why-grid">
+				<div class="why-card">
+					<div class="why-icon"><i class="fas fa-landmark" aria-hidden="true"></i></div>
+					<h3>State-Approved</h3>
+					<p>Licensed by the New Jersey Department of Labor &amp; Workforce Development. Programs meet
+						state-mandated curriculum standards.</p>
+				</div>
+				<div class="why-card">
+					<div class="why-icon"><i class="fas fa-briefcase" aria-hidden="true"></i></div>
+					<h3>On-Site Job Placement</h3>
+					<p>Personal job placement assistance for graduates. Linked to the New Jersey One-Stop system
+						for ongoing career resources.</p>
+				</div>
+				<div class="why-card">
+					<div class="why-icon"><i class="fas fa-comments" aria-hidden="true"></i></div>
+					<h3>Career Counseling</h3>
+					<p>One-on-one guidance to help you choose the right program, prepare for certification, and
+						plan your next career step.</p>
+				</div>
+				<div class="why-card">
+					<div class="why-icon"><i class="fas fa-language" aria-hidden="true"></i></div>
+					<h3>Bilingual Support</h3>
+					<p>Spanish-speaking staff available for admissions, advisement, and student support.</p>
+				</div>
+				<div class="why-card">
+					<div class="why-icon"><i class="fas fa-moon" aria-hidden="true"></i></div>
+					<h3>Evening Classes</h3>
+					<p>Programs scheduled Monday through Saturday with evening options so you can train around
+						work and family commitments.</p>
+				</div>
+				<div class="why-card">
+					<div class="why-icon"><i class="fas fa-users" aria-hidden="true"></i></div>
+					<h3>Small Class Sizes</h3>
+					<p>Personal attention from experienced instructors. Hands-on practice in real clinical
+						settings, not just textbooks.</p>
+				</div>
+				<div class="why-card">
+					<div class="why-icon"><i class="fas fa-hand-holding-usd" aria-hidden="true"></i></div>
+					<h3>WIA / Financial Aid</h3>
+					<p>Many of our programs are WIA-eligible. We accept external grants and scholarships and
+						can guide you through student loan options.</p>
+				</div>
+				<div class="why-card">
+					<div class="why-icon"><i class="fas fa-wheelchair" aria-hidden="true"></i></div>
+					<h3>Accessible Facility</h3>
+					<p>Air-conditioned, well-lit campus with student break room, accessible lavatories, and
+						handicap-accessible parking and ramp.</p>
+				</div>
+			</div>
+
+			<div class="admissions-block">
+				<div class="admissions-header">
+					<h3>Admissions Requirements</h3>
+					<p>Simple, clear, and student-focused. Here is what you need to enroll.</p>
+				</div>
+				<ul class="admissions-list">
+					<li>
+						<i class="fas fa-id-card" aria-hidden="true"></i>
+						<div>
+							<strong>17 Years or Older</strong>
+							<span>On or before the first day of class.</span>
+						</div>
+					</li>
+					<li>
+						<i class="fas fa-graduation-cap" aria-hidden="true"></i>
+						<div>
+							<strong>High School Diploma or GED</strong>
+							<span>Required for program enrollment. Ability to Benefit assessment available.</span>
+						</div>
+					</li>
+					<li>
+						<i class="fas fa-file-signature" aria-hidden="true"></i>
+						<div>
+							<strong>In-Person Registration</strong>
+							<span>Bring valid ID, proof of education, and your initial payment.</span>
+						</div>
+					</li>
+					<li>
+						<i class="fas fa-clock" aria-hidden="true"></i>
+						<div>
+							<strong>Register Early</strong>
+							<span>Up to 5 business days before classes start (20 days for financial aid).</span>
+						</div>
+					</li>
+				</ul>
+				<div class="admissions-cta">
+					<a href="#contact" class="btn btn-primary">Start Your Application</a>
+					<span class="meta">Or call <a href="tel:+16097125499">(609) 712-5499</a> to speak with admissions.</span>
+				</div>
+			</div>
+		</div>
+	</section>
 
 	<!-- Grants Section -->
 	<section id="grants" class="section-padding bg-surface-1">
@@ -484,10 +1956,11 @@
 	</section>
 
 	<!-- Faculty Section -->
-	<section id="faculty" class="section-padding bg-surface-2">
+	<section id="faculty" class="section-padding bg-surface-1">
 		<div class="container">
 			<div class="section-header text-center">
-				<h2>Meet Our Faculty</h2>
+				<h2>Meet Our Team</h2>
+				<p class="text-muted">A small, hands-on team committed to your success.</p>
 			</div>
 			<div class="faculty-wrapper">
 				<div class="program-card faculty-card text-center">
@@ -495,10 +1968,20 @@
 						<i class="fas fa-user-md"></i>
 					</div>
 					<h3>Shazia Qazi</h3>
-					<p class="text-primary font-bold mb-2">Program Director</p>
-					<p>Shazia Qazi is a well-experienced medical assistant and graduate of the National Health
-						Association. With extensive experience in medical office management, billing, and coding, she
-						brings real-world expertise to the classroom.</p>
+					<p class="text-primary font-bold mb-2">Program Director &amp; Director of Education</p>
+					<p>Shazia is an experienced medical assistant and graduate of the National Healthcareer
+						Association. With deep experience in medical office management, billing, and coding,
+						she brings real-world expertise to every classroom and personally guides students
+						through admissions and advisement.</p>
+				</div>
+				<div class="program-card faculty-card text-center">
+					<div class="program-icon faculty-icon">
+						<i class="fas fa-coins"></i>
+					</div>
+					<h3>Basma Qazi</h3>
+					<p class="text-primary font-bold mb-2">Bursar</p>
+					<p>Basma manages tuition, payment plans, financial aid coordination, and refund inquiries.
+						She is your point of contact for anything related to the cost of your program.</p>
 				</div>
 			</div>
 		</div>
@@ -566,23 +2049,179 @@
 		</div>
 	</section>
 
+	<!-- Contact / Request Info Section -->
+	<!--
+		================================================================================
+		GOOGLE FORMS INTEGRATION (configuration block)
+		--------------------------------------------------------------------------------
+		To wire this form to a Google Form, do the following:
+		  1. Create a Google Form whose questions match the fields below, in the same
+		     order. Use the same question titles for clarity. Recommended fields:
+		       - Full Name              (Short answer, required)
+		       - Email Address          (Short answer, required, validate as email)
+		       - Phone Number           (Short answer, required)
+		       - Program of Interest    (Dropdown: Phlebotomy Technician,
+		                                Medical Assistant, Patient Care Technician (PCT),
+		                                EKG Technician, Certified Nursing Assistant,
+		                                Not sure yet)
+		       - Best Time to Call      (Dropdown: Morning, Afternoon, Evening, Anytime)
+		       - Message                (Paragraph, optional)
+		  2. Open the Google Form, click the three-dot menu, and choose "Get pre-filled
+		     link". Fill out each field with a unique placeholder (e.g. NAME_HERE) and
+		     click "Get link". Copy the URL.
+		  3. The URL will look like:
+		     https://docs.google.com/forms/d/e/<FORM_ID>/viewform?usp=pp_url&entry.123=NAME_HERE&entry.456=...
+		     - Replace "<FORM_ID>" in the form's `action` attribute below
+		       (https://docs.google.com/forms/d/e/<FORM_ID>/formResponse).
+		     - For each `entry.XXXXXXX` you see in the pre-filled URL, copy it into the
+		       matching field's `name` attribute below. The fields are pre-labeled with
+		       TODO markers for you.
+		  4. Save and you're done. The hidden iframe absorbs Google's redirect so the
+		     visitor sees an in-page success message instead of leaving the site.
+		================================================================================
+	-->
+	<section id="contact" class="contact-section section-padding" aria-labelledby="contact-title">
+		<div class="container">
+			<div class="contact-grid">
+				<div class="contact-intro">
+					<span class="contact-eyebrow">Request a Call</span>
+					<h2 id="contact-title" class="section-title">Talk to an Admissions Advisor</h2>
+					<p>Tell us a little about yourself and we'll reach out with class dates, pricing, and
+						everything you need to enroll. No pressure, no obligation.</p>
+
+					<ul class="contact-direct">
+						<li>
+							<i class="fas fa-phone-alt" aria-hidden="true"></i>
+							<div>
+								<div class="contact-direct-label">Call Us</div>
+								<a href="tel:+16097125499">(609) 712-5499</a>
+							</div>
+						</li>
+						<li>
+							<i class="fas fa-envelope" aria-hidden="true"></i>
+							<div>
+								<div class="contact-direct-label">Email</div>
+								<a href="mailto:mercermedtech@gmail.com">mercermedtech@gmail.com</a>
+							</div>
+						</li>
+						<li>
+							<i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+							<div>
+								<div class="contact-direct-label">Visit</div>
+								<a href="https://www.google.com/maps/search/?api=1&amp;query=168%20Franklin%20Corner%20Rd%2C%20Bldg%202%2C%20Suite%20140%2C%20Lawrenceville%2C%20NJ%2008648"
+									target="_blank" rel="noopener noreferrer">168 Franklin Corner Rd, Bldg 2,
+									Suite #140<br>Lawrenceville, NJ 08648</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+
+				<div class="contact-card">
+					<form id="request-info-form" class="contact-form"
+						action="https://docs.google.com/forms/d/e/1FAIpQLSdlbJCiaAE1h2VVLcF0mUPG_6SKAs34IR0Ipu_DHATetEX-lg/formResponse"
+						method="POST" target="hidden_form_iframe">
+						<div class="form-row">
+							<label class="form-field">
+								<span class="form-label">Full Name <span class="req" aria-hidden="true">*</span></span>
+								<input type="text" name="entry.500866520" required autocomplete="name"
+									placeholder="Jane Doe">
+							</label>
+							<label class="form-field">
+								<span class="form-label">Phone <span class="req" aria-hidden="true">*</span></span>
+								<input type="tel" name="entry.377183870" required autocomplete="tel"
+									placeholder="(609) 555 1234"
+									pattern="[0-9\(\)\-\s\+]{7,}">
+							</label>
+						</div>
+
+						<label class="form-field">
+							<span class="form-label">Email <span class="req" aria-hidden="true">*</span></span>
+							<input type="email" name="entry.561406325" required autocomplete="email"
+								placeholder="you@example.com">
+						</label>
+
+						<div class="form-row">
+							<label class="form-field">
+								<span class="form-label">Program of Interest</span>
+								<select name="entry.358026590" required>
+									<option value="" disabled selected>Choose a program</option>
+									<option>Phlebotomy Technician</option>
+									<option>Medical Assistant</option>
+									<option>Patient Care Technician (PCT)</option>
+									<option>EKG Technician</option>
+									<option>Certified Nursing Assistant</option>
+									<option>Not sure yet</option>
+								</select>
+							</label>
+							<label class="form-field">
+								<span class="form-label">Best Time to Call</span>
+								<select name="entry.1429591353">
+									<option value="" disabled selected>Anytime works</option>
+									<option>Morning (9:00 AM - 12:00 PM)</option>
+									<option>Afternoon (12:00 PM - 5:00 PM)</option>
+									<option>Evening (5:00 PM - 8:00 PM)</option>
+									<option>Anytime</option>
+								</select>
+							</label>
+						</div>
+
+						<label class="form-field">
+							<span class="form-label">Message <span class="optional">(optional)</span></span>
+							<textarea name="entry.1375584749" rows="4"
+								placeholder="Anything you want us to know? Questions about prerequisites, schedules, financial aid, etc."></textarea>
+						</label>
+
+						<div class="form-consent">
+							<label>
+								<input type="checkbox" required>
+								<span>I agree to be contacted by Mercer Med Tech about my inquiry. We will
+									never share your information.</span>
+							</label>
+						</div>
+
+						<button type="submit" class="btn btn-primary form-submit">
+							<span class="form-submit-label">Request a Call</span>
+							<i class="fas fa-paper-plane" aria-hidden="true"></i>
+						</button>
+
+						<div class="form-success" role="status" aria-live="polite" hidden>
+							<i class="fas fa-circle-check" aria-hidden="true"></i>
+							<div>
+								<strong>Thank you. We received your request.</strong>
+								<span>An advisor will reach out within one business day.</span>
+							</div>
+						</div>
+
+						<p class="form-note">By submitting, you agree to be contacted by Mercer Med Tech.
+							We respect your privacy.</p>
+					</form>
+
+					<iframe name="hidden_form_iframe" id="hidden_form_iframe"
+						style="display:none;width:0;height:0;border:0" tabindex="-1" aria-hidden="true"
+						title="hidden"></iframe>
+				</div>
+			</div>
+		</div>
+	</section>
+
 	<!-- Footer -->
-	<footer id="contact" class="site-footer">
+	<footer id="footer" class="site-footer">
 		<div class="container">
 			<div class="footer-grid">
 				<div class="footer-brand">
 					<img src="images/logo-modern.png" alt="Mercer Med Tech"
 						style="height: 40px; margin-bottom: 1rem; filter: brightness(0) invert(1);">
-					<p>Empowering the next generation of healthcare professionals with quality education and practical
-						skills.</p>
+					<p>Allied Health Sciences training in Lawrenceville, NJ. Practical skills, real instructors,
+						real careers.</p>
 				</div>
 				<div class="footer-col">
-					<h4>Quick Links</h4>
+					<h4>Explore</h4>
 					<ul class="footer-links">
 						<li><a href="#hero">Home</a></li>
 						<li><a href="#about">About Us</a></li>
 						<li><a href="#programs">Programs</a></li>
-						<li><a href="#contact">Contact</a></li>
+						<li><a href="#enroll">Enrollment</a></li>
+						<li><a href="#contact">Request Info</a></li>
 					</ul>
 				</div>
 				<div class="footer-col">
@@ -602,12 +2241,12 @@
 							</a>
 						</li>
 						<li>
-							<a href="https://www.google.com/maps/search/?api=1&query=1418%20South%20Broad%20Street%2C%20Trenton%2C%20NJ%2008610"
+							<a href="https://www.google.com/maps/search/?api=1&query=168%20Franklin%20Corner%20Rd%2C%20Bldg%202%2C%20Suite%20140%2C%20Lawrenceville%2C%20NJ%2008648"
 								target="_blank" rel="noopener noreferrer"
 								style="display: flex; align-items: flex-start; gap: 0.5rem;">
 								<i class="fas fa-map-marker-alt" style="margin-top: 0.25em;"></i>
 								<div>
-									1418 South Broad Street<br>Trenton, NJ 08610
+									168 Franklin Corner Rd<br>Bldg 2, Suite #140<br>Lawrenceville, NJ 08648
 								</div>
 							</a>
 						</li>
@@ -627,7 +2266,7 @@
 				</div>
 			</div>
 			<div class="footer-bottom">
-				<p>&copy; 2025 Mercer Med Tech. All rights reserved.</p>
+				<p>&copy; 2026 Mercer Med Tech. All rights reserved.</p>
 			</div>
 		</div>
 	</footer>
@@ -690,12 +2329,16 @@
 				<h4>Certification</h4>
 				<p>Graduates can choose to take their certification exam online through the National Healthcare
 					Association (NHA) or in-person via MedCa.</p>
+				<h4>Tuition</h4>
+				<p>Total program cost: <strong>$5,000</strong> (Tuition $4,650 + Administrative Fee $150 + Books
+					$100 + Exam Fee $150). The Administrative Fee is non-refundable. Financial aid assistance is
+					available.</p>
 				<h4>Salary Expectation</h4>
 				<p>Graduates can expect a median annual wage of approximately $44,200 (roughly $21 per hour), with
 					experienced earners exceeding $56,000.</p>
 				<h4>Career Outlook</h4>
 				<p>Medical Assisting is one of the fastest-growing healthcare occupations, with employment projected to
-					grow 12% over the next decade—much faster than the national average. This growth is expected to
+					grow 12% over the next decade, much faster than the national average. This growth is expected to
 					result in approximately 112,300 job openings each year and offers dynamic opportunities for
 					advancement into healthcare administration, specialized clinical nursing, or office management
 					roles.</p>
@@ -732,10 +2375,141 @@
 				</p>
 				<h4>Career Outlook</h4>
 				<p>Phlebotomy is a rapidly expanding field, with employment projected to grow 6% over the next
-					decade—faster than the average for all occupations. This growth is expected to result in about
+					decade, faster than the average for all occupations. This growth is expected to result in about
 					18,400 job openings each year. As an essential part of diagnostic teams, phlebotomists have
 					excellent opportunities for advancement into roles such as Medical Laboratory Technician,
 					Histotechnician, or Registered Nurse.</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary modal-close-bottom">Close</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="pct-modal" class="modal">
+		<div class="modal-content">
+			<button class="modal-close" aria-label="Close modal">&times;</button>
+			<div class="modal-header">
+				<h2>Certified Patient Care Technician (PCT)</h2>
+				<p>CIP: 51.0904 | 300 Hours | 5 to 6 Months</p>
+			</div>
+			<div class="modal-body">
+				<p>The Patient Care Technician program prepares students to care for patients across a variety of
+					settings: hospitals, clinics, outpatient centers, long-term care facilities, rehabilitation
+					centers, assisted living, and nursing homes. Students learn to perform emergency and recording
+					duties under the supervision of nurses and physicians.</p>
+				<h4>Key Skills Covered</h4>
+				<ul>
+					<li>Basic Anatomy and Physiology</li>
+					<li>Phlebotomy and Specimen Collection</li>
+					<li>EKG Lead Placement and Basic Interpretation</li>
+					<li>Vital Signs and Patient Observation</li>
+					<li>Oxygen Administration</li>
+					<li>Medication Administration and Application</li>
+					<li>Record-Keeping and Patient Documentation</li>
+				</ul>
+				<h4>Program Length</h4>
+				<p>Minimum 300 hours. Competency training is spread over several weeks to allow additional time for
+					practice and mastery.</p>
+				<h4>Tuition</h4>
+				<p>Total program cost: <strong>$4,000</strong>. Financial aid assistance is available, and the
+					program is WIA-eligible.</p>
+				<h4>Admission Requirements</h4>
+				<p>High school diploma or GED.</p>
+				<h4>Salary Expectation</h4>
+				<p>Patient Care Technicians typically earn between $35,000 and $48,000 annually (roughly $17 to
+					$23 per hour), with experienced PCTs in hospital settings exceeding $52,000. Based on BLS
+					Nursing Assistants data (median $38,200) adjusted for the expanded PCT scope of practice.</p>
+				<h4>Career Outlook</h4>
+				<p>Graduates work in hospitals, rehabilitation centers, assisted living facilities, nursing homes,
+					and long-term care. The PCT role is a strong stepping stone toward Licensed Practical Nurse
+					(LPN), Registered Nurse (RN), or specialized technician careers. Employment for related
+					healthcare support occupations is projected to grow 4% over the next decade.</p>
+				<h4>Student Support</h4>
+				<p>Career counseling, on-site job placement assistance, evening courses, and Spanish-speaking staff
+					are all available.</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary modal-close-bottom">Close</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="chha-modal" class="modal">
+		<div class="modal-content">
+			<button class="modal-close" aria-label="Close modal">&times;</button>
+			<div class="modal-header">
+				<h2>Certified Home Health Aide (CHHA)</h2>
+				<p>CIP: 51.2602 | 76 Hours | 4 to 11 Weeks</p>
+			</div>
+			<div class="modal-body">
+				<p>Train to deliver compassionate care directly in the client's home. Our CHHA program is based on
+					the New Jersey Board of Nursing's curriculum and prepares students to support the elderly,
+					new mothers, individuals with chronic illness, and those with mental, physical, or social
+					challenges.</p>
+				<h4>Key Skills Covered</h4>
+				<ul>
+					<li>Personal Care, Bathing, and Hygiene</li>
+					<li>Client Ambulation, Transfers, and Exercise</li>
+					<li>Assistance with Client Medication</li>
+					<li>Reporting Changes in Client Condition</li>
+					<li>Documentation of Clinical Reports and Program Records</li>
+					<li>Safety, Communication, and Professional Boundaries</li>
+				</ul>
+				<h4>Tuition</h4>
+				<p>Total program cost: <strong>$800</strong>. Financial aid assistance is available.</p>
+				<h4>Admission Requirements</h4>
+				<p>Application and interview, plus criminal background check.</p>
+				<h4>Career Outlook</h4>
+				<p>Graduates are prepared to work as CHHAs in home care agencies, hospice, and visiting nurse
+					services. The program provides strong preparation for the New Jersey Home Health Aide
+					Certification.</p>
+				<h4>Student Support</h4>
+				<p>Career counseling, evening courses, on-site job placement assistance, and Spanish-speaking
+					staff are all available. Linked to the NJ One-Stop system.</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary modal-close-bottom">Close</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="medaide-modal" class="modal">
+		<div class="modal-content">
+			<button class="modal-close" aria-label="Close modal">&times;</button>
+			<div class="modal-header">
+				<h2>Certified Medication Aide</h2>
+				<p>CIP: 51.2603 | 40 Hours</p>
+			</div>
+			<div class="modal-body">
+				<p>This program prepares already-certified Nursing Assistants and Home Health Aides to become
+					certified through the New Jersey Department of Health and Senior Services to assist residents
+					with their medications. Certified Medication Aides administer medications in
+					Assisted-Living Residences, Comprehensive Personal Care Homes, and Assisted Living Programs.</p>
+				<h4>Why Add This Certification</h4>
+				<p>Becoming a Medication Aide is a logical next step in the healthcare career ladder for working
+					CNAs, PCAs, and CHHAs. It expands your scope of practice and increases employment
+					opportunities, particularly in assisted-living settings.</p>
+				<h4>Key Skills Covered</h4>
+				<ul>
+					<li>Safe Medication Administration in Assisted-Living Settings</li>
+					<li>Pharmacology Fundamentals for Common Medications</li>
+					<li>Documentation and Reporting</li>
+					<li>Identifying Adverse Reactions and When to Escalate</li>
+					<li>Resident Rights and Confidentiality</li>
+				</ul>
+				<h4>Tuition</h4>
+				<p>Total program cost: <strong>$600</strong>.</p>
+				<h4>Admission Requirements</h4>
+				<p>Active CNA or CHHA certification.</p>
+				<h4>Salary Expectation</h4>
+				<p>Certified Medication Aides typically earn between $36,000 and $45,000 annually (roughly $17
+					to $22 per hour). Adding the Medication Aide credential to a CNA or CHHA background
+					typically lifts pay 5% to 15% above base nursing assistant wages, per BLS Nursing Assistants
+					data (median $38,200).</p>
+				<h4>Career Outlook</h4>
+				<p>All of our Medication Aide graduates are placed in assisted-living facilities. The program is
+					also a strong stepping stone for students considering nursing or pharmacy technician careers.</p>
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-secondary modal-close-bottom">Close</button>
@@ -778,6 +2552,12 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Floating Mobile Call CTA -->
+	<a href="tel:+16097125499" class="floating-call" aria-label="Call Mercer Med Tech">
+		<i class="fas fa-phone-alt" aria-hidden="true"></i>
+		<span>Call Now</span>
+	</a>
 
 	<!-- Scripts -->
 	<script>
@@ -1184,6 +2964,64 @@
 						ticking = true;
 					}
 				});
+			}
+
+			// ============================================
+			// Request Info Form
+			// ============================================
+			const form = document.getElementById('request-info-form');
+			if (form) {
+				const submitBtn = form.querySelector('.form-submit');
+				const successMsg = form.querySelector('.form-success');
+				const labelEl = form.querySelector('.form-submit-label');
+				const iframe = document.getElementById('hidden_form_iframe');
+
+				const isConfigured = !form.action.includes('REPLACE_WITH_FORM_ID');
+				let isSubmitting = false;
+				let safetyTimer = null;
+
+				const finishSubmission = () => {
+					if (!isSubmitting) return;
+					isSubmitting = false;
+					if (safetyTimer) { clearTimeout(safetyTimer); safetyTimer = null; }
+					submitBtn.disabled = false;
+					submitBtn.classList.remove('is-loading');
+					if (labelEl) labelEl.textContent = 'Request a Call';
+					successMsg.classList.add('is-visible');
+					form.reset();
+					successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				};
+
+				form.addEventListener('submit', (e) => {
+					if (!form.checkValidity()) return; // browser will show validation
+
+					if (!isConfigured) {
+						e.preventDefault();
+						successMsg.classList.add('is-visible');
+						successMsg.querySelector('strong').textContent = 'Form not yet connected.';
+						successMsg.querySelector('span').textContent =
+							'Please configure the Google Form action URL and field IDs before going live.';
+						return;
+					}
+
+					isSubmitting = true;
+					submitBtn.disabled = true;
+					submitBtn.classList.add('is-loading');
+					if (labelEl) labelEl.textContent = 'Sending';
+
+					// Safety net: cross-origin iframe load events can be unreliable.
+					// If we don't hear back within 4s, assume success and reset the form.
+					safetyTimer = setTimeout(finishSubmission, 4000);
+				});
+
+				if (iframe) {
+					iframe.addEventListener('load', () => {
+						// Only respond to loads that occur AFTER the user has submitted.
+						// Initial empty-iframe load events are ignored because
+						// isSubmitting is still false at that point.
+						if (isSubmitting) finishSubmission();
+					});
+				}
 			}
 		});
 	</script>

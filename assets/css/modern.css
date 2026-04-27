@@ -560,8 +560,10 @@ img {
 
 /* Faculty */
 .faculty-wrapper {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 400px));
     justify-content: center;
+    gap: 2rem;
     margin-top: 3rem;
 }
 
@@ -575,6 +577,24 @@ img {
     font-size: 3rem;
     border-radius: 50%;
     margin: 0 auto 1.5rem;
+}
+
+.faculty-contact {
+    margin-top: 1.25rem !important;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+}
+
+.faculty-contact a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.faculty-contact a:hover {
+    color: var(--primary-dark);
 }
 
 /* About Section */
