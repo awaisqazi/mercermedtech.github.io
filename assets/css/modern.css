@@ -150,10 +150,26 @@ img {
 }
 
 .btn-primary {
+    position: relative;
+    overflow: hidden;
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: white;
     border: none;
     box-shadow: 0 10px 20px rgba(0, 166, 156, 0.25);
+}
+
+/* Sheen sweep micro-interaction */
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.6s var(--ease-out);
+    pointer-events: none;
 }
 
 .btn-primary:hover {
@@ -162,7 +178,15 @@ img {
     -ms-transform: translateY(-3px);
     -o-transform: translateY(-3px);
     transform: translateY(-3px);
-    box-shadow: 0 15px 30px rgba(0, 166, 156, 0.35);
+    box-shadow: 0 16px 32px rgba(0, 166, 156, 0.38);
+}
+
+.btn-primary:hover::after {
+    left: 125%;
+}
+
+.btn-primary:active {
+    transform: translateY(-1px) scale(0.99);
 }
 
 .btn-secondary {
@@ -201,7 +225,25 @@ img {
 
 .section-title {
     margin-bottom: 1.5rem;
-    font-size: 2.5rem;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+/* Consistent centered section header treatment */
+.section-header h2 {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+}
+
+.section-header .text-muted {
+    max-width: 620px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 1.08rem;
 }
 
 .text-center {
@@ -328,16 +370,64 @@ img {
 }
 
 .hero-content h1 {
-    font-size: 3.5rem;
+    font-size: clamp(2.6rem, 6vw, 4.25rem);
+    font-weight: 800;
+    line-height: 1.05;
     margin-bottom: 1.5rem;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.035em;
+}
+
+.hero-content h1 .text-gradient {
+    /* Subtle animated teal accent on the hero keyword */
+    background: linear-gradient(120deg, var(--primary) 0%, var(--accent) 40%, var(--primary-dark) 80%, var(--primary) 100%);
+    background-size: 220% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: var(--primary);
+    animation: heroAccentShift 8s ease-in-out infinite;
+}
+
+@keyframes heroAccentShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
 }
 
 .hero-content p {
-    font-size: 1.125rem;
+    font-size: 1.15rem;
     color: var(--text-muted);
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
     max-width: 540px;
+}
+
+/* Hero trust strip */
+.hero-trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin: 0 0 2rem;
+    padding: 0;
+    list-style: none;
+}
+
+.hero-trust li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.hero-trust li i {
+    color: var(--primary);
+    font-size: 0.85rem;
+}
+
+@media (max-width: 968px) {
+    .hero-trust {
+        justify-content: center;
+    }
 }
 
 .hero-image-wrapper {
@@ -604,9 +694,47 @@ img {
 
 /* Footer */
 .site-footer {
-    background: var(--text-main);
+    position: relative;
+    background: linear-gradient(180deg, #16202e 0%, var(--text-main) 100%);
     color: white;
-    padding: 4rem 0 2rem;
+    padding: 4.5rem 0 2rem;
+}
+
+/* Teal top accent line */
+.site-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 50%, var(--primary) 100%);
+}
+
+.footer-col h4 {
+    position: relative;
+    padding-bottom: 0.6rem;
+}
+
+.footer-col h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 28px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--primary);
+}
+
+.footer-links a {
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+
+.footer-links a:hover {
+    transform: translateX(3px);
 }
 
 .footer-grid {
@@ -1480,5 +1608,59 @@ img {
     .programs-section .carousel-btn,
     .programs-section .dot {
         transition-duration: 0.1s;
+    }
+}
+
+/* ==========================================================================
+   SCROLL REVEAL — IntersectionObserver-driven fade/slide-in (added in refresh)
+   ========================================================================== */
+
+/* Only hide elements once JS confirms observer support; avoids FOUC / no-JS gaps */
+.reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+        opacity 0.7s var(--spring-gentle),
+        transform 0.7s var(--spring-gentle);
+    will-change: opacity, transform;
+}
+
+.reveal-ready [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+}
+
+/* Staggered children (cards, chips, list items) */
+.reveal-ready [data-reveal-stagger] > * {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+        opacity 0.6s var(--spring-gentle),
+        transform 0.6s var(--spring-gentle);
+}
+
+.reveal-ready [data-reveal-stagger].is-revealed > * {
+    opacity: 1;
+    transform: none;
+}
+
+.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(2) { transition-delay: 0.07s; }
+.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(3) { transition-delay: 0.14s; }
+.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(4) { transition-delay: 0.21s; }
+.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(5) { transition-delay: 0.28s; }
+.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(6) { transition-delay: 0.35s; }
+
+@media (prefers-reduced-motion: reduce) {
+
+    .hero-content h1 .text-gradient,
+    .btn-primary::after {
+        animation: none;
+    }
+
+    .reveal-ready [data-reveal],
+    .reveal-ready [data-reveal-stagger] > * {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
     }
 }

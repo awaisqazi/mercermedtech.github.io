@@ -6,9 +6,9 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<meta name="description"
-		content="Mercer Med Tech is a state-approved allied health training school in Lawrenceville, NJ. Now enrolling: Phlebotomy starts May 18, CNA June 1, Medical Assistant July 8. Programs include CNA, Medical Assistant, Phlebotomy, EKG Technician, Patient Care Technician (PCT), Home Health Aide, and Medication Aide. Call (609) 712-5499.">
+		content="Mercer Med Tech is a state-approved allied health training school in Lawrenceville, NJ. Now enrolling: CNA and Medical Assistant classes start July 15, 2026. Programs include CNA, Medical Assistant, Phlebotomy, EKG Technician, Patient Care Technician (PCT), Medication Aide, and a Cybersecurity Summer Bootcamp. Call (609) 712-5499.">
 	<meta name="keywords"
-		content="Mercer Med Tech, allied health training, Lawrenceville NJ, medical assistant, phlebotomy, EKG technician, patient care technician, PCT, CNA, home health aide, CHHA, medication aide, healthcare training NJ">
+		content="Mercer Med Tech, allied health training, Lawrenceville NJ, medical assistant, phlebotomy, EKG technician, patient care technician, PCT, CNA, medication aide, cybersecurity bootcamp, cybersecurity summer bootcamp, healthcare training NJ">
 	<link rel="canonical" href="https://www.mercermedtech.com/">
 
 	<!-- Open Graph / Social -->
@@ -16,13 +16,13 @@
 	<meta property="og:site_name" content="Mercer Med Tech">
 	<meta property="og:title" content="Mercer Med Tech | Allied Health Training in Lawrenceville, NJ">
 	<meta property="og:description"
-		content="Now enrolling at our new Lawrenceville, NJ location — Phlebotomy starts May 18, CNA June 1, Medical Assistant July 8. Hands-on training for Phlebotomy, Medical Assistant, PCT, and EKG programs.">
+		content="Now enrolling at our new Lawrenceville, NJ location — CNA and Medical Assistant classes start July 15, 2026. Hands-on training for Phlebotomy, Medical Assistant, PCT, and EKG programs.">
 	<meta property="og:url" content="https://www.mercermedtech.com/">
 	<meta property="og:image" content="https://www.mercermedtech.com/images/logo-modern.png">
 	<meta name="twitter:card" content="summary_large_image">
 	<meta name="twitter:title" content="Mercer Med Tech | Allied Health Training in Lawrenceville, NJ">
 	<meta name="twitter:description"
-		content="Now enrolling — Phlebotomy May 18, CNA June 1, Medical Assistant July 8. New Lawrenceville, NJ location.">
+		content="Now enrolling — CNA and Medical Assistant classes start July 15, 2026. New Lawrenceville, NJ location.">
 
 	<!-- Geo metadata -->
 	<meta name="geo.region" content="US-NJ">
@@ -58,7 +58,8 @@
 			"longitude": -74.7429
 		},
 		"sameAs": [
-			"https://www.facebook.com/mercermedtech"
+			"https://www.facebook.com/mercermedtech",
+			"https://credentialfinder.org/detail/organization/ce-b96e30d0-ddd5-48c7-94e7-2d1e99ed1549"
 		],
 		"openingHoursSpecification": [
 			{
@@ -78,13 +79,13 @@
 			"@type": "OfferCatalog",
 			"name": "Allied Health Training Programs",
 			"itemListElement": [
-				{ "@type": "Course", "name": "Certified Medical Assistant (CMA)", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
-				{ "@type": "Course", "name": "Phlebotomy Technician", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
-				{ "@type": "Course", "name": "EKG Technician", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
-				{ "@type": "Course", "name": "Certified Nursing Assistant (CNA)", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
-				{ "@type": "Course", "name": "Patient Care Technician (PCT)", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
-				{ "@type": "Course", "name": "Certified Home Health Aide (CHHA)", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } },
-				{ "@type": "Course", "name": "Certified Medication Aide", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" } }
+				{ "@type": "Course", "name": "Certified Medical Assistant (CMA)", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" }, "offers": { "@type": "Offer", "price": 5000, "priceCurrency": "USD" } },
+				{ "@type": "Course", "name": "Phlebotomy Technician", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" }, "offers": { "@type": "Offer", "price": 1500, "priceCurrency": "USD" } },
+				{ "@type": "Course", "name": "EKG Technician", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" }, "offers": { "@type": "Offer", "price": 1400, "priceCurrency": "USD" } },
+				{ "@type": "Course", "name": "Certified Nursing Assistant (CNA)", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" }, "offers": { "@type": "Offer", "price": 2000, "priceCurrency": "USD" } },
+				{ "@type": "Course", "name": "Patient Care Technician (PCT)", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" }, "offers": { "@type": "Offer", "price": 4000, "priceCurrency": "USD" } },
+				{ "@type": "Course", "name": "Certified Medication Aide", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" }, "offers": { "@type": "Offer", "price": 900, "priceCurrency": "USD" } },
+				{ "@type": "Course", "name": "Cybersecurity Summer Bootcamp", "provider": { "@type": "EducationalOrganization", "name": "Mercer Med Tech" }, "offers": { "@type": "Offer", "price": 1800, "priceCurrency": "USD" } }
 			]
 		}
 	}
@@ -1354,6 +1355,91 @@
 				display: inline-flex;
 			}
 		}
+
+		/* ===== Coming Soon Program Cards (distinct muted / dashed treatment) ===== */
+		.program-card-glass.coming-soon {
+			background: linear-gradient(145deg,
+					rgba(248, 250, 252, 0.9) 0%,
+					rgba(241, 245, 249, 0.85) 100%);
+			border: 1.5px dashed rgba(0, 166, 156, 0.35);
+			box-shadow:
+				0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+				0 4px 16px rgba(15, 23, 42, 0.04);
+		}
+
+		.program-card-glass.coming-soon .program-icon {
+			background: linear-gradient(135deg, rgba(148, 163, 184, 0.2) 0%, rgba(148, 163, 184, 0.1) 100%);
+			color: var(--text-muted);
+		}
+
+		.program-card-glass.coming-soon:hover .program-icon {
+			background: linear-gradient(135deg, var(--text-muted) 0%, var(--text-light) 100%);
+			color: #fff;
+		}
+
+		.program-card-glass.coming-soon .program-stats-badge {
+			background: rgba(148, 163, 184, 0.14);
+			color: var(--text-muted);
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+			font-size: 0.72rem;
+		}
+
+		.program-card-glass.coming-soon h3 {
+			color: var(--text-main);
+		}
+
+		/* Corner "Coming Soon" ribbon badge */
+		.program-card-glass.coming-soon::before {
+			content: '';
+			background: linear-gradient(90deg, var(--text-light) 0%, var(--text-muted) 100%);
+			opacity: 0.6;
+		}
+
+		/* ===== Tuition table premium refinements ===== */
+		.tuition-table thead th {
+			background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+			color: #fff;
+			border-bottom: none;
+		}
+
+		.tuition-table thead {
+			background: none;
+		}
+
+		/* Highlighted tuition (price) column */
+		.tuition-table thead th.tuition-col,
+		.tuition-table td.tuition-col {
+			background: rgba(0, 166, 156, 0.06);
+		}
+
+		.tuition-table thead th.tuition-col {
+			background: linear-gradient(135deg, var(--primary-dark) 0%, #006860 100%);
+			color: #fff;
+		}
+
+		.tuition-table td.tuition-col strong {
+			font-family: 'Outfit', sans-serif;
+			font-size: 1.15rem;
+			font-weight: 700;
+			color: var(--primary-dark);
+		}
+
+		.tuition-table tbody tr:hover td.tuition-col {
+			background: rgba(0, 166, 156, 0.1);
+		}
+
+		@media (max-width: 720px) {
+
+			/* Emphasize the price row inside the mobile card layout */
+			.tuition-table tbody td.tuition-col {
+				background: none;
+			}
+
+			.tuition-table tbody td.tuition-col strong {
+				font-size: 1.25rem;
+			}
+		}
 	</style>
 </head>
 
@@ -1389,6 +1475,11 @@
 					<h1>Launch Your Career in <span class="text-gradient">Healthcare</span></h1>
 					<p>Allied Health Sciences training in Lawrenceville, NJ. Hands-on instruction, small class
 						sizes, and the certifications you need to start working in the medical field.</p>
+					<ul class="hero-trust" aria-label="Why students choose Mercer Med Tech">
+						<li><i class="fas fa-landmark" aria-hidden="true"></i> State-approved</li>
+						<li><i class="fas fa-check-circle" aria-hidden="true"></i> Credential Registry verified</li>
+						<li><i class="fas fa-briefcase" aria-hidden="true"></i> Job placement help</li>
+					</ul>
 					<div class="hero-actions">
 						<a href="#programs" class="btn btn-primary">Explore Programs</a>
 						<a href="#contact" class="btn btn-secondary">Request Information</a>
@@ -1408,28 +1499,28 @@
 			<div class="enroll-card">
 				<span class="enroll-badge">
 					<span class="pulse-dot" aria-hidden="true"></span>
-					Now Enrolling · Spring & Summer 2026
+					Now Enrolling · Summer 2026
 				</span>
 				<h2 id="enroll-title" class="enroll-title">
-					Spring &amp; Summer 2026 <span class="text-gradient">Healthcare Training</span> Programs
+					Summer 2026 <span class="text-gradient">Healthcare Training</span> Programs
 				</h2>
 				<p class="enroll-subtitle">
-					Classes begin May 18, 2026 at our new Lawrenceville location — a great fit for college students on summer break.
+					CNA and Medical Assistant classes begin July 15, 2026 at our new Lawrenceville location — a great fit for college students on summer break.
 					Start your career in the medical field with hands-on training from experienced instructors.
 				</p>
 
 				<div class="enroll-programs" aria-label="Programs offered">
 					<div class="enroll-program">
-						<i class="fas fa-syringe" aria-hidden="true"></i>
-						<span>Phlebotomy Technician</span>
+						<i class="fas fa-user-nurse" aria-hidden="true"></i>
+						<span>Certified Nursing Assistant (CNA)</span>
 					</div>
 					<div class="enroll-program">
 						<i class="fas fa-stethoscope" aria-hidden="true"></i>
-						<span>Medical Assistant</span>
+						<span>Certified Medical Assistant</span>
 					</div>
 					<div class="enroll-program">
-						<i class="fas fa-user-nurse" aria-hidden="true"></i>
-						<span>Patient Care Technician (PCT)</span>
+						<i class="fas fa-syringe" aria-hidden="true"></i>
+						<span>Phlebotomy Technician</span>
 					</div>
 					<div class="enroll-program">
 						<i class="fas fa-heartbeat" aria-hidden="true"></i>
@@ -1449,7 +1540,7 @@
 						<div class="enroll-chip-icon"><i class="fas fa-calendar-day" aria-hidden="true"></i></div>
 						<div>
 							<div class="enroll-chip-label">Next Session Begins</div>
-							<div class="enroll-chip-value">May 18, 2026 (Phlebotomy)</div>
+							<div class="enroll-chip-value">July 15, 2026 (CNA &amp; CMA)</div>
 						</div>
 					</div>
 					<div class="enroll-chip">
@@ -1491,9 +1582,10 @@
 						<span>Upcoming Class Start Dates</span>
 					</div>
 					<ul class="term-list">
-						<li class="term-current"><span class="term-name">Phlebotomy</span><span class="term-date">May 18, 2026</span></li>
-						<li><span class="term-name">CNA</span><span class="term-date">June 1, 2026</span></li>
-						<li><span class="term-name">Medical Assistant</span><span class="term-date">July 8, 2026</span></li>
+						<li class="term-current"><span class="term-name">CNA</span><span class="term-date">July 15, 2026</span></li>
+						<li class="term-current"><span class="term-name">Medical Assistant</span><span class="term-date">July 15, 2026</span></li>
+						<li><span class="term-name">Phlebotomy</span><span class="term-date">Call for dates</span></li>
+						<li><span class="term-name">EKG</span><span class="term-date">Call for dates</span></li>
 					</ul>
 				</div>
 			</div>
@@ -1642,24 +1734,6 @@
 								</a>
 							</article>
 
-							<!-- CHHA -->
-							<article class="program-card-glass carousel-slide">
-								<div class="program-icon">
-									<i class="fas fa-hand-holding-heart"></i>
-								</div>
-								<div class="program-stats-badge">
-									<i class="fas fa-clock"></i>
-									<span>76 Hours</span>
-								</div>
-								<h3>Certified Home Health Aide</h3>
-								<p>Direct care training for in-home settings: personal care, ambulation,
-									medication assistance, and reporting client needs to nursing supervisors.</p>
-								<a href="#" class="btn btn-secondary full-width" data-modal-target="#chha-modal">
-									Learn More <i class="fas fa-arrow-right"
-										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
-								</a>
-							</article>
-
 							<!-- Certified Medication Aide -->
 							<article class="program-card-glass carousel-slide">
 								<div class="program-icon">
@@ -1667,13 +1741,67 @@
 								</div>
 								<div class="program-stats-badge">
 									<i class="fas fa-clock"></i>
-									<span>40 Hours</span>
+									<span>30 Hours</span>
 								</div>
 								<h3>Certified Medication Aide</h3>
-								<p>Advanced certification for active CNAs and CHHAs to assist residents with
+								<p>Advanced certification for active CNAs to assist residents with
 									medication in assisted-living and personal care settings.</p>
 								<a href="#" class="btn btn-secondary full-width" data-modal-target="#medaide-modal">
 									Learn More <i class="fas fa-arrow-right"
+										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+								</a>
+							</article>
+
+							<!-- Cybersecurity Summer Bootcamp -->
+							<article class="program-card-glass carousel-slide">
+								<div class="program-icon">
+									<i class="fas fa-shield-halved"></i>
+								</div>
+								<div class="program-stats-badge">
+									<i class="fas fa-clock"></i>
+									<span>100 Hours</span>
+								</div>
+								<h3>Cybersecurity Summer Bootcamp</h3>
+								<p>Hands-on introduction to cybersecurity fundamentals — networking basics,
+									security concepts, threat awareness, and practical labs in a summer cohort.</p>
+								<a href="#" class="btn btn-secondary full-width" data-modal-target="#cyber-modal">
+									Learn More <i class="fas fa-arrow-right"
+										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+								</a>
+							</article>
+
+							<!-- Dental Assistant (Coming Soon) -->
+							<article class="program-card-glass carousel-slide coming-soon">
+								<div class="program-icon">
+									<i class="fas fa-tooth"></i>
+								</div>
+								<div class="program-stats-badge">
+									<i class="fas fa-hourglass-half"></i>
+									<span>Coming Soon</span>
+								</div>
+								<h3>Dental Assistant</h3>
+								<p>Chairside assisting, sterilization, and dental office fundamentals.
+									This program is coming soon — join the waitlist to be notified first.</p>
+								<a href="#contact" class="btn btn-secondary full-width">
+									Join the Waitlist <i class="fas fa-arrow-right"
+										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
+								</a>
+							</article>
+
+							<!-- Medical Billing & Coding (Coming Soon) -->
+							<article class="program-card-glass carousel-slide coming-soon">
+								<div class="program-icon">
+									<i class="fas fa-file-invoice-dollar"></i>
+								</div>
+								<div class="program-stats-badge">
+									<i class="fas fa-hourglass-half"></i>
+									<span>Coming Soon</span>
+								</div>
+								<h3>Medical Billing &amp; Coding</h3>
+								<p>Insurance claims, medical coding systems, and healthcare office administration.
+									This program is coming soon — join the waitlist to be notified first.</p>
+								<a href="#contact" class="btn btn-secondary full-width">
+									Join the Waitlist <i class="fas fa-arrow-right"
 										style="font-size: 0.8rem; margin-left: 0.25rem;"></i>
 								</a>
 							</article>
@@ -1727,8 +1855,9 @@
 					<span>Investment in Your Career</span>
 				</div>
 				<h2 id="tuition-title">Tuition at a Glance</h2>
-				<p class="text-muted">Transparent program pricing. Financial aid assistance is available, and many
-					of our programs are WIA-eligible.</p>
+				<p class="text-muted">Transparent program pricing. Mercer Med Tech does not award financial aid
+					directly, but we accept external grants such as One-Stop Career Center and NJ Department of
+					Labor funding.</p>
 			</div>
 
 			<div class="tuition-table-wrap">
@@ -1739,7 +1868,8 @@
 							<th scope="col">Program</th>
 							<th scope="col">Hours</th>
 							<th scope="col">Length</th>
-							<th scope="col" class="num">Total Tuition</th>
+							<th scope="col" class="num tuition-col">Tuition</th>
+							<th scope="col" class="num">Exam Fee</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -1747,57 +1877,65 @@
 							<th scope="row">Certified Medical Assistant (CMA)</th>
 							<td data-label="Hours">480</td>
 							<td data-label="Length">8 to 12 months</td>
-							<td data-label="Total Tuition" class="num"><strong>$5,000</strong></td>
+							<td data-label="Tuition" class="num tuition-col"><strong>$5,000</strong></td>
+							<td data-label="Exam Fee" class="num">$150</td>
 						</tr>
 						<tr>
 							<th scope="row">Patient Care Technician (PCT)</th>
 							<td data-label="Hours">300</td>
 							<td data-label="Length">5 to 6 months</td>
-							<td data-label="Total Tuition" class="num"><strong>$4,000</strong></td>
+							<td data-label="Tuition" class="num tuition-col"><strong>$4,000</strong></td>
+							<td data-label="Exam Fee" class="num">$150</td>
 						</tr>
 						<tr>
 							<th scope="row">Phlebotomy Technician</th>
 							<td data-label="Hours">120</td>
 							<td data-label="Length">~6 weeks</td>
-							<td data-label="Total Tuition" class="num">Contact admissions</td>
+							<td data-label="Tuition" class="num tuition-col"><strong>$1,500</strong></td>
+							<td data-label="Exam Fee" class="num">$150</td>
 						</tr>
 						<tr>
 							<th scope="row">EKG Technician</th>
 							<td data-label="Hours">120</td>
 							<td data-label="Length">6 weeks</td>
-							<td data-label="Total Tuition" class="num">Contact admissions</td>
+							<td data-label="Tuition" class="num tuition-col"><strong>$1,400</strong></td>
+							<td data-label="Exam Fee" class="num">$150</td>
 						</tr>
 						<tr>
 							<th scope="row">Certified Nursing Assistant (CNA)</th>
 							<td data-label="Hours">90</td>
 							<td data-label="Length">~6 weeks</td>
-							<td data-label="Total Tuition" class="num">Contact admissions</td>
-						</tr>
-						<tr>
-							<th scope="row">Certified Home Health Aide (CHHA)</th>
-							<td data-label="Hours">76</td>
-							<td data-label="Length">4 to 11 weeks</td>
-							<td data-label="Total Tuition" class="num"><strong>$800</strong></td>
+							<td data-label="Tuition" class="num tuition-col"><strong>$2,000</strong></td>
+							<td data-label="Exam Fee" class="num">$150</td>
 						</tr>
 						<tr>
 							<th scope="row">Certified Medication Aide</th>
-							<td data-label="Hours">40</td>
+							<td data-label="Hours">30</td>
 							<td data-label="Length">~1 week</td>
-							<td data-label="Total Tuition" class="num"><strong>$600</strong></td>
+							<td data-label="Tuition" class="num tuition-col"><strong>$900</strong></td>
+							<td data-label="Exam Fee" class="num">$150</td>
+						</tr>
+						<tr>
+							<th scope="row">Cybersecurity Summer Bootcamp</th>
+							<td data-label="Hours">100</td>
+							<td data-label="Length">Summer session</td>
+							<td data-label="Tuition" class="num tuition-col"><strong>$1,800</strong></td>
+							<td data-label="Exam Fee" class="num">—</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
 
 			<p class="tuition-note">
-				CMA tuition includes a $150 non-refundable administrative fee, $100 books, and a $150 exam fee.
-				Final pricing for Phlebotomy, EKG, and CNA is confirmed at registration. Refund schedule is
-				detailed in the school catalog and Enrollment Agreement.
+				Exam fees are paid in addition to tuition. CMA tuition includes a $150 non-refundable
+				administrative fee and books. Mercer Med Tech does not award financial aid directly, but we
+				accept external grants, including One-Stop Career Center and NJ Department of Labor funding.
+				Refund schedule is detailed in the school catalog and Enrollment Agreement.
 			</p>
 
 			<div class="tuition-cta">
 				<a href="#contact" class="btn btn-primary">Request Pricing &amp; Class Dates</a>
-				<a href="#grants" class="btn btn-secondary">Financial Aid Options</a>
+				<a href="#grants" class="btn btn-secondary">Grant Funding Options</a>
 			</div>
 		</div>
 	</section>
@@ -1853,9 +1991,9 @@
 				</div>
 				<div class="why-card">
 					<div class="why-icon"><i class="fas fa-hand-holding-usd" aria-hidden="true"></i></div>
-					<h3>WIA / Financial Aid</h3>
-					<p>Many of our programs are WIA-eligible. We accept external grants and scholarships and
-						can guide you through student loan options.</p>
+					<h3>Grant Funding Accepted</h3>
+					<p>We don't award financial aid directly, but we accept external grants, including
+						One-Stop Career Center and NJ Department of Labor funding.</p>
 				</div>
 				<div class="why-card">
 					<div class="why-icon"><i class="fas fa-wheelchair" aria-hidden="true"></i></div>
@@ -1896,7 +2034,7 @@
 						<i class="fas fa-clock" aria-hidden="true"></i>
 						<div>
 							<strong>Register Early</strong>
-							<span>Up to 5 business days before classes start (20 days for financial aid).</span>
+							<span>Up to 5 business days before classes start (20 days if using grant funding).</span>
 						</div>
 					</li>
 				</ul>
@@ -1913,23 +2051,25 @@
 		<div class="container">
 			<div class="hero-grid">
 				<div class="hero-image-wrapper">
-					<img src="images/pic04.png" alt="Financial Aid" class="hero-image"
+					<img src="images/pic04.png" alt="Grant Funding" class="hero-image"
 						style="border-radius: var(--radius-lg);">
-					<!-- User note: Consider replacing 'pic04.jpg' with a more relevant image for financial aid. -->
+					<!-- User note: Consider replacing 'pic04.jpg' with a more relevant image for grant funding. -->
 				</div>
 				<div class="hero-content">
-					<h2 class="section-title">Financial Aid & Grants</h2>
-					<p>While Mercer Med Tech does not directly award grants or scholarships, we are committed to helping
-						you navigate your financial options. We proudly honor funding from outside organizations and can
-						assist you in understanding student loan opportunities.</p>
+					<h2 class="section-title">Grant Funding</h2>
+					<p>Mercer Med Tech does not directly award grants, scholarships, or financial aid, but we are
+						committed to helping you navigate your funding options. We proudly accept external grants,
+						including One-Stop Career Center grants and NJ Department of Labor funding, and can help you
+						understand how to apply for them.</p>
 
 					<ul class="fa-ul" style="margin-left: 1.5rem; margin-top: 1.5rem; margin-bottom: 2rem;">
 						<li style="padding-bottom: 1rem;"><span class="fa-li"><i
-									class="fas fa-award text-primary"></i></span>Accepts External Scholarships & Grants
+									class="fas fa-award text-primary"></i></span>Accepts External Grants (One-Stop
+							Career Center, NJ Department of Labor)
 						</li>
 						<li style="padding-bottom: 1rem;"><span class="fa-li"><i
-									class="fas fa-comments-dollar text-primary"></i></span>Student Loan Information &
-							Assistance</li>
+									class="fas fa-comments-dollar text-primary"></i></span>Guidance Navigating One-Stop
+							/ NJDOL Funding</li>
 					</ul>
 
 					<div class="financial-aid-footer"
@@ -2008,6 +2148,9 @@
 					<div class="org-item">
 						<p>CNJHS LLC</p>
 					</div>
+					<div class="org-item">
+						<p>Credential Engine Registry</p>
+					</div>
 					<!-- Repeat for seamless scroll -->
 					<div class="org-item">
 						<p>New Jersey Department of Health</p>
@@ -2032,6 +2175,9 @@
 					</div>
 					<div class="org-item">
 						<p>CNJHS LLC</p>
+					</div>
+					<div class="org-item">
+						<p>Credential Engine Registry</p>
 					</div>
 				</div>
 			</div>
@@ -2134,11 +2280,13 @@
 								<span class="form-label">Program of Interest</span>
 								<select name="entry.358026590" required>
 									<option value="" disabled selected>Choose a program</option>
+									<option>Certified Nursing Assistant (CNA)</option>
+									<option>Certified Medical Assistant</option>
 									<option>Phlebotomy Technician</option>
-									<option>Medical Assistant</option>
-									<option>Patient Care Technician (PCT)</option>
 									<option>EKG Technician</option>
-									<option>Certified Nursing Assistant</option>
+									<option>Patient Care Technician (PCT)</option>
+									<option>Certified Medication Aide</option>
+									<option>Cybersecurity Summer Bootcamp</option>
 									<option>Not sure yet</option>
 								</select>
 							</label>
@@ -2157,7 +2305,7 @@
 						<label class="form-field">
 							<span class="form-label">Message <span class="optional">(optional)</span></span>
 							<textarea name="entry.1375584749" rows="4"
-								placeholder="Anything you want us to know? Questions about prerequisites, schedules, financial aid, etc."></textarea>
+								placeholder="Anything you want us to know? Questions about prerequisites, schedules, grant funding, etc."></textarea>
 						</label>
 
 						<div class="form-consent">
@@ -2211,6 +2359,8 @@
 						<li><a href="#programs">Programs</a></li>
 						<li><a href="#enroll">Enrollment</a></li>
 						<li><a href="#contact">Request Info</a></li>
+						<li><a href="https://credentialfinder.org/detail/organization/ce-b96e30d0-ddd5-48c7-94e7-2d1e99ed1549"
+								target="_blank" rel="noopener">Verified on Credential Finder</a></li>
 					</ul>
 				</div>
 				<div class="footer-col">
@@ -2251,6 +2401,13 @@
 								<span>Facebook</span>
 							</a>
 						</li>
+						<li>
+							<a href="https://www.instagram.com/mercermedtech/"
+								style="display: flex; align-items: center; gap: 0.5rem;">
+								<i class="fab fa-instagram"></i>
+								<span>Instagram</span>
+							</a>
+						</li>
 					</ul>
 				</div>
 			</div>
@@ -2279,6 +2436,8 @@
 				<h4>Certification</h4>
 				<p>Upon completion, students are eligible to take a state-administered skills exam at our school and a
 					written exam at a local PSI Testing Center.</p>
+				<h4>Tuition</h4>
+				<p>Total tuition: <strong>$2,000</strong> plus a $150 exam fee. Next class starts July 15, 2026.</p>
 				<h4>Salary Expectation</h4>
 				<p>Graduates can expect to earn a median annual wage of approximately $39,400 (roughly $19 per hour).
 				</p>
@@ -2319,9 +2478,8 @@
 				<p>Graduates can choose to take their certification exam online through the National Healthcare
 					Association (NHA) or in-person via MedCa.</p>
 				<h4>Tuition</h4>
-				<p>Total program cost: <strong>$5,000</strong> (Tuition $4,650 + Administrative Fee $150 + Books
-					$100 + Exam Fee $150). The Administrative Fee is non-refundable. Financial aid assistance is
-					available.</p>
+				<p>Tuition: <strong>$5,000</strong> plus a $150 exam fee. Tuition includes the administrative fee
+					and books; the administrative fee is non-refundable. Next class starts July 15, 2026.</p>
 				<h4>Salary Expectation</h4>
 				<p>Graduates can expect a median annual wage of approximately $44,200 (roughly $21 per hour), with
 					experienced earners exceeding $56,000.</p>
@@ -2359,6 +2517,8 @@
 				<h4>Certification</h4>
 				<p>Graduates can choose to take their certification exam online through the National Healthcare
 					Association (NHA) or in-person via MedCa.</p>
+				<h4>Tuition</h4>
+				<p>Tuition: <strong>$1,500</strong> plus a $150 exam fee.</p>
 				<h4>Salary Expectation</h4>
 				<p>Graduates can expect to earn a median annual wage of approximately $43,600 (roughly $21 per hour).
 				</p>
@@ -2401,8 +2561,9 @@
 				<p>Minimum 300 hours. Competency training is spread over several weeks to allow additional time for
 					practice and mastery.</p>
 				<h4>Tuition</h4>
-				<p>Total program cost: <strong>$4,000</strong>. Financial aid assistance is available, and the
-					program is WIA-eligible.</p>
+				<p>Tuition: <strong>$4,000</strong> plus a $150 exam fee. Mercer Med Tech does not award financial
+					aid directly, but we accept external grants such as One-Stop Career Center and NJ Department of
+					Labor funding.</p>
 				<h4>Admission Requirements</h4>
 				<p>High school diploma or GED.</p>
 				<h4>Salary Expectation</h4>
@@ -2424,60 +2585,21 @@
 		</div>
 	</div>
 
-	<div id="chha-modal" class="modal">
-		<div class="modal-content">
-			<button class="modal-close" aria-label="Close modal">&times;</button>
-			<div class="modal-header">
-				<h2>Certified Home Health Aide (CHHA)</h2>
-				<p>CIP: 51.2602 | 76 Hours | 4 to 11 Weeks</p>
-			</div>
-			<div class="modal-body">
-				<p>Train to deliver compassionate care directly in the client's home. Our CHHA program is based on
-					the New Jersey Board of Nursing's curriculum and prepares students to support the elderly,
-					new mothers, individuals with chronic illness, and those with mental, physical, or social
-					challenges.</p>
-				<h4>Key Skills Covered</h4>
-				<ul>
-					<li>Personal Care, Bathing, and Hygiene</li>
-					<li>Client Ambulation, Transfers, and Exercise</li>
-					<li>Assistance with Client Medication</li>
-					<li>Reporting Changes in Client Condition</li>
-					<li>Documentation of Clinical Reports and Program Records</li>
-					<li>Safety, Communication, and Professional Boundaries</li>
-				</ul>
-				<h4>Tuition</h4>
-				<p>Total program cost: <strong>$800</strong>. Financial aid assistance is available.</p>
-				<h4>Admission Requirements</h4>
-				<p>Application and interview, plus criminal background check.</p>
-				<h4>Career Outlook</h4>
-				<p>Graduates are prepared to work as CHHAs in home care agencies, hospice, and visiting nurse
-					services. The program provides strong preparation for the New Jersey Home Health Aide
-					Certification.</p>
-				<h4>Student Support</h4>
-				<p>Career counseling, evening courses, on-site job placement assistance, and Spanish-speaking
-					staff are all available. Linked to the NJ One-Stop system.</p>
-			</div>
-			<div class="modal-footer">
-				<button class="btn btn-secondary modal-close-bottom">Close</button>
-			</div>
-		</div>
-	</div>
-
 	<div id="medaide-modal" class="modal">
 		<div class="modal-content">
 			<button class="modal-close" aria-label="Close modal">&times;</button>
 			<div class="modal-header">
 				<h2>Certified Medication Aide</h2>
-				<p>CIP: 51.2603 | 40 Hours</p>
+				<p>CIP: 51.2603 | 30 Hours</p>
 			</div>
 			<div class="modal-body">
-				<p>This program prepares already-certified Nursing Assistants and Home Health Aides to become
+				<p>This program prepares already-certified Nursing Assistants to become
 					certified through the New Jersey Department of Health and Senior Services to assist residents
 					with their medications. Certified Medication Aides administer medications in
 					Assisted-Living Residences, Comprehensive Personal Care Homes, and Assisted Living Programs.</p>
 				<h4>Why Add This Certification</h4>
 				<p>Becoming a Medication Aide is a logical next step in the healthcare career ladder for working
-					CNAs, PCAs, and CHHAs. It expands your scope of practice and increases employment
+					CNAs and PCAs. It expands your scope of practice and increases employment
 					opportunities, particularly in assisted-living settings.</p>
 				<h4>Key Skills Covered</h4>
 				<ul>
@@ -2488,12 +2610,12 @@
 					<li>Resident Rights and Confidentiality</li>
 				</ul>
 				<h4>Tuition</h4>
-				<p>Total program cost: <strong>$600</strong>.</p>
+				<p>Tuition: <strong>$900</strong> plus a $150 exam fee.</p>
 				<h4>Admission Requirements</h4>
-				<p>Active CNA or CHHA certification.</p>
+				<p>Active CNA certification.</p>
 				<h4>Salary Expectation</h4>
 				<p>Certified Medication Aides typically earn between $36,000 and $45,000 annually (roughly $17
-					to $22 per hour). Adding the Medication Aide credential to a CNA or CHHA background
+					to $22 per hour). Adding the Medication Aide credential to a CNA background
 					typically lifts pay 5% to 15% above base nursing assistant wages, per BLS Nursing Assistants
 					data (median $38,200).</p>
 				<h4>Career Outlook</h4>
@@ -2527,6 +2649,8 @@
 				<h4>Certification</h4>
 				<p>Graduates can choose to take their certification exam online through the National Healthcare
 					Association (NHA) or in-person via MedCa.</p>
+				<h4>Tuition</h4>
+				<p>Tuition: <strong>$1,400</strong> plus a $150 exam fee.</p>
 				<h4>Salary Expectation</h4>
 				<p>Graduates typically earn between $42,000 and $54,000 annually (roughly $20 - $26 per hour), depending
 					on the facility.</p>
@@ -2535,6 +2659,40 @@
 					decade. The role serves as a vital stepping stone in cardiac care, offering clear pathways for
 					advancement into higher-level positions such as Cardiovascular Technologist, Telemetry Technician,
 					or Cardiac Monitor Technician.</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-secondary modal-close-bottom">Close</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="cyber-modal" class="modal">
+		<div class="modal-content">
+			<button class="modal-close" aria-label="Close modal">&times;</button>
+			<div class="modal-header">
+				<h2>Cybersecurity Summer Bootcamp</h2>
+				<p>100 Hours | Summer Program | $1,800</p>
+			</div>
+			<div class="modal-body">
+				<p>This hands-on bootcamp introduces students to the fundamentals of cybersecurity over an intensive
+					100-hour summer program. Learn how networks operate, how attackers exploit them, and how defenders
+					protect systems and data — all through practical, lab-based instruction.</p>
+				<h4>Key Skills Covered</h4>
+				<ul>
+					<li>Networking Basics and How the Internet Works</li>
+					<li>Core Security Concepts and Terminology</li>
+					<li>Threat Awareness: Phishing, Malware, and Social Engineering</li>
+					<li>Practical, Hands-On Security Labs</li>
+					<li>Security Best Practices for Home and Workplace</li>
+				</ul>
+				<h4>Who It's For</h4>
+				<p>Ideal for students and career changers who want an accessible entry point into technology and
+					security. A great way for college and high school students to build in-demand skills over the
+					summer break — no prior IT experience required.</p>
+				<h4>Tuition</h4>
+				<p>Tuition: <strong>$1,800</strong>.</p>
+				<h4>Next Cohort</h4>
+				<p>Call <a href="tel:+16097125499">(609) 712-5499</a> for the next cohort start date.</p>
 			</div>
 			<div class="modal-footer">
 				<button class="btn btn-secondary modal-close-bottom">Close</button>
@@ -2762,6 +2920,67 @@
 			const menuToggle = document.querySelector('.mobile-menu-toggle');
 			const navMenu = document.querySelector('.nav-menu');
 			const navLinks = document.querySelectorAll('.nav-link');
+
+			// ============================================
+			// Scroll Reveal (IntersectionObserver, reduced-motion safe)
+			// Applies reveal attributes in JS so markup stays clean / Astro-friendly.
+			// ============================================
+			(function initScrollReveal() {
+				const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+				// Blocks that fade/slide in as a whole
+				const revealSelectors = [
+					'.section-header',
+					'.about-section .hero-content',
+					'.about-section .hero-image-wrapper',
+					'#grants .hero-content',
+					'#grants .hero-image-wrapper',
+					'.tuition-table-wrap',
+					'.tuition-note',
+					'.tuition-cta',
+					'.admissions-block',
+					'.data-source-notes',
+					'.faculty-wrapper',
+					'.contact-intro',
+					'.contact-card'
+				];
+				// Containers whose direct children stagger in
+				const staggerSelectors = [
+					'.why-grid',
+					'.enroll-programs',
+					'.enroll-grid'
+				];
+
+				revealSelectors.forEach(sel => {
+					document.querySelectorAll(sel).forEach(el => el.setAttribute('data-reveal', ''));
+				});
+				staggerSelectors.forEach(sel => {
+					document.querySelectorAll(sel).forEach(el => el.setAttribute('data-reveal-stagger', ''));
+				});
+
+				const targets = document.querySelectorAll('[data-reveal], [data-reveal-stagger]');
+				if (!targets.length) return;
+
+				// If reduced motion or no IO support, reveal everything immediately (no hidden state).
+				if (prefersReduced || !('IntersectionObserver' in window)) {
+					targets.forEach(el => el.classList.add('is-revealed'));
+					return;
+				}
+
+				// Enable the hidden-until-revealed CSS only now that JS/IO is confirmed.
+				document.documentElement.classList.add('reveal-ready');
+
+				const observer = new IntersectionObserver((entries, obs) => {
+					entries.forEach(entry => {
+						if (entry.isIntersecting) {
+							entry.target.classList.add('is-revealed');
+							obs.unobserve(entry.target);
+						}
+					});
+				}, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+				targets.forEach(el => observer.observe(el));
+			})();
 
 			// Initialize Carousel
 			const carousel = new Carousel();
