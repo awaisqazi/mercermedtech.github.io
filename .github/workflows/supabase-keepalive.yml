@@ -1,0 +1,35 @@
+name: Supabase keep-alive
+
+# Free-tier Supabase projects pause after 7 days with no API traffic. This POSTs
+# to the public.ping() RPC twice a week so the project stays awake.
+#
+# The key below is the Supabase *publishable* key. It is public by design — it
+# is compiled into the browser bundle of the portal itself and is protected by
+# Row Level Security; it is not a secret and must not be moved into GitHub
+# Secrets, where it would only create the illusion of one. The service_role key
+# is the secret one, and it never appears in this repository.
+
+on:
+  schedule:
+    # 13:00 UTC every Monday and Thursday
+    - cron: '0 13 * * 1,4'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: supabase-keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    name: Ping the database
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: POST /rest/v1/rpc/ping
+        run: |
+          curl -fsS -X POST "https://olqhfdpaoqvwompkqtdz.supabase.co/rest/v1/rpc/ping" \
+            -H "apikey: sb_publishable_N3L_0PXlx5urFzkObblWIA_7qrVgq8M" \
+            -H "Content-Type: application/json" \
+            -d '{}'
