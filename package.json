@@ -1,25 +1,29 @@
 {
-  "name": "mercermedtech.github.io",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "mercermedtech-site",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
-    "dev": "vite",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "check:parity": "node scripts/check-parity.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "check:form": "node scripts/check-form-contract.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "check:seo": "node scripts/check-seo.mjs",
+    "check:all": "npm run check:links && npm run check:form && npm run check:i18n && npm run check:seo && npm run check:parity",
+    "astro": "astro"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/awaisqazi/mercermedtech.github.io.git"
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.3"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/awaisqazi/mercermedtech.github.io/issues"
-  },
-  "homepage": "https://github.com/awaisqazi/mercermedtech.github.io#readme",
-  "devDependencies": {
-    "vite": "^7.2.2"
+  "allowScripts": {
+    "esbuild": true
   }
 }

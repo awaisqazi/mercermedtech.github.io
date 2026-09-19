@@ -1,0 +1,76 @@
+---
+import '../styles/components/why.css';
+import { site } from '../data/site';
+
+interface Props {
+  badge: string;
+  heading: string;
+  intro: string;
+  cards: { icon: string; heading: string; body: string }[];
+  admissions: {
+    heading: string;
+    intro: string;
+    items: { icon: string; title: string; body: string }[];
+    ctaHref: string;
+    ctaLabel: string;
+    metaBefore: string;
+    metaAfter: string;
+    metaLinkLabel: string;
+    metaLinkHref: string;
+  };
+}
+
+const { badge, heading, intro, cards, admissions } = Astro.props;
+---
+
+<section id="why" class="why-section section-padding bg-surface-2">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="programs-pill-badge">
+        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+        <span>{badge}</span>
+      </div>
+      <h2>{heading}</h2>
+      <p class="text-muted">{intro}</p>
+    </div>
+
+    <div class="why-grid">
+      {
+        cards.map((card) => (
+          <div class="why-card">
+            <div class="why-icon"><i class={card.icon} aria-hidden="true" /></div>
+            <h3>{card.heading}</h3>
+            <p>{card.body}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="admissions-block">
+      <div class="admissions-header">
+        <h3>{admissions.heading}</h3>
+        <p>{admissions.intro}</p>
+      </div>
+      <ul class="admissions-list">
+        {
+          admissions.items.map((item) => (
+            <li>
+              <i class={item.icon} aria-hidden="true" />
+              <div>
+                <strong>{item.title}</strong>
+                <span>{item.body}</span>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="admissions-cta">
+        <a href={admissions.ctaHref} class="btn btn-primary">{admissions.ctaLabel}</a>
+        <span class="meta">
+          {admissions.metaBefore}<a href={site.phone.href}>{site.phone.display}</a>{admissions.metaAfter}{' '}
+          <a href={admissions.metaLinkHref}>{admissions.metaLinkLabel}</a>.
+        </span>
+      </div>
+    </div>
+  </div>
+</section>

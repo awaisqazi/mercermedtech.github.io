@@ -1,0 +1,68 @@
+/* ==========================================================================
+   Floating mobile call CTA
+   Teal on the homepage, indigo on the Tech-track landing page.
+   ========================================================================== */
+
+.floating-call {
+    position: fixed;
+    right: max(1rem, var(--safe-area-right));
+    bottom: max(1rem, var(--safe-area-bottom));
+    z-index: 950;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.25rem;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    box-shadow:
+        0 12px 28px rgba(0, 166, 156, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    text-decoration: none;
+    transition: transform 0.25s var(--spring-gentle),
+        box-shadow 0.25s ease;
+}
+
+.floating-call:hover,
+.floating-call:focus-visible {
+    transform: translateY(-2px) scale(1.02);
+    color: #fff;
+    box-shadow: 0 16px 32px rgba(0, 166, 156, 0.5);
+}
+
+.floating-call i {
+    font-size: 1rem;
+}
+
+/* Tech-track variant */
+.floating-call--tech {
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    box-shadow:
+        0 12px 28px rgba(59, 91, 219, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+.floating-call--tech:hover,
+.floating-call--tech:focus-visible {
+    box-shadow: 0 16px 32px rgba(59, 91, 219, 0.5);
+}
+
+@media (max-width: 768px) {
+    .floating-call {
+        display: inline-flex;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .floating-call {
+        transition: none;
+    }
+
+    .floating-call:hover,
+    .floating-call:focus-visible {
+        transform: none;
+    }
+}

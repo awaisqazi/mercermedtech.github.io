@@ -1,0 +1,17 @@
+---
+import ProgramView from '../../../../views/ProgramView.astro';
+import { detailPrograms } from '../../../../data/programs';
+import type { Program } from '../../../../data/types';
+
+/** The same program pages in Spanish, under /es/programs/<id>/. */
+export function getStaticPaths() {
+  return detailPrograms.map((program) => ({ params: { id: program.id }, props: { program } }));
+}
+
+interface Props {
+  program: Program;
+}
+
+const { program } = Astro.props;
+---
+<ProgramView program={program} locale="es" />

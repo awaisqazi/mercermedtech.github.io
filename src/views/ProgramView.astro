@@ -1,0 +1,142 @@
+---
+/** One program page, in one language. */
+import '../styles/components/program-page.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { tuitionDisplay, hoursDisplay } from '../data/programs';
+import { site } from '../data/site';
+import { localePath, t, type Locale } from '../i18n';
+import { homeNav } from '../i18n/links';
+import { programCourseJsonLd, breadcrumbJsonLd } from '../data/schema';
+import type { Program } from '../data/types';
+
+interface Props {
+  program: Program;
+  locale: Locale;
+}
+
+const { program, locale } = Astro.props;
+const d = t(locale);
+const p = d.programPage;
+const path = `/programs/${program.id}/`;
+const pageUrl = new URL(localePath(locale, path), site.url).href;
+/**
+ * The title uses the SHORT name, never `name`. On Spanish pages `name` carries
+ * the official English name in brackets ("Capacitacion en Habilidades Digitales
+ * (Digital Literacy Training)"), which both doubles the length of the <title>
+ * and, with the Spanish pattern, reads "Capacitacion de Capacitacion en ...".
+ * The full name still appears in the H1 and the breadcrumb, where it wraps.
+ */
+const title = p.titleTemplate.replace('{program}', program.shortName[locale]);
+const description = (program.seo?.description ?? program.summary)[locale];
+const announceSoon = program.status === 'announce-soon';
+const home = localePath(locale, '/');
+
+const facts = [
+  { label: p.factsHours, value: hoursDisplay(program, locale) },
+  { label: p.factsLength, value: program.length?.[locale] },
+  { label: p.factsCost, value: tuitionDisplay(program, locale) },
+  { label: p.factsExamFee, value: program.examFee?.[locale] },
+].filter((fact) => Boolean(fact.value));
+
+const jsonLd = [
+  programCourseJsonLd(program, pageUrl, locale),
+  breadcrumbJsonLd([
+    { name: p.breadcrumbHome, path: home },
+    { name: p.breadcrumbPrograms, path: `${home}#programs` },
+    { name: program.name[locale], path: localePath(locale, path) },
+  ]),
+];
+---
+
+<BaseLayout
+  locale={locale}
+  path={path}
+  title={title}
+  description={description}
+  jsonLd={jsonLd}
+  navLinks={homeNav(locale, true)}
+>
+  <main class="program-page">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label={p.breadcrumbLabel}>
+        <a href={home}>{p.breadcrumbHome}</a>
+        <span aria-hidden="true">/</span>
+        <a href={`${home}#programs`}>{p.breadcrumbPrograms}</a>
+        <span aria-hidden="true">/</span>
+        <span>{program.name[locale]}</span>
+      </nav>
+
+      <div class="program-hero">
+        <h1 set:html={program.name[locale]}></h1>
+        <p class="program-lead">{program.summary[locale]}</p>
+
+        {
+          program.statusLine && (
+            <p class="program-status-banner">
+              <i class={announceSoon ? 'fas fa-info-circle' : 'fas fa-calendar-alt'} aria-hidden="true" />
+              {/*
+                "Next group: Next sessions will be announced soon." says the same
+                thing twice, so a program that is not enrolling shows the status
+                line on its own. An enrolling one keeps the label.
+              */}
+              <span>
+                {announceSoon ? (
+                  program.statusLine[locale]
+                ) : (
+                  <>
+                    <strong>{p.factsNextGroup}:</strong>{' '}
+                    {program.statusLine[locale]}
+                  </>
+                )}
+              </span>
+            </p>
+          )
+        }
+
+        <ul class="program-facts">
+          {
+            facts.map((fact) => (
+              <li>
+                <span class="program-fact-label">{fact.label}</span>
+                <span class="program-fact-value">{fact.value}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="program-detail">
+        {
+          program.detail[locale].map((section) => (
+            <>
+              {section.heading && <h2>{section.heading}</h2>}
+              {section.paragraphs?.map((text) => <p set:html={text} />)}
+              {section.bullets && (
+                <ul>
+                  {section.bullets.map((item) => (
+                    <li set:html={item} />
+                  ))}
+                </ul>
+              )}
+            </>
+          ))
+        }
+      </div>
+
+      <div class="program-aside">
+        <h2>{p.fundingHeading}</h2>
+        <p>{p.fundingBody}</p>
+        <div class="program-actions">
+          <a href={`${home}?program=${program.id}#contact`} class="btn btn-primary">{p.ctaLabel}</a>
+          <a href={site.phone.href} class="btn btn-secondary">{p.callLabel}</a>
+        </div>
+        <p class="program-registry">
+          {p.registryBefore}
+          <a href={site.credentialFinderUrl} target="_blank" rel="noopener">{p.registryLinkLabel}</a>.
+        </p>
+      </div>
+
+      <p class="program-back"><a href={`${home}#programs-med`}>{p.backLabel}</a></p>
+    </div>
+  </main>
+</BaseLayout>

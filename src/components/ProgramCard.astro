@@ -1,0 +1,49 @@
+---
+import type { Program } from '../data/types';
+import type { Locale } from '../i18n';
+
+interface Props {
+  program: Program;
+  locale: Locale;
+  /** Label of the button that opens the pop-up. */
+  detailsLabel: string;
+  /** Label of the button on a coming-soon card. */
+  waitlistLabel: string;
+  /** Where a coming-soon card sends the reader. */
+  waitlistHref: string;
+}
+
+const { program, locale, detailsLabel, waitlistLabel, waitlistHref } = Astro.props;
+const comingSoon = program.status === 'coming-soon';
+const showStatusLine = program.status === 'announce-soon';
+const label = comingSoon ? (program.cta ? program.cta[locale] : waitlistLabel) : detailsLabel;
+---
+
+<article class={`program-card-glass carousel-slide${comingSoon ? ' coming-soon' : ''}`}>
+  <div class="program-icon">
+    <i class={program.icon} aria-hidden="true"></i>
+  </div>
+  {
+    program.badge && (
+      <div class="program-stats-badge">
+        <i class={program.badgeIcon ?? 'fas fa-clock'} aria-hidden="true" />
+        <span>{program.badge[locale]}</span>
+      </div>
+    )
+  }
+  <h3 set:html={program.name[locale]}></h3>
+  <p>{program.summary[locale]}</p>
+  {showStatusLine && program.statusLine && <p class="program-status-line">{program.statusLine[locale]}</p>}
+
+  {
+    comingSoon ? (
+      <a href={waitlistHref} class="btn btn-secondary full-width">
+        {label} <i class="fas fa-arrow-right program-card-arrow" aria-hidden="true" />
+      </a>
+    ) : (
+      <button type="button" class="btn btn-secondary full-width" data-modal-target={`${program.id}-modal`}>
+        {label} <i class="fas fa-arrow-right program-card-arrow" aria-hidden="true" />
+      </button>
+    )
+  }
+</article>

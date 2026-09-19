@@ -1,0 +1,63 @@
+---
+/**
+ * The error page, in both languages at once.
+ *
+ * GitHub Pages only ever serves /404.html, whatever address was asked for, so
+ * there is no Spanish twin to route to and /es/404/ would never be reached.
+ * The page therefore prints a short English block and a short Spanish block.
+ * The inline script below puts the Spanish one first when the reader was on an
+ * /es/ address, so the language they were reading is the one they land on.
+ */
+import '../styles/components/program-page.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { localePath, t } from '../i18n';
+import { homeNav } from '../i18n/links';
+
+const en = t('en').notFound;
+const es = t('es').notFound;
+---
+
+<BaseLayout
+  locale="en"
+  path="/404.html"
+  switchPath="/"
+  standalone
+  title={en.title}
+  description={en.description}
+  navLinks={homeNav('en', true)}
+>
+  <main class="error-page">
+    <div class="container error-blocks" id="error-blocks">
+      <section class="error-block" lang="en" data-lang="en">
+        <h1>{en.heading}</h1>
+        <p>{en.body}</p>
+        <div class="error-actions">
+          <a href={localePath('en', '/')} class="btn btn-primary">{en.homeCta}</a>
+          <a href={site.phone.href} class="btn btn-secondary">{en.callCta}</a>
+        </div>
+      </section>
+
+      <section class="error-block" lang="es" data-lang="es">
+        <h2>{es.heading}</h2>
+        <p>{es.body}</p>
+        <div class="error-actions">
+          <a href={localePath('es', '/')} class="btn btn-primary">{es.homeCta}</a>
+          <a href={site.phone.href} class="btn btn-secondary">{es.callCta}</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script slot="end" is:inline>
+    // Someone who was reading /es/... reads the Spanish block first.
+    (function () {
+      if (!location.pathname.startsWith('/es/')) return;
+      var blocks = document.getElementById('error-blocks');
+      var spanish = blocks && blocks.querySelector('[data-lang="es"]');
+      if (!spanish) return;
+      blocks.insertBefore(spanish, blocks.firstElementChild);
+      document.documentElement.lang = 'es';
+    })();
+  </script>
+</BaseLayout>

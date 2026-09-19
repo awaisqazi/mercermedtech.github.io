@@ -1,0 +1,65 @@
+---
+import '../styles/components/modal.css';
+import { detailPrograms } from '../data/programs';
+import ProgramModal from './ProgramModal.astro';
+import type { Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  closeLabel: string;
+  closeButtonLabel: string;
+  pageLinkLabel: string;
+  contactHref: string;
+}
+
+const { locale, closeLabel, closeButtonLabel, pageLinkLabel, contactHref } = Astro.props;
+---
+
+{
+  detailPrograms.map((program) => (
+    <ProgramModal
+      program={program}
+      locale={locale}
+      closeLabel={closeLabel}
+      closeButtonLabel={closeButtonLabel}
+      pageLinkLabel={pageLinkLabel}
+      contactHref={contactHref}
+    />
+  ))
+}
+
+<script>
+  // Program pop-ups, on top of the native <dialog> element: the browser gives
+  // us the focus trap, the ESC key and the backdrop for free.
+  const lockBody = (locked: boolean) => document.body.classList.toggle('modal-active', locked);
+
+  document.querySelectorAll<HTMLElement>('[data-modal-target]').forEach((trigger) => {
+    trigger.addEventListener('click', (event) => {
+      const id = trigger.dataset.modalTarget;
+      const dialog = id ? document.getElementById(id) : null;
+      if (!(dialog instanceof HTMLDialogElement)) return;
+      event.preventDefault();
+      dialog.showModal();
+      lockBody(true);
+    });
+  });
+
+  document.querySelectorAll<HTMLDialogElement>('dialog.program-modal').forEach((dialog) => {
+    // A click that lands on the dialog itself is a click on the backdrop,
+    // because .modal-content fills the dialog box.
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    dialog.querySelectorAll<HTMLElement>('[data-modal-close]').forEach((button) => {
+      button.addEventListener('click', () => dialog.close());
+    });
+
+    dialog.addEventListener('close', () => {
+      // Another dialog may still be open, for example after a link from one
+      // pop-up to another.
+      const stillOpen = document.querySelector('dialog.program-modal[open]');
+      lockBody(Boolean(stillOpen));
+    });
+  });
+</script>

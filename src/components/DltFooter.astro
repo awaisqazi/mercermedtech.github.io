@@ -1,0 +1,34 @@
+---
+/**
+ * Minimal Tech-track footer. NJDOL rule: the only outbound site link is the
+ * plain "Mercer Med Tech home" link. No program cross-sell of any kind.
+ */
+import { site } from '../data/site';
+import { localePath, t, type Locale } from '../i18n';
+import FundingLine from './FundingLine.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const d = t(locale);
+---
+
+<footer class="dl-footer">
+  <div class="container">
+    <FundingLine locale={locale} class="dl-footer-funding" />
+
+    <p>{d.footer.licensingLine}</p>
+    <p>
+      {site.address.street}, {site.address.city}, {site.address.region} {site.address.postalCode}.
+      <a href={site.phone.href}>{site.phone.display}</a>.
+      <a href={`mailto:${site.email}`}>{site.email}</a>.
+    </p>
+    <p><a href={localePath(locale, '/')}>{d.footer.homeLink}</a></p>
+
+    <div class="dl-footer-bottom">
+      <p>{site.copyright}</p>
+    </div>
+  </div>
+</footer>

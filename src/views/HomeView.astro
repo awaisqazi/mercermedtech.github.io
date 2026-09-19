@@ -1,0 +1,222 @@
+---
+/**
+ * The homepage, in one language. Both /  and /es/ render this same file; the
+ * only difference is the dictionary it reads.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AnnounceStrip from '../components/AnnounceStrip.astro';
+import Hero from '../components/Hero.astro';
+import EnrollTracks from '../components/EnrollTracks.astro';
+import About from '../components/About.astro';
+import ProgramsSection from '../components/ProgramsSection.astro';
+import ProgramsMed from '../components/ProgramsMed.astro';
+import ProgramsTech from '../components/ProgramsTech.astro';
+import TuitionTable from '../components/TuitionTable.astro';
+import WhyUs from '../components/WhyUs.astro';
+import Grants from '../components/Grants.astro';
+import Faculty from '../components/Faculty.astro';
+import Organizations from '../components/Organizations.astro';
+import ContactForm from '../components/ContactForm.astro';
+import ProgramModals from '../components/ProgramModals.astro';
+import ScrollReveal from '../components/ScrollReveal.astro';
+
+import { site } from '../data/site';
+import { localePath, t, type Locale } from '../i18n';
+import { organizationJsonLd } from '../data/schema';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const d = t(locale);
+const h = d.home;
+const dltPath = localePath(locale, '/digital-literacy/');
+
+// Structured data is read by machines that come back later, so both addresses
+// are the unhashed files in public/, not the fingerprinted /_astro/ ones.
+const jsonLd = [
+  organizationJsonLd({
+    locale,
+    description: h.seo.schemaDescription,
+    catalogName: h.seo.catalogName,
+    logo: new URL(site.staticImages.logo, site.url).href,
+    image: new URL(site.staticImages.ogCard, site.url).href,
+    catalogDescriptions: { 'digital-literacy-training': h.seo.dltCatalogDescription },
+  }),
+];
+
+const heroPanels = [
+  { track: 'med' as const, ...h.hero.medPanel, ctaHref: '#programs-med' },
+  { track: 'tech' as const, ...h.hero.techPanel, ctaHref: '#programs-tech' },
+];
+---
+
+<BaseLayout
+  locale={locale}
+  path="/"
+  title={h.seo.title}
+  description={h.seo.description}
+  keywords={h.seo.keywords}
+  ogTitle={h.seo.ogTitle}
+  ogDescription={h.seo.ogDescription}
+  twitterDescription={h.seo.twitterDescription}
+  jsonLd={jsonLd}
+>
+  <AnnounceStrip
+    label={h.announce.label}
+    message={h.announce.message}
+    ctaLabel={h.announce.ctaLabel}
+    ctaHref={`${dltPath}#qualify`}
+  />
+
+  <Hero
+    headingBefore={h.hero.headingBefore}
+    headingAccent={h.hero.headingAccent}
+    headingAfter={h.hero.headingAfter}
+    lead={h.hero.lead}
+    trust={h.hero.trust}
+    trustLabel={h.hero.trustLabel}
+    panels={heroPanels}
+    quietBefore={h.hero.quietBefore}
+    quietLinkLabel={h.hero.quietLinkLabel}
+    quietLinkHref="#contact"
+    quietAfter={h.hero.quietAfter}
+  />
+
+  <EnrollTracks
+    locale={locale}
+    sectionTitle={h.enroll.sectionTitle}
+    med={{
+      badge: h.enroll.med.badge,
+      titleAccent: h.enroll.med.titleAccent,
+      titleRest: h.enroll.med.titleRest,
+      subtitle: h.enroll.med.subtitle,
+      programsLabel: h.enroll.med.programsLabel,
+      chips: [
+        { icon: 'fas fa-laptop-medical', label: h.enroll.med.formatLabel, value: h.enroll.med.formatValue },
+        { icon: 'fas fa-map-marker-alt', label: h.enroll.med.locationLabel, address: true },
+      ],
+      actions: [
+        { href: '#programs-med', label: h.enroll.med.programsCta, style: 'primary' },
+        { href: '#contact', label: h.enroll.med.contactCta, style: 'secondary' },
+      ],
+      scheduleLabel: h.enroll.med.scheduleLabel,
+    }}
+    tech={{
+      badge: h.enroll.tech.badge,
+      titleAccent: h.enroll.tech.titleAccent,
+      titleRest: h.enroll.tech.titleRest,
+      subtitle: h.enroll.tech.subtitle,
+      chips: [
+        { icon: 'fas fa-tag', label: h.enroll.tech.costLabel, value: h.enroll.tech.costValue },
+        { icon: 'fas fa-hourglass-half', label: h.enroll.tech.lengthLabel, value: h.enroll.tech.lengthValue },
+        { icon: 'fas fa-calendar-check', label: h.enroll.tech.sessionsLabel, value: h.enroll.tech.sessionsValue },
+        { icon: 'fas fa-map-marker-alt', label: h.enroll.tech.locationLabel, address: true },
+      ],
+      qualifyLabel: h.enroll.tech.qualifyLabel,
+      qualifyText: h.enroll.tech.qualifyText,
+      featuresLabel: h.enroll.tech.featuresLabel,
+      features: h.enroll.tech.features,
+      actions: [
+        { href: `${dltPath}#qualify`, label: h.enroll.tech.qualifyCta, style: 'tech' },
+        { href: site.phone.href, label: h.enroll.tech.callCta, style: 'tech-outline', icon: 'fas fa-phone-alt' },
+      ],
+    }}
+  />
+
+  <About
+    heading={h.about.heading}
+    paragraphs={h.about.paragraphs}
+    imageAlt={h.about.imageAlt}
+    actions={[
+      { href: '#programs-med', label: h.about.medCta, style: 'primary' },
+      { href: dltPath, label: h.about.dltCta, style: 'tech-outline' },
+    ]}
+  />
+
+  <ProgramsSection heading={h.programs.heading} intro={h.programs.intro}>
+    <ProgramsMed
+      locale={locale}
+      tag={h.programs.med.tag}
+      heading={h.programs.med.heading}
+      intro={h.programs.med.intro}
+      detailsLabel={h.programs.med.detailsLabel}
+      waitlistLabel={h.waitlistCta}
+      waitlistHref="#contact"
+      prevLabel={h.programs.med.prevLabel}
+      nextLabel={h.programs.med.nextLabel}
+      swipeLabel={h.programs.med.swipeLabel}
+      dotLabel={h.programs.med.dotLabel}
+      trackLabel={h.programs.med.trackLabel}
+      notes={{ heading: h.programs.med.notesHeading, paragraphs: h.programs.med.notes }}
+    />
+    <ProgramsTech
+      locale={locale}
+      tag={h.programs.tech.tag}
+      heading={h.programs.tech.heading}
+      intro={h.programs.tech.intro}
+      chips={h.programs.tech.chips}
+      modulesLabel={h.programs.tech.modulesLabel}
+      modules={h.programs.tech.modules}
+      sessionsLine={h.programs.tech.sessionsLine}
+      actions={[
+        { href: dltPath, label: h.programs.tech.readMoreCta, style: 'tech' },
+        { href: site.phone.href, label: h.programs.tech.callCta, style: 'tech-outline', icon: 'fas fa-phone-alt' },
+      ]}
+    />
+  </ProgramsSection>
+
+  <TuitionTable
+    locale={locale}
+    badge={h.tuition.badge}
+    heading={h.tuition.heading}
+    intro={h.tuition.intro}
+    caption={h.tuition.caption}
+    columns={h.tuition.columns}
+    note={h.tuition.note}
+    actions={[
+      { href: '#contact', label: h.tuition.contactCta, style: 'primary' },
+      { href: '#grants', label: h.tuition.grantsCta, style: 'secondary' },
+    ]}
+  />
+
+  <WhyUs
+    badge={h.why.badge}
+    heading={h.why.heading}
+    intro={h.why.intro}
+    cards={h.why.cards}
+    admissions={{
+      ...h.why.admissions,
+      ctaHref: '#contact',
+      metaLinkHref: `${dltPath}#qualify`,
+    }}
+  />
+
+  <Grants
+    locale={locale}
+    med={{ ...h.grants.med, ctaHref: '#contact' }}
+    tech={{ ...h.grants.tech, ctaHref: `${dltPath}#qualify` }}
+  />
+
+  <Faculty heading={h.faculty.heading} intro={h.faculty.intro} people={h.faculty.people} />
+
+  <Organizations
+    heading={h.organizations.heading}
+    intro={h.organizations.intro}
+    organizations={h.organizations.list}
+  />
+
+  <ContactForm locale={locale} />
+
+  <ScrollReveal />
+
+  <ProgramModals
+    slot="end"
+    locale={locale}
+    closeLabel={h.modals.closeLabel}
+    closeButtonLabel={h.modals.closeButtonLabel}
+    pageLinkLabel={h.modals.pageLinkLabel}
+    contactHref="#contact"
+  />
+</BaseLayout>

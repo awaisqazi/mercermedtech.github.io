@@ -1,0 +1,116 @@
+/* ==========================================================================
+   Buttons
+   .btn-primary / .btn-secondary belong to the Med track (teal).
+   .btn-tech / .btn-tech-outline belong to the Tech track (indigo).
+   Same geometry in both families.
+   ========================================================================== */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 2rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out);
+    gap: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: 0.9rem;
+    /*
+       Spanish labels run 20 to 25 percent longer than the English ones
+       ("Pida que le avisemos cuando abran las inscripciones" against "Ask us
+       to contact you when enrollment opens"). The pill grows taller instead of
+       overflowing at 375px, and a wrapped label stays centred rather than
+       ragging left inside a centred flex item.
+    */
+    text-align: center;
+    text-wrap: balance;
+}
+
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 10px 20px rgba(0, 166, 156, 0.25);
+}
+
+/* Sheen sweep micro-interaction */
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.6s var(--ease-out);
+    pointer-events: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px rgba(0, 166, 156, 0.38);
+}
+
+.btn-primary:hover::after {
+    left: 125%;
+}
+
+.btn-primary:active {
+    transform: translateY(-1px) scale(0.99);
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.btn-secondary:hover {
+    background: var(--primary-light);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.btn-sm {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+}
+
+/* Tech-track button. Same geometry as .btn-primary, indigo fill. */
+.btn-tech {
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 10px 20px rgba(59, 91, 219, 0.25);
+}
+
+.btn-tech:hover {
+    transform: translateY(-3px);
+    color: #fff;
+    box-shadow: 0 16px 32px rgba(59, 91, 219, 0.38);
+}
+
+.btn-tech-outline {
+    background: #fff;
+    color: var(--tech-dark);
+    border: 2px solid var(--tech);
+}
+
+.btn-tech-outline:hover {
+    background: var(--tech-light);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn-primary::after {
+        animation: none;
+        transition: none;
+    }
+}

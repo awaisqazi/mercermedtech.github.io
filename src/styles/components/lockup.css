@@ -1,0 +1,74 @@
+/* ==========================================================================
+   Med + Tech lockup
+   "Med" teal, thin divider, "Tech" indigo. Outfit 700. Always CSS text,
+   never an image.
+   ========================================================================== */
+
+.medtech-lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+.medtech-lockup .lockup-med {
+    color: var(--primary-dark);
+}
+
+.medtech-lockup .lockup-tech {
+    color: var(--tech-dark);
+}
+
+.medtech-lockup .lockup-plus {
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* Eyebrow-sized lockup used in the hero and section headers */
+.medtech-lockup.lockup-eyebrow {
+    padding: 0.45rem 1rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    background: linear-gradient(135deg, rgba(0, 166, 156, 0.10) 0%, rgba(59, 91, 219, 0.10) 100%);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-full);
+    margin-bottom: 1.25rem;
+}
+
+/* Footer variant sits on the dark footer surface */
+.site-footer .medtech-lockup {
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+}
+
+.site-footer .medtech-lockup .lockup-med {
+    color: #5FE3D8;
+}
+
+.site-footer .medtech-lockup .lockup-tech {
+    color: #9FB3FF;
+}
+
+/* Combined gradient, for the hero accent word only */
+.text-gradient-lockup {
+    background: var(--lockup-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    color: var(--tech);
+}
+
+/* Tech-only gradient accent */
+.text-gradient-tech {
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    color: var(--tech);
+}

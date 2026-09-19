@@ -1,0 +1,104 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/images/logo-modern.png';
+import { site } from '../data/site';
+import { localePath, t, type Locale } from '../i18n';
+import type { NavLink } from '../i18n/links';
+import LanguageToggle from './LanguageToggle.astro';
+
+interface Props {
+  locale: Locale;
+  links: NavLink[];
+  /** Language-free path of this page, for the language switch. */
+  path: string;
+  /** "home" links the logo to the homepage of this language. */
+  variant?: 'home' | 'dlt';
+  /** Shown as a button at the end of the Tech-track nav. */
+  phoneButton?: boolean;
+}
+
+const { locale, links, path, variant = 'home', phoneButton = false } = Astro.props;
+const d = t(locale);
+const navId = variant === 'dlt' ? 'dl-nav' : 'site-nav';
+const homeHref = localePath(locale, '/');
+---
+
+<header class="site-header">
+  <div class="container">
+    <a href={homeHref} class="logo" aria-label={d.ui.homeAria}>
+      {/*
+        The logo is drawn 40px tall (1830x600 source, so 122px wide). Giving
+        Astro that size and two densities keeps the largest emitted file a few
+        kilobytes instead of a 240 KB full-size PNG.
+      */}
+      <Image
+        src={logo}
+        alt={d.ui.logoAlt}
+        width={122}
+        height={40}
+        densities={[1, 2]}
+        format="webp"
+        loading="eager"
+      />
+    </a>
+
+    <button class="mobile-menu-toggle" aria-label={d.ui.menuLabel} aria-expanded="false" aria-controls={navId}>
+      <i class="fas fa-bars" aria-hidden="true"></i>
+    </button>
+
+    <nav class="nav-menu" id={navId} aria-label={d.ui.primaryNavLabel}>
+      {
+        links.map((link) =>
+          link.button ? (
+            <a href={link.href} class={`btn ${link.button === 'tech' ? 'btn-tech' : 'btn-primary'} btn-sm`}>
+              {link.icon && <i class={link.icon} aria-hidden="true" />}
+              {link.label}
+            </a>
+          ) : (
+            <a href={link.href} class="nav-link">
+              {link.label}
+            </a>
+          )
+        )
+      }
+      {
+        phoneButton && (
+          <a href={site.phone.href} class="btn btn-tech btn-sm dl-header-phone">
+            <i class="fas fa-phone-alt" aria-hidden="true" /> {site.phone.display}
+          </a>
+        )
+      }
+      <LanguageToggle locale={locale} path={path} variant={variant} />
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Mobile navigation toggle. Shared by both header variants.
+  const toggle = document.querySelector<HTMLButtonElement>('.mobile-menu-toggle');
+  const menu = document.querySelector<HTMLElement>('.nav-menu');
+
+  if (toggle && menu) {
+    const setIcon = (open: boolean) => {
+      const icon = toggle.querySelector('i');
+      if (!icon) return;
+      icon.classList.toggle('fa-bars', !open);
+      icon.classList.toggle('fa-times', open);
+    };
+
+    const close = () => {
+      if (!menu.classList.contains('active')) return;
+      menu.classList.remove('active');
+      toggle.setAttribute('aria-expanded', 'false');
+      setIcon(false);
+    };
+
+    toggle.addEventListener('click', () => {
+      const open = menu.classList.toggle('active');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      setIcon(open);
+    });
+
+    menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
+  }
+</script>

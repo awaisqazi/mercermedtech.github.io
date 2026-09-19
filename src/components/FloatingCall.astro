@@ -1,0 +1,20 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  variant?: 'med' | 'tech';
+  label: string;
+  ariaLabel: string;
+}
+
+const { variant = 'med', label, ariaLabel } = Astro.props;
+---
+
+<a
+  href={site.phone.href}
+  class={`floating-call${variant === 'tech' ? ' floating-call--tech' : ''}`}
+  aria-label={ariaLabel}
+>
+  <i class="fas fa-phone-alt" aria-hidden="true"></i>
+  <span>{label}</span>
+</a>

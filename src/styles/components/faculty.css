@@ -1,0 +1,81 @@
+/* ==========================================================================
+   Faculty cards (uses the standard .program-card shell)
+   ========================================================================== */
+
+.program-card {
+    background: var(--surface-1);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    border: 1px solid var(--border);
+    transition: all 0.3s var(--ease-out);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.program-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    border-color: var(--primary-light);
+}
+
+.program-icon {
+    width: 64px;
+    height: 64px;
+    background: var(--surface-3);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.program-card:hover .program-icon {
+    background: var(--primary);
+    color: white;
+}
+
+.program-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.program-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+}
+
+.faculty-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 400px));
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.faculty-card {
+    max-width: 400px;
+}
+
+.faculty-icon {
+    width: 120px;
+    height: 120px;
+    font-size: 3rem;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .program-card {
+        transition: none;
+    }
+
+    .program-card:hover {
+        transform: none;
+    }
+}

@@ -1,0 +1,54 @@
+---
+/**
+ * English | Espanol. Two plain links to the same page in the other language,
+ * so it works with JavaScript switched off. The small script below only adds
+ * the #section you are looking at, so the switch keeps your place.
+ */
+import { alternatePaths, localeMeta, t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  /** Language-free path of this page, for example "/digital-literacy/". */
+  path: string;
+  /** "dlt" uses the Tech-track colours. */
+  variant?: 'home' | 'dlt';
+}
+
+const { locale, path, variant = 'home' } = Astro.props;
+const d = t(locale);
+const options = alternatePaths(path);
+---
+
+<div class={`lang-switch lang-switch--${variant}`} role="group" aria-label={d.ui.languageLabel}>
+  {
+    options.map(({ locale: optionLocale, path: optionPath }) => {
+      const current = optionLocale === locale;
+      const label = optionLocale === locale ? d.ui.thisLanguage : d.ui.otherLanguage;
+      return current ? (
+        <span class="lang-switch-option" aria-current="true" lang={localeMeta[optionLocale].htmlLang}>
+          {label}
+        </span>
+      ) : (
+        <a
+          class="lang-switch-option"
+          href={optionPath}
+          lang={localeMeta[optionLocale].htmlLang}
+          hreflang={localeMeta[optionLocale].hreflang}
+          aria-label={d.ui.switchAria}
+          data-lang-link
+        >
+          {label}
+        </a>
+      );
+    })
+  }
+</div>
+
+<script>
+  // Carry the current #section across when the reader switches language.
+  document.querySelectorAll<HTMLAnchorElement>('a[data-lang-link]').forEach((link) => {
+    link.addEventListener('click', () => {
+      if (window.location.hash) link.href = `${link.pathname}${window.location.hash}`;
+    });
+  });
+</script>

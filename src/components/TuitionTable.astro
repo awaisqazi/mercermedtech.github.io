@@ -1,0 +1,89 @@
+---
+import '../styles/components/tuition.css';
+import { tuitionPrograms, tuitionDisplay, hoursDisplay } from '../data/programs';
+import { tracks } from '../data/site';
+import type { Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  badge: string;
+  heading: string;
+  intro: string;
+  caption: string;
+  columns: { program: string; hours: string; length: string; cost: string; examFee: string };
+  note: string;
+  actions: { href: string; label: string; style: 'primary' | 'secondary' }[];
+}
+
+const { locale, badge, heading, intro, caption, columns, note, actions } = Astro.props;
+
+// Med rows first, then Tech, each behind its own group row.
+const groups = (['med', 'tech'] as const).map((track) => ({
+  track,
+  label: tracks[track].label,
+  rows: tuitionPrograms.filter((program) => program.track === track),
+}));
+---
+
+<section id="tuition" class="tuition-section section-padding bg-surface-1" aria-labelledby="tuition-title">
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="programs-pill-badge">
+        <i class="fas fa-coins" aria-hidden="true"></i>
+        <span>{badge}</span>
+      </div>
+      <h2 id="tuition-title">{heading}</h2>
+      <p class="text-muted">{intro}</p>
+    </div>
+
+    <div class="tuition-table-wrap">
+      <table class="tuition-table">
+        <caption class="visually-hidden">{caption}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{columns.program}</th>
+            <th scope="col">{columns.hours}</th>
+            <th scope="col">{columns.length}</th>
+            <th scope="col" class="num tuition-col">{columns.cost}</th>
+            <th scope="col" class="num">{columns.examFee}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            groups.map((group) => (
+              <>
+                <tr class={`tuition-group tuition-group--${group.track}`}>
+                  <th scope="colgroup" colspan="5">{group.label}</th>
+                </tr>
+                {group.rows.map((program) => (
+                  <tr>
+                    <th scope="row" set:html={(program.tableName ?? program.name)[locale]} />
+                    <td data-label={columns.hours}>{hoursDisplay(program, locale)}</td>
+                    <td data-label={columns.length}>{program.length?.[locale]}</td>
+                    <td data-label={columns.cost} class="num tuition-col">
+                      {program.tuition === null ? (
+                        <span class="tuition-nocost">
+                          <strong class="no-cost">{program.tuitionLabel?.[locale]}</strong>{' '}
+                          <span class="tuition-nocost-note">{program.tuitionNote?.[locale]}</span>
+                        </span>
+                      ) : (
+                        <strong>{tuitionDisplay(program, locale)}</strong>
+                      )}
+                    </td>
+                    <td data-label={columns.examFee} class="num">{program.examFee?.[locale]}</td>
+                  </tr>
+                ))}
+              </>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="tuition-note">{note}</p>
+
+    <div class="tuition-cta">
+      {actions.map((action) => <a href={action.href} class={`btn btn-${action.style}`}>{action.label}</a>)}
+    </div>
+  </div>
+</section>

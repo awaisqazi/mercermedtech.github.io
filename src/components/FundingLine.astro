@@ -1,0 +1,29 @@
+---
+/**
+ * The NJDOL funding statement.
+ *
+ * NJDOL requires this sentence word for word in English wherever it appears.
+ * On Spanish pages a Spanish rendering is printed first so the reader
+ * understands it, and the required English sentence follows, marked lang="en".
+ */
+import { dlt } from '../data/site';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  class?: string;
+}
+
+const { locale, class: className = 'funding-line' } = Astro.props;
+const d = t(locale);
+---
+
+{
+  locale === 'es' ? (
+    <p class={className}>
+      {d.ui.fundingSentenceLocal} <span lang="en">{dlt.fundingSentence}</span>
+    </p>
+  ) : (
+    <p class={className}>{dlt.fundingSentence}</p>
+  )
+}

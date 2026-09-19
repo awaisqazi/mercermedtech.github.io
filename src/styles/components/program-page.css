@@ -1,0 +1,223 @@
+/* ==========================================================================
+   Per-program pages (/programs/<id>/) and the 404 page
+   Built from the same tokens and card shapes as the homepage.
+   ========================================================================== */
+
+.program-page {
+    padding-top: calc(var(--header-height) + 3rem);
+    padding-bottom: 4.5rem;
+}
+
+.breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.breadcrumbs a {
+    color: var(--primary-dark);
+    font-weight: 600;
+}
+
+.breadcrumbs a:hover {
+    color: var(--primary);
+}
+
+.breadcrumbs span[aria-hidden] {
+    color: var(--text-light);
+}
+
+.program-hero h1 {
+    font-size: clamp(2rem, 4.6vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+}
+
+.program-hero .program-lead {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 62ch;
+    margin-bottom: 1.5rem;
+}
+
+.program-status-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    max-width: 62ch;
+    margin: 0 0 1.75rem;
+    padding: 0.95rem 1.15rem;
+    background: rgba(0, 166, 156, 0.1);
+    border-left: 3px solid var(--primary);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+.program-status-banner i {
+    color: var(--primary);
+    margin-top: 0.25rem;
+}
+
+.program-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0 2.5rem;
+    padding: 0;
+    list-style: none;
+}
+
+.program-facts li {
+    padding: 1rem 1.15rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(0, 166, 156, 0.15);
+    border-radius: var(--radius-md);
+}
+
+.program-fact-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 0.2rem;
+}
+
+.program-fact-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.program-detail {
+    max-width: 70ch;
+}
+
+.program-detail h2 {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.program-detail p {
+    color: var(--text-main);
+    line-height: 1.65;
+    margin-bottom: 0.75rem;
+}
+
+.program-detail ul {
+    list-style: disc;
+    padding-left: 20px;
+    margin-bottom: 0.75rem;
+}
+
+.program-detail li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.program-aside {
+    margin-top: 2.5rem;
+    padding: 1.75rem;
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.9) 0%,
+            rgba(224, 247, 246, 0.7) 100%);
+    border: 1px solid rgba(0, 166, 156, 0.18);
+    border-radius: var(--radius-lg);
+}
+
+.program-aside h2 {
+    font-size: 1.35rem;
+    margin-bottom: 0.75rem;
+}
+
+.program-aside p {
+    color: var(--text-muted);
+    max-width: 68ch;
+    margin-bottom: 0.85rem;
+}
+
+.program-aside .btn {
+    min-height: 48px;
+}
+
+.program-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    margin-top: 1.25rem;
+}
+
+.program-registry {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.program-registry a {
+    color: var(--primary-dark);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.program-back {
+    margin-top: 2.5rem;
+    font-weight: 600;
+}
+
+.program-back a {
+    color: var(--primary-dark);
+}
+
+/* 404 */
+.error-page {
+    padding-top: calc(var(--header-height) + 5rem);
+    padding-bottom: 6rem;
+    text-align: center;
+}
+
+/*
+ * One error page, two languages. /404.html is the only error page GitHub Pages
+ * serves, so the English and the Spanish block sit on it together, separated by
+ * a rule. A script on the page moves the Spanish one up when the address the
+ * reader asked for started with /es/.
+ */
+.error-block + .error-block {
+    margin-top: 3rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+}
+
+.error-page h1,
+.error-page .error-block h2 {
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+}
+
+.error-page p {
+    color: var(--text-muted);
+    max-width: 52ch;
+    margin: 0 auto 2rem;
+    font-size: 1.05rem;
+}
+
+.error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}

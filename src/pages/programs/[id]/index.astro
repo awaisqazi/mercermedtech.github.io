@@ -1,0 +1,21 @@
+---
+import ProgramView from '../../../views/ProgramView.astro';
+import { detailPrograms } from '../../../data/programs';
+import type { Program } from '../../../data/types';
+
+/**
+ * One page per program that has its own detail content. Digital Literacy
+ * Training is excluded because it has a landing page of its own, and
+ * coming-soon programs are excluded because there is nothing to say yet.
+ */
+export function getStaticPaths() {
+  return detailPrograms.map((program) => ({ params: { id: program.id }, props: { program } }));
+}
+
+interface Props {
+  program: Program;
+}
+
+const { program } = Astro.props;
+---
+<ProgramView program={program} locale="en" />

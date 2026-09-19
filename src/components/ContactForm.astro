@@ -1,0 +1,248 @@
+---
+import '../styles/components/contact.css';
+import { site, tracks } from '../data/site';
+import { formPrograms, NOT_SURE_OPTION, BEST_TIME_VALUES } from '../data/programs';
+import { t, type Locale } from '../i18n';
+
+/**
+ * GOOGLE FORM CONTRACT (external, do not improvise)
+ * -------------------------------------------------
+ * The action URL and every entry.* name below must match the live Google Form.
+ * The program dropdown is a Google Forms DROPDOWN: it silently rejects any
+ * value that is not one of its own choices. So on Spanish pages the reader
+ * sees a Spanish LABEL while the VALUE sent to Google stays the English string
+ * from programs.ts "formOption". The same goes for the best-time-to-call list.
+ * scripts/check-form-contract.mjs (npm run check:form) checks every built page.
+ * The hidden iframe absorbs Google's cross-origin redirect so the reader sees
+ * an in-page confirmation instead of leaving the site.
+ */
+const FORM_ACTION =
+  'https://docs.google.com/forms/d/e/1FAIpQLSdlbJCiaAE1h2VVLcF0mUPG_6SKAs34IR0Ipu_DHATetEX-lg/formResponse';
+const FIELD = {
+  name: 'entry.500866520',
+  phone: 'entry.377183870',
+  email: 'entry.561406325',
+  program: 'entry.358026590',
+  bestTime: 'entry.1429591353',
+  message: 'entry.1375584749',
+};
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const c = t(locale).home.contact;
+const groups = (['med', 'tech'] as const).map((track) => ({
+  label: tracks[track].label,
+  programs: formPrograms.filter((program) => program.track === track),
+}));
+const addressLine2 = `${site.address.city}, ${site.address.region} ${site.address.postalCode}`;
+const bestTimeChoices = BEST_TIME_VALUES.map((value, index) => ({
+  value,
+  label: c.bestTimeOptions[index] ?? value,
+}));
+---
+
+<section id="contact" class="contact-section section-padding" aria-labelledby="contact-title">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-intro">
+        <span class="contact-eyebrow">{c.eyebrow}</span>
+        <h2 id="contact-title" class="section-title">{c.heading}</h2>
+        <p>{c.intro}</p>
+
+        <ul class="contact-direct">
+          <li>
+            <i class="fas fa-phone-alt" aria-hidden="true"></i>
+            <div>
+              <div class="contact-direct-label">{c.callLabel}</div>
+              <a href={site.phone.href}>{site.phone.display}</a>
+            </div>
+          </li>
+          <li>
+            <i class="fas fa-envelope" aria-hidden="true"></i>
+            <div>
+              <div class="contact-direct-label">{c.emailLabel}</div>
+              <a href={`mailto:${site.email}`}>{site.email}</a>
+            </div>
+          </li>
+          <li>
+            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+            <div>
+              <div class="contact-direct-label">{c.visitLabel}</div>
+              <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
+                {site.address.street}<br />{addressLine2}
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="contact-card">
+        <form id="request-info-form" class="contact-form" action={FORM_ACTION} method="POST" target="hidden_form_iframe">
+          <div class="form-row">
+            <label class="form-field">
+              <span class="form-label">{c.nameLabel} <span class="req" aria-hidden="true">*</span></span>
+              <input type="text" name={FIELD.name} required autocomplete="name" placeholder={c.namePlaceholder} />
+            </label>
+            <label class="form-field">
+              <span class="form-label">{c.phoneLabel} <span class="req" aria-hidden="true">*</span></span>
+              <input
+                type="tel"
+                name={FIELD.phone}
+                required
+                autocomplete="tel"
+                placeholder={c.phonePlaceholder}
+                pattern="[0-9\(\)\-\s\+]{7,}"
+              />
+            </label>
+          </div>
+
+          <label class="form-field">
+            <span class="form-label">{c.emailFieldLabel} <span class="req" aria-hidden="true">*</span></span>
+            <input type="email" name={FIELD.email} required autocomplete="email" placeholder={c.emailPlaceholder} />
+          </label>
+
+          <div class="form-row">
+            <label class="form-field">
+              <span class="form-label">{c.programLabel}</span>
+              <select name={FIELD.program} required>
+                <option value="" disabled selected>{c.programPlaceholder}</option>
+                {
+                  groups.map((group) => (
+                    <optgroup label={group.label}>
+                      {group.programs.map((program) => (
+                        <option value={program.formOption} data-program={program.id}>
+                          {program.name[locale]}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))
+                }
+                <option value={NOT_SURE_OPTION}>{c.notSureOption}</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span class="form-label">{c.bestTimeLabel}</span>
+              <select name={FIELD.bestTime}>
+                <option value="" disabled selected>{c.bestTimePlaceholder}</option>
+                {bestTimeChoices.map((choice) => <option value={choice.value}>{choice.label}</option>)}
+              </select>
+            </label>
+          </div>
+
+          <label class="form-field">
+            <span class="form-label">{c.messageLabel} <span class="optional">({c.optional})</span></span>
+            <textarea name={FIELD.message} rows="4" placeholder={c.messagePlaceholder}></textarea>
+          </label>
+
+          <div class="form-consent">
+            <label>
+              <input type="checkbox" required />
+              <span>{c.consent}</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary form-submit">
+            <span class="form-submit-label">{c.submit}</span>
+            <i class="fas fa-paper-plane" aria-hidden="true"></i>
+          </button>
+
+          <div
+            class="form-success"
+            role="status"
+            aria-live="polite"
+            hidden
+            data-success-title={c.successTitle}
+            data-success-body={c.successBody}
+            data-error-title={c.errorTitle}
+            data-error-body={c.errorBody}
+            data-submit-label={c.submit}
+            data-sending-label={c.sending}
+          >
+            <i class="fas fa-check-circle" aria-hidden="true"></i>
+            <div>
+              <strong>{c.successTitle}</strong>
+              <span>{c.successBody}</span>
+            </div>
+          </div>
+        </form>
+
+        <iframe
+          name="hidden_form_iframe"
+          id="hidden_form_iframe"
+          class="contact-iframe"
+          tabindex="-1"
+          aria-hidden="true"
+          title={c.iframeTitle}></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('request-info-form') as HTMLFormElement | null;
+
+  if (form) {
+    const submitBtn = form.querySelector<HTMLButtonElement>('.form-submit');
+    const successMsg = form.querySelector<HTMLElement>('.form-success');
+    const labelEl = form.querySelector<HTMLElement>('.form-submit-label');
+    const iframe = document.getElementById('hidden_form_iframe');
+
+    // Arriving with ?program=<id> (from a program page, or from the Digital
+    // Literacy page) preselects that option, so the reader does not have to
+    // find it themselves.
+    const requested = new URLSearchParams(window.location.search).get('program');
+    if (requested) {
+      const select = form.querySelector<HTMLSelectElement>('select[name="entry.358026590"]');
+      const alias = requested === 'digital-literacy' ? 'digital-literacy-training' : requested;
+      const option = select?.querySelector<HTMLOptionElement>(`option[data-program="${CSS.escape(alias)}"]`);
+      if (select && option) select.value = option.value;
+    }
+
+    if (submitBtn && successMsg && iframe) {
+      const strong = successMsg.querySelector('strong');
+      const span = successMsg.querySelector('span');
+      const data = successMsg.dataset;
+      let isSubmitting = false;
+      let safetyTimer: number | null = null;
+
+      const finish = () => {
+        if (!isSubmitting) return;
+        isSubmitting = false;
+        if (safetyTimer) {
+          window.clearTimeout(safetyTimer);
+          safetyTimer = null;
+        }
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('is-loading');
+        if (labelEl && data.submitLabel) labelEl.textContent = data.submitLabel;
+        if (strong && data.successTitle) strong.textContent = data.successTitle;
+        if (span && data.successBody) span.textContent = data.successBody;
+        successMsg.hidden = false;
+        successMsg.classList.add('is-visible');
+        form.reset();
+        successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+
+      form.addEventListener('submit', () => {
+        if (!form.checkValidity()) return; // the browser shows its own message
+        isSubmitting = true;
+        submitBtn.disabled = true;
+        submitBtn.classList.add('is-loading');
+        if (labelEl && data.sendingLabel) labelEl.textContent = data.sendingLabel;
+
+        // Safety net: cross-origin iframe load events can be unreliable.
+        // If we have not heard back within 4s, treat it as sent.
+        safetyTimer = window.setTimeout(finish, 4000);
+      });
+
+      iframe.addEventListener('load', () => {
+        // Only loads that happen AFTER a submit count. The initial empty-iframe
+        // load is ignored because isSubmitting is still false.
+        if (isSubmitting) finish();
+      });
+    }
+  }
+</script>

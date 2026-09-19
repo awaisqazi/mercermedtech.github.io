@@ -1,0 +1,69 @@
+/* ==========================================================================
+   Homepage: announcement strip
+   One slim line under the fixed header. Not sticky. Digital Literacy sits
+   second everywhere else under the Med-first order rule, so this is where it
+   gets its own moment. Tech color family.
+   ========================================================================== */
+
+.announce-strip {
+    /* Clears the fixed header, which is out of flow. */
+    margin-top: var(--header-height);
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    color: #fff;
+}
+
+.announce-strip p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem 0.75rem;
+    margin: 0;
+    padding: 0.4rem 0;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.announce-strip i {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.announce-strip a {
+    display: inline-flex;
+    align-items: center;
+    /* 44px tap target without making the strip tall on desktop. */
+    min-height: 44px;
+    padding: 0 0.85rem;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+}
+
+.announce-strip a:hover,
+.announce-strip a:focus-visible {
+    background: rgba(255, 255, 255, 0.28);
+    color: #fff;
+}
+
+/* The strip now carries the header offset, so the hero drops its own. */
+.announce-strip + .hero {
+    padding-top: 3rem;
+}
+
+@media (max-width: 640px) {
+    .announce-strip p {
+        padding: 0.35rem 0;
+        font-size: 0.88rem;
+    }
+
+    .announce-strip + .hero {
+        padding-top: 2rem;
+    }
+}

@@ -1,0 +1,84 @@
+---
+import '../styles/components/hero.css';
+import Lockup from './Lockup.astro';
+
+export interface TrustItem {
+  icon: string;
+  label: string;
+}
+
+export interface TrackPanel {
+  track: 'med' | 'tech';
+  label: string;
+  heading: string;
+  body: string;
+  chips: string[];
+  chipsLabel: string;
+  ctaHref: string;
+  ctaLabel: string;
+}
+
+interface Props {
+  headingBefore: string;
+  headingAccent: string;
+  headingAfter: string;
+  lead: string;
+  trust: TrustItem[];
+  trustLabel: string;
+  /** Med panel first, Tech second. The order rule is not negotiable. */
+  panels: TrackPanel[];
+  quietBefore: string;
+  quietLinkLabel: string;
+  quietLinkHref: string;
+  quietAfter: string;
+}
+
+const {
+  headingBefore,
+  headingAccent,
+  headingAfter,
+  lead,
+  trust,
+  trustLabel,
+  panels,
+  quietBefore,
+  quietLinkLabel,
+  quietLinkHref,
+  quietAfter,
+} = Astro.props;
+---
+
+<section id="hero" class="hero">
+  <div class="container">
+    <div class="hero-content hero-lead">
+      <Lockup variant="eyebrow" />
+      <h1>{headingBefore}<span class="text-gradient-lockup">{headingAccent}</span>{headingAfter}</h1>
+      <p>{lead}</p>
+      <ul class="hero-trust" aria-label={trustLabel}>
+        {trust.map((item) => (
+          <li><i class={item.icon} aria-hidden="true"></i> {item.label}</li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="track-panels">
+      {
+        panels.map((panel) => (
+          <article class={`track-panel track-panel--${panel.track}`}>
+            <span class="track-label">{panel.label}</span>
+            <h2>{panel.heading}</h2>
+            <p>{panel.body}</p>
+            <ul class="track-chips" aria-label={panel.chipsLabel}>
+              {panel.chips.map((chip) => <li>{chip}</li>)}
+            </ul>
+            <a href={panel.ctaHref} class={`btn ${panel.track === 'tech' ? 'btn-tech' : 'btn-primary'}`}>
+              {panel.ctaLabel}
+            </a>
+          </article>
+        ))
+      }
+    </div>
+
+    <p class="hero-quiet">{quietBefore}<a href={quietLinkHref}>{quietLinkLabel}</a>{quietAfter}</p>
+  </div>
+</section>

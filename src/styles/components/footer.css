@@ -1,0 +1,121 @@
+/* ==========================================================================
+   Footer (home variant) and the minimal Tech-track footer
+   ========================================================================== */
+
+.site-footer {
+    position: relative;
+    background: linear-gradient(180deg, #16202e 0%, var(--text-main) 100%);
+    color: white;
+    padding: 4.5rem 0 2rem;
+}
+
+/* Teal top accent line */
+.site-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 50%, var(--primary) 100%);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 4rem;
+}
+
+.footer-brand img {
+    height: 40px;
+    margin-bottom: 1rem;
+    filter: brightness(0) invert(1);
+}
+
+.footer-brand p {
+    color: var(--text-light);
+    margin-top: 1rem;
+    max-width: 300px;
+}
+
+.footer-col h4 {
+    position: relative;
+    padding-bottom: 0.6rem;
+    color: white;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.footer-col h4::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 28px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--primary);
+}
+
+.footer-links li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-light);
+    transition: color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+}
+
+.footer-links a:hover {
+    transform: translateX(3px);
+    color: var(--primary);
+}
+
+.footer-links .footer-link-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-links .footer-link-address {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.footer-links .footer-link-address i {
+    margin-top: 0.25em;
+}
+
+.footer-licensing {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    max-width: 70ch;
+    margin: 0 auto 1.5rem;
+    text-align: center;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 2rem;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.875rem;
+}
+
+@media (max-width: 640px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+}

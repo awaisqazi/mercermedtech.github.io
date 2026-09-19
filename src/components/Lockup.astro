@@ -1,0 +1,32 @@
+---
+/**
+ * The "Med + Tech" wordmark. Always CSS text, never an image.
+ * variant "eyebrow" is the pill-shaped hero/section version.
+ * variant "brand" is the landing-page version that spells out the school name.
+ */
+interface Props {
+  variant?: 'plain' | 'eyebrow' | 'brand';
+  divider?: string;
+  trailing?: string;
+  class?: string;
+}
+
+const { variant = 'plain', divider = '+', trailing, class: className = '' } = Astro.props;
+const classes = ['medtech-lockup', variant === 'eyebrow' || variant === 'brand' ? 'lockup-eyebrow' : '', className]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<span class={classes}>
+  {
+    variant === 'brand' ? (
+      <span class="lockup-brand">
+        Mercer <span class="lockup-med">Med</span> <span class="lockup-tech">Tech</span>
+      </span>
+    ) : (
+      <span class="lockup-med">Med</span>
+    )
+  }
+  <span class="lockup-plus" aria-hidden="true">{divider}</span>
+  <span class="lockup-tech">{trailing ?? 'Tech'}</span>
+</span>

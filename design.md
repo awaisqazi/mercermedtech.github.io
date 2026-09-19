@@ -10,9 +10,15 @@ healthcare-tech product than a traditional vocational school site.
 
 **Who we are.** Mercer Med Tech, Inc. (MMT) is a state-approved private
 vocational school in Lawrenceville, NJ, licensed by the New Jersey Department
-of Labor & Workforce Development. We turn motivated people into certified
-healthcare professionals through hands-on instruction, small classes, and
-real-world clinical experience.
+of Labor & Workforce Development. We train people for the two kinds of jobs
+central New Jersey is hiring for: care and computer work. The **Med** track is
+health care certification, taught in small classes with hands-on practice, and
+an externship in the programs that include one. The **Tech** track is computer
+skills and help finding work, which right now means Digital Literacy Training,
+delivered with NJDOL. Say what each program actually includes in that
+program's own card and modal; never make "clinical experience" a blanket claim
+for the Med track, and never name "skilled nursing facilities". See section 1a
+for how the two tracks are named, coloured, and written about.
 
 **Personality.** Warm, confident, modern, practical. We sound like a great
 academic advisor: knowledgeable but never stiff, encouraging but never hype-y.
@@ -21,14 +27,18 @@ academic advisor: knowledgeable but never stiff, encouraging but never hype-y.
 
 ### Brand pillars
 
-1. **Practical mastery.** Every program is hands-on and certification-ready.
+1. **Practical mastery.** Every program is hands-on and credential-ready.
 2. **Personal attention.** Small class sizes, mentor-style faculty.
 3. **Career launchpad.** We exist to get students into jobs, not into more debt.
 4. **Modern medicine, modern training.** Clean tech, current data, BLS-backed
    outcomes.
-5. **Accessible support.** Bilingual (English/Spanish) staff, evening classes,
-   on-site placement assistance, WIA-eligible programs, and an accessible
-   facility.
+5. **Accessible support.** Bilingual (English/Spanish) staff, help finding
+   work, an accessible facility, and this sentence where a caseworker or a
+   funded student will look: "Mercer Med Tech is on New Jersey's Eligible
+   Training Provider List (ETPL)." Never claim a specific program is
+   ETPL-listed, and never claim evening classes. Class times depend on the
+   program, and the honest line is "Call and we will tell you the days and
+   hours for the one you are looking at."
 
 ### Voice & tone
 
@@ -43,6 +53,77 @@ academic advisor: knowledgeable but never stiff, encouraging but never hype-y.
 - **Punctuation.** No em-dashes (`—`) or en-dashes (`–`). Use commas, periods,
   parentheses, or "to" as appropriate. Use the Oxford comma.
 
+### Writing for this reader
+
+**1. Respect first. This rule outranks every other line in this section.**
+Never presume the reader lacks skills, experience, or intelligence. These are
+adults with work and life experience who are adding a skill set. Do not write
+"even if you have never...", "no experience needed", "don't worry", "it's
+easy", or "simple" as a label for the person. Frame the skills check as
+placing each person at the right level, never as reassurance for beginners.
+Warm and relatable means direct, specific, and adult, not soothing.
+
+> Rejected: "You do not need to know anything about computers to start."
+> Preferred: "Digital Literacy Training prepares you for work that uses a
+> computer every day. We start with a short skills check so your training fits
+> what you already know."
+
+**2. Who we are writing for.** Most people reading this site are adults on
+TANF or SNAP in central New Jersey. Many have been out of work a while, many
+are reading on a phone, and many read English as a second language. A smaller
+group are county caseworkers deciding whether to send someone to us. Write for
+the first group; the second group reads the same page and is reassured by the
+same plainness. Write like the person at the front desk who is good at their
+job: straight, warm, never talking down, never chirpy. Say what happens, in
+what order, and what it costs.
+
+**3. Do and don't, drawn from this site.**
+
+| Don't | Do |
+| --- | --- |
+| "Investment in Your Career" | "What each program costs" |
+| "we are committed to helping you navigate your funding options" | "We can show you how to apply." |
+| "Comprehensive course covering clinical and administrative duties" | "You learn the clinical side and the office side." |
+| "Personal attention from experienced instructors." | "Small classes. You get time with the instructor." |
+| "Job placement help" | "Help finding work" |
+| "Learn More" (nine times, three destinations) | "See the details", "Read about Digital Literacy Training" |
+| "Start Your Application" (there is no application) | "Ask us to call you" |
+| "real instructors, real outcomes, and the support you need to succeed" | "Real instructors. Small classes. Someone who picks up the phone." |
+| "This growth is expected to result in approximately 112,300 job openings each year" | "The Bureau of Labor Statistics counts about 112,300 openings a year." |
+| "A small, hands-on team committed to your success." | "The people you will actually deal with." |
+
+**4. Banned words and constructions.** Never publish: empower, unlock,
+journey, seamless, comprehensive, cutting-edge, state-of-the-art, premier,
+thrive, elevate, tailored, robust, leverage, synergy, holistic, transformative,
+"navigate your options", "we are committed to", "designed to", "proudly",
+"valuable", "dynamic opportunities", "in today's world", "look no further".
+(The single allowed exception is "comprehensive personal care homes", which is
+the New Jersey facility category, not an adjective we chose.)
+
+Never use these shapes:
+
+- **Rule-of-three lists.** Two items, or four. Three is the AI cadence.
+- **"Whether you're X or Y."**
+- **"Not just X, but Y."**
+- **Stacked adjectives.** "valuable hands-on clinical externship experience" is
+  one noun and four decisions you did not make.
+- **Vague superlatives.** "leading", "premier", "best-in-class".
+- **Headline case in the source string.** Write "What it costs", not "What It
+  Costs". Let CSS uppercase buttons if it wants to.
+- **Em-dashes, en-dashes, and exclamation marks.** Repeated here because they
+  keep coming back.
+
+**5. Standing wording decisions.**
+
+- **One phrase for the cost claim, everywhere: "No cost if you qualify."**
+- **"Health care" as two words** in anything a person reads. "Allied health"
+  stays in the catalog and the JSON-LD only.
+- **"Help finding work" or "career services", never "placement".**
+- **"National Healthcareer Association"** is the vendor's correct name.
+- Name the source inside the sentence for every number: "The Bureau of Labor
+  Statistics expects...".
+- The NJDOL funding sentence is verbatim, everywhere it appears.
+
 ### Source-of-truth hierarchy
 
 When facts conflict, trust sources in this order:
@@ -51,6 +132,107 @@ When facts conflict, trust sources in this order:
 2. **Google Business Profile** (address, phone, hours as displayed in Maps).
 3. **BLS / NHA** (salary expectations and outlook).
 4. The **website** (which should reflect 1–3, not contradict them).
+
+---
+
+## 1a. Brand architecture: Med + Tech
+
+The name carries the positioning. **Mercer Med Tech = Med and Tech**, two
+training tracks under one school. The legal, licensed name stays "Mercer Med
+Tech" everywhere: title tags, JSON-LD `name`, footer copyright, and every
+licensing statement. Do not rename the school and do not edit the logo files.
+
+### The two tracks
+
+| Track    | What it is                                  | Programs                                                                                         |
+| -------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Med**  | Allied health certification                 | Medical Assistant, Phlebotomy, PCT, EKG, CNA, Medication Aide, plus the two "coming soon" cards.   |
+| **Tech** | Digital skills and career readiness         | Digital Literacy Training (no cost if eligible, NJDOL funded). Future Tech programs slot into the right column. |
+
+Name them the same way in every surface: nav, section headings, tuition table
+groups, enrollment cards, and the contact form's `<optgroup>` labels.
+
+### Order rule
+
+**Order rule: Med first/left, Tech second/right, everywhere, mirroring the
+name.** Side by side, Med takes the left column. Stacked (mobile, or any
+vertical list), Med comes first. This governs the hero track panels, the
+enrollment cards, the two programs columns, the tuition table groups, the
+contact form `<optgroup>`s, nav and footer links, the JSON-LD OfferCatalog,
+and any prose that names both tracks. Never flip it with CSS `order`,
+`row-reverse`, or grid placement at a breakpoint. The single exception is the
+homepage announcement strip, which is about Digital Literacy on its own.
+
+### Color ownership
+
+Med keeps the brand teal (`--primary` family). Tech owns the indigo family,
+declared in `assets/css/digital-literacy.css` next to the existing tokens:
+
+| Token          | Hex       | Use                                             |
+| -------------- | --------- | ----------------------------------------------- |
+| `--tech`       | `#3B5BDB` | Tech buttons, chips, icons, card accents.       |
+| `--tech-dark`  | `#2B44A8` | Tech hover, text on light indigo, emphasis.     |
+| `--tech-light` | `#E7ECFD` | Tech tints, chip and card backgrounds.          |
+
+Contrast checked: `--tech` on white 5.6:1, `--tech-dark` on white 8.4:1,
+`--tech-dark` on `--tech-light` 7.1:1, white on `--tech` 5.6:1. All pass AA for
+body text. A Tech-track element never uses teal, and a Med-track element never
+uses indigo.
+
+### Lockup gradient and wordmark
+
+`--lockup-gradient: linear-gradient(135deg, #00A69C 0%, #3B5BDB 100%)` is
+reserved for two things only: the "Med + Tech" wordmark treatment and the hero
+accent word. Never a section background.
+
+The wordmark is CSS text, never an image: `.medtech-lockup` renders "Med" in
+teal, a thin divider, and "Tech" in indigo, in Outfit 700. It appears in the
+hero eyebrow, the programs section header, and the footer brand line.
+
+**Positioning line:** "Med and Tech. Two paths to a better job." Use it in the
+hero, meta copy, and the footer. Keep it within the voice rules in section 1.
+
+### Program status
+
+A program that is not currently enrolling stays on the site as a normal card
+with the line **"Next sessions will be announced soon."** It is never listed as
+enrolling and never shows a start date. Do not use "not available at this time"
+and do not use "Contact us for more information" for these programs.
+
+**The exact status strings, and nothing else:**
+
+| Program | Status string |
+| --- | --- |
+| Digital Literacy Training | "Enrolling soon." (never "now enrolling", never a pulsing live badge). Badge: "Enrolling soon · No cost if you qualify." |
+| Certified Medical Assistant | "New groups start regularly. The most recent group began September 14, 2026. Call for the next start date." |
+| Phlebotomy Technician, Patient Care Technician | "Call for the next start date." |
+| EKG Technician | "Call for availability." |
+| CNA, Certified Medication Aide | "Next sessions will be announced soon." |
+| Information sessions, anywhere | "Details on upcoming information sessions will be shared soon." No day, no time, no walk-in instruction, and no "what to bring". |
+
+In practice that means: the normal card style (no muted or dashed treatment),
+its usual hours badge, a `.program-contact-line` under the description, and its
+usual "See the details" modal trigger. The modal opens with a
+`.modal-contact-note` paragraph ("Next sessions will be announced soon.") and
+an "Ask us about [program]" button that closes the modal and goes to
+`#contact`. Keep it out of every "now enrolling" list: hero chips, enrollment
+pills, meta and OG copy, and the JSON-LD `OfferCatalog`. It may appear in a
+neutral list of programs (keywords, the contact form, the tuition table). Its
+tuition row carries no status line.
+
+### NJDOL rule (non-negotiable)
+
+NJDOL is affiliated with Digital Literacy Training only. Therefore:
+
+- Digital Literacy materials, including `digital-literacy.html`, never advertise
+  MMT's healthcare or other programs. No program cards, no tuition table, no
+  cross-sell. A plain "Mercer Med Tech home" link is the only outbound site link.
+- Every Digital Literacy surface carries this sentence verbatim: "The funding for
+  this initiative is being provided by the New Jersey Department of Labor and
+  Workforce Development."
+- Never mention stipends or payments to participants, and never promise a free
+  laptop. Say technology access and other supports **may be available based on
+  individual need**.
 
 ---
 
@@ -144,19 +326,34 @@ a full-section background (it competes with content).
 
 The home page is one long scroll, in this order. Anchor IDs are nav targets.
 
-1. `#hero` — Hero with primary CTA (Programs) and secondary CTA (Request Info)
-2. `#enroll` — Now Enrolling announcement card with **Term Schedule** panel
-3. `#about` — Brand story and state-approval credentials
-4. `#programs` — 7-card carousel of all training programs
-5. `#tuition` — Tuition at a Glance table
-6. `#why` — 8-card "Why Mercer Med Tech" + Admissions Requirements block
-7. `#grants` — Financial aid and loan information
-8. `#faculty` — Meet Our Team (Director, Bursar)
-9. `#organizations` — Affiliated organizations marquee
-10. `#contact` — Request Info form (wired to Google Forms)
-11. `#footer` — Site footer (NAP, social)
+0. `.announce-strip`: one slim, non-sticky Digital Literacy line under the
+   fixed header
+1. `#hero`: Lockup eyebrow, H1, trust chips, and two equal track panels
+   (Med first), plus a quiet "Request information" link
+2. `#enroll`: Two enrollment cards in the glass system, Med first, with the
+   **Term Schedule** panel inside the Med card
+3. `#about`: The Med + Tech story and state-approval credentials
+4. `#programs`: Wrapper holding `.programs-tracks`, a two-column layout with
+   `#programs-med` (left, the glass carousel) and `#programs-tech` (right, the
+   Digital Literacy feature card). Below 1024px they stack, Med first.
+   `#programs` stays on the wrapper so older links keep working.
+5. `#tuition`: Tuition at a Glance table, grouped into Med and Tech
+6. `#why`: 8-card "Why Mercer Med Tech" + Admissions Requirements block
+7. `#grants`: Financial aid and loan information
+8. `#faculty`: Meet Our Team (Director, Bursar)
+9. `#organizations`: Affiliated organizations marquee
+10. `#contact`: Request Info form (wired to Google Forms)
+11. `#footer`: Site footer (NAP, social)
 
 Plus a fixed floating "Call Now" CTA on mobile.
+
+**Second page: `digital-literacy.html`.** The Tech track landing page, built for
+county caseworkers and participants. Same design system, Tech color family,
+page CSS in `assets/css/digital-literacy.css` (which also holds the shared
+Med + Tech components the home page uses). Its order is: hero, information
+sessions strip, `#qualify`, `#learn`, what you leave with, support while you
+train, `#enroll`, `#partners`, En español, FAQ, contact, footer. It follows the
+NJDOL rule in section 1a: no cross-sell, funding line in the footer.
 
 ---
 
@@ -176,7 +373,7 @@ Plus a fixed floating "Call Now" CTA on mobile.
 
 The "liquid teal glass" treatment is reserved for **brand-defining moments**:
 
-- Now Enrolling announcement (`.enroll-card`)
+- Enrollment announcement cards (`.enroll-card`)
 - Contact form card (`.contact-card`)
 - Admissions Requirements block (`.admissions-block`)
 - Program modals (`.modal-content`)
@@ -242,8 +439,9 @@ Always include a `<caption class="visually-hidden">` for screen readers.
 
 ### Badges & pills
 
-- **"Now Enrolling" badge:** gradient fill, white text, uppercase, tiny pulse
-  dot animation. One per page maximum.
+- **Enrollment badge:** gradient fill, white text, uppercase. Static, no pulse
+  dot: Digital Literacy Training is "Enrolling soon", not live, and a pulsing
+  badge claims otherwise. Med uses the teal gradient, Tech the indigo one.
 - **Eyebrow chip / pill badge:** `--primary-light` background, primary-dark
   text, small.
 
@@ -299,15 +497,25 @@ Always include a `<caption class="visually-hidden">` for screen readers.
 
 ## 10. SEO & Local Search
 
-- Title pattern: `Mercer Med Tech | <Specific> in Lawrenceville, NJ`.
+- Title pattern: `Mercer Med Tech | <Specific> in Lawrenceville, NJ`. Program
+  pages use `<Short name> Training | Mercer Med Tech` and, in Spanish,
+  `Capacitación de <nombre corto> | Mercer Med Tech`. The title is built from
+  the program's **short** name, never `name`: the Spanish `name` carries the
+  official English name in brackets, which doubles the length and reads
+  "Capacitación de Capacitación en ...".
+- **Length limits, both languages: `<title>` 60 characters or fewer, meta
+  description 155 or fewer.** Spanish runs 20 to 25 percent longer than
+  English, so the Spanish half goes over first. `npm run check:seo` counts
+  every built page and fails the build script if one is over.
 - Every page has `meta description`, `canonical`, Open Graph, and Twitter Card
   tags.
 - One JSON-LD `EducationalOrganization` + `LocalBusiness` block in `<head>`
   with full postal address, phone, email, geo, opening hours, and a course
   catalog covering all 7 programs. Update this whenever address, phone,
   program list, or hours change.
-- `openingHoursSpecification` reflects catalog hours (Mon-Fri 8:00-21:00,
-  Sat 8:30-14:00).
+- No `openingHoursSpecification` block. We do not publish opening hours until
+  the hours we actually staff the phone are confirmed, and we have never
+  confirmed Saturday or evening hours.
 - Google Business Profile is the source of truth for the address Google shows
   in Maps and the knowledge panel, keep it in sync with the site.
 - Maintain NAP (Name / Address / Phone) consistency across the site, GBP,
@@ -368,17 +576,182 @@ Always include a `<caption class="visually-hidden">` for screen readers.
 | -------------------------------------- | ----: | -------------- | ----------------- | ---------- |
 | Certified Medical Assistant (CMA)      |   480 | 8 to 12 months | $5,000            | 51.0801    |
 | Patient Care Technician (PCT)          |   300 | 5 to 6 months  | $4,000            | 51.0904 *  |
-| Phlebotomy Technician                  |   120 | ~6 weeks       | Contact admissions| 51.1009    |
-| EKG Technician                         |   120 | 6 weeks        | Contact admissions| 51.0902    |
-| Certified Nursing Assistant (CNA)      |    90 | ~6 weeks       | Contact admissions| 51.3902    |
+| Phlebotomy Technician                  |   120 | ~6 weeks       | $1,500            | 51.1009    |
+| EKG Technician                         |   120 | 6 weeks        | $1,400            | 51.0902    |
+| Certified Nursing Assistant (CNA)      |    90 | ~6 weeks       | $2,000            | 51.3902    |
 | Certified Home Health Aide (CHHA)      |    76 | 4 to 11 weeks  | $800              | 51.2602    |
-| Certified Medication Aide              |    40 | ~1 week        | $600              | 51.2603    |
+| Certified Medication Aide              |    30 | ~1 week        | $900              | 51.2603    |
 
 \* PCT CIP is approximate; the 2025 catalog prints "51090" (incomplete).
 Verify against the active NJ DOL filing before reprinting the catalog.
 
-Term start dates (2026): Winter Jan 1, Spring Apr 2, Summer Jul 5, Fall Oct 2.
+Tech track: **Digital Literacy Training** (hours vary by plan, about 5 to 6
+weeks, no cost if you qualify, NJDOL funded). The Cybersecurity
+Bootcamp was a summer offering and is no longer published on the site.
+
+### Current status (as published on the site)
+
+| Program                       | Status                                                             |
+| ----------------------------- | ------------------------------------------------------------------ |
+| Certified Medical Assistant   | Running. Most recent group began September 14, 2026.                |
+| Phlebotomy, PCT               | Running. Call for the next start date.                              |
+| EKG Technician                | Call for availability.                                              |
+| CNA, Certified Medication Aide| On the site as normal cards with "Next sessions will be announced soon." No dates. See the Program status rule in section 1a. |
+| Digital Literacy Training     | "Enrolling soon." No dates printed, and no information-session days or times anywhere. |
+| Cybersecurity Bootcamp        | Removed from the site. It was a summer offering and it is over.     |
+
+Do not publish a specific start date unless it has been confirmed by the school.
 
 ---
 
-*Last updated: 2026-04-27*
+*Last updated: 2026-09-19*
+
+---
+
+## 15. Two languages, always
+
+The site is published in English and Spanish. They are not two projects. They
+are one project with two sets of words, and both sets are part of every change.
+
+### The rule
+
+**Every copy change is made in English and Spanish in the same change.** The
+wording lives in `src/i18n/en.ts` and `src/i18n/es.ts`, and, for program
+wording, in `src/data/programs.ts` as `L('English', 'Espanol')`. A change that
+touches only one language is an unfinished change. `npm run check:i18n` must
+pass before anything is published, and the build itself stops if a key exists
+in one language and not the other.
+
+URLs: English at `/`, `/digital-literacy/`, `/programs/<id>/`. Spanish at the
+same paths under `/es/`. The language switch in the header links to the same
+page in the other language. Nothing redirects by browser language.
+
+### Spanish voice
+
+Same voice rules as English, in Spanish:
+
+- **usted**, never **tu**.
+- Short sentences. Plain words. The word a person would use out loud.
+- Respect first. Never imply the reader does not know things, is behind, or
+  needs reassurance. No "no se preocupe", "es facil", "aunque no sepa nada".
+  Frame the skills check as placing each person at the right level, never as
+  help for beginners.
+- No exclamation marks, in either direction: no `!` and no `¡`.
+- No em dashes and no en dashes.
+- Not a literal translation of the English. Say the same thing the way it is
+  said in Spanish in New Jersey.
+
+### The program name in Spanish
+
+**Digital Literacy Training is "Capacitación en Habilidades Digitales" in
+Spanish, everywhere a reader sees it.** On first use on a page it carries the
+official English name: "Capacitación en Habilidades Digitales (Digital Literacy
+Training)". Where the slot is tight (a chip, a badge, a button, a `<title>`)
+the short form is "Habilidades Digitales".
+
+**"Alfabetización" is never used for this program.** In Latin American Spanish
+"alfabetización" is the word for teaching an adult to read and write
+("campañas de alfabetización"). To an adult on TANF, "Capacitación en
+Alfabetización Digital" reads as *training for people who cannot read*, which
+is exactly what the respect-first rule in section 1 forbids. "Habilidades
+digitales" is the standard US workforce term, says the same thing, and does not
+put a deficit on the reader. The only place "alfabetizacion digital" survives is
+`home.seo.keywords` / `dlt.seo.keywords`, because that is what people type into
+a search box and the tag is not something anyone reads.
+
+If NJDOL ever requires a specific Spanish name for the program, theirs wins and
+this section gets rewritten.
+
+### Glossary: the Spanish word we use
+
+One word per concept, across the whole site. Do not introduce a synonym because
+a sentence reads better in isolation: the reader meets these words in a chip, a
+heading and a FAQ answer on the same screen, and a second word reads as a
+second thing.
+
+| Concept | The word we use | Never |
+| --- | --- | --- |
+| Digital Literacy Training (program name) | **Capacitación en Habilidades Digitales**, glossed `(Digital Literacy Training)` on first use per page; short form **Habilidades Digitales** | "Alfabetización Digital" in reader-facing copy (keywords only) |
+| training | **capacitación** | "entrenamiento", "formación" |
+| class group / cohort | **grupo** ("el próximo grupo") | "clase" for a cohort, "cohorte", "promoción" |
+| small classes / small groups | **grupos pequeños** | "clases pequeñas", "cursos reducidos" |
+| externship / internship | **pasantía**, glossed `pasantía (externship)` on first use per page | "prácticas", "prácticas profesionales", "internado" |
+| hands-on | **práctica / práctico**: "mucha práctica", "práctica con equipo real", "Todas son prácticas" | "práctica con las manos", "con las manos", "aprendizaje manual" |
+| skills check | **una revisión de lo que ya sabe** (short: "una revisión corta de lo que ya sabe") | "evaluación", "examen de nivel", "prueba diagnóstica", a bare "una revisión corta" |
+| career services / help finding work | **ayuda para encontrar trabajo** | "apoyo para buscar trabajo" as a second label, "colocación laboral", "bolsa de trabajo" |
+| career coaching | **orientación laboral** | — |
+| caseworker | **trabajador de caso** in body copy, glossed `(caseworker)` on first use per page; **agencias** / **quien refiere** in nav and section labels | "trabajador social", "asistente social" |
+| referral | **referencia** (noun), **referir** (verb) | "que lo manden", "remisión", "envío" |
+| enrollment | **inscripción** / **inscribirse** | "matriculación", "registro", "admisión" for signing up |
+| tuition / what it costs | **el costo del curso** (or **el costo** / **el precio**) | "colegiatura", "matrícula", "cuota escolar" |
+| exam fee | **costo del examen** | a bare "Examen" in a money column |
+| credential / certificate | **certificado** (**certificación** for the act) | "credencial", "acreditación", mixing both |
+| micro-credential | **microcertificado** (one word) | "micro certificado", "micro-credencial" |
+| information session | **sesión informativa** | "sesión de información", "charla informativa" |
+| waitlist / interest list | **lista de interés**, CTA **"Anóteme en la lista"** | "Apúnteme en la lista", "lista de espera" |
+| to apply for a job | **mandar/enviar su solicitud**, **solicitar** | "aplicar a un trabajo", "aplicar" |
+| to administer an exam | **administran / toman nuestros exámenes** | "aplican nuestros exámenes" |
+| track (Med / Tech) | **rama** ("rama Med", "rama Tech") | "pista", "vía", "carril" |
+| grant funding | **subvención** (scholarship = **beca**) | "beca" for a grant, "su fondo" |
+| computer | **computadora** (laptop: **computadora portátil**); pointing device: **el mouse** | "ordenador", "ratón", "portátil" alone |
+| high school | **escuela secundaria (high school)** | "preparatoria", "prepa", "liceo" |
+| comprehensive personal care home | **comprehensive personal care homes** (English, glossed once as *hogares de cuidado personal*) | "hogares de cuidado personal integral" |
+| stipends | **estipendios** ("No hay pagos ni estipendios por asistir") | "ayuda económica", which is what we call outside financial aid |
+| the reader as direct object | **le** ("le prepara", "le llamamos", "le acompaña") | "lo" referring to the reader |
+
+**Punctuation in Spanish.** No serial (Oxford) comma before the final `y` / `e`
+of an enumeration: that is an English rule and the RAE does not use it. The one
+exception is an enumeration whose own items contain `y`, where the comma is what
+keeps it readable ("El mouse y el teclado, los archivos y las carpetas, y cómo
+cambiar la configuración"). A comma before `y` joining two full clauses is not a
+serial comma and stays.
+
+**Gendered defaults.** Spanish adjectives agreeing with the reader ("está
+listo", "no está solo", "usted mismo") assume a man. Use a phrasing that does
+not: "Quiere capacitarse", "Aquí no está por su cuenta", "avise usted",
+"por su cuenta", "¿Tiene dudas?".
+
+Open questions for the school's bilingual staff are in
+`docs/spanish-review-questions.md`. When an answer comes back, write it into
+this table and delete the question.
+
+### Glossary: what stays in English
+
+These appear on paperwork, on benefit letters, or on a certificate, so the
+reader has to recognise them:
+
+| Term | In Spanish copy |
+| --- | --- |
+| TANF, SNAP | keep as is |
+| WorkFirst New Jersey | keep as is |
+| One-Stop Career Center | keep as is |
+| ETPL | "Lista de Proveedores de Capacitacion Elegibles de Nueva Jersey (ETPL)" on first use |
+| National Healthcareer Association, MedCA, PSI | keep as is |
+| New Jersey Department of Health and Senior Services | keep as is |
+| Microsoft Office, Google Workspace | keep as is |
+| Ability to Benefit | keep as is |
+| Program names | Spanish name, then the official English name in parentheses on first use per page, for example "Asistente Medico Certificado (Certified Medical Assistant)" |
+
+Prices, hours, the phone number and the address never change between
+languages. Dates are written the way each language writes them: "September 14,
+2026" and "14 de septiembre de 2026".
+
+### The NJDOL funding sentence
+
+NJDOL requires this sentence word for word, in English, wherever Digital
+Literacy Training is described:
+
+> The funding for this initiative is being provided by the New Jersey
+> Department of Labor and Workforce Development.
+
+On Spanish pages a Spanish rendering is printed first so the reader
+understands it, and the required English sentence follows it, marked
+`lang="en"`. The English sentence is never translated away, never shortened
+and never dropped. `FundingLine.astro` does this; use that component rather
+than writing the sentence by hand.
+
+### When a Spanish term is not obvious
+
+Ask the school's bilingual staff before inventing one. They speak to these
+readers every day and they know which word the person will use on the phone.
+Note the question in the change so the answer gets written down here.

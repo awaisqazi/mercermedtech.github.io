@@ -1,0 +1,99 @@
+---
+import '../styles/components/footer.css';
+import { Image } from 'astro:assets';
+import logo from '../assets/images/logo-modern.png';
+import Lockup from './Lockup.astro';
+import { site } from '../data/site';
+import { t, type Locale } from '../i18n';
+import { footerLinks } from '../i18n/links';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const d = t(locale);
+const links = footerLinks(locale);
+---
+
+<footer id="footer" class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        {/* Also drawn 40px tall. Same two densities as the header. */}
+        <Image
+          src={logo}
+          alt=""
+          aria-hidden="true"
+          width={122}
+          height={40}
+          densities={[1, 2]}
+          format="webp"
+          loading="lazy"
+        />
+        <Lockup />
+        <p>{d.footer.brandLine}</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>{d.footer.explore}</h4>
+        <ul class="footer-links">
+          {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+          <li>
+            <a href={site.credentialFinderUrl} target="_blank" rel="noopener">{d.footer.credentialFinder}</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>{d.footer.contact}</h4>
+        <ul class="footer-links">
+          <li>
+            <a href={site.phone.href} class="footer-link-icon">
+              <i class="fas fa-phone-alt" aria-hidden="true"></i>
+              <span>{site.phone.display}</span>
+            </a>
+          </li>
+          <li>
+            <a href={`mailto:${site.email}`} class="footer-link-icon">
+              <i class="fas fa-envelope" aria-hidden="true"></i>
+              <span>{site.email}</span>
+            </a>
+          </li>
+          <li>
+            <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer" class="footer-link-address">
+              <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+              <div>
+                168 Franklin Corner Rd<br />Bldg 2, Suite #140<br />{site.address.city}, {site.address.region}{' '}
+                {site.address.postalCode}
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>{d.footer.follow}</h4>
+        <ul class="footer-links">
+          <li>
+            <a href={site.social.facebook} class="footer-link-icon" target="_blank" rel="noopener">
+              <i class="fab fa-facebook-f" aria-hidden="true"></i>
+              <span>Facebook</span>
+            </a>
+          </li>
+          <li>
+            <a href={site.social.instagram} class="footer-link-icon" target="_blank" rel="noopener">
+              <i class="fab fa-instagram" aria-hidden="true"></i>
+              <span>Instagram</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-licensing">{d.footer.licensingLine}</p>
+      <p>{site.copyright}</p>
+    </div>
+  </div>
+</footer>

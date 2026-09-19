@@ -1,0 +1,11 @@
+---
+/** Renders one structured-data block. Everything it prints comes from src/data. */
+interface Props {
+  data: unknown;
+}
+
+const { data } = Astro.props;
+const json = JSON.stringify(data, null, 2).replace(/</g, '\\u003c');
+---
+
+<script type="application/ld+json" is:inline set:html={json} />

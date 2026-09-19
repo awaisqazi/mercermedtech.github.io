@@ -1,0 +1,369 @@
+---
+/**
+ * Digital Literacy Training landing page, in one language.
+ * NJDOL rule: this page never advertises the health care programs.
+ */
+import '../styles/components/dl.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Lockup from '../components/Lockup.astro';
+import DltHeroArt from '../components/DltHeroArt.astro';
+import { site, dlt } from '../data/site';
+import { programById } from '../data/programs';
+import { localePath, t, type Locale } from '../i18n';
+import { dltCourseJsonLd, faqJsonLd } from '../data/schema';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const d = t(locale);
+const page = d.dlt;
+const addressLine2 = `${site.address.city}, ${site.address.region} ${site.address.postalCode}`;
+const dltProgram = programById('digital-literacy-training')!;
+const contactHref = `${localePath(locale, '/')}?program=digital-literacy#contact`;
+const jsonLd = [
+  dltCourseJsonLd(page.seo.schemaDescription, locale, dltProgram.name[locale]),
+  faqJsonLd(page.faq.items, locale),
+];
+---
+
+<BaseLayout
+  locale={locale}
+  path={dlt.path}
+  title={page.seo.title}
+  description={page.seo.description}
+  keywords={page.seo.keywords}
+  ogTitle={page.seo.ogTitle}
+  ogDescription={page.seo.ogDescription}
+  twitterTitle={page.seo.ogTitle}
+  twitterDescription={page.seo.twitterDescription}
+  variant="dlt"
+  bodyClass="dl-page"
+  jsonLd={jsonLd}
+  skipLink
+>
+  <main id="main">
+    <!-- ===== 1. Hero ===== -->
+    <section class="dl-hero">
+      <div class="container">
+        <div class="dl-hero-grid">
+          <div>
+            <Lockup variant="brand" divider="·" trailing={page.hero.eyebrowTrailing} />
+            <h1>{page.hero.headingBefore}<span class="text-gradient-tech">{page.hero.headingAccent}</span></h1>
+            <p class="dl-lead">{page.hero.lead}</p>
+            <ul class="dl-chips">
+              {page.hero.chips.map((chip) => <li><i class={chip.icon} aria-hidden="true"></i> {chip.label}</li>)}
+            </ul>
+            <div class="dl-actions">
+              <a href="#qualify" class="btn btn-tech">{page.hero.qualifyCta}</a>
+              <a href={site.phone.href} class="btn btn-tech-outline">
+                <i class="fas fa-phone-alt" aria-hidden="true"></i> {page.hero.callCta}
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <DltHeroArt label={page.hero.artLabel} />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 2. Information sessions ===== -->
+    <section class="dl-strip" aria-labelledby="dl-sessions-title">
+      <div class="container">
+        <div class="dl-strip-grid">
+          <div>
+            <h2 id="dl-sessions-title">{page.strip.heading}</h2>
+            <p>
+              {page.strip.note}
+              <a href={contactHref}>{page.strip.ctaLabel}</a>.
+            </p>
+          </div>
+          <div>
+            <span class="dl-strip-label">{page.strip.callLabel}</span>
+            <p><a href={site.phone.href}>{site.phone.display}</a></p>
+          </div>
+          <div>
+            <span class="dl-strip-label">{page.strip.whereLabel}</span>
+            <p>
+              <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
+                {site.address.street}, {addressLine2}
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 3. Who qualifies ===== -->
+    <section id="qualify" class="dl-section">
+      <div class="container">
+        <div class="dl-section-head">
+          <span class="dl-eyebrow">{page.qualify.eyebrow}</span>
+          <h2>{page.qualify.heading}</h2>
+          <p>{page.qualify.intro}</p>
+        </div>
+
+        <ul class="dl-checks">
+          {
+            page.qualify.checks.map((check) => (
+              <li>
+                <i class="fas fa-check" aria-hidden="true" />
+                <div>
+                  <strong>{check.title}</strong>
+                  <span>{check.body}</span>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h3 class="dl-eyebrow">{page.qualify.countiesHeading}</h3>
+        <ul class="dl-county-chips" aria-label={page.qualify.countiesHeading}>
+          {dlt.counties.map((county) => <li>{county}</li>)}
+        </ul>
+
+        <p class="dl-note">{page.qualify.note}</p>
+
+        <div class="dl-callout dl-callout--spaced">
+          <i class="fas fa-question-circle" aria-hidden="true"></i>
+          <p>
+            <strong>{page.qualify.calloutStrong}</strong>{page.qualify.calloutBefore}
+            <a href={site.phone.href}>{site.phone.display}</a>{page.qualify.calloutAfter}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 4. What you learn ===== -->
+    <section id="learn" class="dl-section dl-section--tint">
+      <div class="container">
+        <div class="dl-section-head">
+          <span class="dl-eyebrow">{page.learn.eyebrow}</span>
+          <h2>{page.learn.heading}</h2>
+          <p>{page.learn.intro}</p>
+        </div>
+
+        <div class="dl-cards">
+          {
+            page.learn.cards.map((card) => (
+              <article class="dl-card">
+                <div class="dl-card-icon"><i class={card.icon} aria-hidden="true" /></div>
+                <h3>{card.heading}</h3>
+                <p>{card.body}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 5. What you leave with ===== -->
+    <section class="dl-section">
+      <div class="container">
+        <div class="dl-section-head">
+          <span class="dl-eyebrow">{page.outcomes.eyebrow}</span>
+          <h2>{page.outcomes.heading}</h2>
+        </div>
+
+        <div class="dl-cards">
+          {
+            page.outcomes.cards.map((card) => (
+              <article class="dl-card">
+                <div class="dl-card-icon"><i class={card.icon} aria-hidden="true" /></div>
+                <h3>{card.heading}</h3>
+                <p>{card.body}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 6. Support while you train ===== -->
+    <section class="dl-section dl-section--tint">
+      <div class="container">
+        <div class="dl-split">
+          <div>
+            <div class="dl-section-head dl-section-head--tight">
+              <span class="dl-eyebrow">{page.support.eyebrow}</span>
+              <h2>{page.support.heading}</h2>
+            </div>
+            <ul class="dl-list">
+              {
+                page.support.items.map((item) => (
+                  <li>
+                    <i class={item.icon} aria-hidden="true" />
+                    <span>{item.body}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div class="dl-panel">
+            <h3>{page.support.panelHeading}</h3>
+            <p class="dl-muted">{page.support.panelIntro}</p>
+            <ul class="dl-list dl-list--spaced">
+              {
+                page.support.panelItems.map((item) => (
+                  <li>
+                    <i class={item.icon} aria-hidden="true" />
+                    <span>{item.body}</span>
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="dl-note">{page.support.panelNote}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 7. How to enroll ===== -->
+    <section id="enroll" class="dl-section">
+      <div class="container">
+        <div class="dl-section-head">
+          <span class="dl-eyebrow">{page.enroll.eyebrow}</span>
+          <h2>{page.enroll.heading}</h2>
+          <p>{page.enroll.intro}</p>
+        </div>
+
+        <ol class="dl-steps">
+          {
+            page.enroll.steps.map((step) => (
+              <li>
+                <strong>{step.title}</strong>
+                <span set:html={step.body} />
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== 8. For referral partners ===== -->
+    <section id="partners" class="dl-section dl-section--tint">
+      <div class="container">
+        <div class="dl-section-head">
+          <span class="dl-eyebrow">{page.partners.eyebrow}</span>
+          <h2>{page.partners.heading}</h2>
+          <p>{page.partners.intro}</p>
+        </div>
+
+        <div class="dl-split">
+          <div>
+            <h3 class="dl-subhead">{page.partners.whoHeading}</h3>
+            <p class="dl-muted">{page.partners.whoBody}</p>
+
+            <h3 class="dl-subhead dl-subhead--spaced">{page.partners.howHeading}</h3>
+            <ul class="dl-list">
+              {
+                page.partners.howItems.map((item) => (
+                  <li>
+                    <i class={item.icon} aria-hidden="true" />
+                    <span set:html={item.body} />
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+
+          <div class="dl-panel">
+            <h3>{page.partners.reportHeading}</h3>
+            <p class="dl-muted">{page.partners.reportBody}</p>
+            <h3 class="dl-subhead--spaced">{page.partners.contactHeading}</h3>
+            <div class="dl-contact-item dl-contact-item--spaced">
+              <i class="fas fa-phone-alt" aria-hidden="true"></i>
+              <div>
+                <div class="dl-contact-label">{page.partners.phoneLabel}</div>
+                <a href={site.phone.href}>{site.phone.display}</a>
+              </div>
+            </div>
+            <div class="dl-contact-item">
+              <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+              <div>
+                <div class="dl-contact-label">{page.partners.campusLabel}</div>
+                <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
+                  {site.address.street}<br />{addressLine2}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 9. FAQ ===== -->
+    <section class="dl-section dl-section--tint" aria-labelledby="dl-faq-title">
+      <div class="container">
+        <div class="dl-section-head">
+          <span class="dl-eyebrow">{page.faq.eyebrow}</span>
+          <h2 id="dl-faq-title">{page.faq.heading}</h2>
+        </div>
+
+        <div class="dl-faq">
+          {
+            page.faq.items.map((item) => (
+              <details>
+                <summary>{item.question}</summary>
+                <div class="dl-faq-body">{item.answer}</div>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 10. Contact ===== -->
+    <section class="dl-section" aria-labelledby="dl-contact-title">
+      <div class="container">
+        <div class="dl-section-head">
+          <span class="dl-eyebrow">{page.contact.eyebrow}</span>
+          <h2 id="dl-contact-title">{page.contact.heading}</h2>
+          <p>{page.contact.intro}</p>
+        </div>
+
+        <div class="dl-contact-grid">
+          <div class="dl-contact-item">
+            <i class="fas fa-phone-alt" aria-hidden="true"></i>
+            <div>
+              <div class="dl-contact-label">{page.contact.callLabel}</div>
+              <a href={site.phone.href}>{site.phone.display}</a>
+            </div>
+          </div>
+          <div class="dl-contact-item">
+            <i class="fas fa-envelope" aria-hidden="true"></i>
+            <div>
+              <div class="dl-contact-label">{page.contact.emailLabel}</div>
+              <a href={`mailto:${site.email}`}>{site.email}</a>
+            </div>
+          </div>
+          <div class="dl-contact-item">
+            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+            <div>
+              <div class="dl-contact-label">{page.contact.visitLabel}</div>
+              <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
+                {site.address.street}<br />{addressLine2}
+              </a>
+            </div>
+          </div>
+          <div class="dl-contact-item">
+            <i class="fas fa-calendar-check" aria-hidden="true"></i>
+            <div>
+              <div class="dl-contact-label">{page.contact.sessionsLabel}</div>
+              <span>{page.contact.sessionsValue}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dl-actions dl-actions--spaced">
+          <a href={site.phone.href} class="btn btn-tech">{page.contact.callCta}</a>
+          <a href={`mailto:${site.email}`} class="btn btn-tech-outline">{page.contact.emailCta}</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

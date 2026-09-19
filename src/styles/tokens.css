@@ -1,0 +1,74 @@
+/* ==========================================================================
+   Design tokens
+   Every colour, radius, timing curve and layout constant the site uses.
+   Med keeps the brand teal (--primary family); Tech owns the indigo family.
+   ========================================================================== */
+
+:root {
+    /* Core Palette - Premium Medical Tech */
+    --primary: #00a69c;
+    /* Brand Teal */
+    --primary-dark: #007d75;
+    /* Darker for contrast */
+    --primary-light: #e0f7f6;
+    --accent: #20c997;
+    /* Brighter teal/green for gradients */
+    --accent-hover: #008c82;
+
+    /* Neutrals */
+    --surface-1: #ffffff;
+    --surface-2: #f0f4f8;
+    --surface-3: #e2e8f0;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+    --border: #cbd5e1;
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 166, 156, 0.1);
+    --backdrop-blur: blur(12px);
+
+    /* Layout */
+    --container-width: 1280px;
+    --header-height: 80px;
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-full: 9999px;
+
+    /* Animation */
+    --ease-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+    --ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
+
+    /* Material 3 Spring Animation Curves */
+    --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --spring-gentle: cubic-bezier(0.22, 1, 0.36, 1);
+    --spring-snappy: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* iOS Safe Area Insets */
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-left: env(safe-area-inset-left, 0px);
+    --safe-area-right: env(safe-area-inset-right, 0px);
+
+    /* Enhanced Glassmorphism for Programs Section */
+    --glass-programs-bg: rgba(255, 255, 255, 0.72);
+    --glass-programs-border: rgba(0, 166, 156, 0.15);
+    --glass-programs-blur: blur(24px);
+    --glass-card-glow: 0 0 40px rgba(0, 166, 156, 0.08);
+    --glass-card-glow-hover: 0 0 60px rgba(0, 166, 156, 0.15);
+
+    /* Tech track design tokens
+       Med  = allied health, keeps the brand teal (--primary family).
+       Tech = digital skills, uses the indigo family below.
+       Contrast checked: --tech on white 5.6:1, --tech-dark on white 8.4:1,
+       --tech-dark on --tech-light 7.1:1, white on --tech 5.6:1. */
+    --tech: #3B5BDB;
+    --tech-dark: #2B44A8;
+    --tech-light: #E7ECFD;
+    /* Combined lockup gradient. Reserved for the "Med + Tech" wordmark
+       treatment and the hero accent. Never as a section background. */
+    --lockup-gradient: linear-gradient(135deg, #00A69C 0%, #3B5BDB 100%);
+}

@@ -1,0 +1,84 @@
+---
+import '../styles/components/programs.css';
+import Lockup from './Lockup.astro';
+
+interface Props {
+  heading: string;
+  intro: string;
+}
+
+const { heading, intro } = Astro.props;
+---
+
+<section id="programs" class="programs-section">
+  <!-- Animated Gradient Mesh Background -->
+  <div class="programs-gradient-mesh" aria-hidden="true"></div>
+
+  <!-- Floating Decorative Elements -->
+  <div class="programs-floating-element" aria-hidden="true"></div>
+  <div class="programs-floating-element" aria-hidden="true"></div>
+  <div class="programs-floating-element" aria-hidden="true"></div>
+
+  <div class="container">
+    <div class="section-header text-center">
+      <div class="programs-pill-badge">
+        <Lockup />
+      </div>
+      <h2>{heading}</h2>
+      <p class="text-muted">{intro}</p>
+    </div>
+
+    <!-- Two track columns. At 1024px and up: Med on the left, Tech on the
+         right, mirroring the name. Below 1024px they stack, Med first. -->
+    <div class="programs-tracks">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<script>
+  // Decorative parallax for the programs background, desktop pointers only,
+  // and never when the reader asks for reduced motion.
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const section = document.querySelector<HTMLElement>('.programs-section');
+  const mesh = document.querySelector<HTMLElement>('.programs-gradient-mesh');
+  const floaters = Array.from(document.querySelectorAll<HTMLElement>('.programs-floating-element'));
+  const hasTouch = 'ontouchstart' in window;
+
+  if (!reduced && !hasTouch && section && mesh) {
+    section.addEventListener('mousemove', (event) => {
+      const rect = section.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+      mesh.style.transform = `translate(${x * 20}px, ${y * 20}px)`;
+    });
+
+    section.addEventListener('mouseleave', () => {
+      mesh.style.transition = 'transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+      mesh.style.transform = 'translate(0, 0)';
+      window.setTimeout(() => {
+        mesh.style.transition = '';
+      }, 500);
+    });
+  }
+
+  if (!reduced && !hasTouch && floaters.length && section) {
+    let ticking = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(() => {
+          const relativeScroll = (window.scrollY - section.offsetTop) * 0.1;
+          floaters.forEach((element, index) => {
+            const speed = 0.02 + index * 0.01;
+            element.style.transform = `translateY(${relativeScroll * speed}px)`;
+          });
+          ticking = false;
+        });
+      },
+      { passive: true }
+    );
+  }
+</script>

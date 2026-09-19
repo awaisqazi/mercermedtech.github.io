@@ -1,0 +1,58 @@
+---
+import type { Program } from '../data/types';
+import { localePath, type Locale } from '../i18n';
+
+interface Props {
+  program: Program;
+  locale: Locale;
+  closeLabel: string;
+  closeButtonLabel: string;
+  pageLinkLabel: string;
+  contactHref: string;
+}
+
+const { program, locale, closeLabel, closeButtonLabel, pageLinkLabel, contactHref } = Astro.props;
+const showStatusNote = program.status === 'announce-soon';
+const titleId = `${program.id}-modal-title`;
+const sections = program.detail[locale];
+const pageHref = localePath(locale, `/programs/${program.id}/`);
+---
+
+<dialog id={`${program.id}-modal`} class="program-modal" aria-labelledby={titleId}>
+  <div class="modal-content">
+    <button class="modal-close" type="button" aria-label={closeLabel} data-modal-close>×</button>
+    <div class="modal-header">
+      <h2 id={titleId} set:html={program.modalTitle ? program.modalTitle[locale] : program.name[locale]}></h2>
+      {program.modalMeta && <p>{program.modalMeta[locale]}</p>}
+    </div>
+    <div class="modal-body">
+      {showStatusNote && program.statusLine && <p class="modal-status-note">{program.statusLine[locale]}</p>}
+      {
+        sections.map((section) => (
+          <>
+            {section.heading && <h3>{section.heading}</h3>}
+            {section.paragraphs?.map((text) => <p set:html={text} />)}
+            {section.bullets && (
+              <ul>
+                {section.bullets.map((item) => (
+                  <li set:html={item} />
+                ))}
+              </ul>
+            )}
+          </>
+        ))
+      }
+    </div>
+    <div class="modal-footer">
+      {
+        program.modalCta && (
+          <a href={contactHref} class="btn btn-primary" data-modal-close>
+            {program.modalCta[locale]}
+          </a>
+        )
+      }
+      <a href={pageHref} class="btn btn-secondary">{pageLinkLabel}</a>
+      <button class="btn btn-secondary" type="button" data-modal-close>{closeButtonLabel}</button>
+    </div>
+  </div>
+</dialog>

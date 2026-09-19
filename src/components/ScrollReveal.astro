@@ -1,0 +1,67 @@
+---
+/**
+ * Sections fade and slide in as they come into view.
+ *
+ * The attributes are added by JavaScript, so the markup stays clean and the
+ * page is fully readable with JavaScript switched off: the hidden state only
+ * turns on once an IntersectionObserver is confirmed. Readers who ask for
+ * reduced motion see everything immediately.
+ */
+import '../styles/components/reveal.css';
+---
+
+<script>
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Blocks that fade in as a whole
+  const revealSelectors = [
+    '.section-header',
+    '.about-section .hero-content',
+    '.about-section .hero-image-wrapper',
+    '#grants .hero-content',
+    '#grants .hero-image-wrapper',
+    '.tuition-table-wrap',
+    '.tuition-note',
+    '.tuition-cta',
+    '.admissions-block',
+    '.grants-block',
+    '.tech-card',
+    '.data-source-notes',
+    '.faculty-wrapper',
+    '.contact-intro',
+    '.contact-card',
+  ];
+  // Containers whose children come in one after another
+  const staggerSelectors = ['.why-grid', '.enroll-programs', '.enroll-grid'];
+
+  revealSelectors.forEach((selector) => {
+    document.querySelectorAll(selector).forEach((el) => el.setAttribute('data-reveal', ''));
+  });
+  staggerSelectors.forEach((selector) => {
+    document.querySelectorAll(selector).forEach((el) => el.setAttribute('data-reveal-stagger', ''));
+  });
+
+  const targets = document.querySelectorAll('[data-reveal], [data-reveal-stagger]');
+
+  if (targets.length) {
+    if (prefersReduced || !('IntersectionObserver' in window)) {
+      targets.forEach((el) => el.classList.add('is-revealed'));
+    } else {
+      // Only now is it safe to hide anything.
+      document.documentElement.classList.add('reveal-ready');
+
+      const observer = new IntersectionObserver(
+        (entries, obs) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('is-revealed');
+            obs.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+      );
+
+      targets.forEach((el) => observer.observe(el));
+    }
+  }
+</script>

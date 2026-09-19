@@ -1,0 +1,64 @@
+/* ==========================================================================
+   Affiliated organizations: continuous marquee strip
+   ========================================================================== */
+
+.scrolling-wrapper {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+    margin-top: 3rem;
+}
+
+.scrolling-wrapper::before,
+.scrolling-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 150px;
+    height: 100%;
+    z-index: 2;
+}
+
+.scrolling-wrapper::before {
+    left: 0;
+    background: linear-gradient(to right, var(--surface-1) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.scrolling-wrapper::after {
+    right: 0;
+    background: linear-gradient(to left, var(--surface-1) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.scrolling-content {
+    display: flex;
+    width: fit-content;
+    animation: scroll 40s linear infinite;
+}
+
+.scrolling-content .org-item {
+    flex-shrink: 0;
+    padding: 1rem 2.5rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scrolling-content {
+        animation: none;
+    }
+}

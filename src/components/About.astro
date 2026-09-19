@@ -1,0 +1,37 @@
+---
+import { Image } from 'astro:assets';
+import aboutImage from '../assets/images/about-modern.png';
+
+interface Props {
+  heading: string;
+  paragraphs: string[];
+  imageAlt: string;
+  actions: { href: string; label: string; style: 'primary' | 'tech-outline' }[];
+}
+
+const { heading, paragraphs, imageAlt, actions } = Astro.props;
+---
+
+<section id="about" class="section-padding about-section">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-image-wrapper">
+        <Image
+          src={aboutImage}
+          alt={imageAlt}
+          class="hero-image"
+          widths={[480, 800, 1200]}
+          sizes="(max-width: 968px) 92vw, 600px"
+          loading="lazy"
+        />
+      </div>
+      <div class="hero-content">
+        <h2 class="section-title">{heading}</h2>
+        {paragraphs.map((text) => <p>{text}</p>)}
+        <div class="hero-actions hero-actions--spaced">
+          {actions.map((action) => <a href={action.href} class={`btn btn-${action.style}`}>{action.label}</a>)}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,217 @@
+---
+import { medPrograms } from '../data/programs';
+import ProgramCard from './ProgramCard.astro';
+import type { Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  tag: string;
+  heading: string;
+  intro: string;
+  detailsLabel: string;
+  waitlistLabel: string;
+  waitlistHref: string;
+  prevLabel: string;
+  nextLabel: string;
+  swipeLabel: string;
+  dotLabel: string;
+  trackLabel: string;
+  notes: { heading: string; paragraphs: string[] };
+}
+
+const {
+  locale,
+  tag,
+  heading,
+  intro,
+  detailsLabel,
+  waitlistLabel,
+  waitlistHref,
+  prevLabel,
+  nextLabel,
+  swipeLabel,
+  dotLabel,
+  trackLabel,
+  notes,
+} = Astro.props;
+---
+
+<div id="programs-med" class="programs-group programs-group--med">
+  <div class="programs-group-header">
+    <span class="track-tag track-tag--med">{tag}</span>
+    <h3>{heading}</h3>
+    <p>{intro}</p>
+  </div>
+
+  <div class="programs-carousel-glass">
+    <div class="carousel-container" data-carousel data-dot-label={dotLabel}>
+      <div class="carousel-wrapper">
+        <div class="carousel-track" tabindex="0" role="group" aria-label={trackLabel}>
+          {
+            medPrograms.map((program) => (
+              <ProgramCard
+                program={program}
+                locale={locale}
+                detailsLabel={detailsLabel}
+                waitlistLabel={waitlistLabel}
+                waitlistHref={waitlistHref}
+              />
+            ))
+          }
+        </div>
+      </div>
+
+      <button class="carousel-btn carousel-prev" type="button" aria-label={prevLabel}>
+        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+      </button>
+      <button class="carousel-btn carousel-next" type="button" aria-label={nextLabel}>
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+      </button>
+
+      <div class="carousel-dots"></div>
+
+      <div class="programs-scroll-progress" aria-hidden="true">
+        <div class="programs-scroll-progress-bar"></div>
+      </div>
+
+      <div class="swipe-indicator">
+        <i class="fas fa-hand-pointer" aria-hidden="true"></i>
+        <span>{swipeLabel}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="data-source-notes">
+    <h4>{notes.heading}</h4>
+    {notes.paragraphs.map((text) => <p>{text}</p>)}
+  </div>
+</div>
+
+<script>
+  // Med programs carousel.
+  //
+  // The cards use ONE set of markup in two modes:
+  //   below 1024px  -> CSS scroll-snap carousel, scrolled by the browser
+  //   1024px and up -> static 2-column CSS grid (see programs.css)
+  // GRID_MODE_QUERY is the single source of truth for the switch and must stay
+  // in sync with the matching @media block in programs.css. In grid mode this
+  // script does nothing at all: no transforms, no widths, nothing to clean up.
+  //
+  // Swiping is native scrolling, so iOS Safari keeps vertical page scrolling,
+  // momentum and rubber-banding. Nothing sets touch-action: none.
+  const GRID_MODE_QUERY = '(min-width: 1024px)';
+
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
+    const track = root.querySelector<HTMLElement>('.carousel-track');
+    const dotsBox = root.querySelector<HTMLElement>('.carousel-dots');
+    const prev = root.querySelector<HTMLButtonElement>('.carousel-prev');
+    const next = root.querySelector<HTMLButtonElement>('.carousel-next');
+    const progressBar = root.querySelector<HTMLElement>('.programs-scroll-progress-bar');
+    if (!track) return;
+
+    const slides = Array.from(track.children) as HTMLElement[];
+    const dotLabel = root.dataset.dotLabel ?? 'Go to program';
+    const gridQuery = window.matchMedia(GRID_MODE_QUERY);
+    let dots: HTMLButtonElement[] = [];
+
+    const isGridMode = () => gridQuery.matches;
+
+    // Width of one slide plus the gap, measured live so it survives a resize.
+    const step = () => {
+      if (slides.length < 2) return slides[0]?.offsetWidth ?? 0;
+      return slides[1].offsetLeft - slides[0].offsetLeft;
+    };
+
+    const itemsPerView = () => {
+      const width = step();
+      if (!width) return 1;
+      return Math.max(1, Math.round(track.clientWidth / width));
+    };
+
+    const currentIndex = () => {
+      const width = step();
+      return width ? Math.round(track.scrollLeft / width) : 0;
+    };
+
+    const scrollToIndex = (index: number) => {
+      const width = step();
+      track.scrollTo({ left: index * width, behavior: 'smooth' });
+    };
+
+    const buildDots = () => {
+      if (!dotsBox) return;
+      const needed = isGridMode() ? 0 : Math.max(0, slides.length - itemsPerView() + 1);
+      if (dots.length === needed) return;
+      dotsBox.innerHTML = '';
+      dots = [];
+      for (let i = 0; i < needed; i += 1) {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'dot';
+        dot.setAttribute('aria-label', `${dotLabel} ${i + 1}`);
+        dot.addEventListener('click', () => scrollToIndex(i));
+        dotsBox.appendChild(dot);
+        dots.push(dot);
+      }
+    };
+
+    const syncState = () => {
+      if (isGridMode()) return;
+      const index = currentIndex();
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      if (prev) prev.disabled = track.scrollLeft <= 1;
+      if (next) next.disabled = track.scrollLeft >= maxScroll - 1;
+
+      if (progressBar && track.scrollWidth > 0) {
+        const visible = Math.min(1, track.clientWidth / track.scrollWidth);
+        const progress = maxScroll > 0 ? track.scrollLeft / maxScroll : 0;
+        progressBar.style.width = `${visible * 100}%`;
+        progressBar.style.transform = `translateX(${(progress * (1 - visible) * 100) / visible}%)`;
+      }
+    };
+
+    const move = (direction: number) => {
+      if (isGridMode()) return;
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      let target = track.scrollLeft + direction * step();
+      // Wrap around, the way the old carousel did.
+      if (target > maxScroll + 1) target = 0;
+      if (target < -1) target = maxScroll;
+      track.scrollTo({ left: Math.max(0, Math.min(target, maxScroll)), behavior: 'smooth' });
+    };
+
+    prev?.addEventListener('click', () => move(-1));
+    next?.addEventListener('click', () => move(1));
+
+    track.addEventListener('scroll', () => {
+      window.requestAnimationFrame(syncState);
+    });
+
+    track.addEventListener('keydown', (event) => {
+      if (isGridMode()) return;
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        move(1);
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        move(-1);
+      }
+    });
+
+    const refresh = () => {
+      if (isGridMode()) {
+        if (dotsBox) dotsBox.innerHTML = '';
+        dots = [];
+        return;
+      }
+      buildDots();
+      syncState();
+    };
+
+    window.addEventListener('resize', refresh);
+    gridQuery.addEventListener('change', refresh);
+    refresh();
+  });
+</script>

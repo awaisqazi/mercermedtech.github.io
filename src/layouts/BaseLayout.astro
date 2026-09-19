@@ -1,0 +1,233 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/components/buttons.css';
+import '../styles/components/lockup.css';
+import '../styles/components/header.css';
+import '../styles/components/floating-call.css';
+
+import { site } from '../data/site';
+import { alternatePaths, defaultLocale, localeMeta, localePath, t, type Locale } from '../i18n';
+import { homeNav, dltNav, type NavLink } from '../i18n/links';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import DltFooter from '../components/DltFooter.astro';
+import FloatingCall from '../components/FloatingCall.astro';
+import JsonLd from '../components/JsonLd.astro';
+
+interface Props {
+  locale: Locale;
+  /** Language-free path, for example "/" or "/programs/ekg-technician/". */
+  path: string;
+  title: string;
+  description: string;
+  keywords?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  twitterTitle?: string;
+  twitterDescription?: string;
+  /** "dlt" renders the minimal Tech-track header and footer. */
+  variant?: 'home' | 'dlt';
+  bodyClass?: string;
+  jsonLd?: unknown[];
+  /** Shows the skip link, used on the Tech-track landing page. */
+  skipLink?: boolean;
+  /** Overrides the header links, for pages that are not the homepage. */
+  navLinks?: NavLink[];
+  /**
+   * The error page has no twin in the other language, so it carries no
+   * hreflang tags and asks search engines to skip it.
+   */
+  standalone?: boolean;
+  /** Where the language switch should send the reader (default: this page). */
+  switchPath?: string;
+}
+
+const {
+  locale,
+  path,
+  title,
+  description,
+  keywords,
+  ogTitle,
+  ogDescription,
+  twitterTitle,
+  twitterDescription,
+  variant = 'home',
+  bodyClass,
+  jsonLd = [],
+  skipLink = false,
+  navLinks,
+  standalone = false,
+  switchPath,
+} = Astro.props;
+
+const d = t(locale);
+const meta = localeMeta[locale];
+const canonical = new URL(localePath(locale, path), site.url).href;
+const alternates = alternatePaths(path).map((alternate) => ({
+  hreflang: localeMeta[alternate.locale].hreflang,
+  href: new URL(alternate.path, site.url).href,
+  isDefault: alternate.locale === defaultLocale,
+}));
+// A shared link outlives a build, so the card points at the unhashed file in
+// public/ rather than at an /_astro/... address that changes with the source.
+const ogImageUrl = new URL(site.staticImages.ogCard, site.url).href;
+const links = navLinks ?? (variant === 'dlt' ? dltNav(locale) : homeNav(locale));
+---
+
+<!DOCTYPE html>
+<html lang={meta.htmlLang}>
+  <head>
+    <title>{title}</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    {keywords && <meta name="keywords" content={keywords} />}
+    <link rel="canonical" href={canonical} />
+
+    {standalone && <meta name="robots" content="noindex" />}
+
+    <!-- The same page in the other language -->
+    {!standalone && alternates.map((alternate) => <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />)}
+    {
+      !standalone &&
+        alternates.filter((a) => a.isDefault).map((a) => <link rel="alternate" hreflang="x-default" href={a.href} />)
+    }
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={ogTitle ?? title} />
+    <meta property="og:description" content={ogDescription ?? description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={meta.ogLocale} />
+    {
+      alternatePaths(path)
+        .filter((alternate) => alternate.locale !== locale)
+        .map((alternate) => <meta property="og:locale:alternate" content={localeMeta[alternate.locale].ogLocale} />)
+    }
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={twitterTitle ?? ogTitle ?? title} />
+    <meta name="twitter:description" content={twitterDescription ?? ogDescription ?? description} />
+
+    <!-- Geo metadata -->
+    <meta name="geo.region" content="US-NJ" />
+    <meta name="geo.placename" content={`${site.address.city}, New Jersey`} />
+    <meta name="geo.position" content={`${site.geo.latitude};${site.geo.longitude}`} />
+    <meta name="ICBM" content={`${site.geo.latitude}, ${site.geo.longitude}`} />
+
+    {jsonLd.map((data) => <JsonLd data={data} />)}
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="/assets/css/fontawesome-all.min.css" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+  </head>
+
+  <body class={bodyClass}>
+    {skipLink && <a href="#main" class="dl-skip-link">{d.ui.skipLink}</a>}
+
+    <Header
+      locale={locale}
+      links={links}
+      path={switchPath ?? path}
+      variant={variant}
+      phoneButton={variant === 'dlt'}
+    />
+
+    <slot />
+
+    {variant === 'dlt' ? <DltFooter locale={locale} /> : <Footer locale={locale} />}
+
+    <FloatingCall
+      variant={variant === 'dlt' ? 'tech' : 'med'}
+      label={d.ui.floatingCallLabel}
+      ariaLabel={d.ui.callAria}
+    />
+
+    <slot name="end" />
+  </body>
+</html>
+
+<script>
+  // Sticky header shadow, smooth in-page scrolling with a header offset, and
+  // the active nav link. One small module, no framework.
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const navLinks = Array.from(document.querySelectorAll<HTMLAnchorElement>('.nav-link'));
+
+  if (header) {
+    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // Active nav link.
+  // At 1024px and up the Med and Tech columns sit side by side and therefore
+  // start at the same y. Rather than guess which one the reader means, every
+  // section that starts on the winning band (within a 2px tolerance) is
+  // highlighted, so "Med" and "Tech" light up together on desktop and
+  // individually once they stack.
+  const BAND_TOLERANCE = 2;
+  const pairs = navLinks
+    .filter((link) => (link.getAttribute('href') || '').startsWith('#'))
+    .map((link) => ({ link, section: document.querySelector<HTMLElement>(link.getAttribute('href')!) }))
+    .filter((pair): pair is { link: HTMLAnchorElement; section: HTMLElement } => Boolean(pair.section));
+
+  if (pairs.length) {
+    const update = () => {
+      const line = (header ? header.offsetHeight : 0) + window.innerHeight * 0.2;
+      const tops = pairs.map((pair) => pair.section.getBoundingClientRect().top);
+
+      let bandTop: number | null = null;
+      tops.forEach((top) => {
+        if (top - line <= 0 && (bandTop === null || top > bandTop + BAND_TOLERANCE)) bandTop = top;
+      });
+
+      pairs.forEach((pair, index) => {
+        const active = bandTop === null ? index === 0 : Math.abs(tops[index] - bandTop) <= BAND_TOLERANCE;
+        pair.link.classList.toggle('active', active);
+      });
+    };
+
+    let ticking = false;
+    const requestUpdate = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        update();
+        ticking = false;
+      });
+    };
+
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+    window.addEventListener('load', requestUpdate);
+    update();
+  }
+
+  // Smooth scrolling for in-page anchors, offset by the fixed header.
+  document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', (event) => {
+      const targetId = anchor.getAttribute('href');
+      // Plain "#" links are not in-page anchors and are not valid selectors.
+      if (!targetId || targetId.length < 2) return;
+      const target = document.querySelector<HTMLElement>(targetId);
+      if (!target) return;
+      event.preventDefault();
+      const headerOffset = header ? header.offsetHeight : 0;
+      const offsetPosition = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+    });
+  });
+</script>
