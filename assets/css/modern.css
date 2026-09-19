@@ -789,7 +789,7 @@ img {
     text-align: left;
 }
 
-.data-source-notes h5 {
+.data-source-notes h4 {
     font-size: 1.1rem;
     color: var(--text-main);
     margin-bottom: 1rem;

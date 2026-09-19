@@ -1,0 +1,1673 @@
+/* ==========================================================================
+   MERCER MED TECH - "Med + Tech" brand architecture
+   --------------------------------------------------------------------------
+   Loaded by BOTH index.html (homepage) and digital-literacy.html.
+   Everything here sits on top of modern.css and reuses its tokens.
+
+   ORDER RULE
+     Med first / left, Tech second / right, everywhere, mirroring the name.
+     Stacked layouts put Med on top. The only exception is the announcement
+     strip in block 3a, which is about Digital Literacy on its own.
+
+   BLOCKS
+     1.  Tech track design tokens
+     2.  Med + Tech lockup (CSS wordmark)
+     3.  Shared utilities (also present inline on the homepage)
+     3a. Homepage: announcement strip
+     4.  Homepage: hero track panels
+     5.  Homepage: programs columns + Tech feature card
+     6.  Homepage: two-track enrollment
+     7.  Homepage: tuition group rows
+     8.  Homepage: grant funding blocks
+     9.  Landing page: page shell, header, hero
+    10.  Landing page: sections and components
+    11.  Reduced motion
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. Tech track design tokens
+   Med  = allied health, keeps the brand teal (--primary family).
+   Tech = digital skills, uses the indigo family below.
+   Contrast checked: --tech on white 5.6:1, --tech-dark on white 8.4:1,
+   --tech-dark on --tech-light 7.1:1, white on --tech 5.6:1.
+   ========================================================================== */
+:root {
+    --tech: #3B5BDB;
+    --tech-dark: #2B44A8;
+    --tech-light: #E7ECFD;
+    /* Combined lockup gradient. Reserved for the "Med + Tech" wordmark
+       treatment and the hero accent. Never as a section background. */
+    --lockup-gradient: linear-gradient(135deg, #00A69C 0%, #3B5BDB 100%);
+}
+
+
+/* ==========================================================================
+   2. Med + Tech lockup
+   "Med" teal, thin divider, "Tech" indigo. Outfit 700.
+   ========================================================================== */
+.medtech-lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+.medtech-lockup .lockup-med {
+    color: var(--primary-dark);
+}
+
+.medtech-lockup .lockup-tech {
+    color: var(--tech-dark);
+}
+
+.medtech-lockup .lockup-plus {
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* Eyebrow-sized lockup used in the hero and section headers */
+.medtech-lockup.lockup-eyebrow {
+    padding: 0.45rem 1rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    background: linear-gradient(135deg, rgba(0, 166, 156, 0.10) 0%, rgba(59, 91, 219, 0.10) 100%);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-full);
+    margin-bottom: 1.25rem;
+}
+
+/* Footer variant sits on the dark footer surface */
+.site-footer .medtech-lockup {
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+}
+
+.site-footer .medtech-lockup .lockup-med {
+    color: #5FE3D8;
+}
+
+.site-footer .medtech-lockup .lockup-tech {
+    color: #9FB3FF;
+}
+
+/* Combined gradient, for the hero accent word only */
+.text-gradient-lockup {
+    background: var(--lockup-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    color: var(--tech);
+}
+
+/* Tech-only gradient accent */
+.text-gradient-tech {
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    color: var(--tech);
+}
+
+/* Tech-track button. Same geometry as .btn-primary, indigo fill. */
+.btn-tech {
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 10px 20px rgba(59, 91, 219, 0.25);
+}
+
+.btn-tech:hover {
+    transform: translateY(-3px);
+    color: #fff;
+    box-shadow: 0 16px 32px rgba(59, 91, 219, 0.38);
+}
+
+.btn-tech-outline {
+    background: #fff;
+    color: var(--tech-dark);
+    border: 2px solid var(--tech);
+}
+
+.btn-tech-outline:hover {
+    background: var(--tech-light);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+
+/* ==========================================================================
+   3. Shared utilities
+   (.visually-hidden and the focus ring also exist inline on the homepage;
+    they are repeated here so the landing page gets them too.)
+   ========================================================================== */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.dl-page :focus-visible {
+    outline: 2px solid var(--tech);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+
+/* ==========================================================================
+   3a. Homepage: announcement strip
+   One slim line under the fixed header. Not sticky. Digital Literacy sits
+   second everywhere else under the Med-first order rule, so this is where it
+   gets its own moment. Tech color family.
+   ========================================================================== */
+.announce-strip {
+    /* Clears the fixed header, which is out of flow. */
+    margin-top: var(--header-height);
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    color: #fff;
+}
+
+.announce-strip p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem 0.75rem;
+    margin: 0;
+    padding: 0.4rem 0;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.announce-strip i {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.announce-strip a {
+    display: inline-flex;
+    align-items: center;
+    /* 44px tap target without making the strip tall on desktop. */
+    min-height: 44px;
+    padding: 0 0.85rem;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+}
+
+.announce-strip a:hover,
+.announce-strip a:focus-visible {
+    background: rgba(255, 255, 255, 0.28);
+    color: #fff;
+}
+
+/* The strip now carries the header offset, so the hero drops its own. */
+.announce-strip + .hero {
+    padding-top: 3rem;
+}
+
+@media (max-width: 640px) {
+    .announce-strip p {
+        padding: 0.35rem 0;
+        font-size: 0.88rem;
+    }
+
+    .announce-strip + .hero {
+        padding-top: 2rem;
+    }
+}
+
+
+/* ==========================================================================
+   4. Homepage: hero track panels
+   Two equal panels. Med first in the DOM, so Med is on top when they stack.
+   ========================================================================== */
+.hero-lead {
+    max-width: 780px;
+}
+
+.hero-lead p {
+    max-width: 62ch;
+}
+
+@media (max-width: 968px) {
+    .hero-lead p {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+.track-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+}
+
+.track-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.75rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 18px 40px -24px rgba(15, 23, 42, 0.25);
+    transition: transform 0.35s var(--spring-gentle),
+        box-shadow 0.35s var(--spring-gentle);
+}
+
+.track-panel:hover {
+    transform: translateY(-4px);
+}
+
+.track-panel--tech {
+    border-color: rgba(59, 91, 219, 0.25);
+    background: linear-gradient(160deg, #fff 0%, var(--tech-light) 100%);
+    box-shadow: 0 18px 40px -22px rgba(59, 91, 219, 0.45);
+}
+
+.track-panel--med {
+    border-color: rgba(0, 166, 156, 0.25);
+    background: linear-gradient(160deg, #fff 0%, var(--primary-light) 100%);
+    box-shadow: 0 18px 40px -22px rgba(0, 166, 156, 0.4);
+}
+
+.track-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: flex-start;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--radius-full);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.track-panel--tech .track-label {
+    background: var(--tech);
+    color: #fff;
+}
+
+.track-panel--med .track-label {
+    background: var(--primary-dark);
+    color: #fff;
+}
+
+.track-panel h2 {
+    font-size: 1.35rem;
+    margin: 0;
+}
+
+.track-panel > p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: none;
+}
+
+.track-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.track-chips li {
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-full);
+    font-size: 0.82rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.track-panel--tech .track-chips li {
+    color: var(--tech-dark);
+    border: 1px solid rgba(59, 91, 219, 0.25);
+}
+
+.track-panel--med .track-chips li {
+    color: var(--primary-dark);
+    border: 1px solid rgba(0, 166, 156, 0.25);
+}
+
+.track-panel .btn {
+    align-self: flex-start;
+    margin-top: auto;
+    min-height: 48px;
+}
+
+.hero-quiet {
+    margin-top: 1.75rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+.hero-quiet a {
+    color: var(--primary-dark);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.hero-quiet a:hover {
+    color: var(--primary);
+}
+
+@media (max-width: 860px) {
+    .track-panels {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================================================
+   5. Homepage: programs columns + Tech feature card
+   #programs stays on the wrapper. #programs-med and #programs-tech are the
+   two labelled columns inside it, Med first in the DOM.
+     below 1024px  -> one stacked column, Med on top, Med carousel swipes
+     1024px and up -> two columns, Med left / Tech right, Med cards become a
+                      static 2-column CSS grid (see "grid mode" below)
+   ========================================================================== */
+.programs-tracks {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 5rem;
+}
+
+.programs-group {
+    position: relative;
+    z-index: 2;
+    min-width: 0;
+    scroll-margin-top: var(--header-height);
+}
+
+.programs-group-header {
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+/* Equal-weight column headers. Both tracks share this size; the track colour
+   comes from .track-tag--med (teal) and .track-tag--tech (indigo). */
+.programs-group-header h3 {
+    font-size: clamp(1.6rem, 3vw, 2.15rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+}
+
+.programs-group-header p {
+    color: var(--text-muted);
+    max-width: 620px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+}
+
+.track-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    border-radius: var(--radius-full);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.track-tag--tech {
+    background: var(--tech-light);
+    color: var(--tech-dark);
+    border: 1px solid rgba(59, 91, 219, 0.25);
+}
+
+.track-tag--med {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border: 1px solid rgba(0, 166, 156, 0.25);
+}
+
+/* Tech feature card */
+.tech-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    background: linear-gradient(145deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(231, 236, 253, 0.85) 100%);
+    border: 1px solid rgba(59, 91, 219, 0.2);
+    border-radius: var(--radius-md);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+        0 4px 16px rgba(59, 91, 219, 0.08);
+    transition: transform 0.5s var(--spring-gentle),
+        box-shadow 0.5s var(--spring-gentle),
+        border-color 0.3s ease;
+}
+
+.tech-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(59, 91, 219, 0.4);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.8) inset,
+        0 20px 40px rgba(15, 23, 42, 0.1);
+}
+
+.tech-card-icon {
+    width: 72px;
+    height: 72px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--tech-light) 0%, rgba(59, 91, 219, 0.18) 100%);
+    color: var(--tech-dark);
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.tech-card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: flex-start;
+    padding: 0.375rem 0.875rem;
+    border-radius: var(--radius-full);
+    background: rgba(59, 91, 219, 0.1);
+    color: var(--tech-dark);
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.tech-card h4 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+}
+
+.tech-card p {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+}
+
+.tech-card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.tech-card-list li {
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(59, 91, 219, 0.2);
+    color: var(--tech-dark);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.tech-card .btn {
+    min-height: 48px;
+}
+
+/* "What you learn": the module names only. */
+.tech-card-subhead {
+    margin: 0 0 0.6rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tech-dark);
+}
+
+.tech-card-modules {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.tech-card-modules li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.92rem;
+    color: var(--text-main);
+    line-height: 1.45;
+}
+
+.tech-card-modules i {
+    flex-shrink: 0;
+    width: 1.25rem;
+    margin-top: 0.15rem;
+    color: var(--tech);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.tech-card-sessions {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin: 0 0 1.5rem;
+    padding: 0.75rem 0.9rem;
+    background: rgba(255, 255, 255, 0.75);
+    border-left: 3px solid var(--tech);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-main);
+}
+
+.tech-card-sessions i {
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+    color: var(--tech);
+}
+
+.tech-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: auto;
+}
+
+.tech-card-funding {
+    margin: 1.25rem 0 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* Programs that are on the site but not advertised with dates. */
+.program-card-glass .program-contact-line {
+    flex-grow: 0;
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+}
+
+/* Same line at the top of that program's modal */
+.modal-contact-note {
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.25rem;
+    background: rgba(0, 166, 156, 0.1);
+    border-left: 3px solid var(--primary);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+
+/* --------------------------------------------------------------------------
+   5b. Programs: two columns at 1024px and up
+   Med (left) keeps the SAME carousel markup but is laid out by CSS grid here.
+   The inline Carousel script watches the identical (min-width: 1024px) query
+   and writes no inline transform/width in this mode, so nothing fights the
+   grid and nothing stale is left behind when the viewport crosses back.
+   -------------------------------------------------------------------------- */
+@media (min-width: 1024px) {
+    .programs-tracks {
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        gap: 2.5rem;
+        /* Columns size to their own content; the Tech card is not stretched
+           to the height of the Med grid. */
+        align-items: start;
+    }
+
+    .programs-group-header {
+        text-align: left;
+        margin-bottom: 1.75rem;
+    }
+
+    .programs-group-header p {
+        margin: 0;
+        max-width: 52ch;
+        font-size: 1rem;
+    }
+
+    /* ----- Med column: carousel markup, grid behaviour ----- */
+    #programs-med .carousel-container {
+        margin-top: 0;
+        padding: 0;
+    }
+
+    #programs-med .carousel-wrapper {
+        overflow: visible;
+        touch-action: auto;
+    }
+
+    #programs-med .carousel-track {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        /* Beat any inline style the swipe carousel may have written before
+           the viewport crossed the breakpoint. */
+        transform: none !important;
+        transition: none !important;
+        width: auto !important;
+        touch-action: auto;
+        user-select: auto;
+        -webkit-user-select: auto;
+    }
+
+    #programs-med .carousel-slide {
+        flex: none;
+        width: auto !important;
+        min-width: 0;
+    }
+
+    /* Swipe affordances have no meaning in grid mode. */
+    #programs-med .carousel-btn,
+    #programs-med .carousel-dots,
+    #programs-med .programs-scroll-progress,
+    #programs-med .swipe-indicator {
+        display: none !important;
+    }
+
+    /* Compact card variant so eight cards fit the left column comfortably. */
+    #programs-med .program-card-glass {
+        min-height: 0;
+        padding: 1.35rem 1.25rem;
+    }
+
+    #programs-med .program-card-glass .program-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.2rem;
+        margin-bottom: 0.9rem;
+    }
+
+    #programs-med .program-stats-badge {
+        margin-bottom: 0.65rem;
+        padding: 0.3rem 0.7rem;
+        font-size: 0.72rem;
+    }
+
+    #programs-med .program-card-glass h3 {
+        font-size: 1.05rem;
+        margin-bottom: 0.45rem;
+    }
+
+    #programs-med .program-card-glass p {
+        font-size: 0.875rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+    }
+
+    #programs-med .program-card-glass .program-contact-line {
+        font-size: 0.82rem;
+        margin-bottom: 1rem;
+    }
+
+    #programs-med .program-card-glass .btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.82rem;
+    }
+
+    /* Hover lift is too much inside a dense grid. */
+    #programs-med .program-card-glass:hover {
+        transform: translateY(-3px);
+    }
+
+    #programs-med .programs-carousel-glass {
+        padding: 1.25rem;
+    }
+
+    #programs-med .data-source-notes {
+        margin-top: 2rem;
+    }
+}
+
+/* Room opens up on wider desktops. */
+@media (min-width: 1280px) {
+    .programs-tracks {
+        gap: 3rem;
+    }
+
+    #programs-med .carousel-track {
+        gap: 1.5rem;
+    }
+
+    #programs-med .programs-carousel-glass {
+        padding: 2rem;
+    }
+
+    #programs-med .program-card-glass {
+        padding: 1.75rem 1.5rem;
+    }
+
+    #programs-med .program-card-glass h3 {
+        font-size: 1.15rem;
+    }
+
+    #programs-med .program-card-glass p {
+        font-size: 0.92rem;
+    }
+}
+
+
+/* ==========================================================================
+   6. Homepage: two-track enrollment
+   Reuses the .enroll-card glass system. Med card first / left.
+   ========================================================================== */
+.enroll-tracks {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
+    /* default stretch keeps the two cards the same height */
+}
+
+.enroll-tracks .enroll-card {
+    display: flex;
+    flex-direction: column;
+    padding: 2.25rem 2rem 2rem;
+}
+
+/* the closing element of each card sits at the bottom */
+.enroll-tracks .enroll-card > .funding-line,
+.enroll-tracks .enroll-card > .term-schedule {
+    margin-top: auto;
+    padding-top: 1.5rem;
+}
+
+.enroll-tracks .enroll-card > .term-schedule {
+    padding-top: 1.25rem;
+}
+
+/* Tech variant of the glass card */
+.enroll-card--tech {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.88) 0%,
+            rgba(231, 236, 253, 0.8) 50%,
+            rgba(255, 255, 255, 0.88) 100%);
+    border-color: rgba(59, 91, 219, 0.3);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+        0 25px 60px -15px rgba(59, 91, 219, 0.22),
+        0 0 80px rgba(59, 91, 219, 0.08);
+}
+
+.enroll-card--tech::after {
+    background: linear-gradient(135deg,
+            rgba(59, 91, 219, 0.45),
+            rgba(0, 166, 156, 0.12),
+            rgba(59, 91, 219, 0.45));
+}
+
+.enroll-card--tech .enroll-badge {
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    box-shadow: 0 6px 16px rgba(59, 91, 219, 0.35);
+}
+
+.enroll-card--tech .enroll-title .text-gradient {
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.enroll-card--tech .enroll-chip,
+.enroll-card--tech .enroll-program {
+    border-color: rgba(59, 91, 219, 0.2);
+}
+
+.enroll-card--tech .enroll-chip-icon {
+    background: linear-gradient(135deg, rgba(59, 91, 219, 0.16), rgba(59, 91, 219, 0.06));
+    color: var(--tech-dark);
+}
+
+.enroll-card--tech .enroll-features span {
+    background: rgba(59, 91, 219, 0.09);
+    color: var(--tech-dark);
+}
+
+/* Static badge for the Med card. Only the Tech badge pulses. */
+.enroll-badge--static {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+}
+
+/* "Who qualifies" one-liner */
+.enroll-qualify {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin: 0 0 1.5rem;
+    padding: 0.85rem 1rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-left: 3px solid var(--tech);
+    border-radius: var(--radius-sm);
+    font-size: 0.92rem;
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+.enroll-qualify i {
+    color: var(--tech);
+    margin-top: 0.2rem;
+}
+
+/* Mandatory NJDOL funding statement */
+.funding-line {
+    margin: 1.5rem 0 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+/* Class-date list when no dates are published. Six programs read better in
+   three columns than in the default four. */
+.term-list--tba {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.term-list--tba .term-date {
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+
+@media (max-width: 1080px) {
+    .enroll-tracks {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================================================
+   7. Homepage: tuition group rows
+   Sub-header rows that split the table into Med and Tech, in that order.
+   ========================================================================== */
+.tuition-table tbody tr.tuition-group th {
+    background: var(--surface-2);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0.7rem 1.5rem;
+}
+
+.tuition-table tbody tr.tuition-group--tech th {
+    background: var(--tech-light);
+    color: var(--tech-dark);
+}
+
+.tuition-table tbody tr.tuition-group--med th {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+.tuition-table tbody tr.tuition-group:hover {
+    background: none;
+}
+
+.tuition-table td.tuition-col strong.no-cost {
+    color: var(--tech-dark);
+}
+
+@media (max-width: 720px) {
+
+    /* The group rows stay as plain labels above the stacked cards */
+    .tuition-table tbody tr.tuition-group {
+        background: none;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        margin-bottom: 0.5rem;
+    }
+
+    .tuition-table tbody tr.tuition-group th {
+        border-radius: var(--radius-sm);
+        margin-bottom: 0;
+        border-bottom: none;
+        font-size: 0.75rem;
+        padding: 0.55rem 0.9rem;
+    }
+}
+
+
+/* ==========================================================================
+   8. Homepage: grant funding blocks
+   ========================================================================== */
+.grants-block {
+    padding: 2.25rem 2rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(145deg, #fff 0%, var(--tech-light) 100%);
+    border: 1px solid rgba(59, 91, 219, 0.2);
+    box-shadow: 0 18px 40px -26px rgba(59, 91, 219, 0.45);
+}
+
+.grants-block h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.grants-block p {
+    color: var(--text-muted);
+    max-width: 68ch;
+}
+
+.grants-block p + p {
+    margin-top: 0.85rem;
+}
+
+.grants-block .btn {
+    margin-top: 1.5rem;
+    min-height: 48px;
+}
+
+.grants-divider {
+    margin-top: 4rem;
+}
+
+
+/* ==========================================================================
+   9. Landing page: page shell, header, hero
+   ========================================================================== */
+.dl-page {
+    background-color: var(--surface-1);
+    background-image: radial-gradient(circle at top right, var(--tech-light) 0%, transparent 42%);
+}
+
+.dl-page .site-header .nav-link::after {
+    background: var(--tech);
+}
+
+.dl-page .site-header .nav-link:hover {
+    color: var(--tech-dark);
+}
+
+.dl-skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 2000;
+    padding: 0.75rem 1.25rem;
+    background: var(--tech-dark);
+    color: #fff;
+    border-radius: 0 0 var(--radius-sm) 0;
+    font-weight: 600;
+}
+
+.dl-skip-link:focus {
+    left: 0;
+    color: #fff;
+}
+
+.dl-header-phone {
+    white-space: nowrap;
+    /* keeps the 44px tap target that .btn-sm would otherwise drop below */
+    min-height: 44px;
+}
+
+.dl-hero {
+    padding-top: calc(var(--header-height) + 3.5rem);
+    padding-bottom: 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.dl-hero-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.dl-hero h1 {
+    font-size: clamp(2.1rem, 5vw, 3.4rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.25rem;
+}
+
+.dl-lead {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 58ch;
+    margin-bottom: 1.75rem;
+}
+
+.dl-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+}
+
+.dl-chips li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.9rem;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(59, 91, 219, 0.22);
+    border-radius: var(--radius-full);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--tech-dark);
+}
+
+.dl-chips li i {
+    font-size: 0.8rem;
+}
+
+.dl-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+}
+
+.dl-actions .btn {
+    min-height: 48px;
+}
+
+.dl-hero-art {
+    width: 100%;
+    height: auto;
+}
+
+@media (max-width: 900px) {
+    .dl-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .dl-hero-art {
+        max-width: 420px;
+        margin: 0 auto;
+    }
+}
+
+
+/* ==========================================================================
+   10. Landing page: sections and components
+   ========================================================================== */
+.dl-section {
+    padding: 4.5rem 0;
+    scroll-margin-top: var(--header-height);
+}
+
+.dl-section--tint {
+    background: var(--surface-2);
+}
+
+.dl-section-head {
+    max-width: 640px;
+    margin-bottom: 2.5rem;
+}
+
+.dl-section-head h2 {
+    font-size: clamp(1.75rem, 3.6vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+}
+
+.dl-section-head p {
+    color: var(--text-muted);
+}
+
+.dl-eyebrow {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    margin-bottom: 1rem;
+    background: var(--tech-light);
+    color: var(--tech-dark);
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* Information sessions strip */
+.dl-strip {
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    color: #fff;
+    padding: 2.5rem 0;
+}
+
+.dl-strip h2 {
+    color: #fff;
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+}
+
+.dl-strip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.dl-strip p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.92);
+    line-height: 1.6;
+}
+
+.dl-strip a {
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 600;
+}
+
+.dl-strip-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 0.35rem;
+}
+
+/* Check list (who qualifies) */
+.dl-checks {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.dl-checks li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1.15rem 1.25rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-md);
+}
+
+.dl-checks i {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--tech-light);
+    color: var(--tech-dark);
+    font-size: 0.9rem;
+}
+
+.dl-checks strong {
+    display: block;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+}
+
+.dl-checks span {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.dl-county-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 0;
+}
+
+.dl-county-chips li {
+    padding: 0.3rem 0.8rem;
+    background: var(--tech-light);
+    color: var(--tech-dark);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.dl-callout {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 1.15rem 1.25rem;
+    background: var(--tech-light);
+    border-radius: var(--radius-md);
+    color: var(--text-main);
+    line-height: 1.55;
+}
+
+.dl-callout i {
+    color: var(--tech-dark);
+    margin-top: 0.25rem;
+}
+
+.dl-note {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* Module / outcome cards */
+.dl-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+}
+
+.dl-card {
+    padding: 1.6rem 1.5rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(59, 91, 219, 0.15);
+    border-radius: var(--radius-md);
+    transition: transform 0.3s var(--spring-gentle),
+        box-shadow 0.3s var(--spring-gentle);
+}
+
+.dl-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 32px rgba(59, 91, 219, 0.12);
+}
+
+.dl-card-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--tech-light) 0%, rgba(59, 91, 219, 0.14) 100%);
+    color: var(--tech-dark);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+.dl-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+}
+
+.dl-card p {
+    font-size: 0.94rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin: 0;
+}
+
+/* Plain feature list */
+.dl-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.85rem;
+}
+
+.dl-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    color: var(--text-main);
+    line-height: 1.55;
+}
+
+.dl-list i {
+    color: var(--tech);
+    margin-top: 0.3rem;
+    font-size: 0.85rem;
+}
+
+/* Numbered steps */
+.dl-steps {
+    list-style: none;
+    counter-reset: dl-step;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.25rem;
+}
+
+.dl-steps li {
+    counter-increment: dl-step;
+    position: relative;
+    padding: 1.5rem 1.35rem 1.35rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-md);
+}
+
+.dl-steps li::before {
+    content: counter(dl-step);
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 0.85rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+}
+
+.dl-steps strong {
+    display: block;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.05rem;
+    margin-bottom: 0.3rem;
+}
+
+.dl-steps span {
+    font-size: 0.94rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+}
+
+/* Two-column text block */
+.dl-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+@media (max-width: 860px) {
+    .dl-split {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+/* Partners panel */
+.dl-panel {
+    padding: 2rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 18px 40px -26px rgba(59, 91, 219, 0.4);
+}
+
+.dl-panel h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Spanish block */
+.dl-es {
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(145deg, #fff 0%, var(--tech-light) 100%);
+    border: 1px solid rgba(59, 91, 219, 0.2);
+}
+
+.dl-es h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.dl-es p {
+    color: var(--text-main);
+    max-width: 70ch;
+    line-height: 1.65;
+}
+
+.dl-es p + p {
+    margin-top: 0.85rem;
+}
+
+/* FAQ */
+.dl-faq {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.dl-faq details {
+    background: var(--surface-1);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.dl-faq summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    min-height: 48px;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    color: var(--text-main);
+    list-style: none;
+}
+
+.dl-faq summary::-webkit-details-marker {
+    display: none;
+}
+
+.dl-faq summary::after {
+    content: '+';
+    flex-shrink: 0;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: var(--tech);
+}
+
+.dl-faq details[open] summary::after {
+    content: '\2212';
+}
+
+.dl-faq details[open] summary {
+    color: var(--tech-dark);
+}
+
+.dl-faq .dl-faq-body {
+    padding: 0 1.25rem 1.25rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* Contact block */
+.dl-contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.5rem;
+}
+
+.dl-contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+}
+
+.dl-contact-item i {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-sm);
+    background: var(--tech-light);
+    color: var(--tech-dark);
+    font-size: 1rem;
+}
+
+.dl-contact-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 0.15rem;
+}
+
+.dl-contact-item a,
+.dl-contact-item span {
+    color: var(--text-main);
+    font-weight: 600;
+    line-height: 1.45;
+}
+
+.dl-contact-item a:hover {
+    color: var(--tech-dark);
+}
+
+/* Footer */
+.dl-footer {
+    background: linear-gradient(180deg, #16202e 0%, var(--text-main) 100%);
+    color: #fff;
+    padding: 3.5rem 0 2rem;
+}
+
+.dl-footer::before {
+    content: '';
+    display: block;
+    height: 3px;
+    margin: -3.5rem 0 3.5rem;
+    background: var(--lockup-gradient);
+}
+
+.dl-footer-funding {
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.07);
+    border-left: 3px solid var(--tech);
+    border-radius: var(--radius-sm);
+    color: #fff;
+    font-weight: 600;
+    line-height: 1.6;
+    max-width: 70ch;
+}
+
+.dl-footer p {
+    color: var(--text-light);
+    line-height: 1.6;
+    max-width: 70ch;
+}
+
+.dl-footer p + p {
+    margin-top: 0.85rem;
+}
+
+.dl-footer a {
+    color: #9FB3FF;
+    font-weight: 600;
+}
+
+.dl-footer a:hover {
+    color: #fff;
+}
+
+.dl-footer-bottom {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+/* Floating mobile call button (the homepage defines its own copy inline) */
+.dl-page .floating-call {
+    position: fixed;
+    right: max(1rem, var(--safe-area-right));
+    bottom: max(1rem, var(--safe-area-bottom));
+    z-index: 950;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.25rem;
+    border-radius: var(--radius-full);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    box-shadow:
+        0 12px 28px rgba(59, 91, 219, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    transition: transform 0.25s var(--spring-gentle), box-shadow 0.25s ease;
+}
+
+.dl-page .floating-call:hover,
+.dl-page .floating-call:focus-visible {
+    transform: translateY(-2px) scale(1.02);
+    color: #fff;
+    box-shadow: 0 16px 32px rgba(59, 91, 219, 0.5);
+}
+
+@media (max-width: 768px) {
+    .dl-page .floating-call {
+        display: inline-flex;
+    }
+}
+
+@media (max-width: 640px) {
+    .dl-section {
+        padding: 3.5rem 0;
+    }
+
+    .dl-panel,
+    .dl-es {
+        padding: 1.5rem 1.25rem;
+    }
+}
+
+
+/* ==========================================================================
+   11. Reduced motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+
+    .track-panel,
+    .tech-card,
+    .dl-card {
+        transition: none;
+    }
+
+    .track-panel:hover,
+    .tech-card:hover,
+    .dl-card:hover {
+        transform: none;
+    }
+}
