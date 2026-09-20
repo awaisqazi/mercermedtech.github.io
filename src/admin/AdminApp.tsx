@@ -38,6 +38,12 @@ export default function AdminApp() {
     applyTheme();
   }, []);
 
+  // A new screen or tab starts at the top; a query-only change (filters, an
+  // opened task) keeps the reader where they are.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [route.path]);
+
   // Send anyone without a session to the sign-in screen, remembering where
   // they were headed so they land there afterwards.
   useEffect(() => {

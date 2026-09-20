@@ -607,34 +607,63 @@ function subscribe(projectId: string): void {
     .catch((error) => logError('realtime setAuth', error))
     .then(() => {
       if (channel !== joining) return; // project was closed while we waited
-      joining.subscribe(onChannelStatus);
+      joining.subscribe((status, error) => {
+        // A channel we have already replaced still reports its own CLOSED.
+        if (channel !== joining) return;
+        onChannelStatus(projectId, status, error);
+      });
     });
 }
 
-function onChannelStatus(status: string): void {
-  {
-    if (status === 'SUBSCRIBED') {
-      store.update((current) => ({ ...current, connection: 'live' }));
-      void trackPresence();
-      // Anything that changed while we were away is not replayed, so a
-      // reconnection has to go and look.
-      if (hadConnection) void refetch();
-      hadConnection = true;
-      return;
-    }
-    if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-      store.update((current) => ({ ...current, connection: 'reconnecting' }));
-      return;
-    }
-    if (status === 'CLOSED') {
-      store.update((current) =>
-        current.connection === 'idle' ? current : { ...current, connection: 'reconnecting' }
-      );
-    }
+/* The SDK rejoins after a dropped socket, but not after the server closes or
+   refuses a channel (an expired token, a policy hiccup, a timeout). Those need
+   a fresh channel, tried again with a growing pause so a real outage is not
+   hammered. */
+let rejoinAttempts = 0;
+let rejoinTimer: ReturnType<typeof setTimeout> | null = null;
+
+function cancelRejoin(): void {
+  if (rejoinTimer) clearTimeout(rejoinTimer);
+  rejoinTimer = null;
+}
+
+function scheduleRejoin(projectId: string): void {
+  if (rejoinTimer) return;
+  const delay = Math.min(30_000, 1_000 * 2 ** Math.min(rejoinAttempts, 5));
+  rejoinAttempts += 1;
+  rejoinTimer = setTimeout(() => {
+    rejoinTimer = null;
+    if (currentProjectId !== projectId) return;
+    const resumed = hadConnection;
+    teardownChannel();
+    hadConnection = resumed; // so the next SUBSCRIBED refetches what we missed
+    subscribe(projectId);
+  }, delay);
+}
+
+function onChannelStatus(projectId: string, status: string, error?: unknown): void {
+  if (status === 'SUBSCRIBED') {
+    rejoinAttempts = 0;
+    cancelRejoin();
+    store.update((current) => ({ ...current, connection: 'live' }));
+    void trackPresence();
+    // Anything that changed while we were away is not replayed, so a
+    // reconnection has to go and look.
+    if (hadConnection) void refetch();
+    hadConnection = true;
+    return;
+  }
+  if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+    if (error) logError(`realtime ${status}`, error);
+    store.update((current) =>
+      current.connection === 'idle' ? current : { ...current, connection: 'reconnecting' }
+    );
+    scheduleRejoin(projectId);
   }
 }
 
 function teardownChannel(): void {
+  cancelRejoin();
   hadConnection = false;
   if (!channel) return;
   const leaving = channel;
@@ -1473,6 +1502,10 @@ if (typeof window !== 'undefined') {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible' && currentProjectId && store.get().connection !== 'live') {
       void refetch();
+      // Coming back to a tab whose channel died: try again now, not after the backoff.
+      rejoinAttempts = 0;
+      cancelRejoin();
+      scheduleRejoin(currentProjectId);
     }
   });
 }
