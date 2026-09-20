@@ -350,7 +350,7 @@ export const es: Dictionary = {
 
     grants: {
       med: {
-        imageAlt: 'Un salón de práctica clínica de Mercer Med Tech',
+        imageAlt: 'Una asesora escolar revisando los costos y la documentación de subvención con una estudiante adulta',
         heading: 'Cómo pagar un programa Med',
         body: 'Nosotros no damos subvenciones, becas ni ayuda económica propia. Sí aceptamos subvenciones de afuera, incluidas las del One-Stop Career Center y del Departamento de Trabajo de Nueva Jersey. Tráiganos lo que le dio su trabajador de caso y le mostramos cómo usarlo. Mercer Med Tech está en la Lista de Proveedores de Capacitación Elegibles de Nueva Jersey (ETPL), así que pregúntele a su trabajador de caso qué programas cubre su subvención.',
         bullets: [

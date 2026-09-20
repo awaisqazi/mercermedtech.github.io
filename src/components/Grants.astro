@@ -1,7 +1,7 @@
 ---
 import '../styles/components/grants.css';
 import { Image } from 'astro:assets';
-import grantsImage from '../assets/images/clinical-skills-room.jpg';
+import fundingImage from '../assets/images/funding-conversation.jpg';
 import type { Locale } from '../i18n';
 import FundingLine from './FundingLine.astro';
 
@@ -32,18 +32,17 @@ const { locale, med, tech } = Astro.props;
 <section id="grants" class="section-padding bg-surface-1">
   <div class="container">
     <!-- (a) Funding for the Med programs -->
-    <div class="hero-grid">
-      <div class="hero-image-wrapper">
-        <Image
-          src={grantsImage}
-          alt={med.imageAlt}
-          class="hero-image grants-image"
-          widths={[480, 800, 1200]}
-          sizes="(max-width: 968px) 92vw, 600px"
-          loading="lazy"
-        />
-      </div>
-      <div class="hero-content">
+    <div class="grants-med-layout">
+      <Image
+        src={fundingImage}
+        alt={med.imageAlt}
+        class="grants-med-image"
+        widths={[480, 800, 1200]}
+        sizes="(max-width: 968px) 92vw, 520px"
+        loading="lazy"
+      />
+
+      <div class="grants-med-copy">
         <h2 class="section-title">{med.heading}</h2>
         <p>{med.body}</p>
 
@@ -58,12 +57,12 @@ const { locale, med, tech } = Astro.props;
           }
         </ul>
 
-        <div class="financial-aid-footer">
-          <h4>{med.loanHeading}</h4>
+        <aside class="financial-aid-footer">
+          <h3>{med.loanHeading}</h3>
           <p class="loan-note">{med.loanBody}</p>
           <p class="loan-invite">{med.loanInvite}</p>
           <a href={med.ctaHref} class="btn btn-primary">{med.ctaLabel}</a>
-        </div>
+        </aside>
       </div>
     </div>
 

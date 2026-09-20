@@ -337,7 +337,7 @@ export const en = {
 
     grants: {
       med: {
-        imageAlt: 'A clinical practice room at Mercer Med Tech',
+        imageAlt: 'A school advisor reviewing tuition and grant paperwork with an adult student',
         heading: 'Paying for a Med program',
         body: "We do not give out grants, scholarships, or financial aid ourselves. We do take outside grants, including One-Stop Career Center grants and NJ Department of Labor funding. Bring us what your caseworker gave you and we will show you how to use it. Mercer Med Tech is on New Jersey's Eligible Training Provider List (ETPL), so ask your caseworker which programs your funding covers.",
         bullets: [
