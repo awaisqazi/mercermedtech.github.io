@@ -236,3 +236,14 @@
     transition: none;
   }
 }
+
+/* ------------------------------------------- 5  Scroll containers contain -- */
+/*
+ * Visually hidden labels are absolutely positioned. Inside a horizontally
+ * scrolling table they sit in columns that are off-screen, and without a
+ * positioned ancestor they are laid out against the page, widening it. Making
+ * the scroll box their containing block lets its overflow clip them.
+ */
+.wb .wb-table-scroll {
+  position: relative;
+}
