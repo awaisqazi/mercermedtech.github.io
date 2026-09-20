@@ -34,6 +34,13 @@ const pages = [];
 /** Redirect stubs kept in public/ are not pages a reader lands on. */
 const isRedirectStub = (html) => /<meta\s+http-equiv="refresh"/i.test(html);
 
+/**
+ * The staff portal at /admin/ is behind a login and carries
+ * noindex,nofollow, so search-result limits do not apply to it: it has a
+ * short title and no meta description on purpose.
+ */
+const isPortal = (page) => relative(DIST, page).startsWith('admin/');
+
 /** Turns the handful of entities Astro escapes back into characters, so the
  *  count is the count a person sees, not the count in the source. */
 const decode = (value) =>
@@ -50,7 +57,7 @@ const rows = [];
 
 for (const page of pages.sort()) {
   const html = readFileSync(page, 'utf8');
-  if (isRedirectStub(html)) continue;
+  if (isRedirectStub(html) || isPortal(page)) continue;
   const name = `/${relative(DIST, page)}`;
 
   const titleMatch = html.match(/<title>([\s\S]*?)<\/title>/i);

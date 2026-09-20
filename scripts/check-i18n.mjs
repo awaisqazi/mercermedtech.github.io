@@ -40,7 +40,11 @@ const pages = [];
 const isErrorPage = (page) => /(^|\/)404(\.html|\/index\.html)$/.test(page);
 const isRedirectStub = (page) =>
   /<meta\s+http-equiv="refresh"/i.test(readFileSync(join(DIST, page), 'utf8'));
-const isBilingualOrStub = (page) => isErrorPage(page) || isRedirectStub(page);
+// The staff portal at /admin/ is a login-protected work tool, not a page the
+// public reads: English only by design, noindex, and with no Spanish twin to
+// pair it with. It is skipped by every rule in this file for that reason.
+const isPortal = (page) => page === 'admin/index.html' || page.startsWith('admin/');
+const isBilingualOrStub = (page) => isErrorPage(page) || isRedirectStub(page) || isPortal(page);
 
 const englishPages = pages
   .map((page) => relative(DIST, page))
@@ -137,8 +141,9 @@ for (const page of spanishPages) {
 
 /* ---------- 5: punctuation the voice rules forbid ---------- */
 for (const page of pages) {
-  const text = visibleText(readFileSync(page, 'utf8'));
   const name = relative(DIST, page);
+  if (isPortal(name)) continue;
+  const text = visibleText(readFileSync(page, 'utf8'));
   if (/[!¡]/.test(text)) fail(`/${name}: exclamation mark in the copy`);
   if (/[—–]/.test(text)) fail(`/${name}: em dash or en dash in the copy`);
 }

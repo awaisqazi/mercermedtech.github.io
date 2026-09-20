@@ -1,0 +1,66 @@
+---
+/**
+ * MMT Workbench — the staff portal.
+ *
+ * This page deliberately does NOT use the marketing BaseLayout: no header,
+ * no footer, no language switch, no SEO metadata. It is a single-page app
+ * shell that hash-routes itself (#/login, #/p/<slug>/<tab>, ...) so it works
+ * on static hosting with no server rewrites.
+ *
+ * English only and noindex,nofollow: the portal is behind a login and has no
+ * Spanish twin, which is why the bilingual and SEO check scripts skip /admin/.
+ * No project content, staff names or secrets live in this repo; everything the
+ * portal shows arrives from Supabase after sign-in, behind row level security.
+ */
+import AdminApp from '../../admin/AdminApp';
+import '../../admin/styles/admin.css';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>MMT Workbench</title>
+    <meta name="robots" content="noindex,nofollow" />
+    <meta name="referrer" content="same-origin" />
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- The same two faces the public site uses, so the portal reads as the
+         same house. Numbers use the system mono stack, no webfont needed. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+
+    <script is:inline>
+      // Paint the chosen theme before the app mounts so there is no flash of
+      // the wrong palette. The toggle writes the same key.
+      try {
+        var saved = localStorage.getItem('wb.theme');
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.dataset.wbTheme = saved;
+        }
+      } catch (error) {
+        /* private mode: fall back to the media query */
+      }
+    </script>
+  </head>
+
+  <body class="wb-body">
+    <!-- Removed by AdminApp the moment it mounts. Without it the page is a
+         blank white rectangle while the bundle downloads. -->
+    <div id="wb-boot" class="wb-boot" role="status" aria-live="polite">
+      <span class="wb-boot-mark">MMT</span>
+      <span class="wb-boot-text">Loading the Workbench</span>
+    </div>
+    <AdminApp client:only="preact" />
+    <noscript>
+      <p class="wb-boot-text">The Workbench needs JavaScript switched on.</p>
+    </noscript>
+  </body>
+</html>

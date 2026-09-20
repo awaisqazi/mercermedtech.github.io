@@ -30,7 +30,13 @@ let problems = 0;
 const fail = (page, msg) => { problems++; console.log(`✗ ${page.replace(DIST, '')}: ${msg}`); };
 const idsOf = (html) => [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
 
+// The staff portal at /admin/ is a single-page app: its links are hash routes
+// (#/projects, #/p/<slug>/<tab>) that only exist once the app has run, so the
+// anchor and banned-string rules for marketing pages cannot be applied to it.
+const isPortal = (page) => page.replace(DIST, '').startsWith('/admin/');
+
 for (const page of pages) {
+  if (isPortal(page)) continue;
   const html = readFileSync(page, 'utf8');
   const ids = idsOf(html);
   const dup = ids.filter((id, i) => ids.indexOf(id) !== i);

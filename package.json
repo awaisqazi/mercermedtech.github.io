@@ -20,10 +20,17 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/preact": "^6.0.5",
     "@astrojs/sitemap": "^3.7.4",
-    "astro": "^7.3.3"
+    "@supabase/supabase-js": "^2.116.0",
+    "astro": "^7.3.3",
+    "preact": "^10.29.8"
   },
   "allowScripts": {
     "esbuild": true
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3"
   }
 }

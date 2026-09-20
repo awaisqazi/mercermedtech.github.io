@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
+import preact from '@astrojs/preact';
 
 // The site is bilingual. English lives at the root (/, /digital-literacy/,
 // /programs/<id>/) and Spanish under /es/ with the same slugs. Astro's built-in
@@ -24,6 +25,12 @@ export default defineConfig({
         defaultLocale: 'en',
         locales: { en: 'en-US', es: 'es-US' },
       },
+      // The staff portal under /admin/ is a private, login-protected tool. It
+      // carries noindex,nofollow and must never appear in the sitemap.
+      filter: (page) => !new URL(page).pathname.startsWith('/admin'),
     }),
+    // Preact powers the /admin/ portal only. The public marketing pages stay
+    // plain Astro, so nothing here ships to them.
+    preact(),
   ],
 });
