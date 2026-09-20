@@ -5,7 +5,7 @@
  * The module is loaded on demand, so somebody who only ever opens general
  * projects never downloads the grant views, and the other way round.
  */
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import type { ComponentType } from 'preact';
 import { closeProject, openProject, setPresence, useProject, usePresence } from '../lib/store';
 import { buildProjectFile, downloadJson } from '../lib/transfer';
@@ -66,11 +66,35 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
   const [showSettings, setShowSettings] = useState(false);
   const [archiving, setArchiving] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  // The banner waits; the dot in the header does not (see below).
+  const [showBanner, setShowBanner] = useState(false);
+  const downSince = useRef<number | null>(null);
 
   useEffect(() => {
     void openProject(slug);
+    setSummaryOpen(false);
     return () => closeProject();
   }, [slug]);
+
+  /**
+   * A dropped socket that comes straight back is not worth a banner: the
+   * header dot says so already, and a strip that appears and vanishes reads
+   * as a fault rather than a hiccup. So the banner waits until the connection
+   * has been down for four seconds, and goes the moment it is live again.
+   */
+  useEffect(() => {
+    const down = connection === 'reconnecting' || connection === 'offline';
+    if (!down) {
+      downSince.current = null;
+      setShowBanner(false);
+      return;
+    }
+    if (downSince.current === null) downSince.current = Date.now();
+    const waited = Date.now() - downSince.current;
+    const timer = window.setTimeout(() => setShowBanner(true), Math.max(0, 4000 - waited));
+    return () => window.clearTimeout(timer);
+  }, [connection]);
 
   const kind = project?.kind ?? 'general';
   const tabs = kind === 'grant' ? GRANT_TABS : GENERAL_TABS;
@@ -191,20 +215,34 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
 
   return (
     <div class="wb-page wb-project" data-track={project.track}>
-      {connection === 'reconnecting' || connection === 'offline' ? (
+      {showBanner && (connection === 'reconnecting' || connection === 'offline') ? (
         <ConnectionBanner state={connection} />
       ) : null}
 
       <header class="wb-project-head">
         <div class="wb-project-title-row">
-          <h1 class="wb-page-title">{project.name}</h1>
-          <Chip tone="accent">{project.track === 'org' ? 'Organisation' : project.track === 'med' ? 'Med' : 'Tech'}</Chip>
-          {project.status === 'archived' ? <Chip tone="quiet">Archived</Chip> : null}
-          {readOnly ? (
-            <Chip tone="quiet" icon={<IconEye size={13} />} title={`Your role: ${role ?? 'viewer'}`}>
-              View only
-            </Chip>
-          ) : null}
+          <div class="wb-project-titles">
+            <h1 class="wb-page-title">{project.name}</h1>
+            <Chip tone="accent">{project.track === 'org' ? 'Organisation' : project.track === 'med' ? 'Med' : 'Tech'}</Chip>
+            {project.status === 'archived' ? <Chip tone="quiet">Archived</Chip> : null}
+            {readOnly ? (
+              <Chip tone="quiet" icon={<IconEye size={13} />} title={`Your role: ${role ?? 'viewer'}`}>
+                View only
+              </Chip>
+            ) : null}
+          </div>
+          {/* Stays at the top right whatever the title does. */}
+          <div class="wb-project-title-menu">
+            <Menu
+              align="right"
+              items={menuItems}
+              trigger={(props) => (
+                <button type="button" class="wb-icon-button" aria-label="Project menu" {...props}>
+                  <IconDots />
+                </button>
+              )}
+            />
+          </div>
         </div>
 
         <div class="wb-project-meta">
@@ -219,18 +257,28 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
             {connection === 'live' ? 'Live' : connection === 'reconnecting' ? 'Reconnecting' : 'Offline'}
           </span>
           <AvatarStack people={presentPeople} label="Here now" size={26} />
-          <Menu
-            align="right"
-            items={menuItems}
-            trigger={(props) => (
-              <button type="button" class="wb-icon-button" aria-label="Project menu" {...props}>
-                <IconDots />
-              </button>
-            )}
-          />
         </div>
 
-        {project.summary ? <p class="wb-project-summary">{project.summary}</p> : null}
+        {project.summary ? (
+          <div class="wb-project-summary-wrap">
+            <p
+              id="wb-project-summary"
+              class={`wb-project-summary${summaryOpen ? ' is-open' : ''}`}
+            >
+              {project.summary}
+            </p>
+            {/* Phones only: the tabs matter more than the blurb. */}
+            <button
+              type="button"
+              class="wb-summary-toggle"
+              aria-expanded={summaryOpen}
+              aria-controls="wb-project-summary"
+              onClick={() => setSummaryOpen((open) => !open)}
+            >
+              {summaryOpen ? 'Less' : 'More'}
+            </button>
+          </div>
+        ) : null}
       </header>
 
       <Tabs tabs={tabDefs} active={activeTab} label="Project sections" />

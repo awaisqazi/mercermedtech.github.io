@@ -20,9 +20,27 @@ import { IconSearch } from '../Icons';
 import { TaskList } from './TaskList';
 import { TaskBoard } from './TaskBoard';
 import { AddTask } from './AddTask';
-import { EMPTY_FILTERS, matchesFilters, type TaskFilters, type TaskView } from './shared';
+import {
+  EMPTY_FILTERS,
+  OWNER_PREFIX,
+  matchesFilters,
+  ownerLabels,
+  sortTasks,
+  type TaskFilters,
+  type TaskView,
+} from './shared';
 
 const VIEW_KEY = 'wb.taskview';
+const HIDE_DONE_KEY = 'wb.hidedone';
+
+/** The remembered "hide done" choice for this browser. On by default. */
+function rememberedHideDone(): boolean {
+  try {
+    return window.localStorage.getItem(HIDE_DONE_KEY) !== 'no';
+  } catch {
+    return EMPTY_FILTERS.hideDone;
+  }
+}
 
 export interface TaskSectionProps {
   workstreams?: WorkstreamDef[];
@@ -42,7 +60,11 @@ export function TaskSection({
   const route = useRoute();
   const tasks = useTasks();
   const { readOnly, members, profiles } = useProject();
-  const [filters, setFilters] = useState<TaskFilters>({ ...EMPTY_FILTERS, ws: initialWs });
+  const [filters, setFilters] = useState<TaskFilters>(() => ({
+    ...EMPTY_FILTERS,
+    ws: initialWs,
+    hideDone: rememberedHideDone(),
+  }));
   const [view, setView] = useState<TaskView>(() => {
     try {
       return window.localStorage.getItem(VIEW_KEY) === 'board' ? 'board' : 'list';
@@ -63,13 +85,40 @@ export function TaskSection({
     }
   };
 
+  const setHideDone = (next: boolean) => {
+    setFilters((current) => ({ ...current, hideDone: next }));
+    try {
+      window.localStorage.setItem(HIDE_DONE_KEY, next ? 'yes' : 'no');
+    } catch {
+      /* nothing to remember */
+    }
+  };
+
   const nameOf = (userId: string | null) =>
     (userId && (profiles[userId]?.full_name || profiles[userId]?.email)) || '';
 
-  const visible = useMemo(
-    () => tasks.filter((task) => matchesFilters(task, filters, { nameOf })),
+  /**
+   * Everything the other filters allow, done items included. `visible` is this
+   * list minus the done ones when they are hidden, and the difference is the
+   * number the checkbox reports — so the count always matches what turning it
+   * off would bring back.
+   */
+  const matching = useMemo(
+    () => sortTasks(tasks.filter((task) => matchesFilters(task, { ...filters, hideDone: false }, { nameOf }))),
     // `profiles` only matters through nameOf, which is only used when filtering by person.
     [tasks, filters, profiles]
+  );
+  const doneCount = useMemo(
+    () => matching.reduce((count, task) => (task.status === 'done' ? count + 1 : count), 0),
+    [matching]
+  );
+  // The board has a Done column, so hiding done cards there would leave it
+  // permanently empty and make a card vanish the moment it is dropped in.
+  // "Hide done" therefore only applies to the list.
+  const hidingDone = filters.hideDone && view === 'list';
+  const visible = useMemo(
+    () => (hidingDone ? matching.filter((task) => task.status !== 'done') : matching),
+    [matching, hidingDone]
   );
 
   const peopleOptions = [
@@ -78,14 +127,28 @@ export function TaskSection({
       value: member.user_id,
       label: profiles[member.user_id]?.full_name?.trim() || profiles[member.user_id]?.email || 'Member',
     })),
+    // The free-text owner is a real way of saying who has something, so it
+    // belongs in the same picker — under its own heading, so nobody mistakes
+    // "Intake team" for an account.
+    ...ownerLabels(tasks).map((label) => ({
+      value: `${OWNER_PREFIX}${label}`,
+      label,
+      group: 'Owner label',
+    })),
   ];
 
   const plural2 = noun === 'task' ? 'tasks' : `${noun}s`;
   const set = <K extends keyof TaskFilters>(key: K, value: TaskFilters[K]) =>
     setFilters((current) => ({ ...current, [key]: value }));
 
-  const filtered =
-    filters.search || filters.ws || filters.status || filters.who || filters.horizon || filters.hideDone;
+  // "Hide done" is a remembered preference rather than a filter to clear, so
+  // it does not raise the Clear button — but it does change what an empty
+  // screen should say.
+  const filtered = Boolean(
+    filters.search || filters.ws || filters.status || filters.who || filters.horizon
+  );
+  const narrowed = filtered || (hidingDone && doneCount > 0);
+  const clearFilters = () => setFilters({ ...EMPTY_FILTERS, hideDone: filters.hideDone });
 
   return (
     <section class="wb-panel">
@@ -169,14 +232,21 @@ export function TaskSection({
           ]}
         />
 
-        <Checkbox
-          label="Hide done"
-          checked={filters.hideDone}
-          onChange={(event) => set('hideDone', (event.currentTarget as HTMLInputElement).checked)}
-        />
+        {view === 'list' ? (
+          <Checkbox
+            label={
+              <>
+                Hide done
+                {doneCount ? <span class="wb-mono-soft"> ({doneCount})</span> : null}
+              </>
+            }
+            checked={filters.hideDone}
+            onChange={(event) => setHideDone((event.currentTarget as HTMLInputElement).checked)}
+          />
+        ) : null}
 
         {filtered ? (
-          <Button variant="quiet" size="sm" onClick={() => setFilters({ ...EMPTY_FILTERS })}>
+          <Button variant="quiet" size="sm" onClick={clearFilters}>
             Clear filters
           </Button>
         ) : null}
@@ -190,18 +260,24 @@ export function TaskSection({
           workstreams={workstreams}
           openId={openId}
           onOpen={setOpenId}
-          emptyTitle={filtered ? `No ${plural2} match those filters` : `No ${plural2} yet`}
+          emptyTitle={narrowed ? `No ${plural2} match those filters` : `No ${plural2} yet`}
           emptyBody={
-            filtered
-              ? 'Clear a filter to see more.'
+            narrowed
+              ? filtered
+                ? 'Clear a filter to see more.'
+                : `Every one of these is done. Turn off "Hide done" to see them.`
               : readOnly
                 ? 'Nothing has been added to this project yet.'
                 : `Add the first one and it will show up for everyone straight away.`
           }
           emptyAction={
             filtered ? (
-              <Button variant="secondary" onClick={() => setFilters({ ...EMPTY_FILTERS })}>
+              <Button variant="secondary" onClick={clearFilters}>
                 Clear filters
+              </Button>
+            ) : narrowed ? (
+              <Button variant="secondary" onClick={() => setHideDone(false)}>
+                Show done {plural2}
               </Button>
             ) : null
           }

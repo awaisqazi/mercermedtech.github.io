@@ -4,6 +4,12 @@ export interface Option<T extends string = string> {
   value: T;
   label: string;
   disabled?: boolean;
+  /**
+   * Puts this option under a heading. Consecutive options carrying the same
+   * group share one `<optgroup>`, so the caller controls the order by the
+   * order of the array and nothing has to be sorted here.
+   */
+  group?: string;
 }
 
 export interface SelectProps<T extends string = string>
@@ -44,11 +50,15 @@ export function Select<T extends string = string>({
         onChange={(event) => onValue((event.currentTarget as HTMLSelectElement).value as T)}
       >
         {placeholder !== undefined ? <option value="">{placeholder}</option> : null}
-        {options.map((option) => (
-          <option key={option.value} value={option.value} disabled={option.disabled}>
-            {option.label}
-          </option>
-        ))}
+        {groupOptions(options).map((run) =>
+          run.group ? (
+            <optgroup key={`g:${run.group}`} label={run.group}>
+              {run.items.map(renderOption)}
+            </optgroup>
+          ) : (
+            run.items.map(renderOption)
+          )
+        )}
       </select>
       <svg class="wb-select-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path
@@ -62,6 +72,27 @@ export function Select<T extends string = string>({
       </svg>
     </span>
   );
+}
+
+function renderOption<T extends string>(option: Option<T>) {
+  return (
+    <option key={option.value} value={option.value} disabled={option.disabled}>
+      {option.label}
+    </option>
+  );
+}
+
+/** Splits an option list into consecutive runs that share a group heading. */
+function groupOptions<T extends string>(
+  options: ReadonlyArray<Option<T>>
+): Array<{ group: string | undefined; items: Array<Option<T>> }> {
+  const runs: Array<{ group: string | undefined; items: Array<Option<T>> }> = [];
+  for (const option of options) {
+    const last = runs[runs.length - 1];
+    if (last && last.group === option.group) last.items.push(option);
+    else runs.push({ group: option.group, items: [option] });
+  }
+  return runs;
 }
 
 /** Turns a label map into options, keeping the order of the keys array. */

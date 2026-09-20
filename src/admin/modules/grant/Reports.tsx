@@ -225,24 +225,26 @@ export function Reports() {
 
                           {checks.length ? (
                             <td data-label="Checklist">
-                              <div class="wb-checkgrid">
-                                {checks.map((def) => (
-                                  <label class="wb-check" key={def.key}>
-                                    <input
-                                      type="checkbox"
-                                      checked={Boolean((report.checks ?? {})[def.key])}
+                              <div class="wb-checkchips">
+                                {checks.map((def) => {
+                                  const on = Boolean((report.checks ?? {})[def.key]);
+                                  const full = `${def.label} — ${formatMonth(report.period) || report.period}`;
+                                  return (
+                                    <button
+                                      key={def.key}
+                                      type="button"
+                                      class="wb-checkchip"
+                                      aria-pressed={on}
+                                      title={full}
+                                      aria-label={full}
                                       disabled={readOnly}
-                                      onChange={(event) =>
-                                        void toggleCheck(
-                                          report,
-                                          def.key,
-                                          (event.currentTarget as HTMLInputElement).checked
-                                        )
-                                      }
-                                    />
-                                    <span>{def.label}</span>
-                                  </label>
-                                ))}
+                                      onClick={() => void toggleCheck(report, def.key, !on)}
+                                    >
+                                      <span class="wb-checkchip-tick" aria-hidden="true" />
+                                      <span class="wb-checkchip-text">{def.short}</span>
+                                    </button>
+                                  );
+                                })}
                               </div>
                               <span class="wb-report-ready wb-mono-soft">
                                 {ready} of {checks.length} ready

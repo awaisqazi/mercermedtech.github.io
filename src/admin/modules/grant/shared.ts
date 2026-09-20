@@ -12,6 +12,10 @@
  *                    left the funnel, or a quality flag) rather than a step.
  *                    When it is absent we infer it from the key: anything
  *                    ending in `_late`, `exited` or `not_enrolled`.
+ *   report_checks[].short
+ *                    a one-word name for the checklist toggle in the reports
+ *                    table. When it is absent the first word of the label is
+ *                    used, cut to ten characters.
  *   metric_map       which `state.metrics` keys feed the headline rates:
  *                    { enrolled, credentialed, placed, retained }. The
  *                    defaults are "enrolled", "credentialed", "placed" and
@@ -191,12 +195,39 @@ export const RULE_WORDING: Record<BudgetCategoryDef['rule'], string> = {
 
 /* ------------------------------------------------------------- reports --- */
 
+/** A checklist entry with a short name worked out, so callers never guess. */
+export interface ReportCheckItem extends ReportCheckDef {
+  /** Always set: `short` from config, or the first word of the label. */
+  short: string;
+}
+
+/** Longest a derived short name gets before it is cut. */
+const SHORT_MAX = 10;
+
+/**
+ * A short name for a checklist toggle: whatever config says, else the first
+ * word of the label, cut to ten characters. Never empty when the label is not.
+ */
+export function shortCheckLabel(label: string, short?: string): string {
+  const given = typeof short === 'string' ? short.trim() : '';
+  if (given) return given.slice(0, SHORT_MAX);
+  const word = label.trim().split(/\s+/)[0] ?? '';
+  return (word || label.trim()).slice(0, SHORT_MAX);
+}
+
 /** The checklist for a report period, from config. Empty when none is set. */
-export function checkDefs(value: unknown): ReportCheckDef[] {
+export function checkDefs(value: unknown): ReportCheckItem[] {
   if (!Array.isArray(value)) return [];
   return (value as ReportCheckDef[])
     .filter((entry) => entry && typeof entry.key === 'string' && entry.key.trim())
-    .map((entry) => ({ key: entry.key.trim(), label: entry.label || humanize(entry.key) }));
+    .map((entry) => {
+      const label = entry.label || humanize(entry.key);
+      return {
+        key: entry.key.trim(),
+        label,
+        short: shortCheckLabel(label, entry.short),
+      };
+    });
 }
 
 /** How many of the checklist are ticked on one report. */

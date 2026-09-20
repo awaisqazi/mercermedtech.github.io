@@ -249,6 +249,13 @@ export interface WorkstreamDef {
 export interface ReportCheckDef {
   key: string;
   label: string;
+  /**
+   * A one-word name for the toggle in the reports table, where the full label
+   * is too wide to sit in a cell. Optional: when it is missing one is derived
+   * from the label, and the full label stays on the control as its title and
+   * accessible name.
+   */
+  short?: string;
 }
 
 export interface BudgetLineDef {

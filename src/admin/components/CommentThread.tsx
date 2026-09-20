@@ -3,7 +3,7 @@
  * note). The rows arrive through the project's single realtime channel, so
  * there is no polling here.
  */
-import { useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { useComments, useProject } from '../lib/store';
 import { getAuth } from '../lib/auth';
 import { fullTime, relativeTime } from '../lib/format';
@@ -30,6 +30,34 @@ export function CommentThread({ entity, id, canComment = true, label = 'Comments
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const me = getAuth().userId;
+
+  /**
+   * Deleting a comment asks first, in the row itself rather than in a dialog:
+   * the trash icon is replaced by the question, and the keyboard is carried
+   * with it — focus lands on Delete, and Esc or "Keep it" puts it back on the
+   * icon it came from.
+   */
+  const [confirming, setConfirming] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<string | null>(null);
+  const slots = useRef(new Map<string, HTMLElement>());
+  const restoreTo = useRef<string | null>(null);
+
+  const keepIt = (id: string) => {
+    restoreTo.current = id;
+    setConfirming(null);
+  };
+
+  useEffect(() => {
+    if (confirming) {
+      const slot = slots.current.get(confirming);
+      (slot?.querySelector('.wb-confirm-go') as HTMLElement | null)?.focus();
+      return;
+    }
+    const id = restoreTo.current;
+    if (!id) return;
+    restoreTo.current = null;
+    (slots.current.get(id)?.querySelector('button') as HTMLElement | null)?.focus();
+  }, [confirming]);
 
   const send = async () => {
     const body = draft.trim();
@@ -75,17 +103,58 @@ export function CommentThread({ entity, id, canComment = true, label = 'Comments
                   <RichText text={comment.body} class="wb-comment-text" />
                 </div>
                 {mine || canManage ? (
-                  <Button
-                    variant="quiet"
-                    size="sm"
-                    iconOnly
-                    aria-label="Delete this comment"
-                    icon={<IconTrash size={14} />}
-                    onClick={async () => {
-                      const result = await thread.remove(comment.id);
-                      if (!result.ok && result.error) toast.bad(result.error.message);
+                  <div
+                    class="wb-comment-actions"
+                    ref={(node) => {
+                      if (node) slots.current.set(comment.id, node);
+                      else slots.current.delete(comment.id);
                     }}
-                  />
+                    onKeyDown={(event) => {
+                      if (event.key === 'Escape' && confirming === comment.id) {
+                        event.stopPropagation();
+                        keepIt(comment.id);
+                      }
+                    }}
+                  >
+                    {confirming === comment.id ? (
+                      <span class="wb-inline-confirm" role="group" aria-label="Delete this comment?">
+                        <span class="wb-inline-confirm-ask">Delete?</span>
+                        <Button variant="quiet" size="sm" onClick={() => keepIt(comment.id)}>
+                          Keep it
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          class="wb-confirm-go"
+                          busy={removing === comment.id}
+                          onClick={async () => {
+                            setRemoving(comment.id);
+                            const result = await thread.remove(comment.id);
+                            setRemoving(null);
+                            if (result.ok) {
+                              // The row is gone; there is nothing to give focus back to.
+                              restoreTo.current = null;
+                              setConfirming(null);
+                            } else {
+                              if (result.error) toast.bad(result.error.message);
+                              keepIt(comment.id);
+                            }
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      </span>
+                    ) : (
+                      <Button
+                        variant="quiet"
+                        size="sm"
+                        iconOnly
+                        aria-label="Delete this comment"
+                        icon={<IconTrash size={14} />}
+                        onClick={() => setConfirming(comment.id)}
+                      />
+                    )}
+                  </div>
                 ) : null}
               </li>
             );

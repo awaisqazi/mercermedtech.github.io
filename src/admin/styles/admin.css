@@ -3435,3 +3435,141 @@ body.wb-no-scroll {
     width: 100%;
   }
 }
+
+/* ===== 14 Polish: tasks ===== */
+/*
+ * The pieces the task surface gained when details moved out of the card:
+ * the board's side drawer, and the owner label that now shows on a collapsed
+ * card. Colours are tokens only, so light and dark both follow.
+ */
+
+/* -- the owner label on a collapsed card ---------------------------------- */
+
+/*
+ * A free-text owner can be a whole team's name, so it is allowed to wrap
+ * rather than push the card sideways on a phone.
+ */
+.wb-task-owner {
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.wb-chip-icon {
+  display: inline-flex;
+  flex: none;
+}
+
+/* -- the board's details drawer ------------------------------------------- */
+
+/*
+ * Same scrim as the app's other overlays. It sits above the phone's bottom
+ * bar (z-index 25) and below toasts (80), so a save can still be reported
+ * while the drawer is open.
+ */
+.wb-drawer-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(12, 18, 28, 0.5);
+  animation: wb-drawer-scrim-in 0.14s ease-out;
+}
+
+.wb-drawer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  height: 100%;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: var(--shadow-pop);
+  animation: wb-drawer-in 0.18s ease-out;
+}
+
+/* Focus is put on the panel only when it holds nothing focusable. */
+.wb-drawer:focus {
+  outline: none;
+}
+
+@keyframes wb-drawer-scrim-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes wb-drawer-in {
+  from {
+    transform: translateX(18px);
+    opacity: 0;
+  }
+}
+
+.wb-drawer-head {
+  flex: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.wb-drawer-heading {
+  min-width: 0;
+}
+
+.wb-drawer-title {
+  font-size: 1rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.wb-drawer-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.wb-drawer-meta:empty {
+  display: none;
+}
+
+/* The drawer scrolls itself, so the board behind it keeps its place. */
+.wb-drawer-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Below the desktop breakpoint the panel becomes the whole screen. */
+@media (max-width: 900px) {
+  .wb-drawer {
+    max-width: none;
+    border-left: 0;
+    animation-name: wb-drawer-sheet-in;
+  }
+
+  .wb-drawer-head {
+    padding-top: calc(0.9rem + env(safe-area-inset-top, 0px));
+  }
+}
+
+@keyframes wb-drawer-sheet-in {
+  from {
+    transform: translateY(18px);
+    opacity: 0;
+  }
+}
