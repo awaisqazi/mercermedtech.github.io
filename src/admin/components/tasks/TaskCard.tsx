@@ -64,7 +64,8 @@ export function TaskCard({
   }, [autoScroll]);
 
   const overdue = isOverdue(task.due) && task.status !== 'done';
-  const ownerLabel = task.owner.trim();
+  // "Unassigned" typed as a label says nothing the assignee select doesn't.
+  const ownerLabel = /^(unassigned|nobody|none|n\/a|tbd)$/i.test(task.owner.trim()) ? '' : task.owner.trim();
   const assigneeOptions = [
     { value: '', label: 'Nobody' },
     ...members.map((member) => ({

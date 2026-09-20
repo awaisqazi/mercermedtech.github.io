@@ -23,7 +23,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
-  max-width: 12rem;
 }
 
 .wb .wb-checkchip {
@@ -107,7 +106,24 @@
    * does not. Either way it can shrink, so it never forces a scrollbar.
    */
   .wb .wb-reports-table td[data-label='Checklist'] {
-    width: 12rem;
+    width: 17rem;
+    min-width: 17rem; /* about three chips a line: a short row beats a narrow column */
+  }
+
+  /* Native date inputs ask for far more room than a date needs. */
+  .wb .wb-reports-table input[type='date'] {
+    width: 8.75rem;
+    min-width: 0;
+  }
+
+  .wb .wb-reports-table td[data-label='Covers'] .wb-input {
+    width: 8rem;
+    min-width: 0;
+  }
+
+  .wb .wb-reports-table td[data-label='Amount'] .wb-input {
+    width: 6.5rem;
+    min-width: 0;
   }
 }
 

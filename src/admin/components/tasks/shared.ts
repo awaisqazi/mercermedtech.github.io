@@ -122,7 +122,7 @@ export function ownerLabels(tasks: Task[]): string[] {
   const seen = new Set<string>();
   for (const task of tasks) {
     const label = task.owner.trim();
-    if (label) seen.add(label);
+    if (label && !/^(unassigned|nobody|none|n\/a|tbd)$/i.test(label)) seen.add(label);
   }
   return [...seen].sort((a, b) => a.localeCompare(b));
 }
