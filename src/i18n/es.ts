@@ -195,7 +195,7 @@ export const es: Dictionary = {
 
     about: {
       heading: 'Sobre Mercer Med Tech',
-      imageAlt: 'Una instructora enseñando a un grupo pequeño de estudiantes adultos',
+      imageAlt: 'Un salón de clases en el campus de Mercer Med Tech en Lawrenceville',
       paragraphs: [
         'Mercer Med Tech es una escuela vocacional privada y pequeña en Lawrenceville. El Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey nos da la licencia y aprueba lo que enseñamos. Empezamos capacitando a personas para trabajos de salud, y lo seguimos haciendo, en grupos pequeños, con equipo real y con instructores que han hecho ese trabajo.',
         'El nombre dice el resto. Med es el lado de la salud. Tech es el lado de la computación, que hoy es la Capacitación en Habilidades Digitales, que damos junto con el Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey, sin costo para quien califica. La zona central de Nueva Jersey contrata en las dos áreas, y las dos las enseñamos igual: practicando y cerca de lo que el trabajo de verdad pide.',
@@ -350,6 +350,7 @@ export const es: Dictionary = {
 
     grants: {
       med: {
+        imageAlt: 'Un salón de práctica clínica de Mercer Med Tech',
         heading: 'Cómo pagar un programa Med',
         body: 'Nosotros no damos subvenciones, becas ni ayuda económica propia. Sí aceptamos subvenciones de afuera, incluidas las del One-Stop Career Center y del Departamento de Trabajo de Nueva Jersey. Tráiganos lo que le dio su trabajador de caso y le mostramos cómo usarlo. Mercer Med Tech está en la Lista de Proveedores de Capacitación Elegibles de Nueva Jersey (ETPL), así que pregúntele a su trabajador de caso qué programas cubre su subvención.',
         bullets: [

@@ -1,13 +1,14 @@
 ---
 import '../styles/components/grants.css';
 import { Image } from 'astro:assets';
-import grantsImage from '../assets/images/pic04.png';
+import grantsImage from '../assets/images/clinical-skills-room.jpg';
 import type { Locale } from '../i18n';
 import FundingLine from './FundingLine.astro';
 
 interface Props {
   locale: Locale;
   med: {
+    imageAlt: string;
     heading: string;
     body: string;
     bullets: { icon: string; label: string }[];
@@ -35,8 +36,7 @@ const { locale, med, tech } = Astro.props;
       <div class="hero-image-wrapper">
         <Image
           src={grantsImage}
-          alt=""
-          aria-hidden="true"
+          alt={med.imageAlt}
           class="hero-image grants-image"
           widths={[480, 800, 1200]}
           sizes="(max-width: 968px) 92vw, 600px"

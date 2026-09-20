@@ -8,7 +8,7 @@
 //
 // Run it again after replacing a source image:  node scripts/make-static-images.mjs
 import sharp from 'sharp';
-import { mkdirSync, rmSync, statSync } from 'node:fs';
+import { mkdirSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const SRC = resolve('src/assets/images');
@@ -33,22 +33,7 @@ await sharp(resolve(SRC, 'logo-modern.png'))
   .toFile(logoOut);
 report('images/logo-modern.png', logoOut);
 
-// 2. The hero, kept only if it fits the budget as a PNG. It does not: at 1024px
-//    wide the best palette PNG is around 380 KB, and a JPEG renamed .png is not
-//    an option, so the file is dropped again. Nothing outside the site links to
-//    it; the page uses the optimized Astro version, and the social card below is
-//    what gets shared.
-const heroOut = resolve(OUT, 'hero-modern.png');
-await sharp(resolve(SRC, 'hero-modern.png'))
-  .resize({ width: 1024, withoutEnlargement: true })
-  .png({ compressionLevel: 9, palette: true, quality: 80, effort: 10 })
-  .toFile(heroOut);
-if (report('images/hero-modern.png', heroOut) > BUDGET) {
-  rmSync(heroOut);
-  console.log('  -> dropped: over the budget as a PNG, and it must stay a PNG.');
-}
-
-// 3. The social card: the brand lockup on white over the Med-to-Tech gradient
+// 2. The social card: the brand lockup on white over the Med-to-Tech gradient
 //    rule. The wordmark is the logo file itself, so nothing here depends on a
 //    font being installed on the machine that runs this script.
 const CARD_W = 1200;

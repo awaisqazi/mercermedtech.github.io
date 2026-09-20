@@ -185,7 +185,7 @@ export const en = {
 
     about: {
       heading: 'About Mercer Med Tech',
-      imageAlt: 'An instructor teaching a small class of adult students',
+      imageAlt: 'A classroom at the Mercer Med Tech campus in Lawrenceville',
       paragraphs: [
         'Mercer Med Tech is a small private vocational school in Lawrenceville. The New Jersey Department of Labor and Workforce Development licenses us and approves what we teach. We started out training people for health care jobs, and we still do that, in small classes, on real equipment, with instructors who have done the work themselves.',
         'The name says the rest. Med is the health care side. Tech is the computer side, which now means Digital Literacy Training, run with the New Jersey Department of Labor and Workforce Development at no cost to people who qualify. Central New Jersey is hiring for both, so we teach both the same way: hands on, and close to what the job actually asks of you.',
@@ -337,6 +337,7 @@ export const en = {
 
     grants: {
       med: {
+        imageAlt: 'A clinical practice room at Mercer Med Tech',
         heading: 'Paying for a Med program',
         body: "We do not give out grants, scholarships, or financial aid ourselves. We do take outside grants, including One-Stop Career Center grants and NJ Department of Labor funding. Bring us what your caseworker gave you and we will show you how to use it. Mercer Med Tech is on New Jersey's Eligible Training Provider List (ETPL), so ask your caseworker which programs your funding covers.",
         bullets: [

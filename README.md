@@ -150,6 +150,5 @@ none of them can point at a fingerprinted `/_astro/...` file. They live in
 node scripts/make-static-images.mjs
 ```
 
-Nothing it writes may go over 300 KB. The hero is left out for that reason: as
-a PNG at 1024px wide it lands around 380 KB, and a JPEG renamed `.png` is not
-an answer.
+Nothing it writes may go over 300 KB. Homepage photography stays in
+`src/assets/images/`, where Astro can resize and optimize it for each layout.
