@@ -65,9 +65,10 @@
  *    `replica identity full`, which is why deletes are matched by id alone.
  */
 import { supabase } from './supabase';
-import { ACTIVITY_PAGE } from './config';
+import { ACTIVITY_PAGE, LOAD_DEADLINE_MS, SLOW_LOAD_MS } from './config';
+import { withDeadline } from './deadline';
 import { observable, useObservable } from './observable';
-import { getAuth } from './auth';
+import { getAuth, resumeSession } from './auth';
 import { logError, toAppError, type AppError } from './errors';
 import type {
   ActivityRow,
@@ -128,6 +129,11 @@ export interface ProjectStoreState {
   commentsLoading: Record<string, boolean>;
   presence: PresencePeer[];
   connection: Connection;
+  /**
+   * The load is still going and has been for a while. Not an error yet: the
+   * screen says "still loading" instead of showing a placeholder in silence.
+   */
+  slow: boolean;
 }
 
 const EMPTY_STATE: ProjectStoreState = {
@@ -152,6 +158,7 @@ const EMPTY_STATE: ProjectStoreState = {
   commentsLoading: {},
   presence: [],
   connection: 'idle',
+  slow: false,
 };
 
 const store = observable<ProjectStoreState>(EMPTY_STATE);
@@ -381,7 +388,35 @@ function reportLoadFailure(error: unknown): void {
     : appError.permission
       ? 'denied'
       : 'error';
-  store.update((current) => ({ ...current, status, error: appError, connection: 'idle' }));
+  store.update((current) => ({
+    ...current,
+    status,
+    error: appError,
+    slow: false,
+    connection: 'idle',
+  }));
+}
+
+/*
+ * A load that is still going after a few seconds says so, and a load that is
+ * still going after the deadline stops being a load and becomes an error with
+ * a Retry on it. Between them there is no way to be left looking at a
+ * placeholder that will never fill in.
+ */
+let slowTimer: ReturnType<typeof setTimeout> | null = null;
+
+function startSlowTimer(token: number): void {
+  if (slowTimer) clearTimeout(slowTimer);
+  slowTimer = setTimeout(() => {
+    slowTimer = null;
+    if (token !== loadToken) return;
+    store.update((current) => (current.status === 'loading' ? { ...current, slow: true } : current));
+  }, SLOW_LOAD_MS);
+}
+
+function stopSlowTimer(): void {
+  if (slowTimer) clearTimeout(slowTimer);
+  slowTimer = null;
 }
 
 /**
@@ -395,17 +430,33 @@ export async function openProject(slug: string): Promise<void> {
   const token = ++loadToken;
   teardownChannel();
   store.set({ ...EMPTY_STATE, slug, status: 'loading', connection: 'connecting' });
+  startSlowTimer(token);
 
   try {
-    const loaded = await fetchEverything(slug);
+    const loaded = await withDeadline(fetchEverything(slug), LOAD_DEADLINE_MS);
     if (token !== loadToken) return;
+    stopSlowTimer();
     applyLoaded(slug, loaded);
     currentProjectId = loaded.project.id;
     subscribe(loaded.project.id);
   } catch (error) {
     if (token !== loadToken) return;
+    stopSlowTimer();
     reportLoadFailure(error);
   }
+}
+
+/** What the Retry button on the project screen calls. */
+export async function retryProject(): Promise<void> {
+  const { slug } = store.get();
+  if (!slug) return;
+  // Forget the failed attempt so `openProject` does not treat it as settled,
+  // and ask the SDK for the session again: a stalled load usually means the
+  // session itself is the thing that is stuck.
+  loadToken += 1;
+  store.set({ ...EMPTY_STATE, slug, status: 'idle' });
+  await resumeSession('restore');
+  await openProject(slug);
 }
 
 /** Re-reads everything for the open project. Used after a reconnection. */
@@ -414,7 +465,7 @@ export async function refetch(): Promise<void> {
   if (!slug) return;
   const token = ++loadToken;
   try {
-    const loaded = await fetchEverything(slug);
+    const loaded = await withDeadline(fetchEverything(slug), LOAD_DEADLINE_MS);
     if (token !== loadToken) return;
     const connection = store.get().connection;
     applyLoaded(slug, loaded);
@@ -422,12 +473,19 @@ export async function refetch(): Promise<void> {
     currentProjectId = loaded.project.id;
   } catch (error) {
     if (token !== loadToken) return;
-    reportLoadFailure(error);
+    // A refetch is a background errand. If it fails we keep what is already on
+    // screen and let the connection banner do the talking, rather than
+    // throwing away a readable project because one catch-up request stalled.
+    logError('refetch', error);
+    store.update((seen) =>
+      seen.connection === 'live' ? { ...seen, connection: 'reconnecting' } : seen
+    );
   }
 }
 
 export function closeProject(): void {
   loadToken += 1;
+  stopSlowTimer();
   teardownChannel();
   currentProjectId = null;
   inFlight.clear();
@@ -629,17 +687,29 @@ function cancelRejoin(): void {
 
 function scheduleRejoin(projectId: string): void {
   if (rejoinTimer) return;
-  const delay = Math.min(30_000, 1_000 * 2 ** Math.min(rejoinAttempts, 5));
+  /*
+   * 1s, 2s, 4s … up to 30s, and the count is only ever reset by an actual
+   * SUBSCRIBED. Safari suspends WebSockets hard when a tab goes to the back,
+   * and it can close a freshly opened one straight away several times over; if
+   * coming back to the tab reset the count, the two would take turns and the
+   * portal would sit there opening and closing sockets as fast as it could.
+   */
+  const delay = Math.min(REJOIN_MAX_DELAY_MS, 1_000 * 2 ** Math.min(rejoinAttempts, 5));
   rejoinAttempts += 1;
   rejoinTimer = setTimeout(() => {
     rejoinTimer = null;
     if (currentProjectId !== projectId) return;
     const resumed = hadConnection;
+    const attempts = rejoinAttempts;
     teardownChannel();
     hadConnection = resumed; // so the next SUBSCRIBED refetches what we missed
+    rejoinAttempts = attempts; // teardown must not wipe the backoff either
     subscribe(projectId);
   }, delay);
 }
+
+/** Never wait longer than this between attempts, however bad it gets. */
+const REJOIN_MAX_DELAY_MS = 30_000;
 
 function onChannelStatus(projectId: string, status: string, error?: unknown): void {
   if (status === 'SUBSCRIBED') {
@@ -665,15 +735,25 @@ function onChannelStatus(projectId: string, status: string, error?: unknown): vo
 function teardownChannel(): void {
   cancelRejoin();
   hadConnection = false;
+  rejoinAttempts = 0;
   if (!channel) return;
   const leaving = channel;
   channel = null;
   try {
-    void leaving.untrack();
+    void leaving.untrack().catch((error) => logError('untrack', error));
   } catch (error) {
     logError('untrack', error);
   }
-  void supabase.removeChannel(leaving);
+  try {
+    // Safari can have already torn the socket down underneath us, in which
+    // case this rejects. It is a cleanup: a failure here must not stop the
+    // fresh channel from being opened.
+    void Promise.resolve(supabase.removeChannel(leaving)).catch((error) =>
+      logError('removeChannel', error)
+    );
+  } catch (error) {
+    logError('removeChannel', error);
+  }
 }
 
 /* ============================================================ presence === */
@@ -1221,6 +1301,8 @@ export interface ProjectView {
   members: ProjectMember[];
   profiles: Record<string, Profile>;
   connection: Connection;
+  /** True once a load has been going long enough to be worth mentioning. */
+  slow: boolean;
 }
 
 const NO_CONFIG: ProjectConfig = {};
@@ -1240,8 +1322,10 @@ export function useProject(): ProjectView {
       members: state.members,
       profiles: state.profiles,
       connection: state.connection,
+      slow: state.slow,
     }),
     [
+      state.slow,
       state.status,
       state.error,
       state.project,
@@ -1495,17 +1579,53 @@ export function useLiveField(
 
 /* ------------------------------------------------- reconnect on wake-up --- */
 
+/**
+ * Coming back to a tab whose channel died: catch up now rather than at the end
+ * of the backoff.
+ *
+ * `soft` is the ordinary case — the tab was in the background. `hard` is a
+ * page Safari handed back out of its back-forward cache, where the socket and
+ * any half-finished request came back with it in name only; that one throws
+ * the channel away and builds a new one instead of nudging the old one.
+ */
+function wakeUp(kind: 'soft' | 'hard'): void {
+  if (!currentProjectId) return;
+  const projectId = currentProjectId;
+
+  if (kind === 'hard') {
+    teardownChannel(); // also clears the backoff, which is what we want here
+    void refetch();
+    subscribe(projectId);
+    return;
+  }
+
+  if (store.get().connection === 'live') return;
+  void refetch();
+  /*
+   * One free fast retry per backoff window. Coming back to the tab should not
+   * have to sit out the rest of a thirty-second wait, but a tab that is
+   * switched to and away from twenty times must not turn a failing channel
+   * into a tight loop of connect-and-close.
+   */
+  const now = Date.now();
+  if (now - lastNudge > REJOIN_MAX_DELAY_MS) {
+    lastNudge = now;
+    rejoinAttempts = 0;
+  }
+  cancelRejoin();
+  scheduleRejoin(projectId);
+}
+
+let lastNudge = 0;
+
 if (typeof window !== 'undefined') {
   window.addEventListener('online', () => {
     if (currentProjectId) void refetch();
   });
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible' && currentProjectId && store.get().connection !== 'live') {
-      void refetch();
-      // Coming back to a tab whose channel died: try again now, not after the backoff.
-      rejoinAttempts = 0;
-      cancelRejoin();
-      scheduleRejoin(currentProjectId);
-    }
+    if (document.visibilityState === 'visible') wakeUp('soft');
+  });
+  window.addEventListener('pageshow', (event) => {
+    if ((event as PageTransitionEvent).persisted) wakeUp('hard');
   });
 }

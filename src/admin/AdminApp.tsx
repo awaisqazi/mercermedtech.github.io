@@ -5,13 +5,16 @@
  * address needs a signed-in user, render the matching screen, and keep the
  * toasts on screen. Everything else lives in the screens.
  */
-import { useEffect } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { startAuth, touchLastSeen, useAuth } from './lib/auth';
 import { getRoute, navigate, rememberDestination, useRoute } from './lib/router';
 import { applyTheme } from './lib/theme';
 import { AppShell, BrandContext } from './components/AppShell';
 import { Toasts } from './components/Toasts';
 import { SkeletonLines } from './components/Skeleton';
+import { SlowNotice } from './components/SchemaNotice';
+import { SLOW_LOAD_MS } from './lib/config';
+import { Button } from './components/Button';
 import { EmptyState } from './components/EmptyState';
 import { LinkButton } from './components/Button';
 import { Login } from './screens/Login';
@@ -93,6 +96,7 @@ export default function AdminApp({
   return (
     <BrandContext.Provider value={{ src: logoSrc, width: logoWidth, height: logoHeight }}>
       <div class="wb">
+        {auth.stalled ? <StalledNote /> : null}
         {renderRoute(auth.ready, Boolean(auth.userId), route.name, route.params)}
         <Toasts />
       </div>
@@ -109,13 +113,7 @@ function renderRoute(
   if (name === 'join') return <Join token={params.token ?? ''} />;
   if (name === 'reset') return <Reset />;
 
-  if (!ready) {
-    return (
-      <div class="wb-boot-frame">
-        <SkeletonLines count={3} />
-      </div>
-    );
-  }
+  if (!ready) return <BootFrame />;
 
   if (!signedIn || name === 'login') return <Login />;
 
@@ -145,5 +143,51 @@ function renderRoute(
         </div>
       )}
     </AppShell>
+  );
+}
+
+/**
+ * The first few seconds of the app, before the SDK has said whether anybody is
+ * signed in. It holds its tongue at first and then says what it is waiting
+ * for, because a skeleton that has been there for five seconds has stopped
+ * meaning "nearly there".
+ */
+function BootFrame() {
+  const [slow, setSlow] = useState(false);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setSlow(true), SLOW_LOAD_MS);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return (
+    <div class="wb-boot-frame">
+      {slow ? <SlowNotice what="Checking your sign-in" /> : null}
+      <SkeletonLines count={3} />
+    </div>
+  );
+}
+
+/**
+ * The session check never came back. Rather than leave the reader guessing at
+ * a sign-in screen they did not ask for, say what happened and offer the one
+ * thing that reliably fixes it.
+ */
+function StalledNote() {
+  return (
+    <div class="wb-notice wb-notice-warn wb-boot-notice" role="status">
+      <div>
+        <p class="wb-notice-title">The server did not answer</p>
+        <p class="wb-notice-body">
+          Your sign-in could not be checked, so this page is showing you the sign-in screen.
+          Reloading usually sorts it out; if the Workbench is open in another tab, close that one
+          first.
+        </p>
+        <div class="wb-notice-action">
+          <Button variant="secondary" onClick={() => window.location.reload()} data-wb-retry>
+            Reload
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

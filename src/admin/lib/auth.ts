@@ -10,8 +10,9 @@
  * whose `invite_token` does not match a live invitation.
  */
 import { supabase } from './supabase';
-import { LAST_SEEN_INTERVAL_MS, MIN_PASSWORD, resetRedirect } from './config';
+import { LAST_SEEN_INTERVAL_MS, LOAD_DEADLINE_MS, MIN_PASSWORD, resetRedirect } from './config';
 import { observable, useObservable } from './observable';
+import { withDeadline } from './deadline';
 import { toAppError, logError, type AppError } from './errors';
 import type { GlobalRole, InvitePreview, Profile } from './types';
 
@@ -25,6 +26,11 @@ export interface AuthState {
   profileError: AppError | null;
   /** True while a recovery link is being turned into a password change. */
   recovery: boolean;
+  /**
+   * True when the SDK never told us anything and we stopped waiting. The
+   * screens use it to say so rather than leaving a placeholder on screen.
+   */
+  stalled: boolean;
 }
 
 const initial: AuthState = {
@@ -34,6 +40,7 @@ const initial: AuthState = {
   profile: null,
   profileError: null,
   recovery: false,
+  stalled: false,
 };
 
 const store = observable<AuthState>(initial);
@@ -65,30 +72,49 @@ export function displayName(state: AuthState = store.get()): string {
 
 let profileRequest: Promise<void> | null = null;
 
-async function loadProfile(userId: string): Promise<void> {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .maybeSingle();
+/*
+ * Startup used to ask for the same profile row three times: once from
+ * `onAuthStateChange`, once from the `getSession` fallback below, and once
+ * more from `touchLastSeen`. Harmless on a fast connection, three queued
+ * requests behind a stalled session on a slow one. One flight per user id.
+ */
+let inFlightProfile: { userId: string; work: Promise<void> } | null = null;
 
-  if (error) {
-    logError('loadProfile', error);
-    store.update((state) => ({ ...state, profileError: toAppError(error) }));
-    return;
+async function loadProfile(userId: string, force = false): Promise<void> {
+  if (!force && inFlightProfile?.userId === userId) return inFlightProfile.work;
+
+  const work = (async () => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (error) {
+      logError('loadProfile', error);
+      store.update((state) => ({ ...state, profileError: toAppError(error) }));
+      return;
+    }
+    store.update((state) => ({
+      ...state,
+      profile: (data as Profile | null) ?? null,
+      profileError: null,
+    }));
+  })();
+
+  inFlightProfile = { userId, work };
+  try {
+    await work;
+  } finally {
+    if (inFlightProfile?.work === work) inFlightProfile = null;
   }
-  store.update((state) => ({
-    ...state,
-    profile: (data as Profile | null) ?? null,
-    profileError: null,
-  }));
 }
 
 /** Re-reads the signed-in user's own profile row. */
 export async function refreshProfile(): Promise<void> {
   const { userId } = store.get();
   if (!userId) return;
-  await loadProfile(userId);
+  await loadProfile(userId, true);
 }
 
 /* ------------------------------------------------------------- last seen */
@@ -146,17 +172,27 @@ export function startAuth(): void {
     }
   });
 
-  // getSession resolves from storage immediately and also settles `ready` when
-  // there is no stored session at all (onAuthStateChange fires INITIAL_SESSION
-  // in current SDKs, but this keeps the screen from hanging on older ones).
-  void supabase.auth
-    .getSession()
+  /*
+   * getSession resolves from storage immediately and also settles `ready` when
+   * there is no stored session at all.
+   *
+   * It is given a deadline because it is not only a storage read: inside the
+   * SDK it waits on `initializePromise`, which waits on a token refresh. If
+   * that refresh stalls — Safari after a wake, a restore from the
+   * back-forward cache, a suspended tab — nothing else in the portal can move,
+   * because every table read goes through this same call. Rather than leave a
+   * skeleton on screen forever, we stop waiting, say so, and let the sign-in
+   * screen take over; a late answer still arrives through onAuthStateChange
+   * and puts the person back where they were.
+   */
+  void withDeadline(supabase.auth.getSession(), LOAD_DEADLINE_MS)
     .then(({ data, error }) => {
       if (error) logError('getSession', error);
       const user = data.session?.user ?? null;
       store.update((state) => ({
         ...state,
         ready: true,
+        stalled: false,
         userId: state.userId ?? user?.id ?? null,
         email: state.email ?? user?.email ?? null,
       }));
@@ -164,8 +200,61 @@ export function startAuth(): void {
     })
     .catch((error) => {
       logError('getSession', error);
-      store.update((state) => ({ ...state, ready: true }));
+      store.update((state) => ({ ...state, ready: true, stalled: !state.userId }));
     });
+
+  watchForResume();
+}
+
+/* --------------------------------------------------------------- resuming */
+
+let lastResume = 0;
+
+/**
+ * Re-checks the session after the page has been away.
+ *
+ * Safari keeps a page in the back-forward cache and hands it back with its
+ * timers, its socket and any half-finished request exactly as they were, which
+ * in practice means "not working". A restored page therefore asks the SDK for
+ * the session again rather than trusting what it is holding.
+ */
+export async function resumeSession(reason: 'wake' | 'restore' = 'wake'): Promise<void> {
+  const now = Date.now();
+  // pageshow and visibilitychange both fire on a restore, seconds apart at
+  // most; and a tab flipped back and forth must not mean a request each time.
+  if (reason === 'wake' && now - lastResume < 30_000) return;
+  lastResume = now;
+  try {
+    const { data } = await withDeadline(supabase.auth.getSession(), LOAD_DEADLINE_MS);
+    const user = data.session?.user ?? null;
+    store.update((state) => ({
+      ...state,
+      ready: true,
+      stalled: false,
+      userId: user?.id ?? state.userId,
+      email: user?.email ?? state.email,
+    }));
+    // The profile is only re-read when the page itself came back from the
+    // dead; an ordinary tab switch has no reason to ask for it again.
+    if (user && reason === 'restore') void loadProfile(user.id, true);
+  } catch (error) {
+    logError('resumeSession', error);
+  }
+}
+
+function watchForResume(): void {
+  if (typeof window === 'undefined') return;
+  // `persisted` means this page came back out of the back-forward cache: the
+  // session the SDK is holding may be hours old and its refresh timer dead.
+  window.addEventListener('pageshow', (event) => {
+    if ((event as PageTransitionEvent).persisted) {
+      lastResume = 0;
+      void resumeSession('restore');
+    }
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') void resumeSession('wake');
+  });
 }
 
 /** Waits for the profile fetch that a sign-in kicked off, if there is one. */

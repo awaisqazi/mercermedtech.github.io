@@ -57,6 +57,29 @@ export function toAppError(input: unknown, context?: string): AppError {
   const code = error.code || '';
   const lower = raw.toLowerCase();
 
+  /*
+   * A stall and a refusal look different to a browser but identical to a
+   * reader: nothing came back. Safari in particular leaves suspended requests
+   * hanging rather than failing them, so the deadline in `supabase.ts` and the
+   * one in `deadline.ts` both land here.
+   */
+  const timedOut =
+    error.name === 'TimeoutError' ||
+    error.name === 'AbortError' ||
+    (input as { timeout?: boolean } | null)?.timeout === true ||
+    lower.includes('did not answer within') ||
+    lower.includes('taking longer than');
+
+  if (timedOut) {
+    return {
+      message: 'The server did not answer. The connection may have stalled — try again.',
+      permission: false,
+      missingSchema: false,
+      offline: true,
+      cause: input,
+    };
+  }
+
   const offline =
     error.name === 'TypeError' ||
     lower.includes('failed to fetch') ||

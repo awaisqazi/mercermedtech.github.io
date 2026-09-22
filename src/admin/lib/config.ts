@@ -33,6 +33,22 @@ export const LAST_SEEN_INTERVAL_MS = 10 * 60 * 1000;
 /** Activity feed page size. */
 export const ACTIVITY_PAGE = 50;
 
+/**
+ * The hard upper bound on any single request to Supabase.
+ *
+ * Nothing the portal asks for takes anywhere near this long; the number exists
+ * so that a connection Safari has quietly suspended turns into an error
+ * somebody can act on instead of a skeleton that never resolves. See the note
+ * at the top of `supabase.ts`.
+ */
+export const REQUEST_TIMEOUT_MS = 15_000;
+
+/** How long a screen may spend loading before it gives up and offers Retry. */
+export const LOAD_DEADLINE_MS = 12_000;
+
+/** How long a load may take before the screen admits it is taking a while. */
+export const SLOW_LOAD_MS = 4_000;
+
 /** Absolute URL for an invitation, for the copy button on the People screen. */
 export function joinLink(token: string): string {
   const origin = typeof window === 'undefined' ? '' : window.location.origin;

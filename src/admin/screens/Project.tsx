@@ -7,7 +7,14 @@
  */
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { ComponentType } from 'preact';
-import { closeProject, openProject, setPresence, useProject, usePresence } from '../lib/store';
+import {
+  closeProject,
+  openProject,
+  retryProject,
+  setPresence,
+  useProject,
+  usePresence,
+} from '../lib/store';
 import { buildProjectFile, downloadJson } from '../lib/transfer';
 import { setProjectStatus } from '../lib/queries';
 import { href, navigate, useRoute } from '../lib/router';
@@ -19,7 +26,7 @@ import { Chip } from '../components/Chip';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { EmptyState } from '../components/EmptyState';
 import { Menu } from '../components/Menu';
-import { SchemaNotice, ConnectionBanner } from '../components/SchemaNotice';
+import { SchemaNotice, ConnectionBanner, SlowNotice } from '../components/SchemaNotice';
 import { SkeletonLines } from '../components/Skeleton';
 import { Tabs, type TabDef } from '../components/Tabs';
 import { IconArchive, IconDots, IconDownload, IconEye, IconPeople, IconSettings } from '../components/Icons';
@@ -58,7 +65,7 @@ const TAB_LABEL: Record<string, string> = {
 export function Project({ slug, tab }: { slug: string; tab?: string }) {
   const auth = useAuth();
   const route = useRoute();
-  const { status, error, project, readOnly, role, canManage, connection } = useProject();
+  const { status, error, project, readOnly, role, canManage, connection, slow } = useProject();
   const peers = usePresence();
   const [Module, setModule] = useState<ComponentType<ModuleProps> | null>(null);
   const [moduleError, setModuleError] = useState(false);
@@ -69,6 +76,7 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
   const [summaryOpen, setSummaryOpen] = useState(false);
   // The banner waits; the dot in the header does not (see below).
   const [showBanner, setShowBanner] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const downSince = useRef<number | null>(null);
 
   useEffect(() => {
@@ -131,9 +139,19 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
     };
   }, [project?.kind, project?.id]);
 
+  const retry = async () => {
+    setRetrying(true);
+    try {
+      await retryProject();
+    } finally {
+      setRetrying(false);
+    }
+  };
+
   if (status === 'loading' || status === 'idle') {
     return (
       <div class="wb-page">
+        {slow ? <SlowNotice what="This project" /> : null}
         <SkeletonLines count={2} />
         <SkeletonLines count={6} />
       </div>
@@ -141,10 +159,26 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
   }
 
   if (status !== 'ready' || !project) {
+    /*
+     * A load that stalled or a connection that went out can be tried again and
+     * may well work; a missing table or a closed door cannot, and offering a
+     * button there would only waste somebody's afternoon.
+     */
+    const worthRetrying = !error || (!error.missingSchema && !error.permission);
+    const retryButton = (
+      <Button variant="secondary" busy={retrying} onClick={retry} data-wb-retry>
+        Try again
+      </Button>
+    );
+
     return (
       <div class="wb-page">
         {error ? (
-          <SchemaNotice error={error} what="this project" />
+          <SchemaNotice
+            error={error}
+            what="this project"
+            action={worthRetrying ? retryButton : null}
+          />
         ) : (
           <EmptyState
             title="That project is not here"

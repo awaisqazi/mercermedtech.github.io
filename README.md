@@ -110,6 +110,86 @@ address asked for started with `/es/`. There is no `/es/404/`.
 `/digital-literacy/`, keeping any `#section` and `?query`, and is never
 indexed.
 
+## The staff portal (MMT Workbench)
+
+`/admin/` is a separate thing living in the same repository: a single-page app
+(Preact + Supabase) behind a sign-in, English only, `noindex`. It hash-routes
+itself (`#/`, `#/p/<slug>/<tab>`) because GitHub Pages cannot rewrite unknown
+paths onto one shell, and it is excluded from the bilingual, link and SEO
+checks — they are about public pages, and this is a work tool.
+
+No project content, staff names, keys or secrets live in this repository. The
+only credential in the code is the Supabase **publishable** key, which is meant
+to be shipped to browsers; row level security does the real work, and every
+read happens as the signed-in person.
+
+### If the Workbench hangs
+
+**What to do, in order.**
+
+1. **Hard reload the page** (`Cmd+Shift+R`). This is the fix, nearly always.
+2. **Use one tab.** Two copies of the portal open at once share one session in
+   storage and take turns refreshing it. Close the spare.
+3. If a screen offers **Try again**, that button re-checks the sign-in before
+   it re-reads the data, so it is worth a press before reloading.
+4. If it is still stuck, sign out and sign back in. If *that* does not work,
+   the problem is not the browser.
+
+**What was wrong, and what the app does about it now.** Every table read in the
+portal goes through `supabase.auth.getSession()`, and inside the SDK that waits
+on a token refresh that had no time limit of its own. One request that is
+neither answered nor refused was therefore enough to stop the whole portal: a
+loading skeleton that never resolved, no error, and — the giveaway — no further
+requests in the network panel, because they were all queued behind the session.
+
+Safari is where this bit, because Safari suspends in-flight connections when a
+tab goes to the background, when a page comes back out of the back-forward
+cache, and when the laptop wakes; those requests are left hanging rather than
+failed. Chrome fails them quickly, which is why the same build felt fine there.
+
+So now:
+
+- **every request has a ceiling** (15 s) and **every screen load has one**
+  (12 s), after which a stall becomes an ordinary error;
+- **a load that is still going after four seconds says so** instead of leaving
+  a placeholder on screen in silence;
+- **Home and the project screen offer Try again**, which re-checks the session
+  first, because a stuck session is usually the real problem;
+- **a page restored from the back-forward cache re-checks its sign-in and
+  rebuilds its realtime channel** rather than trusting what it woke up with;
+- **localStorage can refuse** (Safari private browsing, tracking prevention)
+  without taking the portal down — the session falls back to memory and lasts
+  until the tab closes.
+
+**Not the Web Locks bug.** There is a known Safari deadlock where auth-js left
+its `navigator.locks` lock held across a reload. It is not this: auth-js 2.116
+coordinates refreshes without a lock and never calls `navigator.locks`, and
+`scripts/webkit-smoke.mjs` proves it by holding `lock:wb.auth` for the whole
+life of the page while the portal signs in anyway. Do not add the deprecated
+`lock` option to `src/admin/lib/supabase.ts` to "fix" this — it would switch
+the old lock path back on.
+
+### Testing it in real WebKit
+
+Chromium is not Safari, so there is a smoke test that drives the actual engine
+Safari ships, next to Chromium, on the built site:
+
+```bash
+npx --yes playwright@latest install webkit chromium   # once, ~500 MB
+npm i --no-save playwright                            # once; not a dependency
+node scripts/webkit-smoke.mjs                         # builds, serves, drives
+```
+
+It checks that the sign-in screen paints within five seconds, holds the Web
+Lock described above, and — the important two — stalls the token endpoint and
+then the REST endpoint and insists the app still reaches a screen somebody can
+act on. It also counts frames while the loading skeleton is up.
+
+It **cannot sign in**: there are no credentials in this repository and none
+should be added. Everything past the sign-in screen — real project data, the
+realtime channel, presence, two people editing at once — is still only ever
+tested by hand, in Safari, signed in.
+
 ## How deploying works
 
 `.github/workflows/deploy.yml` builds the site with
@@ -136,7 +216,10 @@ src/styles/        tokens.css, base.css, components/*.css
 src/components/    one job each: header, footer, cards, form, pop-ups
 src/views/         one page, in whichever language it is handed
 src/pages/         the routes, English at the root and Spanish under /es/
-scripts/           the checks listed above, plus make-static-images.mjs
+src/admin/         the staff portal: its own app, styles, data store and
+                   Supabase client, mounted only at /admin/
+scripts/           the checks listed above, plus make-static-images.mjs and
+                   webkit-smoke.mjs (the real-WebKit test for the portal)
 ```
 
 ### The images with a fixed address

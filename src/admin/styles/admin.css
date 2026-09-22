@@ -2053,6 +2053,27 @@ body.wb-no-scroll {
   color: var(--ink-2);
 }
 
+/* The one button a notice is allowed: "try that again". */
+.wb-notice-action {
+  margin-top: 0.6rem;
+}
+
+/* The banner above the sign-in screen when the session check never came back. */
+.wb-boot-notice {
+  max-width: 420px;
+  margin: 1.2rem auto 0;
+}
+
+/*
+ * "Still loading." Deliberately quiet: it sits above a skeleton that is still
+ * doing its job, so it reassures rather than alarms.
+ */
+.wb-slow-note {
+  color: var(--ink-2);
+  font-size: 0.86rem;
+  margin-bottom: 0.6rem;
+}
+
 .wb-reconnect {
   display: flex;
   align-items: center;

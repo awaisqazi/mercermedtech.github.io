@@ -8,19 +8,22 @@
  * late or stuck.
  */
 import { useCallback, useEffect, useState } from 'preact/hooks';
-import { displayName, touchLastSeen, useAuth } from '../lib/auth';
+import { displayName, resumeSession, touchLastSeen, useAuth } from '../lib/auth';
 import { loadHome, type HomeData, type HomeStats } from '../lib/queries';
+import { LOAD_DEADLINE_MS, SLOW_LOAD_MS } from '../lib/config';
+import { withDeadline } from '../lib/deadline';
+import { toAppError } from '../lib/errors';
 import { href } from '../lib/router';
 import { daysUntil, dueWording, formatDateLong, relativeTime } from '../lib/format';
 import type { Task } from '../lib/types';
 import { Avatar } from '../components/Avatar';
 import { Chip } from '../components/Chip';
 import { EmptyState } from '../components/EmptyState';
-import { LinkButton } from '../components/Button';
+import { Button, LinkButton } from '../components/Button';
 import { SkeletonCards, SkeletonLines } from '../components/Skeleton';
 import { ProjectCard } from './ProjectCard';
 import { IconProjects } from '../components/Icons';
-import { SchemaNotice } from '../components/SchemaNotice';
+import { SchemaNotice, SlowNotice } from '../components/SchemaNotice';
 
 /** How many rows a list shows before it hands over to the project screen. */
 const LIST_CAP = 8;
@@ -88,12 +91,44 @@ export function Home() {
   const auth = useAuth();
   const [data, setData] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [slow, setSlow] = useState(false);
 
+  /*
+   * `loadHome` swallows its own errors, but it cannot swallow a request that
+   * is never answered — and in Safari that is the usual way for this to go
+   * wrong. The deadline turns the silence into an ordinary error with a Retry
+   * on it, and the four-second mark turns a wordless skeleton into a sentence.
+   */
   const refresh = useCallback(async () => {
-    const result = await loadHome(auth.userId, displayName(auth));
-    setData(result);
-    setLoading(false);
+    setSlow(false);
+    setLoading(true);
+    const timer = window.setTimeout(() => setSlow(true), SLOW_LOAD_MS);
+    try {
+      const result = await withDeadline(loadHome(auth.userId, displayName(auth)), LOAD_DEADLINE_MS);
+      setData(result);
+    } catch (error) {
+      setData({
+        projects: [],
+        profiles: {},
+        mine: [],
+        attention: [],
+        activity: [],
+        stats: { open: 0, dueWeek: 0, overdue: 0 },
+        error: toAppError(error),
+      });
+    } finally {
+      window.clearTimeout(timer);
+      setSlow(false);
+      setLoading(false);
+    }
   }, [auth.userId, auth.profile?.full_name]);
+
+  const retry = useCallback(async () => {
+    // A stalled home screen usually means the session is the thing that is
+    // stuck, so ask the SDK for it again before asking for the data.
+    await resumeSession('restore');
+    await refresh();
+  }, [refresh]);
 
   useEffect(() => {
     void refresh();
@@ -174,7 +209,20 @@ export function Home() {
         {loading ? null : <StatStrip stats={data?.stats ?? null} />}
       </header>
 
-      {data?.error ? <SchemaNotice error={data.error} /> : null}
+      {slow && loading ? <SlowNotice what="Your work" /> : null}
+
+      {data?.error ? (
+        <SchemaNotice
+          error={data.error}
+          action={
+            data.error.missingSchema || data.error.permission ? null : (
+              <Button variant="secondary" onClick={retry} data-wb-retry>
+                Try again
+              </Button>
+            )
+          }
+        />
+      ) : null}
 
       <div class="wb-home-grid">
         <section class="wb-panel">
