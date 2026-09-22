@@ -347,3 +347,287 @@
         transition: none;
     }
 }
+
+/* ==========================================================================
+   The partner briefing that opens the page.
+   The section bodies reuse dl.css (dl-checks, dl-steps, dl-list, dl-callout,
+   dl-note), so only the pieces those do not cover live here.
+   ========================================================================== */
+
+.brief-prepared {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+}
+
+/* ---------- the funded-by strip ---------- */
+
+.brief-funded {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    margin: 0 0 1.75rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-md);
+}
+
+.brief-funded img {
+    width: 64px;
+    height: auto;
+    flex-shrink: 0;
+}
+
+.brief-funded-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tech-dark);
+    margin-bottom: 0.25rem;
+}
+
+.brief-funded-line {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+/* ---------- the mini table of contents ---------- */
+
+.brief-toc {
+    margin: 0 0 2.25rem;
+    padding: 1rem 1.15rem;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-radius: var(--radius-md);
+}
+
+.brief-toc-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 0.6rem;
+}
+
+.brief-toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.75rem;
+}
+
+.brief-toc a {
+    font-size: 0.88rem;
+    color: var(--tech-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.brief-toc a:hover,
+.brief-toc a:focus-visible {
+    color: var(--tech);
+}
+
+/* ---------- "send someone our way", the one block that must not be missed ---------- */
+
+.brief-refer {
+    margin: 0 0 2.25rem;
+    padding: 1.5rem 1.5rem 1.35rem;
+    background: linear-gradient(135deg, var(--tech-light) 0%, rgba(255, 255, 255, 0.9) 100%);
+    border: 1px solid rgba(59, 91, 219, 0.28);
+    border-radius: var(--radius-lg);
+}
+
+.brief-refer h2 {
+    font-size: 1.3rem;
+    margin: 0 0 0.5rem;
+    color: var(--tech-dark);
+}
+
+.brief-refer > p {
+    margin: 0 0 1.15rem;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+.brief-refer-btn {
+    width: 100%;
+    padding: 1.05rem 1.5rem;
+    font-size: 1rem;
+}
+
+.brief-refer-url {
+    margin: 0.65rem 0 1.15rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    word-break: break-word;
+}
+
+.brief-refer-points {
+    gap: 0.6rem;
+}
+
+.brief-refer-points span {
+    font-size: 0.92rem;
+}
+
+/* ---------- the training pathway ---------- */
+
+.brief-stages {
+    list-style: none;
+    counter-reset: brief-stage;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+}
+
+.brief-stages li {
+    counter-increment: brief-stage;
+    position: relative;
+    padding: 1rem 1.15rem 1rem 3.25rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-md);
+}
+
+.brief-stages li::before {
+    content: counter(brief-stage);
+    position: absolute;
+    left: 1.15rem;
+    top: 1rem;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.brief-stages strong {
+    display: block;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.brief-stages span {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+/* ---------- what participants learn ---------- */
+
+.brief-chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.brief-chips li {
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    background: var(--tech-light);
+    color: var(--tech-dark);
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+/* ---------- what we ask, what you get ---------- */
+
+.brief-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.brief-columns h3 {
+    font-size: 0.95rem;
+    margin: 0 0 0.75rem;
+    color: var(--tech-dark);
+}
+
+/* ---------- contacts ---------- */
+
+.brief-contacts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.brief-contacts li {
+    padding: 1.15rem 1.25rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-md);
+    display: grid;
+    gap: 0.25rem;
+}
+
+.brief-contacts strong {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.05rem;
+}
+
+.brief-contact-role {
+    font-size: 0.85rem;
+    color: var(--tech-dark);
+}
+
+.brief-contact-scope {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.brief-contacts a {
+    font-size: 0.88rem;
+    color: var(--tech-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    word-break: break-word;
+    margin-top: 0.25rem;
+}
+
+/* ---------- where the briefing ends and the kit begins ---------- */
+
+.kit-open {
+    margin: 3rem 0 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid rgba(59, 91, 219, 0.18);
+}
+
+.kit-open h2 {
+    font-size: 1.45rem;
+    margin: 0 0 0.5rem;
+}
+
+@media (max-width: 480px) {
+    .brief-funded {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+}

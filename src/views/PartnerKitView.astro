@@ -1,26 +1,38 @@
 ---
 /**
- * Partner outreach kit page, in one language.
+ * Partner briefing page, in one language: a one page summary of the program
+ * for county staff, followed by the outreach kit they hand out.
  *
  * Hidden on purpose, exactly like the sign-up page: BaseLayout carries
  * "standalone" (noindex, no hreflang pair), astro.config.mjs keeps
  * /partners/ out of the sitemap, and nothing on the site links here. The
  * address is emailed to the agency.
  *
- * The files are plain static files under public/partners/hunterdon-county/,
- * so every link on this page is a direct download. Nothing is bundled and
- * nothing is optimized: the agency has to get the exact file we shipped.
+ * The kit files are plain static files under public/partners/hunterdon-county/,
+ * so every link in that half of the page is a direct download. Nothing is
+ * bundled and nothing is optimized: the agency has to get the exact file we
+ * shipped. The NJDOL seal at the top is the one exception, because it is a
+ * picture on the page rather than something to hand over, so it goes through
+ * Astro's image pipeline like every other image on the site.
  *
- * NJDOL rule: this page never names another program, and it carries the
- * funding sentence through DltFooter.
+ * NJDOL rules this page follows line by line: eligibility is written as
+ * "TANF or SNAP", no other Mercer Med Tech program is named, no class days or
+ * times are given, and the funding sentence appears word for word in English
+ * (through FundingLine at the top and DltFooter at the bottom).
+ *
+ * The page body carries no phone number, the same as the sign-up page. The
+ * header and footer keep theirs.
  *
  * navLinks is empty on purpose, the same as the sign-up page: the Tech-track
  * nav is a list of in-page anchors that only exist on the landing page.
  */
+import { Image } from 'astro:assets';
 import '../styles/components/dl.css';
 import '../styles/components/signup.css';
 import '../styles/components/partner-kit.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import FundingLine from '../components/FundingLine.astro';
+import seal from '../assets/images/njdol-seal.png';
 import { site } from '../data/site';
 import { localePath, t, type Locale } from '../i18n';
 
@@ -72,6 +84,27 @@ const previews = [
 
 const signupPath = localePath(locale, '/digital-literacy/sign-up/');
 const signupLabel = 'mercermedtech.com/digital-literacy/sign-up';
+
+const b = page.brief;
+
+/**
+ * The mini table of contents. It is built from the section headings rather
+ * than from a second list of its own, so a renamed heading cannot drift away
+ * from the link that points at it, and npm run check:links proves every
+ * anchor resolves.
+ */
+const sections = [
+  { id: 'refer', label: b.refer.heading },
+  { id: 'qualify', label: b.qualify.heading },
+  { id: 'how', label: b.how.heading },
+  { id: 'pathway', label: b.pathway.heading },
+  { id: 'learn', label: b.learn.heading },
+  { id: 'leave-with', label: b.leaveWith.heading },
+  { id: 'barriers', label: b.barriers.heading },
+  { id: 'exchange', label: b.exchange.heading },
+  { id: 'contacts', label: b.contacts.heading },
+  { id: 'kit', label: page.kitHeading },
+];
 ---
 
 <BaseLayout
@@ -88,7 +121,195 @@ const signupLabel = 'mercermedtech.com/digital-literacy/sign-up';
     <div class="signup-column kit-column">
       <span class="signup-eyebrow">{page.eyebrow}</span>
       <h1>{page.heading}</h1>
-      <p class="signup-lead">{page.preparedFor}</p>
+      <p class="brief-prepared">{page.preparedFor}</p>
+      <p class="signup-lead">{b.lead}</p>
+
+      <div class="brief-funded">
+        <Image src={seal} alt={b.sealAlt} width={64} height={64} densities={[1, 2]} format="webp" />
+        <div>
+          <span class="brief-funded-label">{b.fundedByLabel}</span>
+          <FundingLine locale={locale} class="brief-funded-line" />
+        </div>
+      </div>
+
+      <nav class="brief-toc" aria-label={b.tocLabel}>
+        <span class="brief-toc-label">{b.tocLabel}</span>
+        <ul>
+          {sections.map((section) => <li><a href={`#${section.id}`}>{section.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <!-- ===== 1. Send someone our way. The reason the page exists. ===== -->
+      <section class="brief-refer" id="refer" aria-labelledby="brief-refer-title">
+        <h2 id="brief-refer-title">{b.refer.heading}</h2>
+        <p>{b.refer.intro}</p>
+        <a class="btn btn-tech brief-refer-btn" href={signupPath}>
+          <i class="fas fa-arrow-right" aria-hidden="true"></i> {b.refer.ctaLabel}
+        </a>
+        <p class="brief-refer-url">{b.refer.url}</p>
+        <ul class="dl-list brief-refer-points">
+          {
+            b.refer.points.map((point) => (
+              <li>
+                <i class="fas fa-check" aria-hidden="true" />
+                <span>{point}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <!-- ===== 2. Who qualifies ===== -->
+      <section class="kit-section" id="qualify" aria-labelledby="brief-qualify-title">
+        <h2 id="brief-qualify-title">{b.qualify.heading}</h2>
+        <ul class="dl-checks">
+          {
+            b.qualify.checks.map((check) => (
+              <li>
+                <i class="fas fa-check" aria-hidden="true" />
+                <div>
+                  <strong>{check.title}</strong>
+                  <span>{check.body}</span>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="dl-note">{b.qualify.noEducation}</p>
+        <p class="dl-note">{b.qualify.gaNote}</p>
+      </section>
+
+      <!-- ===== 3. How it works ===== -->
+      <section class="kit-section" id="how" aria-labelledby="brief-how-title">
+        <h2 id="brief-how-title">{b.how.heading}</h2>
+        <ol class="dl-steps">
+          {
+            b.how.steps.map((step) => (
+              <li>
+                <strong>{step.title}</strong>
+                <span>{step.body}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <div class="dl-callout dl-callout--spaced">
+          <i class="fas fa-info-circle" aria-hidden="true"></i>
+          <p>{b.how.aosos}</p>
+        </div>
+      </section>
+
+      <!-- ===== 4. The training pathway ===== -->
+      <section class="kit-section" id="pathway" aria-labelledby="brief-pathway-title">
+        <h2 id="brief-pathway-title">{b.pathway.heading}</h2>
+        <ol class="brief-stages">
+          {
+            b.pathway.stages.map((stage) => (
+              <li>
+                <strong>{stage.title}</strong>
+                <span>{stage.body}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="dl-note">{b.pathway.total}</p>
+      </section>
+
+      <!-- ===== 5. What participants learn ===== -->
+      <section class="kit-section" id="learn" aria-labelledby="brief-learn-title">
+        <h2 id="brief-learn-title">{b.learn.heading}</h2>
+        <ul class="brief-chips">
+          {b.learn.items.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <!-- ===== 6. What they leave with ===== -->
+      <section class="kit-section" id="leave-with" aria-labelledby="brief-leave-title">
+        <h2 id="brief-leave-title">{b.leaveWith.heading}</h2>
+        <ul class="dl-list">
+          {
+            b.leaveWith.items.map((item) => (
+              <li>
+                <i class="fas fa-certificate" aria-hidden="true" />
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="dl-note">{b.leaveWith.workActivity}</p>
+      </section>
+
+      <!-- ===== 7. Barriers ===== -->
+      <section class="kit-section" id="barriers" aria-labelledby="brief-barriers-title">
+        <h2 id="brief-barriers-title">{b.barriers.heading}</h2>
+        <ul class="dl-list">
+          {
+            b.barriers.items.map((item) => (
+              <li>
+                <i class="fas fa-hand-holding-heart" aria-hidden="true" />
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="dl-note">{b.barriers.note}</p>
+        <p class="dl-note">{b.barriers.childcare}</p>
+      </section>
+
+      <!-- ===== 8. What we ask, what you get ===== -->
+      <section class="kit-section" id="exchange" aria-labelledby="brief-exchange-title">
+        <h2 id="brief-exchange-title">{b.exchange.heading}</h2>
+        <div class="brief-columns">
+          <div>
+            <h3>{b.exchange.askHeading}</h3>
+            <ul class="dl-list">
+              {
+                b.exchange.ask.map((item) => (
+                  <li>
+                    <i class="fas fa-arrow-right" aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+          <div>
+            <h3>{b.exchange.getHeading}</h3>
+            <ul class="dl-list">
+              {
+                b.exchange.get.map((item) => (
+                  <li>
+                    <i class="fas fa-check" aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 9. Your contacts ===== -->
+      <section class="kit-section" id="contacts" aria-labelledby="brief-contacts-title">
+        <h2 id="brief-contacts-title">{b.contacts.heading}</h2>
+        <ul class="brief-contacts">
+          {
+            b.contacts.people.map((person) => (
+              <li>
+                <strong>{person.name}</strong>
+                <span class="brief-contact-role">{person.role}</span>
+                <span class="brief-contact-scope">{person.scope}</span>
+                <a href={`mailto:${person.email}`}>{person.email}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <!-- ===== 10. The outreach kit, unchanged below this line ===== -->
+      <section class="kit-open" id="kit" aria-labelledby="brief-kit-title">
+        <h2 id="brief-kit-title">{page.kitHeading}</h2>
+        <p class="kit-note">{page.kitIntro}</p>
+      </section>
 
       <section class="kit-section" aria-labelledby="kit-how-title">
         <h2 id="kit-how-title">{page.howToHeading}</h2>

@@ -823,14 +823,179 @@ export const es: Dictionary = {
    */
   partnerKit: {
     seo: {
-      title: 'Kit de difusión para agencias | Mercer Med Tech',
+      title: 'Resumen para agencias aliadas | Mercer Med Tech',
       description:
-        'Descargue el kit de difusión de Habilidades Digitales para el equipo de WorkFirst New Jersey del Hunterdon County Educational Services Commission.',
+        'Resumen para el personal del condado sobre Habilidades Digitales: quién califica, cómo enviar a alguien, qué cubre la capacitación y el kit.',
     },
     eyebrow: 'Para agencias aliadas',
-    heading: 'Kit de difusión de la Capacitación en Habilidades Digitales (Digital Literacy Training)',
+    heading: 'Capacitación en Habilidades Digitales (Digital Literacy Training): resumen para agencias',
     preparedFor:
       'Preparado para el equipo de WorkFirst New Jersey del Hunterdon County Educational Services Commission.',
+    /**
+     * El resumen que ahora abre la página, para el personal del condado que
+     * tiene que explicar el programa y decidir a quién manda. Reglas del NJDOL
+     * que valen en cada línea: la elegibilidad es "TANF o SNAP", no se nombra
+     * ningún otro programa, y no se dan días ni horas de clase.
+     */
+    brief: {
+      fundedByLabel: 'Con fondos de',
+      sealAlt: 'Sello del Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey',
+      lead: 'La Capacitación en Habilidades Digitales (Digital Literacy Training) es capacitación en computación, inteligencia artificial y búsqueda de trabajo, sin costo, para adultos que reciben TANF o SNAP en la Región Central. Tiene fondos de una subvención del Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey, y Mercer Med Tech es una de seis organizaciones con esta subvención en el estado. El primer grupo empieza la primera semana de octubre de 2026, y de ahí empieza un grupo nuevo cada 5 a 6 semanas, en grupos de 10 a 12 personas.',
+      tocLabel: 'En esta página',
+      refer: {
+        heading: 'Mándenos a alguien',
+        intro: 'Con un enlace basta. Déselo a la persona, o llénenlo juntos mientras la tiene enfrente.',
+        ctaLabel: 'Formulario de inscripción',
+        url: 'mercermedtech.com/es/digital-literacy/sign-up',
+        points: [
+          'No hay formulario de referencia que llenar.',
+          'Un trabajador de caso (caseworker) puede enviar el formulario por la persona.',
+          'Confirmamos con su oficina que la persona recibe TANF o SNAP antes de que empiece.',
+        ],
+      },
+      qualify: {
+        heading: 'Quién califica',
+        checks: [
+          {
+            title: 'Vive en Nueva Jersey y tiene 18 años o más',
+            body: '18 años o más el primer día de la capacitación.',
+          },
+          {
+            title: 'Recibe TANF o SNAP ahora',
+            body: 'Beneficios por medio de WorkFirst New Jersey.',
+          },
+          {
+            title: 'Vive en uno de siete condados',
+            body: 'Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset o Union.',
+          },
+          {
+            title: 'Quiere capacitarse y buscar trabajo',
+            body: 'Puede asistir y trabajar con nosotros en la búsqueda de trabajo.',
+          },
+        ],
+        noEducation:
+          'No se pide ningún nivel de estudios. Nadie necesita un diploma ni el puntaje de un examen para empezar.',
+        gaNote: 'General Assistance no califica bajo esta subvención.',
+      },
+      how: {
+        heading: 'Cómo funciona',
+        steps: [
+          {
+            title: 'La persona usa el enlace de inscripción',
+            body: 'El formulario es corto, y un trabajador de caso lo puede llenar por ella.',
+          },
+          {
+            title: 'Confirmamos que califica',
+            body: 'Revisamos con su oficina que recibe TANF o SNAP antes de que empiece.',
+          },
+          {
+            title: 'Revisión de lo que ya sabe y un plan',
+            body: 'En 7 días cada persona hace una revisión de lo que ya sabe y un Individual Employment Plan, y anotamos los apoyos que va a necesitar.',
+          },
+          {
+            title: 'Capacitación con su grupo',
+            body: 'Todas las clases son en línea. Hay apoyo en persona en el campus de Lawrenceville durante las horas de oficina programadas, y los estudiantes reciben ese horario al empezar.',
+          },
+        ],
+        aosos:
+          'Las personas de Hunterdon y Somerset también necesitan un número AOSOS. Nosotros los pedimos por lotes a la oficina de Employment Services del NJDOL en el Greater Raritan One-Stop, así que la persona no tiene que ocuparse de eso.',
+      },
+      pathway: {
+        heading: 'La ruta de la capacitación',
+        stages: [
+          {
+            title: '60 horas de base con Mercer Med Tech',
+            body: 'Manejo de la computadora, archivos y carpetas, internet y correo electrónico, programas de productividad y lo básico de ciberseguridad. Empieza con una revisión inicial, tiene revisiones de avance y termina con un proyecto final.',
+          },
+          {
+            title: '32 horas en línea con NJIT',
+            body: 'El AI Literacy Microcredential, 20 horas, y el Digital Literacy Microcredential, 12 horas. Son los certificados de la lista ETPL que el NJDOL cuenta.',
+          },
+          {
+            title: '20 horas de enriquecimiento, en vivo por internet',
+            body: 'Tecnologías emergentes y manejo del dinero.',
+          },
+          {
+            title: 'Ruta avanzada',
+            body: 'Más capacitación de la lista ETPL, caso por caso, con la aprobación del NJDOL.',
+          },
+        ],
+        total:
+          'Unas 110 horas en 5 a 6 semanas. Quien ya tiene lo básico puede pasar la parte de base con un examen.',
+      },
+      learn: {
+        heading: 'Qué aprenden',
+        items: [
+          'Lo básico de la computadora',
+          'Internet, correo electrónico y reuniones en línea',
+          'Microsoft Office y Google Workspace',
+          'Seguridad en línea',
+          'Inteligencia artificial',
+          'Manejo del dinero',
+          'Preparación para el trabajo',
+        ],
+      },
+      leaveWith: {
+        heading: 'Con qué salen',
+        items: [
+          'Un certificado reconocido por la industria, incluido el AI Literacy Microcredential de NJIT.',
+          'Un currículum terminado, práctica de entrevista y un plan para buscar trabajo.',
+          'Ayuda para encontrar trabajo que sigue después: atención uno a uno, presentaciones con empleadores y llamadas a los 30, 60 y 90 días.',
+        ],
+        workActivity:
+          'El tiempo de capacitación cuenta para el plan de actividad laboral, y nosotros documentamos la asistencia.',
+      },
+      barriers: {
+        heading: 'Apoyos que podemos dar, caso por caso',
+        items: [
+          'Ayuda con el transporte para quien decida venir en persona.',
+          'Una computadora portátil y acceso a internet en casa.',
+          'Costos de examen, de certificado y de identificación.',
+          'Ropa para la entrevista.',
+          'Orientaciones virtuales para el personal de la agencia.',
+        ],
+        note: 'Cada apoyo se decide caso por caso según lo que diga el plan de la persona, se entrega antes de que haga falta y queda documentado para el NJDOL.',
+        childcare: 'El cuidado de niños no es un apoyo estándar, y lo podemos ver caso por caso.',
+      },
+      exchange: {
+        heading: 'Qué pedimos y qué reciben',
+        askHeading: 'Qué pedimos',
+        ask: [
+          'Hablen del programa y compartan el enlace.',
+          'Díganos a quién mandaron.',
+          'Ayúdenos a confirmar que la persona califica cuando se lo pidamos.',
+          'Cuéntenos cómo es su proceso de admisión.',
+        ],
+        getHeading: 'Qué reciben',
+        get: [
+          'Un correo semanal con la lista de quién se inscribió, en el formato de ustedes si tienen uno.',
+          'Registros de asistencia y de graduación para el reporte de actividad laboral.',
+          'Reporte mensual al NJDOL por condado.',
+          'La información de los participantes se mantiene confidencial.',
+          'Orientaciones virtuales para su personal cuando las pidan.',
+        ],
+      },
+      contacts: {
+        heading: 'Sus contactos',
+        people: [
+          {
+            name: 'Awais Qazi',
+            role: 'Coordinador del programa, especialista en admisión y reclutamiento',
+            scope: 'Referencias, elegibilidad, inscripción, reportes semanales.',
+            email: 'awais.a.qazi@gmail.com',
+          },
+          {
+            name: 'Shazia Qazi',
+            role: 'Directora del programa, asesora de orientación laboral',
+            scope: 'Planes, búsqueda de trabajo, empleadores, seguimiento.',
+            email: 'mercermedtech@gmail.com',
+          },
+        ],
+      },
+    },
+    kitHeading: 'Kit de difusión',
+    kitIntro:
+      'Publicaciones listas para usar, un volante y un correo que puede reenviar, en inglés y en español, con el logo de ustedes o sin él. Cada pieza lleva el sello del NJDOL y la frase de financiamiento requerida.',
     howToHeading: 'Cómo usarlo',
     howToSteps: [
       'Elija una carpeta y úsela en todo, para que lo que publique se vea como un solo conjunto.',

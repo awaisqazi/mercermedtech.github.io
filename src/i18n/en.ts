@@ -802,14 +802,180 @@ export const en = {
    */
   partnerKit: {
     seo: {
-      title: 'Outreach kit for partner agencies | Mercer Med Tech',
+      title: 'Digital Literacy Training partner briefing | Mercer Med Tech',
       description:
-        'Download the Digital Literacy Training outreach kit prepared for the WorkFirst New Jersey team at Hunterdon County Educational Services Commission.',
+        'A briefing for county staff on Digital Literacy Training: who qualifies, how to send someone, what the training covers, and the outreach kit.',
     },
     eyebrow: 'For partner agencies',
-    heading: 'Digital Literacy Training outreach kit',
+    heading: 'Digital Literacy Training: partner briefing',
     preparedFor:
       'Prepared for the WorkFirst New Jersey team at Hunterdon County Educational Services Commission.',
+    /**
+     * The briefing that now opens the page, for county staff who have to
+     * explain the program and decide who to send. Facts only, in the order a
+     * person asks for them. NJDOL rules that apply to every line: eligibility
+     * is "TANF or SNAP", no other program is named, and no days or times are
+     * given for any class.
+     */
+    brief: {
+      fundedByLabel: 'Funded by',
+      sealAlt: 'Seal of the New Jersey Department of Labor and Workforce Development',
+      lead: 'Digital Literacy Training is computer, AI and job search training at no cost, for adults receiving TANF or SNAP in the Central Region. It is grant funded by the New Jersey Department of Labor and Workforce Development, and Mercer Med Tech is one of six grantees across the state. The first group starts the first week of October 2026, and a new group starts every 5 to 6 weeks after that, in groups of 10 to 12.',
+      tocLabel: 'On this page',
+      refer: {
+        heading: 'Send someone our way',
+        intro: 'One link does it. Give it to the person, or fill it in with them while they are in front of you.',
+        ctaLabel: 'Sign-up form',
+        url: 'mercermedtech.com/digital-literacy/sign-up',
+        points: [
+          'There is no referral form to complete.',
+          'A caseworker may submit the form on someone else’s behalf.',
+          'We confirm TANF or SNAP status with your office before anyone starts.',
+        ],
+      },
+      qualify: {
+        heading: 'Who qualifies',
+        checks: [
+          {
+            title: 'A New Jersey resident, 18 or older',
+            body: 'Age 18 or older on the first day of training.',
+          },
+          {
+            title: 'Currently receiving TANF or SNAP',
+            body: 'Benefits through WorkFirst New Jersey.',
+          },
+          {
+            title: 'Living in one of seven counties',
+            body: 'Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset or Union.',
+          },
+          {
+            title: 'Ready to train and look for work',
+            body: 'Able to attend and to work with us on the job search.',
+          },
+        ],
+        noEducation:
+          'There is no education requirement. Nobody needs a diploma or a test score to start.',
+        gaNote: 'General Assistance is not eligible under this grant.',
+      },
+      how: {
+        heading: 'How it works',
+        steps: [
+          {
+            title: 'They use the sign-up link',
+            body: 'The form is short, and a caseworker can fill it in for them.',
+          },
+          {
+            title: 'We confirm eligibility',
+            body: 'We check TANF or SNAP status with your office before anyone starts.',
+          },
+          {
+            title: 'Skills check and a plan',
+            body: 'Within 7 days each person completes a skills check and an Individual Employment Plan, and we flag any support they will need.',
+          },
+          {
+            title: 'Training with their group',
+            body: 'Every class is online. In-person support is available at our Lawrenceville campus during scheduled office hours, and students get that schedule at the start.',
+          },
+        ],
+        aosos:
+          'Hunterdon and Somerset residents also need an AOSOS number. We request those in batches from the NJDOL Employment Services office at the Greater Raritan One-Stop, so it is not something the person has to chase.',
+      },
+      pathway: {
+        heading: 'The training pathway',
+        stages: [
+          {
+            title: '60 hours of foundations with Mercer Med Tech',
+            body: 'Computer operation, files and folders, internet and email, productivity software, and cybersecurity basics. It opens with a baseline check, has progress checks along the way, and ends with a capstone.',
+          },
+          {
+            title: '32 hours online with NJIT',
+            body: 'The AI Literacy Microcredential, 20 hours, and the Digital Literacy Microcredential, 12 hours. These are the ETPL listed credentials NJDOL counts.',
+          },
+          {
+            title: '20 hours of enrichment, live online',
+            body: 'Emerging technologies, and financial literacy.',
+          },
+          {
+            title: 'Advanced pathway',
+            body: 'Further ETPL training, case by case, with NJDOL approval.',
+          },
+        ],
+        total:
+          'About 110 hours across 5 to 6 weeks. Someone who already has the basics can test past the foundations.',
+      },
+      learn: {
+        heading: 'What participants learn',
+        items: [
+          'Computer basics',
+          'Internet, email and online meetings',
+          'Microsoft Office and Google Workspace',
+          'Online safety',
+          'AI literacy',
+          'Money management',
+          'Getting ready for work',
+        ],
+      },
+      leaveWith: {
+        heading: 'What they leave with',
+        items: [
+          'An industry-recognized credential, including the AI Literacy Microcredential from NJIT.',
+          'A finished resume, interview practice, and a job search plan.',
+          'Career services that keep going: one-to-one help, introductions to employers, and check-ins at 30, 60 and 90 days.',
+        ],
+        workActivity:
+          'Training time counts toward a work activity plan, and we document attendance.',
+      },
+      barriers: {
+        heading: 'Barriers we can help with, case by case',
+        items: [
+          'Travel help for anyone who chooses to come in.',
+          'A laptop and internet access at home.',
+          'Exam, credential and ID fees.',
+          'Interview clothing.',
+          'Virtual orientations for partner staff.',
+        ],
+        note: 'Each support is decided case by case from the need written in the person’s plan, provided before it is needed, and documented for NJDOL.',
+        childcare: 'Childcare is not a standard support, and we can look at it case by case.',
+      },
+      exchange: {
+        heading: 'What we ask, what you get',
+        askHeading: 'What we ask',
+        ask: [
+          'Tell people about the program and share the link.',
+          'Tell us who you have sent.',
+          'Help us confirm eligibility when we ask.',
+          'Tell us what your intake steps are.',
+        ],
+        getHeading: 'What you get',
+        get: [
+          'A weekly email listing who enrolled, in your format if you have one.',
+          'Attendance and completion records for work activity reporting.',
+          'Monthly reporting to NJDOL by county.',
+          'Participant information kept confidential.',
+          'Virtual orientations for your staff on request.',
+        ],
+      },
+      contacts: {
+        heading: 'Your contacts',
+        people: [
+          {
+            name: 'Awais Qazi',
+            role: 'Program Coordinator, Onboarding and Recruitment Specialist',
+            scope: 'Referrals, eligibility, enrollment, weekly reports.',
+            email: 'awais.a.qazi@gmail.com',
+          },
+          {
+            name: 'Shazia Qazi',
+            role: 'Program Director, Career Services Advisor',
+            scope: 'Plans, job search, employers, follow-ups.',
+            email: 'mercermedtech@gmail.com',
+          },
+        ],
+      },
+    },
+    kitHeading: 'Outreach kit',
+    kitIntro:
+      'Ready-made posts, a flyer and an email you can forward, in English and Spanish, with your logo or without it. Every piece carries the NJDOL seal and the required funding sentence.',
     howToHeading: 'How to use it',
     howToSteps: [
       'Pick one folder and use it throughout, so everything you put out looks like one set.',
