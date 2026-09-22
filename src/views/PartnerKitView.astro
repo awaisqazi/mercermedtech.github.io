@@ -137,9 +137,15 @@ const signupLabel = 'mercermedtech.com/digital-literacy/sign-up';
           }
         </ul>
         <dialog class="kit-lightbox" id="kit-lightbox" aria-label={page.zoomDialogLabel}>
-          <button type="button" class="kit-lightbox-close" data-close aria-label={page.zoomClose}>
-            <i class="fas fa-times" aria-hidden="true" />
-          </button>
+          <div class="kit-lightbox-bar">
+            <span class="kit-lightbox-name" data-name></span>
+            <a class="kit-lightbox-download" data-download href="#" download>
+              <i class="fas fa-download" aria-hidden="true" /> {page.zoomDownload}
+            </a>
+            <button type="button" class="kit-lightbox-close" data-close aria-label={page.zoomClose}>
+              <i class="fas fa-times" aria-hidden="true" />
+            </button>
+          </div>
           <img alt="" />
         </dialog>
       </section>
@@ -192,8 +198,13 @@ const signupLabel = 'mercermedtech.com/digital-literacy/sign-up';
     document.querySelectorAll<HTMLAnchorElement>('.kit-preview-link').forEach((link) => {
       link.addEventListener('click', (event) => {
         event.preventDefault();
-        img.src = link.dataset.full ?? link.href;
+        const full = link.dataset.full ?? link.href;
+        img.src = full;
         img.alt = link.dataset.alt ?? '';
+        const dl = box.querySelector<HTMLAnchorElement>('[data-download]');
+        if (dl) dl.href = full;
+        const name = box.querySelector('[data-name]');
+        if (name) name.textContent = full.split('/').pop() ?? '';
         box.showModal();
       });
     });

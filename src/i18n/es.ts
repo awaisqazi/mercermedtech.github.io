@@ -862,6 +862,7 @@ export const es: Dictionary = {
     zoomLabel: 'Ampliar',
     zoomDialogLabel: 'Vista previa a tamaño completo',
     zoomClose: 'Cerrar',
+    zoomDownload: 'Descargar este archivo',
     filesHeading: 'Cada archivo por separado',
     filesNote: 'EN es inglés y ES es español. Publique los dos, o el que lea su gente.',
     fileGroups: [

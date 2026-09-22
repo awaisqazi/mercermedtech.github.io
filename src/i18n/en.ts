@@ -841,6 +841,7 @@ export const en = {
     zoomLabel: 'Zoom',
     zoomDialogLabel: 'Full size preview',
     zoomClose: 'Close',
+    zoomDownload: 'Download this file',
     filesHeading: 'Every file on its own',
     filesNote: 'EN is English and ES is Spanish. Post both, or pick the one your readers use.',
     fileGroups: [

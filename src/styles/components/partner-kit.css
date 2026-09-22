@@ -257,6 +257,12 @@
 }
 
 .kit-lightbox {
+    /* The site reset zeroes margins, which pins a dialog to the corner. */
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: fit-content;
+    height: fit-content;
     max-width: min(96vw, 1200px);
     max-height: 96vh;
     padding: 0;
@@ -264,37 +270,76 @@
     border-radius: var(--radius-md);
     background: #fff;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
 }
 
 .kit-lightbox::backdrop {
     background: rgba(10, 20, 24, 0.7);
 }
 
+.kit-lightbox-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem 0.6rem 1rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.kit-lightbox-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.kit-lightbox-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: var(--radius-sm);
+    background: var(--tech);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.kit-lightbox-download:hover,
+.kit-lightbox-download:focus-visible {
+    background: var(--tech-dark);
+    color: #fff;
+}
+
 .kit-lightbox img {
     display: block;
     max-width: 96vw;
-    max-height: 96vh;
+    max-height: calc(96vh - 3.5rem);
     width: auto;
     height: auto;
 }
 
 .kit-lightbox-close {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 2.25rem;
+    height: 2.25rem;
     border: 0;
     border-radius: 50%;
-    background: rgba(20, 38, 42, 0.85);
-    color: #fff;
-    font-size: 1.1rem;
+    background: var(--surface-3);
+    color: var(--text-main);
+    font-size: 1rem;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .kit-lightbox-close:hover,
 .kit-lightbox-close:focus-visible {
     background: var(--tech);
+    color: #fff;
 }
 
 @media (prefers-reduced-motion: reduce) {
