@@ -43,6 +43,10 @@ const EXPECTED_MISSES = [
     why: 'developer comment in the old file, not visible copy',
   },
   {
+    match: /^168 Franklin Corner Rd, Bldg 2, Suite #140, Lawrenceville, NJ 08648\.$/,
+    why: 'the footer address is still there; it now sits in its own span beside the phone and email, without the trailing full stop that used to glue the three together',
+  },
+  {
     match: /^(swipe to see more|see the details|put me on the list)$/i,
     why: 'button label, still present in the build in the same words',
   },
