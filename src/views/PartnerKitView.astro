@@ -82,6 +82,9 @@ const previews = [
   { file: 'thumb-flyer.jpg', full: 'co-branded/flyer-EN.png', ...page.previews[3] },
 ];
 
+/** The slide deck from the September 22 session, in the same folder as the kit. */
+const briefingPdf = 'Digital-Literacy-Training-Hunterdon-County-briefing.pdf';
+
 const signupPath = localePath(locale, '/digital-literacy/sign-up/');
 const signupLabel = 'mercermedtech.com/digital-literacy/sign-up';
 
@@ -157,6 +160,25 @@ const sections = [
             ))
           }
         </ul>
+      </section>
+
+      <!-- ===== The slides from the session, in the same card style as the kit downloads. ===== -->
+      <section class="kit-section" aria-labelledby="brief-presentation-title">
+        <div class="kit-downloads">
+          <article class="kit-download">
+            <div class="kit-download-head">
+              <span class="kit-download-icon" aria-hidden="true">
+                <i class="fas fa-file-pdf"></i>
+              </span>
+              <h3 id="brief-presentation-title">{b.presentation.heading}</h3>
+            </div>
+            <p>{b.presentation.note}</p>
+            <a class="kit-download-btn" href={`${BASE}/${briefingPdf}`} download>
+              <i class="fas fa-download" aria-hidden="true"></i>
+              <span>{b.presentation.ctaLabel}</span>
+            </a>
+          </article>
+        </div>
       </section>
 
       <!-- ===== 2. Who qualifies ===== -->

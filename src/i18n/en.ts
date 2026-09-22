@@ -833,6 +833,12 @@ export const en = {
           'We confirm TANF or SNAP status with your office before anyone starts.',
         ],
       },
+      /** The slide deck from the September 22 information session, as a PDF. */
+      presentation: {
+        heading: 'The presentation from our September 22 session',
+        note: 'The 13 slides we walked through, as a PDF to share with your team.',
+        ctaLabel: 'Download the slides (PDF, about 1.8 MB)',
+      },
       qualify: {
         heading: 'Who qualifies',
         checks: [

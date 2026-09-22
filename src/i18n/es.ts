@@ -853,6 +853,12 @@ export const es: Dictionary = {
           'Confirmamos con su oficina que la persona recibe TANF o SNAP antes de que empiece.',
         ],
       },
+      /** La presentación de la sesión informativa del 22 de septiembre, en PDF. */
+      presentation: {
+        heading: 'La presentación de nuestra sesión del 22 de septiembre',
+        note: 'Las 13 diapositivas que repasamos, en PDF para compartir con su equipo.',
+        ctaLabel: 'Descargar las diapositivas (PDF, unos 1.8 MB)',
+      },
       qualify: {
         heading: 'Quién califica',
         checks: [
