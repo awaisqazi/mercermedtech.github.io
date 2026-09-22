@@ -20,10 +20,10 @@ const d = t(locale);
     <FundingLine locale={locale} class="dl-footer-funding" />
 
     <p>{d.footer.licensingLine}</p>
-    <p>
-      {site.address.street}, {site.address.city}, {site.address.region} {site.address.postalCode}.
-      <a href={site.phone.href}>{site.phone.display}</a>.
-      <a href={`mailto:${site.email}`}>{site.email}</a>.
+    <p class="dl-footer-contact">
+      <span>{site.address.street}, {site.address.city}, {site.address.region} {site.address.postalCode}</span>
+      <a href={site.phone.href}>{site.phone.display}</a>
+      <a href={`mailto:${site.email}`}>{site.email}</a>
     </p>
     <p><a href={localePath(locale, '/')}>{d.footer.homeLink}</a></p>
 
