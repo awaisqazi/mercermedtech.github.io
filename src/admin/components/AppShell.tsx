@@ -2,12 +2,12 @@
  * The frame every signed-in screen sits in.
  *
  * Desktop: a left rail that collapses to icons. Phone: a top bar and a bottom
- * tab bar with safe-area padding. The lockup gradient appears exactly twice in
- * the whole portal — on the sign-in wordmark and as the 3px rule along the top
- * of this shell.
+ * tab bar with safe-area padding. The brand appears as the school logo, never
+ * as a text wordmark; the lockup gradient is only the 3px rule along the top
+ * of this shell and of the sign-in frame.
  */
-import type { ComponentChildren } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { createContext, type ComponentChildren } from 'preact';
+import { useContext, useEffect, useState } from 'preact/hooks';
 import { APP_NAME, APP_SUBTITLE } from '../lib/config';
 import { displayName, isAdmin, signOut, useAuth } from '../lib/auth';
 import { href, navigate, useRoute } from '../lib/router';
@@ -45,11 +45,44 @@ const NAV: NavItem[] = [
   { key: 'account', label: 'Account', path: '/account', icon: <IconAccount /> },
 ];
 
-export function Wordmark({ gradient = false }: { gradient?: boolean }) {
+/**
+ * The school logo, resolved by the Astro page and handed to the island as a
+ * prop: the bundle is `client:only`, so importing the PNG in here would give
+ * an unprocessed path. `src/pages/admin/index.astro` is the one place that
+ * knows the file.
+ */
+export interface Brand {
+  src: string;
+  width: number;
+  height: number;
+}
+
+export const BrandContext = createContext<Brand>({ src: '', width: 366, height: 120 });
+
+/**
+ * `mark` crops the lockup down to the badge on its left, for the narrow rail.
+ * The badge occupies the first 550 of the 1830 source pixels, which is the
+ * 11 / 12 box the stylesheet gives it.
+ */
+export function Logo({ height, mark = false }: { height: number; mark?: boolean }) {
+  const brand = useContext(BrandContext);
+  if (!brand.src) return null;
+  const width = Math.round((brand.width / brand.height) * height);
+  const image = (
+    <img
+      class="wb-logo"
+      src={brand.src}
+      alt="Mercer Med Tech"
+      width={width}
+      height={height}
+      style={{ height: `${height}px` }}
+      decoding="async"
+    />
+  );
+  if (!mark) return image;
   return (
-    <span class={`wb-wordmark${gradient ? ' is-gradient' : ''}`}>
-      <span class="wb-wordmark-mmt">MMT</span>
-      <span class="wb-wordmark-word">Workbench</span>
+    <span class="wb-logo-mark" style={{ height: `${height}px` }}>
+      {image}
     </span>
   );
 }
@@ -113,8 +146,8 @@ export function AppShell({ children }: { children: ComponentChildren }) {
 
       {/* Phone: top bar */}
       <header class="wb-topbar">
-        <a class="wb-topbar-brand" href={href('/')}>
-          <Wordmark />
+        <a class="wb-topbar-brand" href={href('/')} title={APP_SUBTITLE}>
+          <Logo height={28} />
         </a>
         <Menu
           align="right"
@@ -130,7 +163,14 @@ export function AppShell({ children }: { children: ComponentChildren }) {
       {/* Desktop: left rail */}
       <nav class="wb-rail" aria-label="Main">
         <a class="wb-rail-brand" href={href('/')} title={APP_SUBTITLE}>
-          <Wordmark />
+          {collapsed ? (
+            <Logo height={30} mark />
+          ) : (
+            <>
+              <Logo height={34} />
+              <span class="wb-rail-brand-caption">Workbench</span>
+            </>
+          )}
         </a>
 
         <ul class="wb-rail-nav">
@@ -233,8 +273,8 @@ export function AuthShell({
       <div class="wb-auth-topline" aria-hidden="true" />
       <div class="wb-auth-panel">
         <div class="wb-auth-brand">
-          <Wordmark gradient />
-          <p class="wb-auth-sub">{APP_SUBTITLE}</p>
+          <Logo height={56} />
+          <p class="wb-auth-sub">Workbench · staff workspace</p>
         </div>
         <h1 class="wb-auth-title">{title}</h1>
         {subtitle ? <p class="wb-auth-lead">{subtitle}</p> : null}

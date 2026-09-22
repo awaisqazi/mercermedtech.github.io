@@ -12,9 +12,27 @@
  * No project content, staff names or secrets live in this repo; everything the
  * portal shows arrives from Supabase after sign-in, behind row level security.
  */
+import { getImage } from 'astro:assets';
+import logo from '../../assets/images/logo-modern.png';
 import AdminApp from '../../admin/AdminApp';
 import '../../admin/styles/admin.css';
 import '../../admin/styles/admin-polish.css';
+
+/*
+ * The island is `client:only`, so nothing inside it can import the PNG and get
+ * an Astro-processed URL. The page resolves the logo here instead and hands
+ * the finished src down as a prop. One emitted file covers every place the
+ * portal draws it: 56px tall on the sign-in panel at 3x, everything else
+ * smaller.
+ */
+const LOGO_WIDTH = 366;
+const LOGO_HEIGHT = 120;
+const logoImage = await getImage({
+  src: logo,
+  width: LOGO_WIDTH,
+  height: LOGO_HEIGHT,
+  format: 'webp',
+});
 ---
 
 <!DOCTYPE html>
@@ -56,10 +74,21 @@ import '../../admin/styles/admin-polish.css';
     <!-- Removed by AdminApp the moment it mounts. Without it the page is a
          blank white rectangle while the bundle downloads. -->
     <div id="wb-boot" class="wb-boot" role="status" aria-live="polite">
-      <span class="wb-boot-mark">MMT</span>
+      <img
+        class="wb-boot-logo"
+        src={logoImage.src}
+        alt="Mercer Med Tech"
+        width={LOGO_WIDTH}
+        height={LOGO_HEIGHT}
+      />
       <span class="wb-boot-text">Loading the Workbench</span>
     </div>
-    <AdminApp client:only="preact" />
+    <AdminApp
+      client:only="preact"
+      logoSrc={logoImage.src}
+      logoWidth={LOGO_WIDTH}
+      logoHeight={LOGO_HEIGHT}
+    />
     <noscript>
       <p class="wb-boot-text">The Workbench needs JavaScript switched on.</p>
     </noscript>

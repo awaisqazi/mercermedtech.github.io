@@ -9,7 +9,7 @@ import { useEffect } from 'preact/hooks';
 import { startAuth, touchLastSeen, useAuth } from './lib/auth';
 import { getRoute, navigate, rememberDestination, useRoute } from './lib/router';
 import { applyTheme } from './lib/theme';
-import { AppShell } from './components/AppShell';
+import { AppShell, BrandContext } from './components/AppShell';
 import { Toasts } from './components/Toasts';
 import { SkeletonLines } from './components/Skeleton';
 import { EmptyState } from './components/EmptyState';
@@ -28,7 +28,22 @@ startAuth();
 /** Addresses that work without an account. */
 const PUBLIC_ROUTES = new Set(['login', 'join', 'reset']);
 
-export default function AdminApp() {
+/**
+ * The logo arrives from `src/pages/admin/index.astro`: this island is
+ * `client:only`, so the Astro page resolves the image and passes the finished
+ * src down rather than the bundle importing a PNG it cannot process.
+ */
+interface AdminAppProps {
+  logoSrc?: string;
+  logoWidth?: number;
+  logoHeight?: number;
+}
+
+export default function AdminApp({
+  logoSrc = '',
+  logoWidth = 366,
+  logoHeight = 120,
+}: AdminAppProps) {
   const auth = useAuth();
   const route = useRoute();
 
@@ -76,10 +91,12 @@ export default function AdminApp() {
   }, [auth.userId]);
 
   return (
-    <div class="wb">
-      {renderRoute(auth.ready, Boolean(auth.userId), route.name, route.params)}
-      <Toasts />
-    </div>
+    <BrandContext.Provider value={{ src: logoSrc, width: logoWidth, height: logoHeight }}>
+      <div class="wb">
+        {renderRoute(auth.ready, Boolean(auth.userId), route.name, route.params)}
+        <Toasts />
+      </div>
+    </BrandContext.Provider>
   );
 }
 

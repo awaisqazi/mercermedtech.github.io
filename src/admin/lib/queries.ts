@@ -8,6 +8,7 @@
  * they belong to, so there is no "where am I a member" clause here.
  */
 import { supabase } from './supabase';
+import { toDateInput } from './format';
 import { toAppError, logError, type AppError } from './errors';
 import type {
   ActivityRow,
@@ -38,9 +39,18 @@ export interface HomeData {
   profiles: Record<string, Profile>;
   /** Not-done tasks assigned to me, or whose owner label carries my first name. */
   mine: Task[];
+  /** Every task that is overdue, blocked or critical. Home shows the first few. */
   attention: Task[];
   activity: ActivityRow[];
+  /** Open work across the reader's active projects, for the strip on Home. */
+  stats: HomeStats;
   error: AppError | null;
+}
+
+export interface HomeStats {
+  open: number;
+  dueWeek: number;
+  overdue: number;
 }
 
 /** Columns Home and Projects need. Never the whole task row. */
@@ -54,6 +64,7 @@ export async function loadHome(userId: string | null, myName: string): Promise<H
     mine: [],
     attention: [],
     activity: [],
+    stats: { open: 0, dueWeek: 0, overdue: 0 },
     error: null,
   };
 
@@ -132,10 +143,27 @@ export async function loadHome(userId: string | null, myName: string): Promise<H
           task.status !== 'done' &&
           (task.pri === 'critical' || task.status === 'blocked' || (task.due && task.due < todayIso))
       )
-      .sort((a, b) => (a.due ?? '9999').localeCompare(b.due ?? '9999'))
-      .slice(0, 8);
+      .sort((a, b) => (a.due ?? '9999').localeCompare(b.due ?? '9999'));
 
-    return { projects: summaries, profiles, mine, attention, activity, error: null };
+    // The strip under the greeting. Archived projects are somebody's history,
+    // not today's work, so they are left out of every count.
+    const activeIds = new Set(
+      projects.filter((project) => project.status === 'active').map((project) => project.id)
+    );
+    const weekIso = new Date();
+    weekIso.setDate(weekIso.getDate() + 7);
+    const weekEnd = toDateInput(weekIso);
+    const openTasks = tasks.filter(
+      (task) => task.status !== 'done' && activeIds.has(task.project_id)
+    );
+    const stats: HomeStats = {
+      open: openTasks.length,
+      dueWeek: openTasks.filter((task) => task.due && task.due >= todayIso && task.due <= weekEnd)
+        .length,
+      overdue: openTasks.filter((task) => task.due && task.due < todayIso).length,
+    };
+
+    return { projects: summaries, profiles, mine, attention, activity, stats, error: null };
   } catch (error) {
     logError('loadHome', error);
     return { ...empty, error: toAppError(error) };
