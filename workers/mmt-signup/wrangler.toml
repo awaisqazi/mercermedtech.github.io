@@ -1,0 +1,13 @@
+# Cloudflare Worker that fronts the Digital Literacy sign-up form.
+# Deploy from this folder:  npx wrangler deploy
+# The Turnstile secret is NOT here; it is set once with:
+#   npx wrangler secret put TURNSTILE_SECRET
+name = "mmt-signup"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[vars]
+# The Google Form the Worker forwards to (public by nature; it is also what the
+# contact form on the site posts to directly).
+FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSdQmOE7rl6qXNkFtYa2cqpz2_i5gZZJ0qCKxEuD_KXFAZ77cA/formResponse"
