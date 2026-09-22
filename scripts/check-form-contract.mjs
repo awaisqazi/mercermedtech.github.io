@@ -1,9 +1,13 @@
-// THE SITE POSTS TO TWO GOOGLE FORMS. Both are checked here.
+// THE SITE FEEDS TWO GOOGLE FORMS. Both are checked here.
 //
 //   1. the contact form   (src/components/ContactForm.astro), on every page
-//      that carries id="request-info-form"
+//      that carries id="request-info-form". It still posts to Google itself.
 //   2. the Digital Literacy sign-up form (src/components/DltSignupForm.astro),
-//      on the hidden /digital-literacy/sign-up/ pages, id="dlt-signup-form"
+//      on the hidden /digital-literacy/sign-up/ pages, id="dlt-signup-form".
+//      It posts to the mmt-signup Cloudflare Worker, which checks the
+//      Turnstile token and forwards the answers to Google. Its Google Form
+//      URL must NOT appear on the page: that is the point of the Worker, and
+//      it is checked below.
 //
 // The two forms are separate Google Forms with separate action URLs and
 // separate entry.* names. Nothing is shared: do not reuse an id between them.
@@ -56,8 +60,14 @@ const REQUIRED_FIELDS = [
 
 /* ---------------- 2. the Digital Literacy sign-up form ---------------- */
 
-const SIGNUP_FORM_ACTION =
-  'https://docs.google.com/forms/d/e/1FAIpQLSdQmOE7rl6qXNkFtYa2cqpz2_i5gZZJ0qCKxEuD_KXFAZ77cA/formResponse';
+const SIGNUP_ACTION = 'https://mmt-signup.mercermedtech.workers.dev';
+
+/**
+ * The sign-up Google Form's id. The Worker holds the real URL; if this string
+ * turns up in a built sign-up page again, the browser is talking to Google
+ * directly and the spam check has been bypassed.
+ */
+const SIGNUP_GOOGLE_FORM_ID = '1FAIpQLSdQmOE7rl6qXNkFtYa2cqpz2_i5gZZJ0qCKxEuD_KXFAZ77cA';
 
 /** Every entry.* name the sign-up form expects, in question order. */
 const SIGNUP_FIELDS = {
@@ -121,8 +131,12 @@ let signupChecked = 0;
 function checkSignupForm(page, html) {
   signupChecked += 1;
 
-  if (!html.includes(SIGNUP_FORM_ACTION)) {
-    fail(page, 'the sign-up form action is not the sign-up Google Form URL');
+  if (!html.includes(`action="${SIGNUP_ACTION}"`)) {
+    fail(page, 'the sign-up form action is not the mmt-signup Worker endpoint');
+  }
+
+  if (html.includes(SIGNUP_GOOGLE_FORM_ID)) {
+    fail(page, 'the sign-up Google Form URL is on the page; it belongs in the Worker only');
   }
 
   for (const [role, field] of Object.entries(SIGNUP_FIELDS)) {

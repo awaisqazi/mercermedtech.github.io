@@ -783,7 +783,10 @@ export const en = {
       successBody: 'Someone from the school will get back to you, usually within two business days.',
       errorTitle: 'We could not send that.',
       errorBody: `Sorry, something went wrong on our end. Please write to us at ${site.email} and we will pick it up from there.`,
-      iframeTitle: 'Form submission target',
+      securityIncomplete:
+        'Please complete the security check above, then send your sign up again.',
+      securityUnavailable:
+        'The security check did not load. Please refresh the page or email us.',
     },
   },
 

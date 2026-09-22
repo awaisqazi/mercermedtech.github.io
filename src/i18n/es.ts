@@ -807,7 +807,10 @@ export const es: Dictionary = {
         'Alguien de la escuela se comunicará con usted, por lo general dentro de dos días hábiles.',
       errorTitle: 'No pudimos enviarlo.',
       errorBody: `Disculpe, algo falló de nuestro lado. Escriba a ${site.email} y seguimos desde ahí.`,
-      iframeTitle: 'Destino del envío del formulario',
+      securityIncomplete:
+        'Complete la verificación de seguridad de arriba y envíe su inscripción otra vez.',
+      securityUnavailable:
+        'La verificación de seguridad no cargó. Actualice la página o escríbanos por correo.',
     },
   },
 
