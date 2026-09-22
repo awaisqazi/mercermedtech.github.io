@@ -747,6 +747,70 @@ export const es: Dictionary = {
     },
   },
 
+  /* ---------- Página de inscripción de Habilidades Digitales (oculta) ---------- */
+  /**
+   * Nada en el sitio enlaza a esta página. La dirección se entrega directamente,
+   * a las agencias y a quien la pida. BaseLayout lleva "standalone", así que la
+   * página es noindex y no entra en el sitemap.
+   */
+  dltSignup: {
+    seo: {
+      title: 'Inscríbase en Habilidades Digitales | Mercer Med Tech',
+      description:
+        'Inscríbase en la Capacitación en Habilidades Digitales en Lawrenceville, NJ. Sin costo si califica. Unas 5 a 6 semanas, en línea o en persona.',
+    },
+    eyebrow: 'Rama Tech',
+    heading: 'Inscríbase en la Capacitación en Habilidades Digitales (Digital Literacy Training)',
+    lead: 'Si califica, no le cuesta nada. La capacitación dura unas 5 a 6 semanas, en línea y con la opción de venir en persona a Lawrenceville, y se da en inglés y en español. Llene este formulario y le llamamos.',
+    qualifyHeading: 'Quién califica',
+    qualifyLine:
+      'Usted vive en Nueva Jersey, tiene 18 años o más, recibe TANF o SNAP, y vive en el condado de Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset o Union.',
+    note: 'Confirmamos si califica con la agencia de servicios sociales de su condado. No necesita una referencia de nadie para inscribirse.',
+    /** Regla del dueño para esta página: el formulario es la vía de contacto.
+     *  Sin número de teléfono y sin botón de llamada. El correo aparece una
+     *  sola vez, en esta línea debajo del formulario. */
+    questionsBefore: 'Si tiene dudas, escríbanos a ',
+    form: {
+      nameLabel: 'Su nombre',
+      namePlaceholder: 'Nombre y apellido',
+      phoneLabel: 'Número de teléfono',
+      phonePlaceholder: '(609) 555 1234',
+      emailLabel: 'Correo electrónico',
+      emailPlaceholder: 'usted@ejemplo.com',
+      countyLabel: '¿En qué condado vive?',
+      countyOther: 'Otro condado',
+      benefitsLabel: '¿Recibe TANF o SNAP?',
+      benefitsYes: 'Sí',
+      benefitsNo: 'No',
+      benefitsNotSure: 'No estoy seguro',
+      languageLabel: '¿En qué idioma quiere la clase?',
+      languageEnglish: 'Inglés',
+      languageSpanish: 'Español',
+      attendLabel: '¿Cómo prefiere asistir?',
+      attendOnline: 'En línea',
+      attendInPerson: 'En persona en Lawrenceville',
+      attendEither: 'Cualquiera de las dos',
+      bestTimeLabel: '¿Cuándo es buen momento para comunicarnos con usted?',
+      bestTimePlaceholder: 'Cualquier hora sirve',
+      referralLabel: 'Le refirió una agencia o un trabajador de caso (caseworker)',
+      referralPlaceholder: 'Nombre de la agencia o de la persona',
+      messageLabel: '¿Algo que quiera contarnos?',
+      messagePlaceholder: 'Por ejemplo: qué quiere aprender, o qué horarios le sirven.',
+      pickOne: 'Elija uno',
+      optional: 'opcional',
+      consent:
+        'Sí, pueden llamarme o escribirme sobre esto. No compartimos su información con nadie.',
+      submit: 'Enviar mi inscripción',
+      sending: 'Enviando',
+      successTitle: 'Listo. Ya está en la lista.',
+      successBody:
+        'Alguien de la escuela se comunicará con usted, por lo general dentro de dos días hábiles.',
+      errorTitle: 'No pudimos enviarlo.',
+      errorBody: `Disculpe, algo falló de nuestro lado. Escriba a ${site.email} y seguimos desde ahí.`,
+      iframeTitle: 'Destino del envío del formulario',
+    },
+  },
+
   /* ---------- Páginas de programa y 404 ---------- */
   programPage: {
     /**

@@ -1,0 +1,256 @@
+---
+import '../styles/components/contact.css';
+import { BEST_TIME_VALUES } from '../data/programs';
+import { dlt } from '../data/site';
+import { t, type Locale } from '../i18n';
+
+/**
+ * GOOGLE FORM CONTRACT number two (external, do not improvise)
+ * -----------------------------------------------------------
+ * The site now posts to TWO Google Forms. The homepage contact form is in
+ * ContactForm.astro. This one is the Digital Literacy sign-up form, owned by
+ * the school's Google account, and it has its own action URL and its own
+ * entry.* names. The two contracts have nothing in common: do not copy an
+ * entry id from one file into the other.
+ *
+ * Every dropdown here is a Google Forms DROPDOWN, which silently throws away
+ * any value it does not recognise. So the VALUE sent to Google is always the
+ * English string the form knows, in both languages, while the reader sees a
+ * translated LABEL. County names are the same word in both languages.
+ *
+ * scripts/check-form-contract.mjs (npm run check:form) checks every built page
+ * against both contracts. The hidden iframe absorbs Google's cross-origin
+ * redirect so the reader sees an in-page confirmation instead of leaving.
+ */
+const FORM_ACTION =
+  'https://docs.google.com/forms/d/e/1FAIpQLSdQmOE7rl6qXNkFtYa2cqpz2_i5gZZJ0qCKxEuD_KXFAZ77cA/formResponse';
+const FIELD = {
+  name: 'entry.610321898',
+  phone: 'entry.845307859',
+  email: 'entry.1745544463',
+  county: 'entry.334657821',
+  benefits: 'entry.1320551453',
+  language: 'entry.1571243070',
+  attend: 'entry.648594530',
+  bestTime: 'entry.303849646',
+  referral: 'entry.1699212155',
+  message: 'entry.1074735478',
+};
+
+/** The value Google keeps for a county that is not one of the seven. */
+const OTHER_COUNTY = 'Other';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const d = t(locale);
+const f = d.dltSignup.form;
+const c = d.home.contact;
+
+const counties = [
+  ...dlt.counties.map((county) => ({ value: county, label: county })),
+  { value: OTHER_COUNTY, label: f.countyOther },
+];
+const benefits = [
+  { value: 'Yes', label: f.benefitsYes },
+  { value: 'No', label: f.benefitsNo },
+  { value: 'Not sure', label: f.benefitsNotSure },
+];
+const languages = [
+  { value: 'English', label: f.languageEnglish },
+  { value: 'Spanish', label: f.languageSpanish },
+];
+const attendance = [
+  { value: 'Online', label: f.attendOnline },
+  { value: 'In person in Lawrenceville', label: f.attendInPerson },
+  { value: 'Either', label: f.attendEither },
+];
+// The best-time labels are the ones the contact form already uses, so the
+// reader meets the same four words everywhere on the site.
+const bestTimes = BEST_TIME_VALUES.map((value, index) => ({
+  value,
+  label: c.bestTimeOptions[index] ?? value,
+}));
+---
+
+<div class="contact-card signup-card">
+  <form
+    id="dlt-signup-form"
+    class="contact-form"
+    action={FORM_ACTION}
+    method="POST"
+    target="dlt_signup_iframe"
+  >
+    <div class="form-row">
+      <label class="form-field">
+        <span class="form-label">{f.nameLabel} <span class="req" aria-hidden="true">*</span></span>
+        <input type="text" name={FIELD.name} required autocomplete="name" placeholder={f.namePlaceholder} />
+      </label>
+      <label class="form-field">
+        <span class="form-label">{f.phoneLabel} <span class="req" aria-hidden="true">*</span></span>
+        <input
+          type="tel"
+          name={FIELD.phone}
+          required
+          autocomplete="tel"
+          placeholder={f.phonePlaceholder}
+          pattern="[0-9\(\)\-\s\+]{7,}"
+        />
+      </label>
+    </div>
+
+    <label class="form-field">
+      <span class="form-label">{f.emailLabel} <span class="optional">({f.optional})</span></span>
+      <input type="email" name={FIELD.email} autocomplete="email" placeholder={f.emailPlaceholder} />
+    </label>
+
+    <div class="form-row">
+      <label class="form-field">
+        <span class="form-label">{f.countyLabel} <span class="req" aria-hidden="true">*</span></span>
+        <select name={FIELD.county} required>
+          <option value="" disabled selected>{f.pickOne}</option>
+          {counties.map((county) => <option value={county.value}>{county.label}</option>)}
+        </select>
+      </label>
+      <label class="form-field">
+        <span class="form-label">{f.benefitsLabel} <span class="req" aria-hidden="true">*</span></span>
+        <select name={FIELD.benefits} required>
+          <option value="" disabled selected>{f.pickOne}</option>
+          {benefits.map((choice) => <option value={choice.value}>{choice.label}</option>)}
+        </select>
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label class="form-field">
+        <span class="form-label">{f.languageLabel} <span class="req" aria-hidden="true">*</span></span>
+        <select name={FIELD.language} required>
+          <option value="" disabled selected>{f.pickOne}</option>
+          {languages.map((choice) => <option value={choice.value}>{choice.label}</option>)}
+        </select>
+      </label>
+      <label class="form-field">
+        <span class="form-label">{f.attendLabel} <span class="req" aria-hidden="true">*</span></span>
+        <select name={FIELD.attend} required>
+          <option value="" disabled selected>{f.pickOne}</option>
+          {attendance.map((choice) => <option value={choice.value}>{choice.label}</option>)}
+        </select>
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label class="form-field">
+        <span class="form-label">{f.bestTimeLabel} <span class="optional">({f.optional})</span></span>
+        <select name={FIELD.bestTime}>
+          <option value="" disabled selected>{f.bestTimePlaceholder}</option>
+          {bestTimes.map((choice) => <option value={choice.value}>{choice.label}</option>)}
+        </select>
+      </label>
+      <label class="form-field">
+        <span class="form-label">{f.referralLabel} <span class="optional">({f.optional})</span></span>
+        <input type="text" name={FIELD.referral} placeholder={f.referralPlaceholder} />
+      </label>
+    </div>
+
+    <label class="form-field">
+      <span class="form-label">{f.messageLabel} <span class="optional">({f.optional})</span></span>
+      <textarea name={FIELD.message} rows="4" placeholder={f.messagePlaceholder}></textarea>
+    </label>
+
+    <div class="form-consent">
+      <label>
+        <input type="checkbox" required />
+        <span>{f.consent}</span>
+      </label>
+    </div>
+
+    <button type="submit" class="btn btn-primary form-submit">
+      <span class="form-submit-label">{f.submit}</span>
+      <i class="fas fa-paper-plane" aria-hidden="true"></i>
+    </button>
+
+    <div
+      class="form-success"
+      role="status"
+      aria-live="polite"
+      hidden
+      data-success-title={f.successTitle}
+      data-success-body={f.successBody}
+      data-error-title={f.errorTitle}
+      data-error-body={f.errorBody}
+      data-submit-label={f.submit}
+      data-sending-label={f.sending}
+    >
+      <i class="fas fa-check-circle" aria-hidden="true"></i>
+      <div>
+        <strong>{f.successTitle}</strong>
+        <span>{f.successBody}</span>
+      </div>
+    </div>
+  </form>
+
+  <iframe
+    name="dlt_signup_iframe"
+    id="dlt_signup_iframe"
+    class="contact-iframe"
+    tabindex="-1"
+    aria-hidden="true"
+    title={f.iframeTitle}></iframe>
+</div>
+
+<script>
+  // Same behaviour as the homepage contact form: post into a hidden iframe so
+  // the reader stays on the page, show an in-page confirmation, and fall back
+  // to a 4 second timer because cross-origin iframe load events are unreliable.
+  const form = document.getElementById('dlt-signup-form') as HTMLFormElement | null;
+
+  if (form) {
+    const submitBtn = form.querySelector<HTMLButtonElement>('.form-submit');
+    const successMsg = form.querySelector<HTMLElement>('.form-success');
+    const labelEl = form.querySelector<HTMLElement>('.form-submit-label');
+    const iframe = document.getElementById('dlt_signup_iframe');
+
+    if (submitBtn && successMsg && iframe) {
+      const strong = successMsg.querySelector('strong');
+      const span = successMsg.querySelector('span');
+      const data = successMsg.dataset;
+      let isSubmitting = false;
+      let safetyTimer: number | null = null;
+
+      const finish = () => {
+        if (!isSubmitting) return;
+        isSubmitting = false;
+        if (safetyTimer) {
+          window.clearTimeout(safetyTimer);
+          safetyTimer = null;
+        }
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('is-loading');
+        if (labelEl && data.submitLabel) labelEl.textContent = data.submitLabel;
+        if (strong && data.successTitle) strong.textContent = data.successTitle;
+        if (span && data.successBody) span.textContent = data.successBody;
+        successMsg.hidden = false;
+        successMsg.classList.add('is-visible');
+        form.reset();
+        successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+
+      form.addEventListener('submit', () => {
+        if (!form.checkValidity()) return; // the browser shows its own message
+        isSubmitting = true;
+        submitBtn.disabled = true;
+        submitBtn.classList.add('is-loading');
+        if (labelEl && data.sendingLabel) labelEl.textContent = data.sendingLabel;
+        safetyTimer = window.setTimeout(finish, 4000);
+      });
+
+      iframe.addEventListener('load', () => {
+        // Only loads after a submit count. The initial empty-iframe load is
+        // ignored because isSubmitting is still false.
+        if (isSubmitting) finish();
+      });
+    }
+  }
+</script>

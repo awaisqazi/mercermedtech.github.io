@@ -723,6 +723,70 @@ export const en = {
     },
   },
 
+  /* ---------- Digital Literacy Training sign-up page (hidden) ---------- */
+  /**
+   * Nothing on the site links to this page. The address is handed out
+   * directly, to partners and to people who ask, and BaseLayout carries
+   * "standalone" so the page is noindex and stays out of the sitemap.
+   * NJDOL rule: this page never mentions the health care programs.
+   */
+  dltSignup: {
+    seo: {
+      title: 'Sign up for Digital Literacy Training | Mercer Med Tech',
+      description:
+        'Sign up for Digital Literacy Training in Lawrenceville, NJ. No cost if you qualify. About 5 to 6 weeks, online or in person, English and Spanish.',
+    },
+    eyebrow: 'Tech track',
+    heading: 'Sign up for Digital Literacy Training',
+    lead: 'If you qualify it costs you nothing. The training runs about 5 to 6 weeks, online with an in person option in Lawrenceville, and it is taught in English and Spanish. Fill this in and we will call you back.',
+    qualifyHeading: 'Who qualifies',
+    qualifyLine: `You live in New Jersey, you are 18 or older, you receive TANF or SNAP, and you live in ${dlt.countiesSentence}.`,
+    note: 'We confirm your eligibility with your county social services agency. You do not need a referral from anyone to sign up.',
+    /**
+     * Owner's rule for this page: the form is the contact path. No phone
+     * number and no "call us" button anywhere on it. The email address is
+     * allowed once, as this quiet line under the form.
+     */
+    questionsBefore: 'Questions? Write to us at ',
+    form: {
+      nameLabel: 'Your name',
+      namePlaceholder: 'First and last name',
+      phoneLabel: 'Phone number',
+      phonePlaceholder: '(609) 555 1234',
+      emailLabel: 'Email address',
+      emailPlaceholder: 'you@example.com',
+      countyLabel: 'What county do you live in?',
+      countyOther: 'Another county',
+      benefitsLabel: 'Do you receive TANF or SNAP?',
+      benefitsYes: 'Yes',
+      benefitsNo: 'No',
+      benefitsNotSure: 'Not sure',
+      languageLabel: 'What language do you want the class in?',
+      languageEnglish: 'English',
+      languageSpanish: 'Spanish',
+      attendLabel: 'How would you like to attend?',
+      attendOnline: 'Online',
+      attendInPerson: 'In person in Lawrenceville',
+      attendEither: 'Either one',
+      bestTimeLabel: 'When is a good time to reach you?',
+      bestTimePlaceholder: 'Anytime works',
+      referralLabel: 'Referred by an agency or caseworker',
+      referralPlaceholder: 'Name of the agency or the person',
+      messageLabel: 'Anything you want us to know',
+      messagePlaceholder: 'For example: what you want to learn, or what times work for you.',
+      pickOne: 'Pick one',
+      optional: 'optional',
+      consent: 'Yes, you can call or email me about this. We do not share your information with anyone.',
+      submit: 'Send my sign up',
+      sending: 'Sending',
+      successTitle: 'Got it. You are on the list.',
+      successBody: 'Someone from the school will get back to you, usually within two business days.',
+      errorTitle: 'We could not send that.',
+      errorBody: `Sorry, something went wrong on our end. Please write to us at ${site.email} and we will pick it up from there.`,
+      iframeTitle: 'Form submission target',
+    },
+  },
+
   /* ---------- Program pages and 404 ---------- */
   programPage: {
     /**

@@ -1,0 +1,97 @@
+/*
+ * Page layout for the hidden Digital Literacy sign-up page.
+ *
+ * The form itself reuses contact.css (contact-card, contact-form, form-field,
+ * form-row, form-success). Only the one-column page around it lives here:
+ * a centred reading column, the Tech-track indigo on the eyebrow because this
+ * is the Tech track, and the school teal on the form card as everywhere else.
+ */
+
+.signup-page {
+    background: linear-gradient(180deg, var(--tech-light) 0%, #fff 340px);
+}
+
+.signup-main {
+    /* The site header is fixed, so the page starts below it. */
+    padding: calc(var(--header-height) + 2.5rem) 0 4rem;
+}
+
+.signup-column {
+    width: min(100%, 720px);
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.signup-eyebrow {
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    background: var(--tech-light);
+    color: var(--tech-dark);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.signup-column h1 {
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    line-height: 1.15;
+    margin: 0.9rem 0 1rem;
+}
+
+.signup-lead {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin: 0 0 1.75rem;
+}
+
+.signup-qualify {
+    border-left: 3px solid var(--primary);
+    background: var(--primary-light);
+    border-radius: var(--radius-md);
+    padding: 1.1rem 1.25rem;
+    margin: 0 0 2rem;
+}
+
+.signup-qualify h2 {
+    font-size: 1rem;
+    margin: 0 0 0.35rem;
+    color: var(--primary-dark);
+}
+
+.signup-qualify p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+}
+
+.signup-card {
+    margin: 0 0 1.5rem;
+}
+
+.signup-note,
+.signup-questions,
+.signup-funding {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+}
+
+.signup-funding {
+    color: var(--text-light);
+    font-size: 0.82rem;
+}
+
+@media (max-width: 640px) {
+    .signup-main {
+        padding: calc(var(--header-height) + 1.5rem) 0 3rem;
+    }
+
+    .signup-column h1 {
+        font-size: 1.6rem;
+    }
+}
