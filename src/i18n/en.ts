@@ -830,7 +830,7 @@ export const en = {
         note: 'The same pieces without the partner mark.',
       },
     ],
-    zipNote: 'ZIP, about 17 MB',
+    zipNote: 'Download ZIP, about 17 MB',
     previewHeading: 'What is inside',
     previews: [
       { caption: 'Feed post, 1080 x 1350', alt: 'The feed post, English version' },
@@ -838,6 +838,9 @@ export const en = {
       { caption: 'Facebook or link preview, 1200 x 630', alt: 'The Facebook image, English version' },
       { caption: 'Flyer, Letter size PDF', alt: 'The one page flyer, English version' },
     ],
+    zoomLabel: 'Zoom',
+    zoomDialogLabel: 'Full size preview',
+    zoomClose: 'Close',
     filesHeading: 'Every file on its own',
     filesNote: 'EN is English and ES is Spanish. Post both, or pick the one your readers use.',
     fileGroups: [

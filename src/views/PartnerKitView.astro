@@ -62,11 +62,12 @@ const fileGroups = [
   { heading: page.fileGroups[6], files: ['social-captions.txt', 'email-template.txt', 'email-template.html'] },
 ];
 
+// Each thumbnail opens its full size file in the lightbox below.
 const previews = [
-  { file: 'thumb-post.jpg', ...page.previews[0] },
-  { file: 'thumb-story.jpg', ...page.previews[1] },
-  { file: 'thumb-facebook.jpg', ...page.previews[2] },
-  { file: 'thumb-flyer.jpg', ...page.previews[3] },
+  { file: 'thumb-post.jpg', full: 'co-branded/instagram-post-EN.png', ...page.previews[0] },
+  { file: 'thumb-story.jpg', full: 'co-branded/instagram-story-EN.png', ...page.previews[1] },
+  { file: 'thumb-facebook.jpg', full: 'co-branded/facebook-post-EN.png', ...page.previews[2] },
+  { file: 'thumb-flyer.jpg', full: 'co-branded/flyer-EN.png', ...page.previews[3] },
 ];
 
 const signupPath = localePath(locale, '/digital-literacy/sign-up/');
@@ -102,14 +103,19 @@ const signupLabel = 'mercermedtech.com/digital-literacy/sign-up';
         <div class="kit-downloads">
           {
             variants.map((variant) => (
-              <a class="kit-download btn btn-tech" href={`${BASE}/${variant.zip}`} download>
-                <i class="fas fa-download" aria-hidden="true" />
-                <span>
-                  <strong>{variant.label}</strong>
-                  <span class="kit-download-note">{variant.note}</span>
-                  <span class="kit-download-size">{page.zipNote}</span>
-                </span>
-              </a>
+              <article class="kit-download">
+                <div class="kit-download-head">
+                  <span class="kit-download-icon" aria-hidden="true">
+                    <i class="fas fa-folder-open" />
+                  </span>
+                  <h3>{variant.label}</h3>
+                </div>
+                <p>{variant.note}</p>
+                <a class="kit-download-btn" href={`${BASE}/${variant.zip}`} download>
+                  <i class="fas fa-download" aria-hidden="true" />
+                  <span>{page.zipNote}</span>
+                </a>
+              </article>
             ))
           }
         </div>
@@ -121,12 +127,21 @@ const signupLabel = 'mercermedtech.com/digital-literacy/sign-up';
           {
             previews.map((preview) => (
               <li>
-                <img src={`${BASE}/${preview.file}`} alt={preview.alt} loading="lazy" width="600" height="750" />
+                <a class="kit-preview-link" href={`${BASE}/${preview.full}`} data-full={`${BASE}/${preview.full}`} data-alt={preview.alt} target="_blank" rel="noopener">
+                  <img src={`${BASE}/${preview.file}`} alt={preview.alt} loading="lazy" width="600" height="750" />
+                  <span class="kit-preview-zoom"><i class="fas fa-search-plus" aria-hidden="true" /> {page.zoomLabel}</span>
+                </a>
                 <span>{preview.caption}</span>
               </li>
             ))
           }
         </ul>
+        <dialog class="kit-lightbox" id="kit-lightbox" aria-label={page.zoomDialogLabel}>
+          <button type="button" class="kit-lightbox-close" data-close aria-label={page.zoomClose}>
+            <i class="fas fa-times" aria-hidden="true" />
+          </button>
+          <img alt="" />
+        </dialog>
       </section>
 
       <section class="kit-section" aria-labelledby="kit-files-title">
@@ -167,3 +182,27 @@ const signupLabel = 'mercermedtech.com/digital-literacy/sign-up';
     </div>
   </main>
 </BaseLayout>
+
+<script>
+  // Thumbnails open full size in a native dialog. Without JavaScript the link
+  // still opens the file in a new tab, so nothing is lost.
+  const box = document.getElementById('kit-lightbox') as HTMLDialogElement | null;
+  const img = box?.querySelector('img');
+  if (box && img && typeof box.showModal === 'function') {
+    document.querySelectorAll<HTMLAnchorElement>('.kit-preview-link').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        img.src = link.dataset.full ?? link.href;
+        img.alt = link.dataset.alt ?? '';
+        box.showModal();
+      });
+    });
+    box.querySelector('[data-close]')?.addEventListener('click', () => box.close());
+    box.addEventListener('click', (event) => {
+      if (event.target === box) box.close();
+    });
+    box.addEventListener('close', () => {
+      img.removeAttribute('src');
+    });
+  }
+</script>

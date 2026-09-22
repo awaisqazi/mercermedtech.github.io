@@ -851,7 +851,7 @@ export const es: Dictionary = {
         note: 'Las mismas piezas sin el sello de la agencia.',
       },
     ],
-    zipNote: 'ZIP, unos 17 MB',
+    zipNote: 'Descargar ZIP, unos 17 MB',
     previewHeading: 'Qué trae',
     previews: [
       { caption: 'Publicación para el feed, 1080 x 1350', alt: 'La publicación para el feed, versión en inglés' },
@@ -859,6 +859,9 @@ export const es: Dictionary = {
       { caption: 'Facebook o vista previa de enlace, 1200 x 630', alt: 'La imagen de Facebook, versión en inglés' },
       { caption: 'Volante, PDF tamaño Letter', alt: 'El volante de una página, versión en inglés' },
     ],
+    zoomLabel: 'Ampliar',
+    zoomDialogLabel: 'Vista previa a tamaño completo',
+    zoomClose: 'Cerrar',
     filesHeading: 'Cada archivo por separado',
     filesNote: 'EN es inglés y ES es español. Publique los dos, o el que lea su gente.',
     fileGroups: [
