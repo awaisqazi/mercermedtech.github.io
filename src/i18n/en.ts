@@ -790,6 +790,75 @@ export const en = {
     },
   },
 
+  /* ---------- Partner outreach kit page (hidden) ---------- */
+  /**
+   * One page per partner agency, at /partners/<agency>/. Nothing links to it:
+   * the address goes to the agency by email. BaseLayout carries "standalone"
+   * so the page is noindex, and astro.config.mjs keeps /partners/ out of the
+   * sitemap. The files themselves live in public/partners/<agency>/.
+   *
+   * NJDOL rule: this page never names another Mercer Med Tech program, and
+   * eligibility is always written as "TANF or SNAP".
+   */
+  partnerKit: {
+    seo: {
+      title: 'Outreach kit for partner agencies | Mercer Med Tech',
+      description:
+        'Download the Digital Literacy Training outreach kit prepared for the WorkFirst New Jersey team at Hunterdon County Educational Services Commission.',
+    },
+    eyebrow: 'For partner agencies',
+    heading: 'Digital Literacy Training outreach kit',
+    preparedFor:
+      'Prepared for the WorkFirst New Jersey team at Hunterdon County Educational Services Commission.',
+    howToHeading: 'How to use it',
+    howToSteps: [
+      'Pick one folder and use it throughout, so everything you put out looks like one set.',
+      'Post the images as they are. Each one is already the right size for where it goes.',
+      'Paste the captions from social-captions.txt under the image.',
+      'Forward the email to your list, as plain text or as HTML.',
+      'The flyer PDF prints on Letter paper, one page.',
+    ],
+    downloadHeading: 'Download the whole kit',
+    downloadNote: 'Both folders hold the same pieces under the same file names.',
+    variants: [
+      {
+        label: 'With your logo',
+        note: 'Mercer Med Tech with the Hunterdon County Educational Services Commission mark.',
+      },
+      {
+        label: 'Mercer Med Tech only',
+        note: 'The same pieces without the partner mark.',
+      },
+    ],
+    zipNote: 'ZIP, about 17 MB',
+    previewHeading: 'What is inside',
+    previews: [
+      { caption: 'Feed post, 1080 x 1350', alt: 'The feed post, English version' },
+      { caption: 'Story or reel cover, 1080 x 1920', alt: 'The story cover, English version' },
+      { caption: 'Facebook or link preview, 1200 x 630', alt: 'The Facebook image, English version' },
+      { caption: 'Flyer, Letter size PDF', alt: 'The one page flyer, English version' },
+    ],
+    filesHeading: 'Every file on its own',
+    filesNote: 'EN is English and ES is Spanish. Post both, or pick the one your readers use.',
+    fileGroups: [
+      'Instagram feed post, 1080 x 1350',
+      'Square post, 1080 x 1080',
+      'Story or reel cover, 1080 x 1920',
+      'Facebook or link preview, 1200 x 630',
+      'Flyer, print ready PDF',
+      'Flyer as a picture, 300 dpi PNG',
+      'Captions and email',
+    ],
+    rulesHeading: 'Rules to keep',
+    rules: [
+      'Use the wording as it is written. It was checked against what the grant allows.',
+      'Eligibility is written as TANF or SNAP. Do not put another program in its place, and do not describe people by their income.',
+      'Do not add a phone number, and do not add class days or times.',
+    ],
+    rulesSignupBefore: 'Send people to the sign-up page: ',
+    contactBefore: 'Questions: ',
+  },
+
   /* ---------- Program pages and 404 ---------- */
   programPage: {
     /**

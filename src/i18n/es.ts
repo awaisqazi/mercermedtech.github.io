@@ -814,6 +814,72 @@ export const es: Dictionary = {
     },
   },
 
+  /* ---------- Página del kit de difusión para agencias (oculta) ---------- */
+  /**
+   * Una página por agencia, en /partners/<agencia>/. Nada enlaza a ella: la
+   * dirección se le manda a la agencia por correo. BaseLayout lleva
+   * "standalone", así que la página es noindex, y astro.config.mjs deja
+   * /partners/ fuera del sitemap.
+   */
+  partnerKit: {
+    seo: {
+      title: 'Kit de difusión para agencias | Mercer Med Tech',
+      description:
+        'Descargue el kit de difusión de Habilidades Digitales para el equipo de WorkFirst New Jersey del Hunterdon County Educational Services Commission.',
+    },
+    eyebrow: 'Para agencias aliadas',
+    heading: 'Kit de difusión de la Capacitación en Habilidades Digitales (Digital Literacy Training)',
+    preparedFor:
+      'Preparado para el equipo de WorkFirst New Jersey del Hunterdon County Educational Services Commission.',
+    howToHeading: 'Cómo usarlo',
+    howToSteps: [
+      'Elija una carpeta y úsela en todo, para que lo que publique se vea como un solo conjunto.',
+      'Publique las imágenes tal como están. Cada una ya viene en el tamaño del lugar donde va.',
+      'Pegue los textos de social-captions.txt debajo de la imagen.',
+      'Reenvíe el correo a su lista, en texto simple o en HTML.',
+      'El volante en PDF se imprime en papel tamaño Letter, en una página.',
+    ],
+    downloadHeading: 'Descargue el kit completo',
+    downloadNote: 'Las dos carpetas traen las mismas piezas con los mismos nombres de archivo.',
+    variants: [
+      {
+        label: 'Con el logo de ustedes',
+        note: 'Mercer Med Tech con el sello del Hunterdon County Educational Services Commission.',
+      },
+      {
+        label: 'Solo Mercer Med Tech',
+        note: 'Las mismas piezas sin el sello de la agencia.',
+      },
+    ],
+    zipNote: 'ZIP, unos 17 MB',
+    previewHeading: 'Qué trae',
+    previews: [
+      { caption: 'Publicación para el feed, 1080 x 1350', alt: 'La publicación para el feed, versión en inglés' },
+      { caption: 'Portada de historia o reel, 1080 x 1920', alt: 'La portada de historia, versión en inglés' },
+      { caption: 'Facebook o vista previa de enlace, 1200 x 630', alt: 'La imagen de Facebook, versión en inglés' },
+      { caption: 'Volante, PDF tamaño Letter', alt: 'El volante de una página, versión en inglés' },
+    ],
+    filesHeading: 'Cada archivo por separado',
+    filesNote: 'EN es inglés y ES es español. Publique los dos, o el que lea su gente.',
+    fileGroups: [
+      'Publicación para el feed de Instagram, 1080 x 1350',
+      'Publicación cuadrada, 1080 x 1080',
+      'Portada de historia o reel, 1080 x 1920',
+      'Facebook o vista previa de enlace, 1200 x 630',
+      'Volante en PDF, listo para imprimir',
+      'Volante como imagen, PNG de 300 ppp',
+      'Textos para publicar y correo',
+    ],
+    rulesHeading: 'Reglas que hay que mantener',
+    rules: [
+      'Use el texto tal como está escrito. Ya se revisó contra lo que permite la subvención.',
+      'La elegibilidad se escribe como TANF o SNAP. No ponga otro programa en su lugar, ni describa a las personas por sus ingresos.',
+      'No agregue un número de teléfono, ni días ni horas de clase.',
+    ],
+    rulesSignupBefore: 'Mande a las personas a la página de inscripción: ',
+    contactBefore: 'Si tiene dudas: ',
+  },
+
   /* ---------- Páginas de programa y 404 ---------- */
   programPage: {
     /**

@@ -1,0 +1,169 @@
+---
+/**
+ * Partner outreach kit page, in one language.
+ *
+ * Hidden on purpose, exactly like the sign-up page: BaseLayout carries
+ * "standalone" (noindex, no hreflang pair), astro.config.mjs keeps
+ * /partners/ out of the sitemap, and nothing on the site links here. The
+ * address is emailed to the agency.
+ *
+ * The files are plain static files under public/partners/hunterdon-county/,
+ * so every link on this page is a direct download. Nothing is bundled and
+ * nothing is optimized: the agency has to get the exact file we shipped.
+ *
+ * NJDOL rule: this page never names another program, and it carries the
+ * funding sentence through DltFooter.
+ *
+ * navLinks is empty on purpose, the same as the sign-up page: the Tech-track
+ * nav is a list of in-page anchors that only exist on the landing page.
+ */
+import '../styles/components/dl.css';
+import '../styles/components/signup.css';
+import '../styles/components/partner-kit.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { localePath, t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const page = t(locale).partnerKit;
+const path = '/partners/hunterdon-county/';
+/** Where the files sit in public/. Same folder for both languages. */
+const BASE = '/partners/hunterdon-county';
+
+/**
+ * The two versions of the kit. Both folders hold the same file names, which
+ * is what lets one list below serve them both.
+ */
+const variants = [
+  {
+    dir: 'co-branded',
+    zip: 'digital-literacy-kit-cobranded-hunterdon.zip',
+    ...page.variants[0],
+  },
+  {
+    dir: 'mercer-med-tech',
+    zip: 'digital-literacy-kit-mercer-med-tech.zip',
+    ...page.variants[1],
+  },
+];
+
+/** The 15 files in each folder, grouped the way a person looks for them. */
+const fileGroups = [
+  { heading: page.fileGroups[0], files: ['instagram-post-EN.png', 'instagram-post-ES.png'] },
+  { heading: page.fileGroups[1], files: ['instagram-post-square-EN.png', 'instagram-post-square-ES.png'] },
+  { heading: page.fileGroups[2], files: ['instagram-story-EN.png', 'instagram-story-ES.png'] },
+  { heading: page.fileGroups[3], files: ['facebook-post-EN.png', 'facebook-post-ES.png'] },
+  { heading: page.fileGroups[4], files: ['flyer-EN.pdf', 'flyer-ES.pdf'] },
+  { heading: page.fileGroups[5], files: ['flyer-EN.png', 'flyer-ES.png'] },
+  { heading: page.fileGroups[6], files: ['social-captions.txt', 'email-template.txt', 'email-template.html'] },
+];
+
+const previews = [
+  { file: 'thumb-post.jpg', ...page.previews[0] },
+  { file: 'thumb-story.jpg', ...page.previews[1] },
+  { file: 'thumb-facebook.jpg', ...page.previews[2] },
+  { file: 'thumb-flyer.jpg', ...page.previews[3] },
+];
+
+const signupPath = localePath(locale, '/digital-literacy/sign-up/');
+const signupLabel = 'mercermedtech.com/digital-literacy/sign-up';
+---
+
+<BaseLayout
+  locale={locale}
+  path={path}
+  title={page.seo.title}
+  description={page.seo.description}
+  variant="dlt"
+  bodyClass="dl-page signup-page"
+  navLinks={[]}
+  standalone
+>
+  <main id="main" class="signup-main">
+    <div class="signup-column kit-column">
+      <span class="signup-eyebrow">{page.eyebrow}</span>
+      <h1>{page.heading}</h1>
+      <p class="signup-lead">{page.preparedFor}</p>
+
+      <section class="kit-section" aria-labelledby="kit-how-title">
+        <h2 id="kit-how-title">{page.howToHeading}</h2>
+        <ol class="kit-steps">
+          {page.howToSteps.map((step) => <li>{step}</li>)}
+        </ol>
+      </section>
+
+      <section class="kit-section" aria-labelledby="kit-download-title">
+        <h2 id="kit-download-title">{page.downloadHeading}</h2>
+        <p class="kit-note">{page.downloadNote}</p>
+        <div class="kit-downloads">
+          {
+            variants.map((variant) => (
+              <a class="kit-download btn btn-tech" href={`${BASE}/${variant.zip}`} download>
+                <i class="fas fa-download" aria-hidden="true" />
+                <span>
+                  <strong>{variant.label}</strong>
+                  <span class="kit-download-note">{variant.note}</span>
+                  <span class="kit-download-size">{page.zipNote}</span>
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </section>
+
+      <section class="kit-section" aria-labelledby="kit-preview-title">
+        <h2 id="kit-preview-title">{page.previewHeading}</h2>
+        <ul class="kit-previews">
+          {
+            previews.map((preview) => (
+              <li>
+                <img src={`${BASE}/${preview.file}`} alt={preview.alt} loading="lazy" width="600" height="750" />
+                <span>{preview.caption}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="kit-section" aria-labelledby="kit-files-title">
+        <h2 id="kit-files-title">{page.filesHeading}</h2>
+        <p class="kit-note">{page.filesNote}</p>
+        {
+          variants.map((variant) => (
+            <div class="kit-variant">
+              <h3>{variant.label}</h3>
+              <dl class="kit-file-list">
+                {fileGroups.map((group) => (
+                  <>
+                    <dt>{group.heading}</dt>
+                    <dd>
+                      {group.files.map((file) => (
+                        <a href={`${BASE}/${variant.dir}/${file}`}>{file}</a>
+                      ))}
+                    </dd>
+                  </>
+                ))}
+              </dl>
+            </div>
+          ))
+        }
+      </section>
+
+      <section class="kit-rules" aria-labelledby="kit-rules-title">
+        <h2 id="kit-rules-title">{page.rulesHeading}</h2>
+        <ul>
+          {page.rules.map((rule) => <li>{rule}</li>)}
+          <li>{page.rulesSignupBefore}<a href={signupPath}>{signupLabel}</a></li>
+        </ul>
+      </section>
+
+      <p class="signup-questions">
+        {page.contactBefore}<a href={`mailto:${site.email}`}>{site.email}</a>.
+      </p>
+    </div>
+  </main>
+</BaseLayout>

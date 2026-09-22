@@ -1,0 +1,90 @@
+EMAIL TEMPLATE  ·  Digital Literacy Training  ·  MERCER MED TECH ONLY
+Replace [first name] and [your name]. Send English and Spanish together, or pick one.
+Do not add a phone number, a class day or a class time.
+
+==========================================================================
+ENGLISH
+==========================================================================
+
+SUBJECT: A no cost computer skills program that may be a good fit
+
+Hello [first name],
+
+I wanted to share a program that may be a good fit for you.
+
+Mercer Med Tech is running Digital Literacy Training with the New Jersey Department of Labor and Workforce Development. There is no cost for people who receive TANF or SNAP.
+
+WHAT YOU LEARN
+  - Computer basics
+  - Email and internet
+  - Microsoft Office and Google Workspace
+  - Online safety
+  - AI at work
+  - Money management
+  - Resume and interviews
+
+WHAT YOU LEAVE WITH
+  - An industry-recognized credential, including an AI Literacy Microcredential from NJIT
+  - A finished resume
+  - Help finding work, with check-ins at 30, 60 and 90 days
+
+THE DETAILS
+  - About 5 to 6 weeks, in small groups, in English and Spanish.
+  - Classes are online. In-person support is available at our Lawrenceville campus during scheduled office hours.
+  - A laptop and internet access can be provided when needed.
+  - Open to residents of seven counties: Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset, Union.
+  - The first group starts early October 2026. New groups start every 5 to 6 weeks.
+
+Sign up: mercermedtech.com/digital-literacy/sign-up
+
+Questions can go to mercermedtech@gmail.com. The campus is at 168 Franklin Corner Rd, Bldg 2, Suite 140, Lawrenceville, NJ 08648.
+
+Please feel free to pass this along to anyone who may be interested.
+
+[your name]
+
+The funding for this initiative is being provided by the New Jersey Department of Labor and Workforce Development.
+
+==========================================================================
+SPANISH
+==========================================================================
+
+ASUNTO: Un programa de habilidades digitales sin costo que puede ser adecuado para usted
+
+Hola [nombre],
+
+Quería compartir con usted un programa que puede ser adecuado para usted.
+
+Mercer Med Tech ofrece Capacitación en Habilidades Digitales (Digital Literacy Training) junto con el Departamento de Trabajo y Desarrollo Laboral de Nueva Jersey. No tiene costo para personas que reciben TANF o SNAP.
+
+LO QUE APRENDE
+  - Uso básico de la computadora
+  - Correo electrónico e internet
+  - Microsoft Office y Google Workspace
+  - Seguridad en línea
+  - La IA en el trabajo
+  - Manejo del dinero
+  - Currículum y entrevistas
+
+LO QUE SE LLEVA
+  - Una credencial reconocida por la industria, incluida una Microcredencial en IA del NJIT (AI Literacy Microcredential)
+  - Un currículum terminado
+  - Ayuda para encontrar trabajo, con seguimiento a los 30, 60 y 90 días
+
+LOS DETALLES
+  - De 5 a 6 semanas, en grupos pequeños, en inglés y español.
+  - Las clases son en línea. Hay apoyo en persona en nuestro campus de Lawrenceville durante horas de oficina programadas.
+  - Se puede proporcionar una computadora portátil y acceso a internet cuando sea necesario.
+  - Abierto a residentes de siete condados: Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset, Union.
+  - El primer grupo comienza a principios de octubre de 2026. Los nuevos grupos comienzan cada 5 a 6 semanas.
+
+Inscríbase: mercermedtech.com/es/digital-literacy/sign-up
+
+Las preguntas se pueden enviar a mercermedtech@gmail.com. El campus está en 168 Franklin Corner Rd, Bldg 2, Suite 140, Lawrenceville, NJ 08648.
+
+Puede compartir esta información con cualquier persona que pueda estar interesada.
+
+[su nombre]
+
+El financiamiento de esta iniciativa es proporcionado por el Departamento de Trabajo y Desarrollo Laboral de Nueva Jersey.
+The funding for this initiative is being provided by the New Jersey Department of Labor and Workforce Development.

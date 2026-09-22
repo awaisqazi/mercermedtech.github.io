@@ -31,9 +31,15 @@ export default defineConfig({
       //   .../sign-up/ the Digital Literacy sign-up page, in both languages.
       //                It is noindex and nothing links to it: the address is
       //                handed out directly to partners and to people who ask.
+      //   /partners/   one outreach kit page per partner agency, also noindex
+      //                and also unlinked. The address is emailed to the agency.
       filter: (page) => {
         const { pathname } = new URL(page);
-        return !pathname.startsWith('/admin') && !pathname.includes('/sign-up');
+        return (
+          !pathname.startsWith('/admin') &&
+          !pathname.includes('/sign-up') &&
+          !pathname.includes('/partners/')
+        );
       },
     }),
     // Preact powers the /admin/ portal only. The public marketing pages stay
