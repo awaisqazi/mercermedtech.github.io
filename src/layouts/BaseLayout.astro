@@ -28,6 +28,13 @@ interface Props {
   twitterDescription?: string;
   /** "dlt" renders the minimal Tech-track header and footer. */
   variant?: 'home' | 'dlt';
+  /**
+   * Which footer to render. Defaults to the variant's own footer. The
+   * Tech-track landing page keeps the minimal "dlt" footer (NJDOL rule: no
+   * program cross-sell on the funded page); the sign-up and partner pages
+   * use the standard site footer.
+   */
+  footer?: 'site' | 'dlt';
   bodyClass?: string;
   jsonLd?: unknown[];
   /** Shows the skip link, used on the Tech-track landing page. */
@@ -54,6 +61,7 @@ const {
   twitterTitle,
   twitterDescription,
   variant = 'home',
+  footer = variant === 'dlt' ? 'dlt' : 'site',
   bodyClass,
   jsonLd = [],
   skipLink = false,
@@ -148,7 +156,7 @@ const links = navLinks ?? (variant === 'dlt' ? dltNav(locale) : homeNav(locale))
 
     <slot />
 
-    {variant === 'dlt' ? <DltFooter locale={locale} /> : <Footer locale={locale} />}
+    {footer === 'dlt' ? <DltFooter locale={locale} /> : <Footer locale={locale} />}
 
     <FloatingCall
       variant={variant === 'dlt' ? 'tech' : 'med'}
