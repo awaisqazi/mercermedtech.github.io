@@ -1,32 +1,39 @@
 /**
- * The screen people leave open. Everything on it is a plain query: no realtime
- * channel, because the socket belongs to whichever project is open.
+ * Today: the screen for "what do I do next, and what did everyone else do".
  *
- * It is a reading surface, so it is built to be scanned rather than studied:
- * one bright thing per row (the title), everything else a step quieter, and
- * the only colour is the semantic one — a left edge and a dot for work that is
- * late or stuck.
+ *   My work                open tasks assigned to me, soonest first
+ *   Due this week          any open task due in the next seven days (or late),
+ *                          and the next report
+ *   Team                   who is on the team, who has been around, how much
+ *                          each has open and the last thing each changed
+ *   Since you were here    what other people changed since your last visit
+ *
+ * Every section draws as soon as its own data lands (see `loadToday` in
+ * queries.ts): nothing waits for everything, and there is never a whole-page
+ * skeleton. No realtime channel here: the socket belongs to whichever project
+ * is open, so this reads once and refreshes quietly when the tab comes back.
  */
-import { useCallback, useEffect, useState } from 'preact/hooks';
-import { displayName, resumeSession, touchLastSeen, useAuth } from '../lib/auth';
-import { loadHome, type HomeData, type HomeStats } from '../lib/queries';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { displayName, resumeSession, useAuth } from '../lib/auth';
+import { loadToday } from '../lib/queries';
+import { href } from '../lib/router';
+import { daysUntil, dueWording, formatDate, formatDateLong, formatMonth, relativeTime } from '../lib/format';
+import { toAppError, type AppError } from '../lib/errors';
 import { LOAD_DEADLINE_MS, SLOW_LOAD_MS } from '../lib/config';
 import { withDeadline } from '../lib/deadline';
-import { toAppError } from '../lib/errors';
-import { href } from '../lib/router';
-import { daysUntil, dueWording, formatDateLong, relativeTime } from '../lib/format';
-import type { Task } from '../lib/types';
+import { pickPrimary, useProjectList } from '../lib/projects';
+import type { ActivityRow, Profile, Project, ProjectMember, Report, Task } from '../lib/types';
 import { Avatar } from '../components/Avatar';
-import { Chip } from '../components/Chip';
-import { EmptyState } from '../components/EmptyState';
-import { Button, LinkButton } from '../components/Button';
-import { SkeletonCards, SkeletonLines } from '../components/Skeleton';
-import { ProjectCard } from './ProjectCard';
-import { IconProjects } from '../components/Icons';
+import { Button } from '../components/Button';
+import { SkeletonLines } from '../components/Skeleton';
 import { SchemaNotice, SlowNotice } from '../components/SchemaNotice';
+import { isMine } from '../components/tasks/shared';
 
-/** How many rows a list shows before it hands over to the project screen. */
-const LIST_CAP = 8;
+const LIST_CAP = 7;
+/** Seen in the last quarter of an hour counts as "around now". */
+const AROUND_MS = 15 * 60 * 1000;
+/** Coming back to the tab refreshes, but not more often than this. */
+const REFRESH_GAP_MS = 60 * 1000;
 
 function greeting(): string {
   const hour = new Date().getHours();
@@ -35,187 +42,148 @@ function greeting(): string {
   return 'Good evening';
 }
 
-/** Soonest first; anything without a date sits at the end. */
-function byDue(a: Task, b: Task): number {
-  return (a.due ?? '9999-12-31').localeCompare(b.due ?? '9999-12-31');
-}
+const byDue = (a: { due: string | null }, b: { due: string | null }) =>
+  (a.due ?? '9999-12-31').localeCompare(b.due ?? '9999-12-31');
 
-/** The one thing worth saying about a task's state, or nothing at all. */
-function flagOf(task: Task): { label: string; tone: 'crit' | 'warn' } | null {
-  if (task.status === 'blocked') return { label: 'Blocked', tone: 'warn' };
-  if (task.pri === 'critical') return { label: 'Critical', tone: 'crit' };
-  return null;
-}
-
-interface RowProps {
-  task: Task;
-  to: string;
-  /** Only worth repeating when the reader has more than one project open. */
-  project: string | null;
-}
-
-/**
- * Two lines, never more: the title owns a full-width line of its own, and
- * everything that used to fight it for space sits underneath in small type.
- */
-function TaskRow({ task, to, project }: RowProps) {
-  const days = daysUntil(task.due);
-  const late = days !== null && days < 0;
-  const soon = days !== null && days >= 0 && days <= 3;
-  const flag = flagOf(task);
-
-  return (
-    <li>
-      <a class={`wb-home-row${late ? ' is-late' : soon ? ' is-soon' : ''}`} href={to}>
-        <span class="wb-home-row-title">{task.title}</span>
-        <span class="wb-home-row-meta">
-          {flag ? (
-            <span class={`wb-home-flag is-${flag.tone}`}>
-              <span class="wb-home-flag-dot" aria-hidden="true" />
-              {flag.label}
-            </span>
-          ) : null}
-          {task.due ? (
-            <span class={`wb-mono wb-home-row-due${late ? ' is-late' : ''}`}>
-              {dueWording(task.due)}
-            </span>
-          ) : null}
-          {project ? <span class="wb-home-row-project">{project}</span> : null}
-        </span>
-      </a>
-    </li>
-  );
-}
+/** One part of the screen: nothing yet, the rows, or what went wrong. */
+type Part<T> = { rows: T[] | null; error: AppError | null };
+const EMPTY_PART = { rows: null, error: null };
 
 export function Home() {
   const auth = useAuth();
-  const [data, setData] = useState<HomeData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const list = useProjectList();
+  const [tasks, setTasks] = useState<Part<Task>>(EMPTY_PART);
+  const [members, setMembers] = useState<Part<ProjectMember>>(EMPTY_PART);
+  const [profiles, setProfiles] = useState<Part<Profile>>(EMPTY_PART);
+  const [activity, setActivity] = useState<Part<ActivityRow>>(EMPTY_PART);
+  const [reports, setReports] = useState<Part<Report>>(EMPTY_PART);
+  const lastLoad = useRef(0);
   const [slow, setSlow] = useState(false);
 
   /*
-   * `loadHome` swallows its own errors, but it cannot swallow a request that
-   * is never answered — and in Safari that is the usual way for this to go
-   * wrong. The deadline turns the silence into an ordinary error with a Retry
-   * on it, and the four-second mark turns a wordless skeleton into a sentence.
+   * Each part has the same ceiling a whole screen had before (12 s, after
+   * which a stall becomes an error with Try again on it), and if anything is
+   * still out after four seconds the screen says so instead of waiting in
+   * silence. Parts that have landed stay on screen either way.
    */
-  const refresh = useCallback(async () => {
+  const load = useCallback(() => {
+    lastLoad.current = Date.now();
     setSlow(false);
-    setLoading(true);
-    const timer = window.setTimeout(() => setSlow(true), SLOW_LOAD_MS);
-    try {
-      const result = await withDeadline(loadHome(auth.userId, displayName(auth)), LOAD_DEADLINE_MS);
-      setData(result);
-    } catch (error) {
-      setData({
-        projects: [],
-        profiles: {},
-        mine: [],
-        attention: [],
-        activity: [],
-        stats: { open: 0, dueWeek: 0, overdue: 0 },
-        error: toAppError(error),
-      });
-    } finally {
-      window.clearTimeout(timer);
-      setSlow(false);
-      setLoading(false);
-    }
-  }, [auth.userId, auth.profile?.full_name]);
-
-  const retry = useCallback(async () => {
-    // A stalled home screen usually means the session is the thing that is
-    // stuck, so ask the SDK for it again before asking for the data.
-    await resumeSession('restore');
-    await refresh();
-  }, [refresh]);
+    const requests = loadToday();
+    const land = <T,>(work: Promise<T[]>, set: (part: Part<T>) => void) =>
+      withDeadline(work, LOAD_DEADLINE_MS).then(
+        (rows) => set({ rows, error: null }),
+        (error) => set({ rows: [], error: toAppError(error) })
+      );
+    void land(requests.tasks, setTasks);
+    void land(requests.members, setMembers);
+    void land(requests.profiles, setProfiles);
+    void land(requests.activity, setActivity);
+    void land(requests.reports, setReports);
+  }, []);
 
   useEffect(() => {
-    void refresh();
-    void touchLastSeen();
+    if (!auth.userId) return undefined;
+    load();
+    // Coming back to the tab refreshes in place: what is on screen stays
+    // until the new rows replace it.
     const onVisible = () => {
-      if (document.visibilityState === 'visible') void refresh();
+      if (document.visibilityState === 'visible' && Date.now() - lastLoad.current > REFRESH_GAP_MS) load();
     };
     document.addEventListener('visibilitychange', onVisible);
     return () => document.removeEventListener('visibilitychange', onVisible);
-  }, [refresh]);
+  }, [auth.userId, load]);
 
-  const projects = (data?.projects ?? []).filter(
-    (summary) => summary.project.status === 'active'
-  );
-  const projectOf = (projectId: string) =>
-    data?.projects.find((summary) => summary.project.id === projectId)?.project ?? null;
+  const waiting =
+    tasks.rows === null ||
+    members.rows === null ||
+    profiles.rows === null ||
+    activity.rows === null ||
+    reports.rows === null;
 
-  const kindTab = (projectId: string) =>
-    projectOf(projectId)?.kind === 'grant' ? 'deliverables' : 'tasks';
-
-  const taskHref = (task: Task) =>
-    href(`/p/${projectOf(task.project_id)?.slug ?? ''}/${kindTab(task.project_id)}`, {
-      task: task.id,
-    });
-
-  /* With one project open its name on every row is noise, so it is dropped. */
-  const manyProjects = projects.length > 1;
-  const nameFor = (task: Task) =>
-    manyProjects ? projectOf(task.project_id)?.name ?? 'Project' : null;
-
-  const mine = [...(data?.mine ?? [])].sort(byDue);
-  const attention = data?.attention ?? [];
-
-  /** "See all 14 in <project>" when the rest all live in the same place. */
-  const seeAll = (tasks: Task[]) => {
-    if (tasks.length <= LIST_CAP) return null;
-    const ids = [...new Set(tasks.map((task) => task.project_id))];
-    if (ids.length === 1) {
-      const project = projectOf(ids[0]!);
-      if (project) {
-        return (
-          <a class="wb-home-more" href={href(`/p/${project.slug}/${kindTab(ids[0]!)}`)}>
-            See all {tasks.length} in {project.name}
-          </a>
-        );
-      }
+  useEffect(() => {
+    if (!waiting) {
+      setSlow(false);
+      return undefined;
     }
-    return (
-      <a class="wb-home-more" href={href('/projects')}>
-        See all {tasks.length}
-      </a>
-    );
+    const timer = window.setTimeout(() => setSlow(true), SLOW_LOAD_MS);
+    return () => window.clearTimeout(timer);
+  }, [waiting]);
+
+  const retry = async () => {
+    await resumeSession('restore');
+    load();
   };
 
-  const list = (tasks: Task[]) => (
-    <>
-      <ul class="wb-home-list">
-        {tasks.slice(0, LIST_CAP).map((task) => (
-          <TaskRow key={task.id} task={task} to={taskHref(task)} project={nameFor(task)} />
-        ))}
-      </ul>
-      {seeAll(tasks)}
-    </>
-  );
+  const me = auth.userId;
+  const myName = displayName(auth);
+  const projects = list.projects;
+  const primary = pickPrimary(projects);
+  const activeIds = new Set(projects.filter((project) => project.status === 'active').map((project) => project.id));
+  const projectOf = (id: string): Project | null => projects.find((project) => project.id === id) ?? null;
+  // A project's name on a row only helps when it is not the home project.
+  const nameIfOther = (projectId: string) =>
+    projectId !== primary?.id ? (projectOf(projectId)?.name ?? null) : null;
+  const people: Record<string, Profile> = {};
+  for (const profile of profiles.rows ?? []) people[profile.id] = profile;
+  const nameOf = (id: string | null) =>
+    id === me ? 'You' : (id && (people[id]?.full_name?.trim() || people[id]?.email)) || 'Someone';
+
+  const openTasks = (tasks.rows ?? []).filter((task) => !projectOf(task.project_id) || activeIds.has(task.project_id));
+  const mine = openTasks.filter((task) => isMine(task, me, myName)).sort(byDue);
+  const week = openTasks
+    .filter((task) => {
+      const days = daysUntil(task.due);
+      return days !== null && days <= 7;
+    })
+    .sort(byDue);
+  const nextReports = (reports.rows ?? [])
+    .filter((report) => activeIds.has(report.project_id) || !projectOf(report.project_id))
+    .sort(byDue);
+  const nextReport = nextReports[0] ?? null;
+
+  const taskHref = (task: Task) => {
+    const project = projectOf(task.project_id);
+    return project ? href(`/p/${project.slug}/plan`, { task: task.id }) : href('/');
+  };
+
+  const firstError =
+    tasks.error ?? members.error ?? profiles.error ?? activity.error ?? reports.error ?? list.error ?? null;
+
+  /* ----------------------------------------------------------- the team --- */
+  const teamIds = [
+    ...new Set(
+      (members.rows ?? [])
+        .filter((member) => !primary || member.project_id === primary.id)
+        .map((member) => member.user_id)
+    ),
+  ];
+  const lastChangeBy = (id: string) => (activity.rows ?? []).find((row) => row.user_id === id) ?? null;
+  const openFor = (id: string) => openTasks.filter((task) => task.assignee === id).length;
+
+  /* --------------------------------------------------- since you were here --- */
+  const since = auth.lastVisit;
+  const others = (activity.rows ?? []).filter((row) => row.user_id !== me);
+  const fresh = since ? others.filter((row) => row.created_at > since) : [];
+  const changes = (fresh.length ? fresh : others).slice(0, 10);
 
   return (
-    <div class="wb-page wb-home">
-      <header class="wb-home-head">
-        <div class="wb-home-greeting">
-          <h1 class="wb-home-title">
-            {greeting()}
-            {auth.profile?.full_name ? `, ${auth.profile.full_name.split(' ')[0]}` : ''}
-          </h1>
-          <p class="wb-home-date wb-mono-soft">
-            {formatDateLong(new Date().toISOString().slice(0, 10))}
-          </p>
-        </div>
-        {loading ? null : <StatStrip stats={data?.stats ?? null} />}
+    <div class="wb-page wb-today wb-home">
+      <header class="wb-today-head">
+        <h1 class="wb-page-title">
+          {greeting()}
+          {auth.profile?.full_name ? `, ${auth.profile.full_name.split(' ')[0]}` : ''}
+        </h1>
+        <p class="wb-mono-soft">{formatDateLong(new Date().toISOString().slice(0, 10))}</p>
       </header>
 
-      {slow && loading ? <SlowNotice what="Your work" /> : null}
+      {slow && waiting ? <SlowNotice what="Some of your work" /> : null}
 
-      {data?.error ? (
+      {firstError ? (
         <SchemaNotice
-          error={data.error}
+          error={firstError}
           action={
-            data.error.missingSchema || data.error.permission ? null : (
+            firstError.missingSchema || firstError.permission ? null : (
               <Button variant="secondary" onClick={retry} data-wb-retry>
                 Try again
               </Button>
@@ -224,114 +192,214 @@ export function Home() {
         />
       ) : null}
 
-      <div class="wb-home-grid">
-        <section class="wb-panel">
-          <header class="wb-panel-head">
-            <h2 class="wb-panel-title">My work</h2>
-            {mine.length ? <Chip tone="quiet">{mine.length}</Chip> : null}
+      <div class="wb-today-grid">
+        <section class="wb-today-section" data-section="mine">
+          <header class="wb-today-section-head">
+            <h2 class="wb-today-title">My work</h2>
+            {tasks.rows ? <span class="wb-plan-count wb-mono">{mine.length}</span> : null}
           </header>
-          {loading ? (
+          {tasks.rows === null ? (
             <SkeletonLines count={4} />
           ) : mine.length ? (
-            list(mine)
+            <>
+              <ul class="wb-today-list">
+                {mine.slice(0, LIST_CAP).map((task) => (
+                  <TaskLine key={task.id} task={task} to={taskHref(task)} project={nameIfOther(task.project_id)} />
+                ))}
+              </ul>
+              {mine.length > LIST_CAP && primary ? (
+                <a class="wb-today-more" href={href(`/p/${primary.slug}/plan`, { mine: '1' })}>
+                  See all {mine.length} in the Plan
+                </a>
+              ) : null}
+            </>
           ) : (
-            <EmptyState title="Nothing assigned to you yet." />
+            <p class="wb-today-empty" data-wb-filled>
+              Nothing is assigned to you.{' '}
+              {primary ? <a href={href(`/p/${primary.slug}/plan`, { unassigned: '1' })}>See what nobody has yet</a> : null}
+            </p>
           )}
         </section>
 
-        <section class="wb-panel">
-          <header class="wb-panel-head">
-            <h2 class="wb-panel-title">Needs attention</h2>
-            {attention.length ? <Chip tone="quiet">{attention.length}</Chip> : null}
+        <section class="wb-today-section" data-section="week">
+          <header class="wb-today-section-head">
+            <h2 class="wb-today-title">Due this week</h2>
+            {tasks.rows ? <span class="wb-plan-count wb-mono">{week.length + (nextReport ? 1 : 0)}</span> : null}
           </header>
-          {loading ? (
+          {tasks.rows === null && reports.rows === null ? (
             <SkeletonLines count={3} />
-          ) : attention.length ? (
-            list(attention)
           ) : (
-            <EmptyState title="Nothing overdue, blocked or stuck." />
+            <ul class="wb-today-list">
+              {nextReport ? (
+                <li>
+                  <a
+                    class={`wb-today-row is-report${(daysUntil(nextReport.due) ?? 99) < 0 ? ' is-late' : ''}`}
+                    href={href(`/p/${projectOf(nextReport.project_id)?.slug ?? primary?.slug ?? ''}/reports`, {
+                      report: nextReport.id,
+                    })}
+                    data-wb-filled
+                  >
+                    <span class="wb-today-row-title">
+                      <span class="wb-pill wb-pill-accent">Report</span>
+                      {nextReport.covers?.trim() || formatMonth(nextReport.period)}
+                    </span>
+                    <span class="wb-due">{nextReport.due ? dueWording(nextReport.due) : 'No due date'}</span>
+                  </a>
+                </li>
+              ) : null}
+              {tasks.rows === null ? (
+                <li>
+                  <SkeletonLines count={2} />
+                </li>
+              ) : (
+                week.slice(0, LIST_CAP).map((task) => (
+                  <TaskLine
+                    key={task.id}
+                    task={task}
+                    to={taskHref(task)}
+                    project={nameIfOther(task.project_id)}
+                    who={task.assignee ? (people[task.assignee] ?? { id: task.assignee }) : null}
+                  />
+                ))
+              )}
+              {tasks.rows && !week.length && !nextReport ? (
+                <li class="wb-today-empty" data-wb-filled>
+                  Nothing is due in the next seven days.
+                </li>
+              ) : null}
+            </ul>
+          )}
+        </section>
+
+        <section class="wb-today-section" data-section="team">
+          <header class="wb-today-section-head">
+            <h2 class="wb-today-title">Team</h2>
+            {primary ? <span class="wb-mono-soft">{primary.name}</span> : null}
+          </header>
+          {members.rows === null || profiles.rows === null ? (
+            <SkeletonLines count={3} />
+          ) : teamIds.length ? (
+            <ul class="wb-team">
+              {teamIds.map((id) => {
+                const profile = people[id];
+                const seen = profile?.last_seen_at ? Date.now() - new Date(profile.last_seen_at).getTime() : null;
+                const around = id === me || (seen !== null && seen < AROUND_MS);
+                const last = lastChangeBy(id);
+                return (
+                  <li class="wb-team-row" key={id} data-wb-filled>
+                    <Avatar id={id} name={profile?.full_name} email={profile?.email} size={34} active={around} />
+                    <div class="wb-team-body">
+                      <p class="wb-team-name">
+                        {id === me ? `${profile?.full_name?.trim() || 'You'} (you)` : profile?.full_name?.trim() || profile?.email || 'Member'}
+                        <span class={`wb-team-presence${around ? ' is-here' : ''}`}>
+                          {around ? 'Around now' : profile?.last_seen_at ? `Seen ${relativeTime(profile.last_seen_at)}` : 'Not seen yet'}
+                        </span>
+                      </p>
+                      <p class="wb-team-meta wb-mono-soft">
+                        {tasks.rows ? `${openFor(id)} open` : ''}
+                        {last ? ` · last: ${last.summary}, ${relativeTime(last.created_at)}` : ''}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p class="wb-today-empty" data-wb-filled>
+              Nobody else is on this project yet.
+            </p>
+          )}
+        </section>
+
+        <section class="wb-today-section" data-section="changes">
+          <header class="wb-today-section-head">
+            <h2 class="wb-today-title">{fresh.length ? 'Since you were here' : 'Recent changes'}</h2>
+            {fresh.length ? <span class="wb-plan-count wb-mono">{fresh.length}</span> : null}
+          </header>
+          {activity.rows === null ? (
+            <SkeletonLines count={4} />
+          ) : changes.length ? (
+            <ol class="wb-today-changes">
+              {changes.map((row) => {
+                const project = projectOf(row.project_id);
+                const link =
+                  project && row.entity_id
+                    ? row.entity === 'task'
+                      ? href(`/p/${project.slug}/plan`, { task: row.entity_id })
+                      : row.entity === 'report'
+                        ? href(`/p/${project.slug}/reports`, { report: row.entity_id })
+                        : row.entity === 'partner'
+                          ? href(`/p/${project.slug}/partners`, { partner: row.entity_id })
+                          : null
+                    : null;
+                const profile = row.user_id ? people[row.user_id] : null;
+                return (
+                  <li class="wb-change" key={row.id} data-wb-filled>
+                    <Avatar id={row.user_id} name={profile?.full_name} email={profile?.email} size={22} />
+                    <span class="wb-change-text">
+                      <span class="wb-change-who">{nameOf(row.user_id)}</span>{' '}
+                      {link ? <a href={link}>{row.summary}</a> : row.summary}
+                    </span>
+                    <span class="wb-mono-soft wb-change-when">
+                      {project && project.id !== primary?.id ? `${project.name} · ` : ''}
+                      {relativeTime(row.created_at)}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          ) : (
+            <p class="wb-today-empty" data-wb-filled>
+              Quiet so far. Changes other people make will show up here.
+            </p>
           )}
         </section>
       </div>
-
-      <section class="wb-panel">
-        <header class="wb-panel-head">
-          <h2 class="wb-panel-title">Projects</h2>
-          <LinkButton variant="quiet" size="sm" href={href('/projects')}>
-            See all
-          </LinkButton>
-        </header>
-        {loading ? (
-          <SkeletonCards count={2} />
-        ) : projects.length ? (
-          <div class="wb-card-grid">
-            {projects.slice(0, 6).map((summary) => (
-              <ProjectCard
-                key={summary.project.id}
-                summary={summary}
-                profiles={data?.profiles ?? {}}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            icon={<IconProjects size={22} />}
-            title="No projects yet"
-            body="Once you are added to a project it will show up here."
-          />
-        )}
-      </section>
-
-      <section class="wb-panel">
-        <header class="wb-panel-head">
-          <h2 class="wb-panel-title">Recent activity</h2>
-        </header>
-        {loading ? (
-          <SkeletonLines count={5} />
-        ) : data?.activity.length ? (
-          <ol class="wb-feed wb-home-feed">
-            {data.activity.map((row) => {
-              const profile = row.user_id ? data.profiles[row.user_id] : null;
-              return (
-                <li class="wb-feed-row" key={row.id}>
-                  <Avatar id={row.user_id} name={profile?.full_name} email={profile?.email} size={26} />
-                  <div class="wb-feed-body">
-                    <p class="wb-feed-line">
-                      <span class="wb-feed-who">
-                        {profile?.full_name?.trim() || profile?.email || 'Someone'}
-                      </span>{' '}
-                      <span class="wb-feed-what">{row.summary}</span>
-                    </p>
-                    <p class="wb-feed-meta wb-mono-soft">
-                      {projectOf(row.project_id)?.name ?? 'Project'} · {relativeTime(row.created_at)}
-                    </p>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
-        ) : (
-          <EmptyState title="Quiet so far" body="Changes people make will show up here." />
-        )}
-      </section>
     </div>
   );
 }
 
-/** "12 open · 3 due this week · 1 overdue", to the right of the greeting. */
-function StatStrip({ stats }: { stats: HomeStats | null }) {
-  if (!stats || !stats.open) return null;
+function TaskLine({
+  task,
+  to,
+  project,
+  who,
+}: {
+  task: Task;
+  to: string;
+  project?: string | null;
+  /** Shown as a small face: who has it. */
+  who?: Pick<Profile, 'id'> & Partial<Profile> | null;
+}) {
+  const days = daysUntil(task.due);
+  const late = days !== null && days < 0;
   return (
-    <ul class="wb-home-stats">
-      <li>
-        <span class="wb-mono wb-home-stat-n">{stats.open}</span> open
-      </li>
-      <li>
-        <span class="wb-mono wb-home-stat-n">{stats.dueWeek}</span> due this week
-      </li>
-      <li class={stats.overdue ? 'is-late' : undefined}>
-        <span class="wb-mono wb-home-stat-n">{stats.overdue}</span> overdue
-      </li>
-    </ul>
+    <li>
+      <a class={`wb-today-row${late ? ' is-late' : ''}`} href={to} data-wb-filled>
+        <span class="wb-today-row-title">
+          <span class={`wb-status-dot is-${task.status}`} aria-hidden="true" />
+          {task.title}
+        </span>
+        <span class="wb-today-row-meta">
+          {task.pri === 'critical' ? <span class="wb-pri-word is-critical">Critical</span> : null}
+          {task.status === 'blocked' ? <span class="wb-pri-word is-blocked">Blocked</span> : null}
+          {who ? (
+            <Avatar
+              id={who.id}
+              name={who.full_name}
+              email={who.email}
+              size={20}
+              title={`Assigned to ${who.full_name?.trim() || who.email || 'a member'}`}
+            />
+          ) : null}
+          {project ? <span class="wb-mono-soft">{project}</span> : null}
+          {task.due ? (
+            <span class={`wb-due${late ? ' is-late' : ''}`} title={formatDate(task.due)}>
+              {dueWording(task.due)}
+            </span>
+          ) : null}
+        </span>
+      </a>
+    </li>
   );
 }

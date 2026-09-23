@@ -72,7 +72,7 @@ export function toAppError(input: unknown, context?: string): AppError {
 
   if (timedOut) {
     return {
-      message: 'The server did not answer. The connection may have stalled — try again.',
+      message: 'The server did not answer. The connection may have stalled. Try again.',
       permission: false,
       missingSchema: false,
       offline: true,

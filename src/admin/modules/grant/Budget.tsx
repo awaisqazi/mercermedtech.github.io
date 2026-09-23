@@ -246,7 +246,7 @@ export function Budget() {
                             tone={share > 1.001 ? 'crit' : share > 0.9 ? 'warn' : 'accent'}
                             title={`${line.label}: ${percent(share)} used`}
                           />
-                          <span class="wb-mono-soft">{line.amount ? percent(share) : '—'}</span>
+                          <span class="wb-mono-soft">{line.amount ? percent(share) : 'None'}</span>
                         </td>
                       </tr>
                     );
@@ -266,7 +266,7 @@ export function Budget() {
                       {money(groupRemaining)}
                     </td>
                     <td data-label="Used" class="wb-mono-soft">
-                      {group.total ? percent(ratio(groupBilled, group.total)) : '—'}
+                      {group.total ? percent(ratio(groupBilled, group.total)) : 'None'}
                     </td>
                   </tr>
                 </tbody>
@@ -288,7 +288,7 @@ export function Budget() {
                   {money(denominator - billedTotal)}
                 </td>
                 <td data-label="Used" class="wb-mono-soft">
-                  {denominator ? percent(billedShare) : '—'}
+                  {denominator ? percent(billedShare) : 'None'}
                 </td>
               </tr>
             </tfoot>

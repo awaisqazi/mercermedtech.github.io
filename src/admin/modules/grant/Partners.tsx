@@ -2,42 +2,45 @@
  * Partners: who sends people our way, where they are, and what the next move
  * with each of them is.
  *
- * The counties and the kinds of organisation are settings
- * (`config.counties`, `config.partner_kinds`), so the coverage strip at the
- * top is really one question asked once per county: is anybody actually
- * referring from here? That answer is given in words, not only in colour.
+ * At the top, one line of county chips: the referrals from each county, and
+ * a warning where nobody is referring yet (said in words too, in the chip's
+ * label). Below it, a compact list; a partner opens in its own panel with the
+ * contact, the next step, the notes, the comments and the history.
+ *
+ * The counties and the kinds of organisation are settings (`config.counties`,
+ * `config.partner_kinds`), so nothing here knows about any real place.
  */
-import { useMemo, useState } from 'preact/hooks';
-import {
-  deleteRow,
-  insertRow,
-  usePartners,
-  useProject,
-} from '../../lib/store';
-import { plural } from '../../lib/format';
+import { useEffect, useMemo, useState } from 'preact/hooks';
+import { deleteRow, insertRow, setPresence, usePartners, useProject } from '../../lib/store';
+import { setQuery, useRoute } from '../../lib/router';
+import { relativeTime } from '../../lib/format';
 import { toast } from '../../lib/toasts';
-import {
-  PARTNER_STAGES,
-  PARTNER_STAGE_LABEL,
-  type Partner,
-  type PartnerStage,
-} from '../../lib/types';
+import { getAuth } from '../../lib/auth';
+import { PARTNER_STAGES, PARTNER_STAGE_LABEL, type Partner, type PartnerStage } from '../../lib/types';
 import { Button } from '../../components/Button';
-import { Chip } from '../../components/Chip';
+import { CommentThread } from '../../components/CommentThread';
 import { useConfirm } from '../../components/ConfirmDialog';
+import { Dialog } from '../../components/Dialog';
 import { EmptyState } from '../../components/EmptyState';
 import { Field, Input } from '../../components/Field';
-import {
-  LiveNumber,
-  LiveSelect,
-  LiveText,
-  LiveTextarea,
-} from '../../components/LiveField';
+import { History } from '../../components/History';
+import { LiveNumber, LiveSelect, LiveText, LiveTextarea } from '../../components/LiveField';
+import { Menu } from '../../components/Menu';
+import { Modal } from '../../components/Modal';
 import { Select, optionsFrom } from '../../components/Select';
-import { IconPeople, IconPlus, IconTrash } from '../../components/Icons';
+import { IconDots, IconPeople, IconPlus, IconSearch, IconTrash } from '../../components/Icons';
+import { changedSince } from '../../components/tasks/shared';
 
 /** A partner at this stage is actually sending people. */
 const ACTIVE_STAGE: PartnerStage = 'referring';
+
+const STAGE_TONE: Record<PartnerStage, string> = {
+  not_contacted: 'quiet',
+  contacted: 'neutral',
+  meeting_held: 'accent',
+  referring: 'good',
+  paused: 'warn',
+};
 
 function uniqueStrings(...lists: Array<Array<string | null | undefined>>): string[] {
   const seen = new Set<string>();
@@ -55,20 +58,16 @@ function uniqueStrings(...lists: Array<Array<string | null | undefined>>): strin
 
 export function Partners() {
   const partners = usePartners();
+  const route = useRoute();
   const { config, readOnly } = useProject();
-  const { confirm, element: confirmElement } = useConfirm();
+  const auth = getAuth();
   const [county, setCounty] = useState('');
-  const [kind, setKind] = useState('');
   const [stage, setStage] = useState<PartnerStage | ''>('');
+  const [search, setSearch] = useState('');
   const [adding, setAdding] = useState(false);
 
-  const configCounties = Array.isArray(config.counties)
-    ? (config.counties as unknown[]).map((value) => String(value))
-    : [];
-  const configKinds = Array.isArray(config.partner_kinds)
-    ? (config.partner_kinds as unknown[]).map((value) => String(value))
-    : [];
-
+  const configCounties = Array.isArray(config.counties) ? (config.counties as unknown[]).map(String) : [];
+  const configKinds = Array.isArray(config.partner_kinds) ? (config.partner_kinds as unknown[]).map(String) : [];
   const counties = uniqueStrings(configCounties, partners.map((partner) => partner.county));
   const kinds = uniqueStrings(configKinds, partners.map((partner) => partner.kind));
 
@@ -81,260 +80,364 @@ export function Partners() {
       referrals: own.reduce((sum, partner) => sum + (Number(partner.referrals) || 0), 0),
     };
   });
+  const gaps = coverage.filter((entry) => !entry.referring).length;
+  const totalReferrals = partners.reduce((sum, partner) => sum + (Number(partner.referrals) || 0), 0);
 
-  const visible = useMemo(
-    () =>
-      partners.filter((partner) => {
-        if (county && partner.county !== county) return false;
-        if (kind && partner.kind !== kind) return false;
-        if (stage && partner.stage !== stage) return false;
-        return true;
-      }),
-    [partners, county, kind, stage]
+  const visible = useMemo(() => {
+    const needle = search.trim().toLowerCase();
+    return partners.filter((partner) => {
+      if (county && partner.county !== county) return false;
+      if (stage && partner.stage !== stage) return false;
+      if (needle && ![partner.name, partner.contact, partner.kind, partner.notes].join(' ').toLowerCase().includes(needle)) {
+        return false;
+      }
+      return true;
+    });
+  }, [partners, county, stage, search]);
+
+  const filtered = Boolean(county || stage || search.trim());
+  const clear = () => {
+    setCounty('');
+    setStage('');
+    setSearch('');
+  };
+
+  const openId = route.query.partner || null;
+  const open = (id: string | null) => setQuery({ ...route.query, partner: id });
+  const openPartner = openId ? (partners.find((partner) => partner.id === openId) ?? null) : null;
+
+  return (
+    <section class="wb-partners" aria-label="Partners">
+      <div class="wb-section-bar">
+        <p class="wb-section-summary">
+          <strong>{partners.length}</strong> partners · <strong>{totalReferrals}</strong> referrals
+          {coverage.length ? (
+            <span class={gaps ? 'wb-warn-text' : 'wb-mono-soft'}>
+              {' '}
+              · {gaps ? `${gaps} of ${coverage.length} counties with nobody referring yet` : 'someone referring in every county'}
+            </span>
+          ) : null}
+        </p>
+        {readOnly ? null : (
+          <Button variant="secondary" size="sm" icon={<IconPlus size={15} />} onClick={() => setAdding(true)}>
+            Add a partner
+          </Button>
+        )}
+      </div>
+
+      {coverage.length ? (
+        <ul class="wb-coverage-strip" aria-label="Referrals by county">
+          {coverage.map((entry) => (
+            <li key={entry.name}>
+              <button
+                type="button"
+                class={`wb-county${entry.referring ? '' : ' is-gap'}${county === entry.name ? ' is-active' : ''}`}
+                aria-pressed={county === entry.name}
+                title={
+                  entry.referring
+                    ? `${entry.name}: ${entry.referring} referring, ${entry.referrals} referrals`
+                    : `${entry.name}: nobody referring yet`
+                }
+                onClick={() => setCounty((current) => (current === entry.name ? '' : entry.name))}
+              >
+                <span class="wb-county-name">{entry.name.replace(/ County$/, '')}</span>
+                <span class="wb-county-count wb-mono">{entry.referrals}</span>
+                {entry.referring ? null : <span class="wb-sr">, nobody referring yet</span>}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      <div class="wb-plan-bar">
+        <div class="wb-plan-chips" role="group" aria-label="Show only">
+          {PARTNER_STAGES.map((key) => {
+            const count = partners.filter((partner) => partner.stage === key).length;
+            if (!count) return null;
+            return (
+              <button
+                key={key}
+                type="button"
+                class={`wb-chip wb-chip-toggle${stage === key ? ' is-active' : ''}`}
+                aria-pressed={stage === key}
+                onClick={() => setStage((current) => (current === key ? '' : key))}
+              >
+                {PARTNER_STAGE_LABEL[key]}
+                <span class="wb-chip-count wb-mono">{count}</span>
+              </button>
+            );
+          })}
+          {filtered ? (
+            <button type="button" class="wb-linkish wb-plan-clear" onClick={clear}>
+              Clear
+            </button>
+          ) : null}
+        </div>
+        <label class="wb-search wb-plan-search">
+          <IconSearch size={16} />
+          <span class="wb-sr">Search partners</span>
+          <input
+            class="wb-input wb-input-sm"
+            type="search"
+            value={search}
+            placeholder="Search"
+            onInput={(event) => setSearch((event.currentTarget as HTMLInputElement).value)}
+          />
+        </label>
+      </div>
+
+      {visible.length === 0 ? (
+        <EmptyState
+          icon={<IconPeople size={22} />}
+          title={filtered ? 'No partners match' : 'No partners yet'}
+          body={
+            filtered
+              ? 'Take a filter off to see more.'
+              : readOnly
+                ? 'Nobody has been added to this project yet.'
+                : 'Add the organisations that send people your way, and everyone sees the same picture.'
+          }
+          action={
+            filtered ? (
+              <Button variant="secondary" onClick={clear}>
+                Clear the filters
+              </Button>
+            ) : readOnly ? null : (
+              <Button variant="primary" icon={<IconPlus size={16} />} onClick={() => setAdding(true)}>
+                Add the first partner
+              </Button>
+            )
+          }
+        />
+      ) : (
+        <div class="wb-list" role="table" aria-label="Partners">
+          <div class="wb-list-head" role="row">
+            <span role="columnheader">Partner</span>
+            <span role="columnheader">County</span>
+            <span role="columnheader">Stage</span>
+            <span role="columnheader" class="wb-num">
+              Referrals
+            </span>
+            <span role="columnheader">Updated</span>
+          </div>
+          {visible.map((partner) => (
+            <div
+              class={`wb-list-row${openId === partner.id ? ' is-open' : ''}`}
+              role="row"
+              key={partner.id}
+            >
+              <span role="cell" class="wb-list-name">
+                <button type="button" class="wb-row-main" onClick={() => open(partner.id)}>
+                  <span class="wb-row-title">
+                    {changedSince(partner, auth.lastVisit, auth.userId) ? (
+                      <span class="wb-new-dot" title="Changed since you were last here" />
+                    ) : null}
+                    {partner.name}
+                  </span>
+                  {partner.kind ? <span class="wb-ws">{partner.kind}</span> : null}
+                </button>
+              </span>
+              <span role="cell" class="wb-list-county">
+                {partner.county || 'Not set'}
+              </span>
+              <span role="cell">
+                <span class={`wb-pill wb-pill-${STAGE_TONE[partner.stage]}`}>{PARTNER_STAGE_LABEL[partner.stage]}</span>
+              </span>
+              <span role="cell" class="wb-num wb-mono">
+                {partner.referrals}
+              </span>
+              <span role="cell" class="wb-mono-soft wb-list-when">
+                {relativeTime(partner.updated_at)}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <PartnerModal partner={openPartner} counties={counties} kinds={kinds} onClose={() => open(null)} />
+
+      <Dialog open={adding} title="Add a partner" onClose={() => setAdding(false)} size="sm">
+        <AddPartner
+          partners={partners}
+          counties={counties}
+          kinds={kinds}
+          onClose={(id) => {
+            setAdding(false);
+            if (id) open(id);
+          }}
+        />
+      </Dialog>
+    </section>
   );
+}
 
-  const filtered = Boolean(county || kind || stage);
+/* ----------------------------------------------------------- the panel --- */
 
-  const remove = async (partner: Partner) => {
+function PartnerModal({
+  partner,
+  counties,
+  kinds,
+  onClose,
+}: {
+  partner: Partner | null;
+  counties: string[];
+  kinds: string[];
+  onClose: () => void;
+}) {
+  const { readOnly } = useProject();
+  const { confirm, element } = useConfirm();
+  const id = partner?.id ?? '';
+
+  useEffect(() => {
+    if (!id) return;
+    setPresence({ editing: `partner:${id}` });
+    return () => setPresence({ editing: '' });
+  }, [id]);
+
+  if (!partner) return element;
+
+  const remove = async () => {
     const ok = await confirm({
       title: `Remove ${partner.name}?`,
       body: 'This removes the partner for everyone. Anything recorded about them goes with it.',
-      confirmLabel: 'Remove',
+      confirmLabel: 'Remove the partner',
       tone: 'danger',
     });
     if (!ok) return;
     const result = await deleteRow('partners', partner.id);
-    if (result.ok) toast.good('Removed.');
-    else if (result.error) toast.bad(result.error.message);
+    if (result.ok) {
+      toast.good('Removed.');
+      onClose();
+    } else if (result.error) toast.bad(result.error.message);
   };
 
+  const choice = (value: string, list: string[]) =>
+    [{ value: '', label: 'Not set' }, ...uniqueStrings(list, [value]).map((entry) => ({ value: entry, label: entry }))];
+
   return (
-    <div class="wb-stack">
-      <section class="wb-panel">
-        <header class="wb-panel-head">
-          <div>
-            <h2 class="wb-panel-title">Coverage</h2>
-            <p class="wb-page-sub">One reading per county: is anybody referring from there yet?</p>
-          </div>
-        </header>
-
-        {coverage.length ? (
-          <ul class="wb-coverage">
-            {coverage.map((entry) => (
-              <li class={`wb-coverage-item${entry.referring ? '' : ' is-gap'}`} key={entry.name}>
-                <p class="wb-coverage-name">{entry.name}</p>
-                <p class="wb-coverage-value wb-mono">
-                  {entry.referrals}
-                  <span class="wb-coverage-unit"> referrals</span>
-                </p>
-                <p class="wb-coverage-meta">
-                  {entry.referring ? (
-                    <Chip tone="good">
-                      {entry.referring} referring
-                    </Chip>
-                  ) : (
-                    <Chip tone="warn">No active referral source</Chip>
-                  )}
-                  <span class="wb-mono-soft">{plural(entry.partners, 'partner')}</span>
-                </p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <EmptyState
-            title="No counties are set up"
-            body="The counties this project serves are a project setting. An administrator can add them in Settings, and the coverage reading will appear here."
+    <>
+      <Modal
+        open
+        side
+        size="lg"
+        label={`Partner: ${partner.name}`}
+        onClose={onClose}
+        initialFocus="panel"
+        title={
+          <LiveText
+            table="partners"
+            id={partner.id}
+            field="name"
+            value={partner.name}
+            label="Name"
+            hideLabel
+            readOnly={readOnly}
+            class="wb-title-field"
           />
-        )}
-      </section>
-
-      <section class="wb-panel">
-        <header class="wb-panel-head">
-          <h2 class="wb-panel-title">
-            Partners
-            <span class="wb-panel-count wb-mono-soft"> {visible.length}</span>
-          </h2>
-          {readOnly || adding ? null : (
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<IconPlus size={15} />}
-              onClick={() => setAdding(true)}
-            >
-              Add partner
-            </Button>
-          )}
-        </header>
-
-        {adding ? (
-          <AddPartner
-            partners={partners}
-            counties={counties}
-            kinds={kinds}
-            onClose={() => setAdding(false)}
-          />
-        ) : null}
-
-        <div class="wb-filters">
-          {counties.length ? (
-            <Select
-              value={county}
-              placeholder="Every county"
-              options={counties.map((name) => ({ value: name, label: name }))}
-              size="sm"
-              aria-label="County"
-              onValue={setCounty}
+        }
+        description={<span class="wb-mono-soft">Last changed {relativeTime(partner.updated_at)}</span>}
+        actions={
+          readOnly ? null : (
+            <Menu
+              align="right"
+              items={[
+                {
+                  key: 'remove',
+                  label: 'Remove this partner',
+                  icon: <IconTrash size={16} />,
+                  tone: 'danger',
+                  onSelect: () => void remove(),
+                },
+              ]}
+              trigger={(props) => (
+                <button type="button" class="wb-icon-button" aria-label="More for this partner" {...props}>
+                  <IconDots />
+                </button>
+              )}
             />
-          ) : null}
-          {kinds.length ? (
-            <Select
-              value={kind}
-              placeholder="Every kind"
-              options={kinds.map((name) => ({ value: name, label: name }))}
-              size="sm"
-              aria-label="Kind of organisation"
-              onValue={setKind}
-            />
-          ) : null}
-          <Select<PartnerStage>
-            value={stage}
-            placeholder="Any stage"
+          )
+        }
+      >
+        <div class="wb-props">
+          <LiveSelect<PartnerStage>
+            table="partners"
+            id={partner.id}
+            field="stage"
+            value={partner.stage}
+            label="Stage"
+            tone={partner.stage === 'referring' ? 'done' : undefined}
             options={optionsFrom(PARTNER_STAGES, PARTNER_STAGE_LABEL)}
-            size="sm"
-            aria-label="Stage"
-            onValue={setStage}
+            readOnly={readOnly}
           />
-          {filtered ? (
-            <Button
-              variant="quiet"
-              size="sm"
-              onClick={() => {
-                setCounty('');
-                setKind('');
-                setStage('');
-              }}
-            >
-              Clear filters
-            </Button>
-          ) : null}
+          <LiveNumber
+            table="partners"
+            id={partner.id}
+            field="referrals"
+            value={partner.referrals}
+            label="Referrals"
+            min={0}
+            step={1}
+            readOnly={readOnly}
+          />
+          <LiveSelect
+            table="partners"
+            id={partner.id}
+            field="county"
+            value={partner.county}
+            label="County"
+            options={choice(partner.county, counties)}
+            readOnly={readOnly}
+          />
+          <LiveSelect
+            table="partners"
+            id={partner.id}
+            field="kind"
+            value={partner.kind}
+            label="Kind"
+            options={choice(partner.kind, kinds)}
+            readOnly={readOnly}
+          />
         </div>
-
-        {visible.length === 0 ? (
-          <EmptyState
-            icon={<IconPeople size={22} />}
-            title={filtered ? 'No partners match those filters' : 'No partners yet'}
-            body={
-              filtered
-                ? 'Clear a filter to see more.'
-                : readOnly
-                  ? 'Nobody has been added to this project yet.'
-                  : 'Add the organisations that send people your way, and everyone will see the same picture.'
-            }
-            action={
-              filtered ? (
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setCounty('');
-                    setKind('');
-                    setStage('');
-                  }}
-                >
-                  Clear filters
-                </Button>
-              ) : readOnly || adding ? null : (
-                <Button variant="primary" icon={<IconPlus size={16} />} onClick={() => setAdding(true)}>
-                  Add the first partner
-                </Button>
-              )
-            }
+        <div class="wb-longform">
+          <LiveText
+            table="partners"
+            id={partner.id}
+            field="contact"
+            value={partner.contact}
+            label="Contact"
+            placeholder="Who we speak to"
+            readOnly={readOnly}
           />
-        ) : (
-          <div class="wb-partner-grid">
-            {visible.map((partner) => (
-              <article class="wb-partner" key={partner.id}>
-                <header class="wb-partner-head">
-                  <h3 class="wb-partner-name">{partner.name}</h3>
-                  {readOnly ? null : (
-                    <Button
-                      variant="quiet"
-                      size="sm"
-                      iconOnly
-                      aria-label={`Remove ${partner.name}`}
-                      icon={<IconTrash size={15} />}
-                      onClick={() => void remove(partner)}
-                    />
-                  )}
-                </header>
-
-                <p class="wb-partner-meta">
-                  {partner.county ? <Chip tone="quiet">{partner.county}</Chip> : null}
-                  {partner.kind ? <Chip tone="quiet">{partner.kind}</Chip> : null}
-                </p>
-
-                <div class="wb-partner-fields">
-                  <LiveSelect<PartnerStage>
-                    table="partners"
-                    id={partner.id}
-                    field="stage"
-                    value={partner.stage}
-                    label="Stage"
-                    size="sm"
-                    options={optionsFrom(PARTNER_STAGES, PARTNER_STAGE_LABEL)}
-                    readOnly={readOnly}
-                  />
-                  <LiveNumber
-                    table="partners"
-                    id={partner.id}
-                    field="referrals"
-                    value={partner.referrals}
-                    label="Referrals"
-                    min={0}
-                    step={1}
-                    readOnly={readOnly}
-                  />
-                </div>
-
-                <LiveText
-                  table="partners"
-                  id={partner.id}
-                  field="contact"
-                  value={partner.contact}
-                  label="Contact"
-                  placeholder="Who we speak to"
-                  readOnly={readOnly}
-                />
-                <LiveText
-                  table="partners"
-                  id={partner.id}
-                  field="next_step"
-                  value={partner.next_step}
-                  label="Next step"
-                  placeholder="What happens next"
-                  readOnly={readOnly}
-                />
-                <LiveTextarea
-                  table="partners"
-                  id={partner.id}
-                  field="notes"
-                  value={partner.notes}
-                  label="Notes"
-                  rows={2}
-                  placeholder="Anything worth remembering"
-                  readOnly={readOnly}
-                />
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {confirmElement}
-    </div>
+          <LiveText
+            table="partners"
+            id={partner.id}
+            field="next_step"
+            value={partner.next_step}
+            label="Next step"
+            placeholder="What happens next"
+            readOnly={readOnly}
+          />
+          <LiveTextarea
+            table="partners"
+            id={partner.id}
+            field="notes"
+            value={partner.notes}
+            label="Notes"
+            rows={3}
+            placeholder="Anything worth remembering"
+            readOnly={readOnly}
+          />
+        </div>
+        <CommentThread entity="partner" id={partner.id} />
+        <History entityId={partner.id} />
+      </Modal>
+      {element}
+    </>
   );
 }
 
-/** The inline form for a new partner. Editors and managers only. */
+/* -------------------------------------------------------- add a partner --- */
+
 function AddPartner({
   partners,
   counties,
@@ -344,7 +447,7 @@ function AddPartner({
   partners: Partner[];
   counties: string[];
   kinds: string[];
-  onClose: () => void;
+  onClose: (id?: string) => void;
 }) {
   const [name, setName] = useState('');
   const [county, setCounty] = useState('');
@@ -375,72 +478,46 @@ function AddPartner({
     setSaving(false);
     if (result.ok) {
       toast.good('Partner added.');
-      onClose();
+      onClose(result.row?.id);
     } else if (result.error) {
       setError(result.error.message);
     }
   };
 
+  const picker = (value: string, set: (next: string) => void, list: string[]) =>
+    (props: { id: string }) =>
+      list.length ? (
+        <Select
+          {...props}
+          value={value}
+          placeholder="Not set"
+          options={list.map((entry) => ({ value: entry, label: entry }))}
+          onValue={set}
+        />
+      ) : (
+        <Input {...props} value={value} onInput={(event) => set((event.currentTarget as HTMLInputElement).value)} />
+      );
+
   return (
-    <form class="wb-grant-form" onSubmit={submit}>
+    <form class="wb-form" onSubmit={submit}>
       <Field label="Name" required error={error}>
         {(props) => (
           <Input
             {...props}
             value={name}
             placeholder="The organisation"
-            autoFocus
             onInput={(event) => setName((event.currentTarget as HTMLInputElement).value)}
           />
         )}
       </Field>
-
-      <Field label="County">
-        {(props) =>
-          counties.length ? (
-            <Select
-              {...props}
-              value={county}
-              placeholder="Not set"
-              options={counties.map((entry) => ({ value: entry, label: entry }))}
-              onValue={setCounty}
-            />
-          ) : (
-            <Input
-              {...props}
-              value={county}
-              onInput={(event) => setCounty((event.currentTarget as HTMLInputElement).value)}
-            />
-          )
-        }
-      </Field>
-
-      <Field label="Kind">
-        {(props) =>
-          kinds.length ? (
-            <Select
-              {...props}
-              value={kind}
-              placeholder="Not set"
-              options={kinds.map((entry) => ({ value: entry, label: entry }))}
-              onValue={setKind}
-            />
-          ) : (
-            <Input
-              {...props}
-              value={kind}
-              onInput={(event) => setKind((event.currentTarget as HTMLInputElement).value)}
-            />
-          )
-        }
-      </Field>
-
-      <div class="wb-grant-form-actions">
-        <Button variant="quiet" onClick={onClose}>
+      <Field label="County">{picker(county, setCounty, counties)}</Field>
+      <Field label="Kind">{picker(kind, setKind, kinds)}</Field>
+      <div class="wb-form-actions">
+        <Button variant="quiet" onClick={() => onClose()}>
           Cancel
         </Button>
         <Button type="submit" variant="primary" busy={saving} disabled={!name.trim()}>
-          Add partner
+          Add the partner
         </Button>
       </div>
     </form>

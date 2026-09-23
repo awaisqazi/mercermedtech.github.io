@@ -1,0 +1,2546 @@
+/* ==========================================================================
+   MMT Workbench: the calm layout (2026-09 redesign)
+   Loaded after admin.css and admin-polish.css. Like them it only uses the
+   tokens defined on `.wb`, so light, dark and the per-track accents follow
+   along, and everything is scoped under `.wb` so nothing reaches the public
+   pages.
+
+   The rules this file keeps:
+     - an 8px rhythm (0.5rem steps);
+     - fewer boxes: sections are separated by space and one hairline, not by
+       bordered panels inside bordered panels;
+     - one accent colour (the project's track); red, amber and green only
+       where they mean late, careful and done, always with a word beside them;
+     - one style per kind of chip: status dot, priority word, workstream tag,
+       pill for a state;
+     - 44px touch targets on a phone; detail panels become full-screen sheets.
+
+   Contents
+     1  Shell: demo ribbon, rail, phone bars, More sheet
+     2  Modal (every detail panel, dialog and sheet)
+     3  Project header
+     4  Shared pieces: pills, status dots, due, priority words, new dots
+     5  Plan
+     6  Task panel and other detail panels
+     7  About and Activity
+     8  Reports
+     9  Partners
+    10  Numbers
+    11  Today
+    12  Projects list
+    13  Phone
+   ========================================================================== */
+
+/* ------------------------------------------------------------- 1  Shell -- */
+
+.wb.is-demo .wb-demo-ribbon {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 70;
+  margin: 0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: var(--warn-soft);
+  color: var(--warn);
+  border: 1px solid var(--warn);
+  box-shadow: var(--shadow-pop);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.wb .wb-rail {
+  /* Above the page, so a menu opening out of the rail is not under the rows. */
+  z-index: 20;
+  gap: 0.5rem;
+  padding: 1.25rem 0.625rem 0.75rem;
+  border-right-color: var(--line-soft);
+}
+
+.wb .wb-rail-brand {
+  padding: 0.25rem 0.5rem 0.75rem;
+}
+
+.wb .wb-rail-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0 -0.25rem;
+  padding: 0 0.25rem;
+  scrollbar-width: thin;
+}
+
+.wb .wb-rail-nav {
+  flex: none;
+}
+
+.wb .wb-rail-link {
+  min-height: 2.25rem;
+  padding: 0.4rem 0.5rem;
+}
+
+.wb .wb-rail-swatch {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+/* The home project: its name, then its own sections. */
+.wb .wb-rail-home {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.wb .wb-rail-home-name {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.375rem 0.5rem 0.5rem;
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.wb .wb-rail-home-name:hover {
+  text-decoration: none;
+  color: var(--accent-strong);
+}
+
+.wb .wb-rail-home-name .wb-rail-swatch {
+  width: 12px;
+  height: 12px;
+}
+
+.wb .wb-rail-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.wb .wb-rail-sub .wb-rail-link {
+  font-size: 0.88rem;
+}
+
+.wb .wb-rail-projects .wb-rail-sub {
+  margin: 0.125rem 0 0.25rem 0.75rem;
+  padding-left: 0.375rem;
+  border-left: 1px solid var(--line-soft);
+}
+
+.wb .wb-rail-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.wb .wb-rail-group-head {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0.4rem 0.5rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+}
+
+.wb .wb-rail-group-head:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.wb .wb-rail-group-head .wb-rail-label {
+  flex: 1;
+}
+
+.wb .wb-rail-count {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.wb .wb-rail-caret {
+  color: var(--ink-3);
+}
+
+.wb .wb-rail-projects {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding-left: 0.5rem;
+}
+
+.wb .wb-rail-project-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--radius);
+  color: var(--ink-2);
+  font-size: 0.86rem;
+}
+
+.wb .wb-rail-project-link:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.wb .wb-rail-project-link.is-current {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.wb .wb-rail-archived,
+.wb .wb-rail-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.5rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+
+.wb .wb-rail-archived:hover,
+.wb .wb-rail-all:hover {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.wb .wb-rail-foot {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.25rem;
+  padding-top: 0.5rem;
+  border-top-color: var(--line-soft);
+}
+
+.wb .wb-rail-foot > .wb-menu-wrap:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.wb .wb-rail-tools {
+  display: flex;
+  gap: 0.125rem;
+}
+
+.wb .wb-rail-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+
+.wb .wb-rail-tool:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.wb .is-collapsed .wb-rail-foot {
+  flex-direction: column;
+}
+
+.wb .is-collapsed .wb-rail-tools {
+  flex-direction: column;
+}
+
+.wb .is-collapsed .wb-rail-home-name,
+.wb .is-collapsed .wb-rail-group-head {
+  justify-content: center;
+}
+
+.wb .is-collapsed .wb-rail-count,
+.wb .is-collapsed .wb-rail-caret {
+  display: none;
+}
+
+/* Menus: groups, notes, and opening upwards from the foot of the rail. */
+.wb .wb-menu-up {
+  top: auto;
+  bottom: calc(100% + 0.375rem);
+}
+
+.wb .wb-menu {
+  min-width: 220px;
+}
+
+.wb .wb-menu-divider {
+  border: 0;
+  border-top: 1px solid var(--line-soft);
+  margin: 0.25rem 0.25rem;
+}
+
+.wb .wb-menu-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.wb .wb-menu-hint {
+  font-size: 0.74rem;
+  color: var(--ink-3);
+}
+
+.wb .wb-menu-item {
+  min-height: 2.25rem;
+}
+
+.wb .wb-topbar-project {
+  flex: 1;
+  min-width: 0;
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.wb .wb-more-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.wb .wb-more-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.25rem;
+  color: var(--ink);
+  border-bottom: 1px solid var(--line-soft);
+  font-weight: 500;
+}
+
+.wb .wb-more-link:hover {
+  text-decoration: none;
+  color: var(--accent-strong);
+}
+
+.wb .wb-more-link .wb-icon {
+  color: var(--ink-3);
+}
+
+.wb .wb-more-tools {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.wb .wb-more-tools .wb-btn {
+  min-height: 2.75rem;
+  justify-content: flex-start;
+}
+
+/* ------------------------------------------------------------- 2  Modal -- */
+
+.wb .wb-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 3rem 1rem;
+  overflow-y: auto;
+  background: rgba(12, 18, 28, 0.42);
+  animation: wb-fade 0.14s ease-out;
+}
+
+.wb .wb-modal {
+  position: relative;
+  width: 100%;
+  max-height: calc(100vh - 6rem);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-pop);
+  outline: none;
+}
+
+.wb .wb-modal-sm {
+  max-width: 420px;
+}
+.wb .wb-modal-md {
+  max-width: 560px;
+}
+.wb .wb-modal-lg {
+  max-width: 760px;
+}
+.wb .wb-modal-xl {
+  max-width: 1040px;
+}
+
+.wb .wb-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.wb .wb-modal-heading {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.25rem;
+}
+
+.wb .wb-modal-title {
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+}
+
+.wb .wb-modal-description {
+  font-size: 0.85rem;
+  color: var(--ink-3);
+}
+
+.wb .wb-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: none;
+}
+
+.wb .wb-modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.wb .wb-modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+/* Forms are smaller and tighter than reading panels. */
+.wb .wb-modal.wb-dialog .wb-modal-body {
+  gap: 1rem;
+}
+
+/* On a wide screen a detail panel is a drawer on the right, and the list
+   stays readable beside it. */
+@media (min-width: 1100px) {
+  .wb .wb-modal-overlay.is-side {
+    justify-content: flex-end;
+    padding: 0;
+    background: rgba(12, 18, 28, 0.18);
+  }
+
+  .wb .wb-modal.is-side {
+    height: 100vh;
+    max-height: none;
+    border-radius: 0;
+    border-width: 0 0 0 1px;
+    animation: wb-slide-in 0.18s ease-out;
+  }
+
+  .wb .wb-modal.is-side.wb-modal-lg {
+    max-width: 640px;
+  }
+
+  .wb .wb-modal.is-side.wb-modal-md {
+    max-width: 520px;
+  }
+}
+
+@keyframes wb-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes wb-slide-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0.6;
+  }
+}
+
+/* --------------------------------------------------- 3  Project header -- */
+
+.wb .wb-project {
+  gap: 0;
+}
+
+.wb .wb-project-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  min-height: 2.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.wb .wb-project-name {
+  font-size: 1.5rem;
+  letter-spacing: -0.015em;
+  min-width: 0;
+}
+
+.wb .wb-presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wb .wb-presence .wb-live-dot {
+  padding: 0.25rem;
+}
+
+.wb .wb-presence .wb-avatar {
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+.wb .wb-presence .wb-avatar.is-away {
+  opacity: 0.55;
+  filter: grayscale(0.6);
+}
+
+.wb .wb-bell {
+  position: relative;
+  border-color: transparent;
+  background: none;
+}
+
+.wb .wb-bell-count {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
+.wb .wb-project-bar .wb-icon-button {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-color: transparent;
+  background: none;
+}
+
+.wb .wb-project-bar .wb-icon-button:hover {
+  background: var(--surface-2);
+}
+
+.wb .wb-project-tabs {
+  margin-bottom: 1.5rem;
+  border-bottom-color: var(--line-soft);
+}
+
+.wb .wb-project-tabs .wb-tab {
+  padding: 0.625rem 0.75rem;
+  font-size: 0.92rem;
+}
+
+/* ---------------------------------------------------- 4  Shared pieces -- */
+
+.wb .wb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+  background: var(--surface-2);
+  color: var(--ink-2);
+}
+
+.wb .wb-pill-accent {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.wb .wb-pill-good {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.wb .wb-pill-warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.wb .wb-pill-crit {
+  background: var(--crit-soft);
+  color: var(--crit);
+}
+
+.wb .wb-pill-quiet {
+  background: transparent;
+  color: var(--ink-3);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.wb .wb-status-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--ink-3);
+  background: transparent;
+  color: var(--surface);
+}
+
+.wb .wb-status-dot.is-doing {
+  border-color: var(--accent);
+  background: conic-gradient(var(--accent) 0 50%, transparent 50% 100%);
+}
+
+.wb .wb-status-dot.is-blocked {
+  border-color: var(--warn);
+  background: var(--warn-soft);
+  box-shadow: inset 0 0 0 3px var(--warn-soft), inset 0 0 0 8px var(--warn);
+}
+
+.wb .wb-status-dot.is-done {
+  border-color: var(--good);
+  background: var(--good);
+}
+
+.wb .wb-status-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  flex: none;
+}
+
+.wb .wb-status-button:hover {
+  background: var(--surface-2);
+}
+
+.wb .wb-status-button.is-static {
+  cursor: default;
+}
+
+.wb .wb-due {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.wb .wb-due.is-soon {
+  color: var(--warn);
+}
+
+.wb .wb-due.is-late {
+  color: var(--crit);
+  font-weight: 700;
+}
+
+.wb .wb-pri-word {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.wb .wb-pri-word.is-critical {
+  color: var(--crit);
+}
+
+.wb .wb-pri-word.is-high {
+  color: var(--warn);
+}
+
+.wb .wb-pri-word.is-blocked {
+  color: var(--warn);
+}
+
+.wb .wb-ws {
+  font-size: 0.76rem;
+  color: var(--ink-3);
+}
+
+.wb .wb-new-dot {
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  margin-right: 0.375rem;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
+.wb .wb-kbd {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  padding: 0 0.3rem;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  color: var(--ink-3);
+  line-height: 1.4;
+}
+
+.wb .wb-callout {
+  margin: 0;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  background: var(--surface-2);
+}
+
+.wb .wb-callout.is-crit {
+  background: var(--crit-soft);
+  color: var(--crit);
+}
+
+.wb .wb-callout.is-warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.wb .wb-callout.is-good {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.wb .wb-warn-text {
+  color: var(--warn);
+}
+
+.wb .wb-section-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.wb .wb-section-summary {
+  font-size: 0.95rem;
+  color: var(--ink-2);
+}
+
+.wb .wb-section-summary strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.wb .wb-avatar-empty {
+  border: 1.5px dashed var(--line);
+  color: var(--ink-3);
+  background: transparent;
+}
+
+/* -------------------------------------------------------------- 5  Plan -- */
+
+.wb .wb-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wb .wb-plan-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.wb .wb-plan-chips {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.wb .wb-plan-chips .wb-chip-toggle,
+.wb .wb-popover-trigger {
+  min-height: 2rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.82rem;
+  background: var(--surface);
+  border-color: var(--line);
+  color: var(--ink-2);
+}
+
+.wb .wb-plan-chips .wb-chip-toggle.is-active,
+.wb .wb-popover-wrap.is-active .wb-popover-trigger {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.wb .wb-plan-clear {
+  font-size: 0.82rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.wb .wb-plan-search .wb-input {
+  width: 200px;
+}
+
+.wb .wb-popover-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.wb .wb-popover {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  z-index: 50;
+  min-width: 220px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-pop);
+}
+
+.wb .wb-popover-left {
+  left: 0;
+}
+.wb .wb-popover-right {
+  right: 0;
+}
+
+.wb .wb-check-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.wb .wb-check-list .wb-check {
+  display: flex;
+  min-height: 2.25rem;
+  padding: 0 0.375rem;
+  border-radius: 6px;
+}
+
+.wb .wb-check-list .wb-check:hover {
+  background: var(--surface-2);
+}
+
+.wb .wb-plan-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.wb .wb-plan-group-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.25rem;
+  padding: 0 0.25rem;
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.wb .wb-plan-group-head.is-toggle {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  min-height: 2.25rem;
+  color: var(--ink-2);
+}
+
+.wb .wb-plan-group-head.is-toggle:hover {
+  color: var(--ink);
+}
+
+.wb .wb-plan-group.is-attention .wb-plan-group-head {
+  color: var(--crit);
+}
+
+.wb .wb-plan-count {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ink-3);
+  padding: 0 0.375rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.wb .wb-rows {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.wb .wb-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.25rem 0.75rem 0.25rem 0.625rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.wb .wb-rows > .wb-row:first-child {
+  border-top: 0;
+}
+
+.wb .wb-row:hover {
+  background: var(--surface-2);
+}
+
+.wb .wb-row.is-open {
+  background: var(--accent-soft);
+}
+
+.wb .wb-row.is-pending {
+  opacity: 0.6;
+}
+
+.wb .wb-row-stripe {
+  position: absolute;
+  left: 0;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: transparent;
+}
+
+.wb .wb-row.wb-pri-critical .wb-row-stripe {
+  background: var(--crit);
+}
+
+.wb .wb-row.wb-pri-high .wb-row-stripe {
+  background: var(--warn);
+}
+
+.wb .wb-row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  padding: 0.5rem 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* The whole row opens the task, but the controls on it stay clickable. */
+.wb .wb-row-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.wb .wb-row .wb-status-button,
+.wb .wb-row .wb-row-side {
+  position: relative;
+  z-index: 1;
+}
+
+.wb .wb-row-title {
+  min-width: 0;
+  font-size: 0.94rem;
+  font-weight: 500;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wb .wb-row.is-done .wb-row-title {
+  color: var(--ink-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--line);
+}
+
+.wb .wb-row-meta {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex: none;
+}
+
+.wb .wb-row-side {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: none;
+}
+
+.wb .wb-row-viewers {
+  display: inline-flex;
+  gap: 0.125rem;
+}
+
+.wb .wb-assignee {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.wb .wb-assignee:hover .wb-avatar {
+  box-shadow: 0 0 0 2px var(--line);
+}
+
+.wb .wb-quick-add {
+  gap: 0.625rem;
+  padding-left: 1.125rem;
+  color: var(--ink-3);
+  min-height: 2.75rem;
+}
+
+.wb .wb-quick-add:hover {
+  background: transparent;
+}
+
+.wb .wb-quick-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.92rem;
+  color: var(--ink);
+  padding: 0.5rem 0;
+}
+
+.wb .wb-quick-input::placeholder {
+  color: var(--ink-3);
+}
+
+.wb .wb-quick-input:focus {
+  outline: none;
+}
+
+.wb .wb-quick-add:focus-within {
+  background: var(--surface-2);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.wb .wb-rows-empty {
+  padding: 0.75rem 1.125rem;
+  font-size: 0.86rem;
+  color: var(--ink-3);
+  border-top: 1px solid var(--line-soft);
+}
+
+.wb .wb-rows > .wb-rows-empty:first-child {
+  border-top: 0;
+}
+
+.wb .wb-plan-foot {
+  font-size: 0.8rem;
+  padding: 0 0.25rem;
+}
+
+/* The board keeps its columns but loses its borders. */
+.wb .wb-board-column {
+  background: var(--surface-2);
+  border-color: transparent;
+}
+
+/* ------------------------------------------------ 6  Detail panels -- */
+
+.wb .wb-title-field {
+  margin: 0;
+}
+
+.wb .wb-title-field .wb-input {
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border-color: transparent;
+  background: transparent;
+  padding: 0.25rem 0.5rem;
+  margin-left: -0.5rem;
+  min-height: 2.5rem;
+}
+
+.wb .wb-title-field .wb-input:hover:not(:disabled) {
+  border-color: var(--line);
+}
+
+.wb .wb-title-field .wb-input:disabled {
+  color: var(--ink);
+  background: transparent;
+}
+
+.wb .wb-props {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+}
+
+.wb .wb-props .wb-select-wrap,
+.wb .wb-props .wb-select {
+  width: 100%;
+}
+
+.wb .wb-assign-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wb .wb-assign-row .wb-select-wrap {
+  flex: 1;
+}
+
+.wb .wb-longform {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wb .wb-modal .wb-label {
+  font-size: 0.72rem;
+}
+
+.wb .wb-modal .wb-sources,
+.wb .wb-modal .wb-comments,
+.wb .wb-history {
+  border-top: 1px solid var(--line-soft);
+  padding-top: 1.25rem;
+}
+
+.wb .wb-history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wb .wb-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wb .wb-history-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: start;
+  font-size: 0.86rem;
+  color: var(--ink-2);
+}
+
+.wb .wb-history-who {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.wb .wb-history-when {
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+.wb .wb-checklist ul {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+}
+
+.wb .wb-check-row {
+  display: flex;
+  min-height: 2.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius);
+  font-size: 0.92rem;
+  color: var(--ink);
+}
+
+.wb .wb-check-row:hover {
+  background: var(--surface-2);
+}
+
+.wb .wb-check-row.is-on span {
+  color: var(--ink-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--line);
+}
+
+.wb .wb-check-row input {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.wb .wb-precheck {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wb .wb-precheck-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wb .wb-precheck-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.94rem;
+}
+
+.wb .wb-precheck-list li.is-done {
+  color: var(--good);
+}
+
+.wb .wb-precheck-list li.is-done span {
+  color: var(--ink-2);
+}
+
+.wb .wb-precheck-list li.is-missing {
+  color: var(--crit);
+}
+
+.wb .wb-precheck-list li.is-missing span {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------- 7  About, Activity -- */
+
+.wb .wb-about .wb-modal-body {
+  padding: 0;
+}
+
+.wb .wb-about-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  min-height: 60vh;
+}
+
+.wb .wb-about-nav {
+  padding: 1rem 0.75rem;
+  border-right: 1px solid var(--line-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wb .wb-about-search .wb-input {
+  width: 100%;
+}
+
+.wb .wb-about-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.wb .wb-about-nav-item {
+  display: block;
+  width: 100%;
+  min-height: 2.25rem;
+  padding: 0.4rem 0.625rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--ink-2);
+  text-align: left;
+  cursor: pointer;
+}
+
+.wb .wb-about-nav-item:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.wb .wb-about-nav-item.is-active {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
+.wb .wb-about-nav-item.is-dim {
+  opacity: 0.45;
+}
+
+.wb .wb-about-body {
+  padding: 1.5rem 2rem 2rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 11rem);
+}
+
+.wb .wb-about-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 68ch;
+}
+
+.wb .wb-about-section + .wb-about-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.wb .wb-about-heading {
+  font-size: 1.35rem;
+  letter-spacing: -0.015em;
+}
+
+.wb .wb-about-doc-title {
+  font-size: 1.02rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.wb .wb-about-docs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.wb .wb-about .wb-doc {
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.wb .wb-about-lead {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.wb .wb-about-kv > div {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.wb .wb-about-funding {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  font-size: 0.95rem;
+}
+
+.wb .wb-about-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.wb .wb-about-foot {
+  margin-top: 0.5rem;
+  font-size: 0.88rem;
+}
+
+.wb .wb-about-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.wb .wb-about-edit > .wb-docs {
+  width: 100%;
+}
+
+.wb .wb-activity {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.wb .wb-activity-day {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wb .wb-activity-day-head {
+  position: sticky;
+  top: -1.25rem;
+  padding: 0.25rem 0;
+  background: var(--surface);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  z-index: 1;
+}
+
+.wb .wb-activity-person {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.wb .wb-activity-who {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.wb .wb-activity-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
+}
+
+.wb .wb-activity-rows li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.5rem;
+  font-size: 0.88rem;
+  color: var(--ink-2);
+}
+
+.wb .wb-activity-rows li.is-new .wb-activity-what {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.wb .wb-activity-meta {
+  font-size: 0.74rem;
+}
+
+/* ----------------------------------------------------------- 8  Reports -- */
+
+.wb .wb-timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-left: 1.5rem;
+}
+
+.wb .wb-timeline::before {
+  content: '';
+  position: absolute;
+  left: 0.5rem;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  width: 2px;
+  background: var(--line-soft);
+}
+
+.wb .wb-tl-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 2.5rem 6.5rem;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 10px;
+}
+
+.wb .wb-tl-row:hover {
+  background: var(--surface-2);
+}
+
+.wb .wb-tl-row.is-open {
+  background: var(--accent-soft);
+}
+
+.wb .wb-tl-marker {
+  position: absolute;
+  left: -1.375rem;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--surface);
+}
+
+.wb .wb-tl-main {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  min-width: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  padding: 0.25rem 0;
+}
+
+.wb .wb-tl-main::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.wb .wb-tl-month {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.wb .wb-tl-kind,
+.wb .wb-tl-flag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.wb .wb-tl-flag {
+  color: var(--accent-strong);
+}
+
+.wb .wb-tl-flag.is-crit {
+  color: var(--crit);
+}
+
+.wb .wb-tl-due {
+  font-size: 0.8rem;
+}
+
+.wb .wb-tl-amount {
+  text-align: right;
+  font-size: 0.86rem;
+  color: var(--ink-2);
+}
+
+.wb .wb-tl-ring-space {
+  width: 34px;
+}
+
+/* Sent: one quiet line with a tick. */
+.wb .wb-tl-row.is-past {
+  min-height: 2.5rem;
+}
+
+.wb .wb-tl-row.is-past .wb-tl-month {
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.wb .wb-tl-row.is-past .wb-tl-marker {
+  border-color: var(--good);
+  background: var(--good);
+}
+
+/* The next one due is the one thing to look at. */
+.wb .wb-tl-row.is-next {
+  min-height: 4rem;
+  margin: 0.5rem 0;
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--accent), 0 4px 14px rgba(15, 23, 42, 0.06);
+}
+
+.wb .wb-tl-row.is-next .wb-tl-month {
+  font-size: 1.05rem;
+}
+
+.wb .wb-tl-row.is-next .wb-tl-marker {
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  left: -1.5rem;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.wb .wb-tl-row.is-late .wb-tl-marker {
+  border-color: var(--crit);
+  background: var(--crit-soft);
+}
+
+/* Still to come: quiet until it is its turn. */
+.wb .wb-tl-row.is-future .wb-tl-month {
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.wb .wb-tl-row.is-future .wb-pill,
+.wb .wb-tl-row.is-future .wb-ring {
+  opacity: 0.6;
+}
+
+.wb .wb-reports .wb-callout {
+  margin-bottom: 1rem;
+}
+
+/* ---------------------------------------------------------- 9  Partners -- */
+
+.wb .wb-coverage-strip {
+  display: flex;
+  gap: 0.375rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  margin-bottom: 1rem;
+  scrollbar-width: thin;
+}
+
+.wb .wb-county {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--line-soft);
+  border-radius: 999px;
+  background: var(--surface);
+  font: inherit;
+  font-size: 0.84rem;
+  color: var(--ink-2);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.wb .wb-county:hover {
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.wb .wb-county-count {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.wb .wb-county.is-gap {
+  background: var(--warn-soft);
+  border-color: transparent;
+  color: var(--warn);
+}
+
+.wb .wb-county.is-gap .wb-county-count {
+  color: var(--warn);
+}
+
+.wb .wb-county.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.wb .wb-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.wb .wb-list-head,
+.wb .wb-list-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 2.4fr) minmax(0, 1.1fr) minmax(0, 1fr) 5.5rem 6.5rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+}
+
+.wb .wb-list-head {
+  min-height: 2.25rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  background: var(--surface-2);
+}
+
+.wb .wb-list-row {
+  min-height: 3rem;
+  border-top: 1px solid var(--line-soft);
+}
+
+.wb .wb-list-row:hover {
+  background: var(--surface-2);
+}
+
+.wb .wb-list-row.is-open {
+  background: var(--accent-soft);
+}
+
+.wb .wb-list-name .wb-row-main {
+  padding: 0.625rem 0;
+  flex-wrap: wrap;
+  row-gap: 0;
+}
+
+.wb .wb-list-county {
+  font-size: 0.88rem;
+  color: var(--ink-2);
+}
+
+.wb .wb-num {
+  text-align: right;
+}
+
+.wb .wb-list-when {
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+/* ----------------------------------------------------------- 10 Numbers -- */
+
+.wb .wb-numbers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.wb .wb-card-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  scroll-margin-top: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.wb .wb-card-panel.is-focused {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.wb .wb-card-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.wb .wb-card-panel-title {
+  font-size: 1.15rem;
+}
+
+.wb .wb-measures {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.wb .wb-measure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.wb .wb-measure-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.wb .wb-measure-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.wb .wb-measure-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.wb .wb-measure-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.8rem;
+}
+
+.wb .wb-standing {
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.wb .wb-standing.is-good {
+  color: var(--good);
+}
+.wb .wb-standing.is-warn {
+  color: var(--warn);
+}
+.wb .wb-standing.is-crit {
+  color: var(--crit);
+}
+
+.wb .wb-pace {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--ink);
+  font-size: 0.92rem;
+}
+
+.wb .wb-asof-line {
+  font-size: 0.78rem;
+}
+
+.wb .wb-budget-top {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.wb .wb-budget-big {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.wb .wb-budget-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.wb .wb-budget-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wb .wb-budget-group-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.wb .wb-budget-group-head .wb-mono-soft {
+  font-size: 0.78rem;
+}
+
+.wb .wb-budget-group-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.wb .wb-budget-group ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wb .wb-budget-line {
+  display: grid;
+  grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) 3rem;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.86rem;
+}
+
+.wb .wb-budget-line-label {
+  color: var(--ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wb .wb-budget-line-amount {
+  text-align: right;
+  font-size: 0.78rem;
+  color: var(--ink-3);
+}
+
+/* ------------------------------------------------------------- 11 Today -- */
+
+.wb .wb-today {
+  gap: 1.5rem;
+}
+
+.wb .wb-today-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.wb .wb-today-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 2.5rem;
+}
+
+.wb .wb-today-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.wb .wb-today-section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.wb .wb-today-section-head .wb-mono-soft {
+  margin-left: auto;
+  font-size: 0.78rem;
+}
+
+.wb .wb-today-title {
+  font-size: 1.02rem;
+}
+
+.wb .wb-today-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.wb .wb-today-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  padding: 0.375rem 0.5rem;
+  margin: 0 -0.5rem;
+  border-radius: var(--radius);
+  color: var(--ink);
+}
+
+.wb .wb-today-row:hover {
+  background: var(--surface-2);
+  text-decoration: none;
+}
+
+.wb .wb-today-row-title {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+  font-size: 0.92rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wb .wb-today-row-meta {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.625rem;
+  flex: none;
+  font-size: 0.78rem;
+}
+
+.wb .wb-today-more {
+  font-size: 0.84rem;
+}
+
+.wb .wb-today-empty {
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--ink-3);
+}
+
+.wb .wb-team {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.wb .wb-team-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.wb .wb-team-name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.wb .wb-team-presence {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+.wb .wb-team-presence.is-here {
+  color: var(--good);
+}
+
+.wb .wb-team-meta {
+  font-size: 0.78rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wb .wb-today-changes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.wb .wb-change {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.625rem;
+  align-items: start;
+  font-size: 0.88rem;
+  color: var(--ink-2);
+}
+
+.wb .wb-change-who {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.wb .wb-change-when {
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+/* ----------------------------------------------------- 12 Projects list -- */
+
+.wb .wb-project-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.wb .wb-project-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.875rem;
+  min-height: 3.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--line-soft);
+  color: var(--ink);
+}
+
+.wb .wb-project-list > li:first-child .wb-project-row {
+  border-top: 0;
+}
+
+.wb .wb-project-row:hover {
+  background: var(--surface-2);
+  text-decoration: none;
+}
+
+.wb .wb-project-row-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.wb .wb-project-row-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.wb .wb-project-row-summary {
+  font-size: 0.84rem;
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wb .wb-project-row-meta {
+  font-size: 0.76rem;
+  text-align: right;
+}
+
+.wb .wb-project-list.is-archived {
+  opacity: 0.8;
+}
+
+.wb .wb-archived {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ------------------------------------------------------------- 13 Phone -- */
+
+@media (max-width: 1100px) {
+  .wb .wb-numbers {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .wb .wb-project-tabs {
+    display: none;
+  }
+
+  .wb .wb-project-bar {
+    gap: 0.5rem;
+  }
+
+  .wb .wb-about-button .wb-btn-label {
+    display: none;
+  }
+
+  .wb .wb-today-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wb .wb-bottom-link {
+    min-height: 3rem;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 720px) {
+  /* Every panel is a full-screen sheet on a phone. */
+  .wb .wb-modal-overlay,
+  .wb .wb-modal-overlay.is-side {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .wb .wb-modal,
+  .wb .wb-modal.is-side {
+    max-width: none;
+    max-height: none;
+    min-height: 100%;
+    height: 100%;
+    border-radius: 0;
+    border: 0;
+    animation: wb-sheet-up 0.2s ease-out;
+  }
+
+  .wb .wb-modal-sm.wb-dialog {
+    min-height: 0;
+    height: auto;
+    margin-top: auto;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .wb .wb-modal-head {
+    padding: calc(0.75rem + env(safe-area-inset-top, 0px)) 0.75rem 0.625rem 1rem;
+  }
+
+  .wb .wb-modal-body {
+    padding: 1rem 1rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .wb .wb-modal-actions .wb-btn-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .wb .wb-props {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wb .wb-project-name {
+    font-size: 1.25rem;
+    flex: 1 1 100%;
+    order: -1;
+  }
+
+  .wb .wb-project-bar .wb-pill {
+    order: -1;
+  }
+
+  .wb .wb-project-bar .wb-spacer {
+    display: none;
+  }
+
+  .wb .wb-presence {
+    margin-right: auto;
+  }
+
+  .wb .wb-project-bar .wb-icon-button,
+  .wb .wb-about-button {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+
+  .wb .wb-plan-bar {
+    gap: 0.5rem;
+  }
+
+  .wb .wb-plan-chips {
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+  }
+
+  .wb .wb-plan-chips .wb-chip-toggle,
+  .wb .wb-popover-trigger {
+    min-height: 2.5rem;
+    flex: none;
+  }
+
+  .wb .wb-plan-search {
+    flex: 1;
+  }
+
+  .wb .wb-plan-search .wb-input {
+    width: 100%;
+    min-height: 2.5rem;
+  }
+
+  .wb .wb-kbd {
+    display: none;
+  }
+
+  .wb .wb-row {
+    min-height: 3.5rem;
+    align-items: center;
+    padding-right: 0.5rem;
+  }
+
+  .wb .wb-status-button {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .wb .wb-row-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.125rem;
+  }
+
+  .wb .wb-row-title {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .wb .wb-row-side {
+    gap: 0.5rem;
+  }
+
+  .wb .wb-row-side .wb-due {
+    font-size: 0.72rem;
+  }
+
+  .wb .wb-row-viewers {
+    display: none;
+  }
+
+  .wb .wb-tl-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem 0.75rem;
+    padding: 0.5rem 0.5rem;
+  }
+
+  .wb .wb-tl-row .wb-ring,
+  .wb .wb-tl-ring-space {
+    display: none;
+  }
+
+  .wb .wb-tl-amount {
+    grid-column: 2;
+    font-size: 0.78rem;
+  }
+
+  .wb .wb-tl-main {
+    grid-row: span 2;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .wb .wb-list-head {
+    display: none;
+  }
+
+  .wb .wb-list-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.125rem 0.75rem;
+    padding: 0.5rem 0.875rem;
+  }
+
+  .wb .wb-list-row > [role='cell']:nth-child(2),
+  .wb .wb-list-row > [role='cell']:nth-child(5) {
+    display: none;
+  }
+
+  .wb .wb-list-row > [role='cell']:nth-child(4) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .wb .wb-list-row > [role='cell']:nth-child(3) {
+    grid-column: 1;
+  }
+
+  .wb .wb-budget-top {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  .wb .wb-budget-big {
+    font-size: 1.05rem;
+  }
+
+  .wb .wb-budget-line {
+    grid-template-columns: minmax(0, 1fr) 3rem;
+  }
+
+  .wb .wb-budget-line .wb-bar {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .wb .wb-card-panel {
+    padding: 1rem;
+  }
+
+  .wb .wb-about-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .wb .wb-about-nav {
+    border-right: 0;
+    border-bottom: 1px solid var(--line-soft);
+    padding: 0.75rem 1rem;
+  }
+
+  .wb .wb-about-nav-list {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 0.25rem;
+    scrollbar-width: none;
+  }
+
+  .wb .wb-about-nav-item {
+    white-space: nowrap;
+    min-height: 2.5rem;
+  }
+
+  .wb .wb-about-body {
+    padding: 1.25rem 1rem 2rem;
+    max-height: none;
+  }
+
+  .wb .wb-project-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .wb .wb-project-row-meta {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .wb .wb-section-bar .wb-toolbar {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .wb .wb-change {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .wb .wb-change-when {
+    grid-column: 2;
+  }
+}
+
+@keyframes wb-sheet-up {
+  from {
+    transform: translateY(16px);
+    opacity: 0.6;
+  }
+}
+
+/* The rail's links are navigation, not prose links: ink, not accent. */
+.wb .wb-rail-link,
+.wb .wb-rail-link:visited {
+  color: var(--ink-2);
+}
+
+.wb .wb-rail-link:hover {
+  color: var(--ink);
+}
+
+.wb .wb-rail-link.is-active {
+  color: var(--accent-strong);
+}
+
+.wb .wb-tab,
+.wb .wb-tab:visited {
+  color: var(--ink-2);
+}
+
+.wb .wb-tab.is-active {
+  color: var(--accent-strong);
+}
+
+.wb .wb-menu {
+  min-width: 250px;
+}
+
+.wb .wb-menu-text > span:first-child {
+  white-space: nowrap;
+}
+
+/* The full editors inside Numbers: the modal is the frame, so the panel
+   inside it loses its own border. */
+.wb .wb-modal-body > .wb-stack > .wb-panel {
+  border: 0;
+  padding: 0;
+  background: none;
+}
+
+.wb .wb-modal-body > .wb-stack {
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .wb.is-demo .wb-demo-more {
+    display: none;
+  }
+
+  .wb.is-demo .wb-demo-ribbon {
+    right: 0.5rem;
+    bottom: calc(4.25rem + env(safe-area-inset-bottom, 0px));
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 720px) {
+  .wb .wb-today-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.125rem;
+    padding-block: 0.5rem;
+  }
+
+  .wb .wb-today-row-title {
+    white-space: normal;
+  }
+
+  .wb .wb-today-row-meta {
+    padding-left: 1.625rem;
+  }
+
+  .wb .wb-today-row.is-report .wb-today-row-title {
+    padding-left: 0;
+  }
+}
+
+.wb .wb-home-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}

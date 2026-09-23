@@ -1,14 +1,15 @@
 /**
- * Plain queries for the screens outside a project: Home, Projects and People.
+ * Plain queries for the screens outside a project: Today and People.
  *
  * None of these open a realtime channel. Home is the screen people leave open
  * all day, and a socket per open tab is the one thing that would push this
- * past the free tier, so it reads once and refreshes when the tab comes back.
+ * past the free tier, so it reads once and refreshes quietly when the tab
+ * comes back.
  * Row level security does the filtering: a member only ever sees the projects
  * they belong to, so there is no "where am I a member" clause here.
  */
 import { supabase } from './supabase';
-import { toDateInput } from './format';
+import { timed } from './timing';
 import { toAppError, logError, type AppError } from './errors';
 import type {
   ActivityRow,
@@ -19,155 +20,72 @@ import type {
   ProjectGrant,
   ProjectMember,
   ProjectRole,
+  Report,
   Task,
 } from './types';
 
-export interface ProjectSummary {
-  project: Project;
-  total: number;
-  open: number;
-  done: number;
-  overdue: number;
-  critical: number;
-  /** The soonest due date among the open tasks. */
-  nextDue: string | null;
-  members: ProjectMember[];
-}
+/* ---------------------------------------------------------------- today --- */
 
-export interface HomeData {
-  projects: ProjectSummary[];
-  profiles: Record<string, Profile>;
-  /** Not-done tasks assigned to me, or whose owner label carries my first name. */
-  mine: Task[];
-  /** Every task that is overdue, blocked or critical. Home shows the first few. */
-  attention: Task[];
-  activity: ActivityRow[];
-  /** Open work across the reader's active projects, for the strip on Home. */
-  stats: HomeStats;
-  error: AppError | null;
-}
+/**
+ * Today used to be one function that asked for the project list, waited, then
+ * asked for tasks, members and activity together, waited, then asked for the
+ * profiles: three round trips in a row before anything could be drawn, and
+ * the whole thing ran twice because it depended on the profile's name. Each
+ * round trip also waits on the session check inside the SDK, so on a
+ * morning's first visit (token refresh first) the screen sat on skeletons for
+ * several seconds.
+ *
+ * Now every part is its own request, all sent at once, and each section of
+ * the screen draws as soon as its own part lands. Row level security already
+ * limits every table to the reader's projects, so no request needs the
+ * project ids from another. The project list itself comes from projects.ts,
+ * which the shell has already loaded.
+ */
 
-export interface HomeStats {
-  open: number;
-  dueWeek: number;
-  overdue: number;
-}
-
-/** Columns Home and Projects need. Never the whole task row. */
+/** Columns Today needs. Never the whole task row. */
 const TASK_COLUMNS =
-  'id,project_id,title,status,pri,horizon,due,owner,assignee,ws,sort,created_at,updated_at';
+  'id,project_id,title,status,pri,horizon,due,owner,assignee,ws,sort,created_at,updated_at,updated_by';
 
-export async function loadHome(userId: string | null, myName: string): Promise<HomeData> {
-  const empty: HomeData = {
-    projects: [],
-    profiles: {},
-    mine: [],
-    attention: [],
-    activity: [],
-    stats: { open: 0, dueWeek: 0, overdue: 0 },
-    error: null,
-  };
+const PROFILE_COLUMNS = 'id,full_name,email,title,role,last_seen_at,created_at';
 
-  try {
-    const projectResult = await supabase
-      .from('projects')
-      .select('*')
-      .order('status')
-      .order('name');
-    if (projectResult.error) throw projectResult.error;
-    const projects = (projectResult.data ?? []) as Project[];
-    if (!projects.length) return empty;
+/** Reports that still need work: not sent yet. */
+const OPEN_REPORT_STATUSES = ['not_started', 'preparing'];
 
-    const ids = projects.map((project) => project.id);
+export interface TodayRequests {
+  tasks: Promise<Task[]>;
+  members: Promise<ProjectMember[]>;
+  profiles: Promise<Profile[]>;
+  activity: Promise<ActivityRow[]>;
+  reports: Promise<Report[]>;
+}
 
-    const [taskResult, memberResult, activityResult] = await Promise.all([
-      supabase.from('tasks').select(TASK_COLUMNS).in('project_id', ids),
-      supabase.from('project_members').select('*').in('project_id', ids),
+function rows<T>(label: string, query: PromiseLike<{ data: unknown; error: unknown }>): Promise<T[]> {
+  return timed(label, query).then(({ data, error }) => {
+    if (error) throw error;
+    return (data ?? []) as T[];
+  });
+}
+
+/** Sends every request Today needs, at once. Each resolves on its own. */
+export function loadToday(): TodayRequests {
+  return {
+    tasks: rows<Task>('today.tasks', supabase.from('tasks').select(TASK_COLUMNS).neq('status', 'done')),
+    members: rows<ProjectMember>('today.members', supabase.from('project_members').select('project_id,user_id,role')),
+    profiles: rows<Profile>('today.profiles', supabase.from('profiles').select(PROFILE_COLUMNS)),
+    activity: rows<ActivityRow>(
+      'today.activity',
+      supabase.from('activity').select('*').order('id', { ascending: false }).limit(40)
+    ),
+    reports: rows<Report>(
+      'today.reports',
       supabase
-        .from('activity')
-        .select('*')
-        .in('project_id', ids)
-        .order('id', { ascending: false })
-        .limit(15),
-    ]);
-    for (const result of [taskResult, memberResult, activityResult]) {
-      if (result.error) throw result.error;
-    }
-
-    const tasks = (taskResult.data ?? []) as Task[];
-    const members = (memberResult.data ?? []) as ProjectMember[];
-    const activity = (activityResult.data ?? []) as ActivityRow[];
-
-    const profileIds = new Set<string>();
-    for (const member of members) profileIds.add(member.user_id);
-    for (const row of activity) if (row.user_id) profileIds.add(row.user_id);
-
-    const profiles: Record<string, Profile> = {};
-    if (profileIds.size) {
-      const profileResult = await supabase.from('profiles').select('*').in('id', [...profileIds]);
-      if (profileResult.error) throw profileResult.error;
-      for (const row of (profileResult.data ?? []) as Profile[]) profiles[row.id] = row;
-    }
-
-    const todayIso = new Date().toISOString().slice(0, 10);
-    const summaries: ProjectSummary[] = projects.map((project) => {
-      const own = tasks.filter((task) => task.project_id === project.id);
-      const open = own.filter((task) => task.status !== 'done');
-      const overdue = open.filter((task) => task.due && task.due < todayIso);
-      const dues = open
-        .map((task) => task.due)
-        .filter((due): due is string => Boolean(due))
-        .sort();
-      return {
-        project,
-        total: own.length,
-        open: open.length,
-        done: own.length - open.length,
-        overdue: overdue.length,
-        critical: open.filter((task) => task.pri === 'critical').length,
-        nextDue: dues[0] ?? null,
-        members: members.filter((member) => member.project_id === project.id),
-      };
-    });
-
-    const first = (myName || '').trim().split(/\s+/)[0]?.toLowerCase() ?? '';
-    const mine = tasks.filter((task) => {
-      if (task.status === 'done') return false;
-      if (userId && task.assignee === userId) return true;
-      return Boolean(first) && task.owner.toLowerCase().includes(first);
-    });
-
-    const attention = tasks
-      .filter(
-        (task) =>
-          task.status !== 'done' &&
-          (task.pri === 'critical' || task.status === 'blocked' || (task.due && task.due < todayIso))
-      )
-      .sort((a, b) => (a.due ?? '9999').localeCompare(b.due ?? '9999'));
-
-    // The strip under the greeting. Archived projects are somebody's history,
-    // not today's work, so they are left out of every count.
-    const activeIds = new Set(
-      projects.filter((project) => project.status === 'active').map((project) => project.id)
-    );
-    const weekIso = new Date();
-    weekIso.setDate(weekIso.getDate() + 7);
-    const weekEnd = toDateInput(weekIso);
-    const openTasks = tasks.filter(
-      (task) => task.status !== 'done' && activeIds.has(task.project_id)
-    );
-    const stats: HomeStats = {
-      open: openTasks.length,
-      dueWeek: openTasks.filter((task) => task.due && task.due >= todayIso && task.due <= weekEnd)
-        .length,
-      overdue: openTasks.filter((task) => task.due && task.due < todayIso).length,
-    };
-
-    return { projects: summaries, profiles, mine, attention, activity, stats, error: null };
-  } catch (error) {
-    logError('loadHome', error);
-    return { ...empty, error: toAppError(error) };
-  }
+        .from('reports')
+        .select('id,project_id,period,due,covers,kind,status,checks,amount')
+        .in('status', OPEN_REPORT_STATUSES)
+        .order('due')
+        .limit(20)
+    ),
+  };
 }
 
 /* ------------------------------------------------------------- projects --- */

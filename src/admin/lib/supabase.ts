@@ -31,6 +31,8 @@
  */
 import { createClient } from '@supabase/supabase-js';
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL, REQUEST_TIMEOUT_MS } from './config';
+import { DEMO } from '../demo/mode';
+import { createDemoClient } from '../demo/client';
 
 /**
  * `fetch` with an upper bound. An abort surfaces as a plain error, which
@@ -114,25 +116,39 @@ function safeStorage(): { getItem(key: string): string | null; setItem(key: stri
   };
 }
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    // The password-reset link arrives with the recovery token in the URL hash.
-    // The app's own routes all start with `#/`, which the SDK ignores, so hash
-    // routing and session detection do not fight over the fragment.
-    detectSessionInUrl: true,
-    storageKey: 'wb.auth',
-    flowType: 'implicit',
-    storage: typeof window === 'undefined' ? undefined : safeStorage(),
-  },
-  realtime: {
-    // One project channel at a time; a small cap keeps us well inside the
-    // free tier's message budget even with a room full of people.
-    params: { eventsPerSecond: 8 },
-  },
-  global: {
-    headers: { 'x-client-info': 'mmt-workbench' },
-    fetch: fetchWithDeadline,
-  },
-});
+function createRealClient() {
+  return createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      // The password-reset link arrives with the recovery token in the URL hash.
+      // The app's own routes all start with `#/`, which the SDK ignores, so hash
+      // routing and session detection do not fight over the fragment.
+      detectSessionInUrl: true,
+      storageKey: 'wb.auth',
+      flowType: 'implicit',
+      storage: typeof window === 'undefined' ? undefined : safeStorage(),
+    },
+    realtime: {
+      // One project channel at a time; a small cap keeps us well inside the
+      // free tier's message budget even with a room full of people.
+      params: { eventsPerSecond: 8 },
+    },
+    global: {
+      headers: { 'x-client-info': 'mmt-workbench' },
+      fetch: fetchWithDeadline,
+    },
+  });
+}
+
+type Client = ReturnType<typeof createRealClient>;
+
+/*
+ * `#/demo` swaps in an in-memory stand-in (src/admin/demo/) that answers from
+ * a fixture and never touches the network. The real client is then never
+ * created at all, so no session is read, refreshed or stored.
+ */
+export const supabase: Client = DEMO
+  ? (createDemoClient() as unknown as Client)
+  : createRealClient();
+

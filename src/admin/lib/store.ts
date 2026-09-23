@@ -34,6 +34,7 @@
  *   usePresence()                PresencePeer[]      (other people, not you)
  *   useLiveField(...)            see below
  *   useProfileOf(userId)         Profile | null      (for avatars and names)
+ *   useHistory(entityId)         { rows, loading }   (activity for one item, lazy)
  *
  * ----------------------------------------------------------------- mutations
  *   insertRow(table, values)     -> { ok, row?, error? }   optimistic, temp id
@@ -56,6 +57,9 @@
  *     cursor is in it. An incoming change to a locked field is not applied;
  *     instead the field reports a hint ("Updated by Sam") and adopts the new
  *     value on blur if the user did not type anything of their own.
+ *  4. Heads-up. When somebody else changes the task, report or partner you
+ *     have open (the one in your presence `editing`), a toast says who and
+ *     what ("Sam changed the due date"), so a change is never silent.
  *
  * ------------------------------------------------------------------- caveats
  *  - The database may not be migrated yet. Every load path reports
@@ -70,6 +74,9 @@ import { withDeadline } from './deadline';
 import { observable, useObservable } from './observable';
 import { getAuth, resumeSession } from './auth';
 import { logError, toAppError, type AppError } from './errors';
+import { getProjectList, noteProjectChanged } from './projects';
+import { timed } from './timing';
+import { toast } from './toasts';
 import type {
   ActivityRow,
   Comment,
@@ -127,6 +134,9 @@ export interface ProjectStoreState {
   /** Comment threads by `<entity>:<id>`, loaded on demand. */
   comments: Record<string, Comment[]>;
   commentsLoading: Record<string, boolean>;
+  /** Activity for one item, by entity id, loaded when its panel opens. */
+  history: Record<string, ActivityRow[]>;
+  historyLoading: Record<string, boolean>;
   presence: PresencePeer[];
   connection: Connection;
   /**
@@ -156,6 +166,8 @@ const EMPTY_STATE: ProjectStoreState = {
   activityDone: false,
   comments: {},
   commentsLoading: {},
+  history: {},
+  historyLoading: {},
   presence: [],
   connection: 'idle',
   slow: false,
@@ -295,41 +307,65 @@ interface Loaded {
   activity: ActivityRow[];
 }
 
+/**
+ * Everything a project screen needs, in as few round trips as possible.
+ *
+ * The project row usually comes from the project list the shell has already
+ * read (projects.ts), so every other request can go out at once, alongside a
+ * fresh read of the project row itself. Only an address for a project the
+ * list does not know yet (a new one, or a list that has not loaded) costs a
+ * first round trip to turn the slug into an id. Profiles no longer wait for
+ * the member list: every signed-in person may read every profile, so they are
+ * fetched in the same batch and the members' ones picked out.
+ */
 async function fetchEverything(slug: string): Promise<Loaded> {
-  const projectResult = await supabase.from('projects').select('*').eq('slug', slug).maybeSingle();
-  if (projectResult.error) throw projectResult.error;
-  if (!projectResult.data) {
-    throw { message: 'That project does not exist, or you are not a member of it.', code: 'NOPROJECT' };
+  let known = getProjectList().projects.find((project) => project.slug === slug) ?? null;
+  if (!known) {
+    const projectResult = await timed(
+      'project.row',
+      supabase.from('projects').select('*').eq('slug', slug).maybeSingle()
+    );
+    if (projectResult.error) throw projectResult.error;
+    if (!projectResult.data) {
+      throw { message: 'That project does not exist, or you are not a member of it.', code: 'NOPROJECT' };
+    }
+    known = projectResult.data as Project;
   }
-  const project = projectResult.data as Project;
-  const projectId = project.id;
+  const projectId = known.id;
 
-  const [members, tasks, reports, partners, state, docs, activity] = await Promise.all([
-    supabase.from('project_members').select('*').eq('project_id', projectId),
-    supabase.from('tasks').select('*').eq('project_id', projectId),
-    supabase.from('reports').select('*').eq('project_id', projectId),
-    supabase.from('partners').select('*').eq('project_id', projectId),
-    supabase.from('project_state').select('*').eq('project_id', projectId),
-    supabase.from('project_docs').select('*').eq('project_id', projectId),
-    supabase
-      .from('activity')
-      .select('*')
-      .eq('project_id', projectId)
-      .order('id', { ascending: false })
-      .limit(ACTIVITY_PAGE),
+  const [fresh, members, profileRows, tasks, reports, partners, state, docs, activity] = await Promise.all([
+    timed('project.fresh', supabase.from('projects').select('*').eq('id', projectId).maybeSingle()),
+    timed('project.members', supabase.from('project_members').select('*').eq('project_id', projectId)),
+    timed('project.profiles', supabase.from('profiles').select('*')),
+    timed('project.tasks', supabase.from('tasks').select('*').eq('project_id', projectId)),
+    timed('project.reports', supabase.from('reports').select('*').eq('project_id', projectId)),
+    timed('project.partners', supabase.from('partners').select('*').eq('project_id', projectId)),
+    timed('project.state', supabase.from('project_state').select('*').eq('project_id', projectId)),
+    timed('project.docs', supabase.from('project_docs').select('*').eq('project_id', projectId)),
+    timed(
+      'project.activity',
+      supabase
+        .from('activity')
+        .select('*')
+        .eq('project_id', projectId)
+        .order('id', { ascending: false })
+        .limit(ACTIVITY_PAGE)
+    ),
   ]);
 
-  for (const result of [members, tasks, reports, partners, state, docs, activity]) {
+  for (const result of [fresh, members, profileRows, tasks, reports, partners, state, docs, activity]) {
     if (result.error) throw result.error;
   }
+  if (!fresh.data) {
+    throw { message: 'That project does not exist, or you are not a member of it.', code: 'NOPROJECT' };
+  }
+  const project = fresh.data as Project;
 
   const memberRows = (members.data ?? []) as ProjectMember[];
-  const ids = memberRows.map((row) => row.user_id);
+  const memberIds = new Set(memberRows.map((row) => row.user_id));
   const profiles: Record<string, Profile> = {};
-  if (ids.length) {
-    const profileResult = await supabase.from('profiles').select('*').in('id', ids);
-    if (profileResult.error) throw profileResult.error;
-    for (const row of (profileResult.data ?? []) as Profile[]) profiles[row.id] = row;
+  for (const row of (profileRows.data ?? []) as Profile[]) {
+    if (memberIds.has(row.id)) profiles[row.id] = row;
   }
 
   const stateMap: Record<string, ProjectStateRow> = {};
@@ -551,11 +587,15 @@ function applyChange(table: WritableTable | 'activity' | 'project_state', payloa
   if (table === 'activity') {
     if (event !== 'INSERT') return;
     const incoming = row as unknown as ActivityRow;
-    store.update((current) =>
-      current.activity.some((item) => item.id === incoming.id)
-        ? current
-        : { ...current, activity: [incoming, ...current.activity].sort(byActivityOrder) }
-    );
+    store.update((current) => {
+      if (current.activity.some((item) => item.id === incoming.id)) return current;
+      const next = { ...current, activity: [incoming, ...current.activity].sort(byActivityOrder) };
+      const thread = incoming.entity_id ? current.history[incoming.entity_id] : undefined;
+      if (thread && !thread.some((item) => item.id === incoming.id)) {
+        next.history = { ...current.history, [incoming.entity_id!]: [incoming, ...thread] };
+      }
+      return next;
+    });
     return;
   }
 
@@ -589,10 +629,63 @@ function applyChange(table: WritableTable | 'activity' | 'project_state', payloa
     }
 
     const local = list.find((item) => item.id === id) as AnyRow | undefined;
+    if (event === 'UPDATE' && local) headsUp(table, id, local, row);
     const merged = mergeIncoming(table, id, local, row, nameOf(row.updated_by as string | null));
     const next = upsertInList(list, merged as { id: string }, sortFor(table) as never);
     return { ...current, [listKey]: next } as ProjectStoreState;
   });
+}
+
+/* The words for a changed column, for the heads-up toast. */
+const FIELD_WORDS: Record<string, string> = {
+  title: 'the title',
+  name: 'the name',
+  status: 'the status',
+  pri: 'the priority',
+  horizon: 'when it is planned for',
+  due: 'the due date',
+  assignee: 'who it is assigned to',
+  owner: 'the owner',
+  ws: 'the workstream',
+  why: 'why it matters',
+  done_when: 'what done looks like',
+  notes: 'the notes',
+  sources: 'the sources',
+  checks: 'the checklist',
+  amount: 'the amount',
+  submitted_on: 'the date it was submitted',
+  covers: 'what it covers',
+  stage: 'the stage',
+  referrals: 'the referral count',
+  next_step: 'the next step',
+  contact: 'the contact',
+  county: 'the county',
+  kind: 'the kind',
+};
+
+const ENTITY_OF: Partial<Record<WritableTable, string>> = {
+  tasks: 'task',
+  reports: 'report',
+  partners: 'partner',
+};
+
+/**
+ * Someone else changed the item this person has open: say so. Our own echoes
+ * never get here as "someone else", and a field under the cursor still gets
+ * its own hint from mergeIncoming as well.
+ */
+function headsUp(table: WritableTable, id: string, local: AnyRow, incoming: AnyRow): void {
+  const entity = ENTITY_OF[table];
+  if (!entity || presenceMeta.editing !== `${entity}:${id}`) return;
+  const by = incoming.updated_by as string | null | undefined;
+  if (!by || by === getAuth().userId) return;
+  const changed = Object.keys(FIELD_WORDS).filter(
+    (field) => field in incoming && JSON.stringify(local[field]) !== JSON.stringify(incoming[field])
+  );
+  if (!changed.length) return;
+  const words = changed.slice(0, 2).map((field) => FIELD_WORDS[field]);
+  const more = changed.length > 2 ? ' and more' : '';
+  toast.info(`${nameOf(by)} changed ${words.join(' and ')}${more}.`);
 }
 
 const WATCHED: Array<WritableTable | 'activity' | 'project_state'> = [
@@ -1279,11 +1372,54 @@ export async function updateProject(patch: Partial<Project>): Promise<MutationRe
     if (error) throw error;
     const row = data as Project;
     store.update((state) => ({ ...state, project: row }));
+    noteProjectChanged(row);
     return { ok: true, row };
   } catch (error) {
     logError('updateProject', error);
     store.update((state) => ({ ...state, project: before }));
     return { ok: false, error: toAppError(error) };
+  }
+}
+
+/** Applies a change made elsewhere (the project list) to the open project. */
+export function patchOpenProject(id: string, patch: Partial<Project>): void {
+  store.update((state) =>
+    state.project && state.project.id === id ? { ...state, project: { ...state.project, ...patch } } : state
+  );
+}
+
+/* ------------------------------------------------------------- history --- */
+
+const HISTORY_PAGE = 40;
+
+/** Reads the activity rows about one item. Once per item per open project. */
+export async function loadHistory(entityId: string): Promise<void> {
+  const projectId = requireProject();
+  if (!projectId || !entityId || entityId.startsWith('temp-')) return;
+  const current = store.get();
+  if (current.history[entityId] || current.historyLoading[entityId]) return;
+  store.update((state) => ({ ...state, historyLoading: { ...state.historyLoading, [entityId]: true } }));
+  try {
+    const { data, error } = await supabase
+      .from('activity')
+      .select('*')
+      .eq('project_id', projectId)
+      .eq('entity_id', entityId)
+      .order('id', { ascending: false })
+      .limit(HISTORY_PAGE);
+    if (error) throw error;
+    store.update((state) => ({
+      ...state,
+      history: { ...state.history, [entityId]: ((data ?? []) as ActivityRow[]).sort(byActivityOrder) },
+      historyLoading: { ...state.historyLoading, [entityId]: false },
+    }));
+  } catch (error) {
+    logError('loadHistory', error);
+    store.update((state) => ({
+      ...state,
+      history: { ...state.history, [entityId]: [] },
+      historyLoading: { ...state.historyLoading, [entityId]: false },
+    }));
   }
 }
 
@@ -1429,6 +1565,21 @@ export function useComments(entity: CommentEntity, id: string | null): CommentsV
         ? addComment(entity, id, body)
         : Promise.resolve({ ok: false, error: toAppError({ message: 'Nothing selected.' }) }),
     remove: (commentId: string) => deleteRow('comments', commentId),
+  };
+}
+
+const EMPTY_HISTORY: ActivityRow[] = [];
+
+/** What has happened to one task, report or partner, newest first. */
+export function useHistory(entityId: string | null): { rows: ActivityRow[]; loading: boolean } {
+  const state = useObservable(store);
+  useEffect(() => {
+    if (entityId) void loadHistory(entityId);
+  }, [entityId]);
+  if (!entityId) return { rows: EMPTY_HISTORY, loading: false };
+  return {
+    rows: state.history[entityId] ?? EMPTY_HISTORY,
+    loading: Boolean(state.historyLoading[entityId]),
   };
 }
 

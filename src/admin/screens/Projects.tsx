@@ -1,141 +1,88 @@
 /**
- * Every project this person can see. Administrators can also start one from
- * scratch, bring one in from a file, or take one back out again.
+ * Every project this person can see, as a plain list: the home project first,
+ * then the other active ones, and the archived ones folded away underneath.
+ *
+ * Starting a project and importing one are rare, so they are not on this
+ * screen's surface any more; they live in the Settings menu (the gear at the
+ * foot of the rail), which is also what the empty state points to.
  */
-import { useCallback, useEffect, useState } from 'preact/hooks';
-import { displayName, isAdmin, useAuth } from '../lib/auth';
-import { loadHome, type HomeData } from '../lib/queries';
-import { buildProjectFile, downloadJson } from '../lib/transfer';
-import { toast } from '../lib/toasts';
+import { useEffect, useState } from 'preact/hooks';
+import { isAdmin, useAuth } from '../lib/auth';
+import { href } from '../lib/router';
+import { relativeTime } from '../lib/format';
+import { openGlobalDialog } from '../lib/ui';
+import { loadProjectList, pickPrimary, useProjectList } from '../lib/projects';
+import type { Project } from '../lib/types';
 import { Button } from '../components/Button';
-import { Checkbox } from '../components/Field';
 import { EmptyState } from '../components/EmptyState';
-import { SkeletonCards } from '../components/Skeleton';
-import { IconDownload, IconPlus, IconProjects, IconUpload } from '../components/Icons';
-import { ProjectCard } from './ProjectCard';
-import { NewProjectDialog } from './NewProjectDialog';
-import { ImportDialog } from './ImportDialog';
+import { SkeletonLines } from '../components/Skeleton';
 import { SchemaNotice } from '../components/SchemaNotice';
-import { Select } from '../components/Select';
+import { IconChevronDown, IconPlus, IconProjects } from '../components/Icons';
+
+const TRACK_LABEL = { med: 'Med', tech: 'Tech', org: 'Organisation' } as const;
 
 export function Projects() {
   const auth = useAuth();
   const admin = isAdmin(auth);
-  const [data, setData] = useState<HomeData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const list = useProjectList();
   const [showArchived, setShowArchived] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const [importing, setImporting] = useState(false);
-  const [exportId, setExportId] = useState('');
-  const [exporting, setExporting] = useState(false);
-
-  const refresh = useCallback(async () => {
-    setLoading(true);
-    const result = await loadHome(auth.userId, displayName(auth));
-    setData(result);
-    setLoading(false);
-  }, [auth.userId, auth.profile?.full_name]);
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    void loadProjectList();
+  }, []);
 
-  const all = data?.projects ?? [];
-  const visible = all.filter((summary) =>
-    showArchived ? summary.project.status === 'archived' : summary.project.status === 'active'
+  const primary = pickPrimary(list.projects);
+  const active = list.projects
+    .filter((project) => project.status === 'active')
+    .sort((a, b) => Number(b.id === primary?.id) - Number(a.id === primary?.id) || a.name.localeCompare(b.name));
+  const archived = list.projects.filter((project) => project.status === 'archived');
+
+  const row = (project: Project) => (
+    <li key={project.id}>
+      <a class="wb-project-row" href={href(`/p/${project.slug}/plan`)} data-track={project.track}>
+        <span class="wb-rail-swatch" aria-hidden="true" />
+        <span class="wb-project-row-main">
+          <span class="wb-project-row-name">
+            {project.name}
+            {project.id === primary?.id ? <span class="wb-pill wb-pill-accent">Home project</span> : null}
+          </span>
+          {project.summary ? <span class="wb-project-row-summary">{project.summary}</span> : null}
+        </span>
+        <span class="wb-project-row-meta wb-mono-soft">
+          {project.kind === 'grant' ? 'Grant' : 'Project'} · {TRACK_LABEL[project.track]} · updated{' '}
+          {relativeTime(project.updated_at)}
+        </span>
+      </a>
+    </li>
   );
-  const archivedCount = all.filter((summary) => summary.project.status === 'archived').length;
-
-  const exportOne = async (projectId: string) => {
-    const summary = all.find((entry) => entry.project.id === projectId);
-    if (!summary) return;
-    setExporting(true);
-    try {
-      const file = await buildProjectFile(projectId);
-      downloadJson(`${summary.project.slug}.mmt-project.json`, file);
-      toast.good('Exported.');
-    } catch (error) {
-      toast.error(error, 'export');
-    } finally {
-      setExporting(false);
-      setExportId('');
-    }
-  };
 
   return (
-    <div class="wb-page">
+    <div class="wb-page wb-page-narrow">
       <header class="wb-page-head">
         <div>
-          <h1 class="wb-page-title">Projects</h1>
+          <h1 class="wb-page-title">All projects</h1>
           <p class="wb-page-sub">Everything you have been given access to.</p>
         </div>
-        {admin ? (
-          <div class="wb-toolbar">
-            <Button variant="secondary" icon={<IconUpload size={16} />} onClick={() => setImporting(true)}>
-              Import from file
-            </Button>
-            <Button variant="primary" icon={<IconPlus size={16} />} onClick={() => setCreating(true)}>
-              New project
-            </Button>
-          </div>
-        ) : null}
       </header>
 
-      {data?.error ? <SchemaNotice error={data.error} what="the project list" /> : null}
+      {list.error ? <SchemaNotice error={list.error} what="the project list" /> : null}
 
-      <div class="wb-filters">
-        <Checkbox
-          label={`Show archived${archivedCount ? ` (${archivedCount})` : ''}`}
-          checked={showArchived}
-          onChange={(event) => setShowArchived((event.currentTarget as HTMLInputElement).checked)}
-        />
-        {admin && all.length ? (
-          <span class="wb-toolbar">
-            <Select
-              value={exportId}
-              placeholder="Export a project to JSON"
-              options={all.map((summary) => ({
-                value: summary.project.id,
-                label: summary.project.name,
-              }))}
-              size="sm"
-              aria-label="Export a project"
-              onValue={(value) => {
-                setExportId(value);
-                if (value) void exportOne(value);
-              }}
-            />
-            {exporting ? (
-              <span class="wb-mono-soft">
-                <IconDownload size={15} /> preparing
-              </span>
-            ) : null}
-          </span>
-        ) : null}
-      </div>
-
-      {loading ? (
-        <SkeletonCards count={3} />
-      ) : visible.length ? (
-        <div class="wb-card-grid">
-          {visible.map((summary) => (
-            <ProjectCard key={summary.project.id} summary={summary} profiles={data?.profiles ?? {}} />
-          ))}
-        </div>
+      {list.status === 'loading' || list.status === 'idle' ? (
+        <SkeletonLines count={4} />
+      ) : active.length ? (
+        <ul class="wb-project-list">{active.map(row)}</ul>
       ) : (
         <EmptyState
           icon={<IconProjects size={24} />}
-          title={showArchived ? 'Nothing archived' : 'No projects yet'}
+          title="No projects yet"
           body={
-            showArchived
-              ? 'Archived projects stay here, out of the way but not deleted.'
-              : admin
-                ? 'Start one from scratch, or bring one in from a file.'
-                : 'Once somebody adds you to a project it will show up here.'
+            admin
+              ? 'Start one from scratch, or bring one in from a file. Both are also in the Settings menu at the foot of the sidebar.'
+              : 'Once somebody adds you to a project it will show up here.'
           }
           action={
-            admin && !showArchived ? (
-              <Button variant="primary" icon={<IconPlus size={16} />} onClick={() => setCreating(true)}>
+            admin ? (
+              <Button variant="primary" icon={<IconPlus size={16} />} onClick={() => openGlobalDialog('new-project')}>
                 New project
               </Button>
             ) : null
@@ -143,20 +90,21 @@ export function Projects() {
         />
       )}
 
-      <NewProjectDialog
-        open={creating}
-        onClose={() => {
-          setCreating(false);
-          void refresh();
-        }}
-      />
-      <ImportDialog
-        open={importing}
-        onClose={() => {
-          setImporting(false);
-          void refresh();
-        }}
-      />
+      {archived.length ? (
+        <section class="wb-archived">
+          <button
+            type="button"
+            class="wb-plan-group-head is-toggle"
+            aria-expanded={showArchived}
+            onClick={() => setShowArchived((value) => !value)}
+          >
+            <span>Archived</span>
+            <span class="wb-plan-count wb-mono">{archived.length}</span>
+            <IconChevronDown size={14} class={showArchived ? 'wb-flip-y' : ''} />
+          </button>
+          {showArchived ? <ul class="wb-project-list is-archived">{archived.map(row)}</ul> : null}
+        </section>
+      ) : null}
     </div>
   );
 }

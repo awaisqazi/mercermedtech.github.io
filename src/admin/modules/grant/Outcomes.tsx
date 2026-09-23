@@ -291,18 +291,18 @@ export function Outcomes() {
                             {percent(target)}
                           </td>
                           <td data-label="Now" class="wb-mono">
-                            {base ? percent(rate) : '—'}
+                            {base ? percent(rate) : 'None'}
                             <span class="wb-mono-soft"> ({value} of {base})</span>
                           </td>
                           <td data-label="Needed at today's numbers" class="wb-mono">
-                            {neededNow === null ? '—' : neededNow}
+                            {neededNow === null ? 'None' : neededNow}
                           </td>
                           <td data-label="Needed if the target is met" class="wb-mono">
-                            {neededAtTarget === null ? '—' : neededAtTarget}
+                            {neededAtTarget === null ? 'None' : neededAtTarget}
                           </td>
                           <td data-label="Gap" class="wb-mono">
                             {neededNow === null ? (
-                              '—'
+                              'None'
                             ) : gap === 0 ? (
                               <Chip tone="good">On target</Chip>
                             ) : (

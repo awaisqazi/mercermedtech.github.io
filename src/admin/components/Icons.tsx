@@ -277,3 +277,62 @@ export const IconRefresh = (props: IconProps) => (
     <path d="M19.5 5.5V11H14" />
   </Svg>
 );
+
+export const IconBell = (props: IconProps) => (
+  <Svg {...props}>
+    <path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 2H5z" />
+    <path d="M10 20.5a2 2 0 0 0 4 0" />
+  </Svg>
+);
+
+export const IconChart = (props: IconProps) => (
+  <Svg {...props}>
+    <path d="M4.5 19.5h15" />
+    <rect x="6" y="11" width="3" height="6" rx="0.75" />
+    <rect x="10.5" y="6.5" width="3" height="10.5" rx="0.75" />
+    <rect x="15" y="9" width="3" height="8" rx="0.75" />
+  </Svg>
+);
+
+export const IconInfo = (props: IconProps) => (
+  <Svg {...props}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 11v5.5" />
+    <circle cx="12" cy="7.75" r="0.9" fill="currentColor" />
+  </Svg>
+);
+
+export const IconToday = (props: IconProps) => (
+  <Svg {...props}>
+    <rect x="3.5" y="5" width="17" height="15" rx="2" />
+    <path d="M3.5 9.5h17M8 3.5v3M16 3.5v3" />
+    <circle cx="12" cy="14.5" r="1.6" fill="currentColor" />
+  </Svg>
+);
+
+export const IconPlan = (props: IconProps) => (
+  <Svg {...props}>
+    <path d="m4 7 1.6 1.6L8.5 5.7" />
+    <path d="m4 13 1.6 1.6 2.9-2.9" />
+    <path d="M11.5 7h8.5M11.5 13h8.5M11.5 19h8.5" />
+    <circle cx="6" cy="19" r="1.1" fill="currentColor" />
+  </Svg>
+);
+
+export const IconMenu = (props: IconProps) => (
+  <Svg {...props}>
+    <path d="M4.5 7h15M4.5 12h15M4.5 17h15" />
+  </Svg>
+);
+
+export const IconStar = (props: IconProps) => (
+  <Svg {...props}>
+    <path d="m12 4.5 2.3 4.7 5.2.8-3.8 3.6.9 5.1-4.6-2.4-4.6 2.4.9-5.1-3.8-3.6 5.2-.8z" />
+  </Svg>
+);
+
+export const IconFilter = (props: IconProps) => (
+  <Svg {...props}>
+    <path d="M4.5 6h15M7.5 12h9M10.5 18h3" />
+  </Svg>
+);

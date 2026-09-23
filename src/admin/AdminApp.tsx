@@ -21,6 +21,8 @@ import { Login } from './screens/Login';
 import { Join } from './screens/Join';
 import { Reset } from './screens/Reset';
 import { Home } from './screens/Home';
+import { HomeRedirect } from './screens/HomeRedirect';
+import { DEMO } from './demo/mode';
 import { Projects } from './screens/Projects';
 import { Project } from './screens/Project';
 import { People } from './screens/People';
@@ -95,7 +97,12 @@ export default function AdminApp({
 
   return (
     <BrandContext.Provider value={{ src: logoSrc, width: logoWidth, height: logoHeight }}>
-      <div class="wb">
+      <div class={`wb${DEMO ? ' is-demo' : ''}`}>
+        {DEMO ? (
+          <p class="wb-demo-ribbon" role="note">
+            Demo data<span class="wb-demo-more">. Everything here is invented and nothing is saved.</span>
+          </p>
+        ) : null}
         {auth.stalled ? <StalledNote /> : null}
         {renderRoute(auth.ready, Boolean(auth.userId), route.name, route.params)}
         <Toasts />
@@ -127,8 +134,10 @@ function renderRoute(
         <People />
       ) : name === 'account' ? (
         <Account />
-      ) : name === 'home' ? (
+      ) : name === 'today' ? (
         <Home />
+      ) : name === 'home' ? (
+        <HomeRedirect />
       ) : (
         <div class="wb-page">
           <EmptyState

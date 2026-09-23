@@ -1,6 +1,13 @@
 /**
- * The frame around a project: header, presence, tabs, and whichever module
- * matches the project's kind.
+ * The frame around a project: one quiet header line, the section tabs, and
+ * whichever module matches the project's kind.
+ *
+ * The header holds only what is needed every day: the name, a status pill,
+ * who is here, "About", the activity bell and a menu. The contract number,
+ * the funding sentence, the long description and the rulebook live in the
+ * About panel, one click away. Every detail view opens on top of the section
+ * it belongs to, and its address is in the query (`?task=`, `?about=`,
+ * `?activity=1`), so a link to it can be pasted to a colleague.
  *
  * The module is loaded on demand, so somebody who only ever opens general
  * projects never downloads the grant views, and the other way round.
@@ -12,76 +19,75 @@ import {
   openProject,
   retryProject,
   setPresence,
+  patchOpenProject,
   useProject,
   usePresence,
 } from '../lib/store';
 import { buildProjectFile, downloadJson } from '../lib/transfer';
 import { setProjectStatus } from '../lib/queries';
-import { href, navigate, useRoute } from '../lib/router';
+import { href, navigate, setQuery, useRoute } from '../lib/router';
 import { isAdmin, useAuth } from '../lib/auth';
 import { toast } from '../lib/toasts';
-import { AvatarStack } from '../components/Avatar';
+import { openGlobalDialog } from '../lib/ui';
+import {
+  TABS,
+  TAB_LABEL,
+  isFlaggedPrimary,
+  loadProjectList,
+  pickPrimary,
+  redirectFor,
+  setPrimaryProject,
+  useProjectList,
+  type TabKey,
+} from '../lib/projects';
+import { Avatar } from '../components/Avatar';
 import { Button, LinkButton } from '../components/Button';
-import { Chip } from '../components/Chip';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { EmptyState } from '../components/EmptyState';
-import { Menu } from '../components/Menu';
+import { Menu, type MenuItem } from '../components/Menu';
 import { SchemaNotice, ConnectionBanner, SlowNotice } from '../components/SchemaNotice';
 import { SkeletonLines } from '../components/Skeleton';
 import { Tabs, type TabDef } from '../components/Tabs';
-import { IconArchive, IconDots, IconDownload, IconEye, IconPeople, IconSettings } from '../components/Icons';
+import { ActivityDrawer, useUnread } from '../components/ActivityDrawer';
+import {
+  IconArchive,
+  IconBell,
+  IconClock,
+  IconDots,
+  IconDownload,
+  IconInfo,
+  IconPeople,
+  IconSettings,
+  IconStar,
+  IconUpload,
+} from '../components/Icons';
 import { MembersDialog } from './MembersDialog';
 import { SettingsDialog } from './SettingsDialog';
+import { AboutModal } from './AboutModal';
 
 export interface ModuleProps {
   tab: string;
 }
 
-const GRANT_TABS = [
-  'overview',
-  'deliverables',
-  'reports',
-  'outcomes',
-  'budget',
-  'partners',
-  'rulebook',
-  'activity',
-];
-const GENERAL_TABS = ['overview', 'tasks', 'notes', 'activity'];
-
-const TAB_LABEL: Record<string, string> = {
-  overview: 'Overview',
-  deliverables: 'Deliverables',
-  reports: 'Reports',
-  outcomes: 'Outcomes',
-  budget: 'Budget',
-  partners: 'Partners',
-  rulebook: 'Rulebook',
-  activity: 'Activity',
-  tasks: 'Tasks',
-  notes: 'Notes',
-};
-
 export function Project({ slug, tab }: { slug: string; tab?: string }) {
   const auth = useAuth();
   const route = useRoute();
-  const { status, error, project, readOnly, role, canManage, connection, slow } = useProject();
+  const list = useProjectList();
+  const { status, error, project, readOnly, role, canManage, connection, slow, members, profiles } = useProject();
   const peers = usePresence();
   const [Module, setModule] = useState<ComponentType<ModuleProps> | null>(null);
   const [moduleError, setModuleError] = useState(false);
   const [showMembers, setShowMembers] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [archiving, setArchiving] = useState(false);
-  const [exporting, setExporting] = useState(false);
-  const [summaryOpen, setSummaryOpen] = useState(false);
   // The banner waits; the dot in the header does not (see below).
   const [showBanner, setShowBanner] = useState(false);
   const [retrying, setRetrying] = useState(false);
   const downSince = useRef<number | null>(null);
+  const unread = useUnread();
 
   useEffect(() => {
     void openProject(slug);
-    setSummaryOpen(false);
     return () => closeProject();
   }, [slug]);
 
@@ -105,13 +111,18 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
   }, [connection]);
 
   const kind = project?.kind ?? 'general';
-  const tabs = kind === 'grant' ? GRANT_TABS : GENERAL_TABS;
-  const activeTab = tab && tabs.includes(tab) ? tab : tabs[0]!;
+  const tabs = TABS[kind];
+  const activeTab: TabKey = tab && (tabs as string[]).includes(tab) ? (tab as TabKey) : 'plan';
 
-  // Send the browser to a real tab address rather than leaving a bare project URL.
+  // Old addresses (overview, deliverables, outcomes, budget, rulebook,
+  // activity) and a bare project address land on a real tab.
   useEffect(() => {
-    if (!project) return;
-    if (tab !== activeTab) navigate(`/p/${slug}/${activeTab}`, { replace: true, query: route.query });
+    if (!project || tab === activeTab) return;
+    const moved = redirectFor(project.kind, tab);
+    navigate(`/p/${slug}/${moved?.tab ?? activeTab}`, {
+      replace: true,
+      query: { ...route.query, ...(moved?.query ?? {}) },
+    });
   }, [project, tab, activeTab, slug]);
 
   useEffect(() => {
@@ -194,58 +205,110 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
     );
   }
 
+  const admin = isAdmin(auth);
+  const primary = pickPrimary(list.projects);
+  const isHome = primary?.id === project.id;
+
   const tabDefs: TabDef[] = tabs.map((key) => ({
     key,
-    label: TAB_LABEL[key] ?? key,
+    label: TAB_LABEL[key],
     href: href(`/p/${slug}/${key}`),
   }));
 
-  const presentPeople = peers.map((peer) => ({
-    id: peer.user_id,
-    name: peer.name,
-    note: TAB_LABEL[peer.tab] ?? peer.tab,
-  }));
+  const openAbout = () => setQuery({ ...route.query, about: 'start', activity: null });
+  const openActivity = () => setQuery({ ...route.query, activity: '1', about: null });
 
-  const menuItems = [
+  /* Members first by who is here, so the lit avatars sit at the front. */
+  const here = new Map(peers.map((peer) => [peer.user_id, peer]));
+  const team = [...members]
+    .sort((a, b) => Number(here.has(b.user_id)) - Number(here.has(a.user_id)))
+    .slice(0, 5);
+
+  const makeHome = async () => {
+    const result = await setPrimaryProject(project.id);
+    if (result.ok) {
+      patchOpenProject(project.id, { config: { ...project.config, primary: true } });
+      toast.good(`${project.name} is now the home project.`);
+    } else {
+      toast.bad(result.error?.message ?? 'That did not work.');
+    }
+  };
+
+  const menuItems: MenuItem[] = [
+    {
+      key: 'about',
+      label: 'About this project',
+      icon: <IconInfo size={16} />,
+      onSelect: openAbout,
+    },
+    {
+      key: 'activity',
+      label: 'Activity',
+      icon: <IconClock size={16} />,
+      onSelect: openActivity,
+    },
     {
       key: 'members',
       label: 'Members',
       icon: <IconPeople size={16} />,
+      divider: true,
       onSelect: () => setShowMembers(true),
     },
     {
       key: 'settings',
-      label: 'Settings',
+      label: 'Project settings',
       icon: <IconSettings size={16} />,
       onSelect: () => setShowSettings(true),
-      disabled: !canManage,
+      hint: canManage ? undefined : 'View only',
     },
+    ...(admin && !isHome && project.status === 'active'
+      ? [
+          {
+            key: 'home',
+            label: 'Make this the home project',
+            icon: <IconStar size={16} />,
+            onSelect: () => void makeHome(),
+          },
+        ]
+      : []),
     {
       key: 'export',
-      label: 'Export JSON',
+      label: 'Export to a file',
       icon: <IconDownload size={16} />,
+      divider: true,
       onSelect: async () => {
-        setExporting(true);
         try {
           const file = await buildProjectFile(project.id);
           downloadJson(`${project.slug}.mmt-project.json`, file);
           toast.good('Exported.');
         } catch (exportError) {
           toast.error(exportError, 'export');
-        } finally {
-          setExporting(false);
         }
       },
     },
+    ...(admin
+      ? [
+          {
+            key: 'import',
+            label: 'Import a project from a file',
+            icon: <IconUpload size={16} />,
+            onSelect: () => openGlobalDialog('import'),
+          },
+        ]
+      : []),
     {
       key: 'archive',
       label: project.status === 'archived' ? 'Bring back from the archive' : 'Archive',
       icon: <IconArchive size={16} />,
       onSelect: () => setArchiving(true),
-      disabled: !canManage && !isAdmin(auth),
+      disabled: !canManage && !admin,
       tone: 'danger' as const,
+      divider: true,
     },
   ];
+
+  const statusWord =
+    project.status === 'archived' ? 'Archived' : readOnly ? 'View only' : isHome ? 'Home project' : 'Active';
 
   return (
     <div class="wb-page wb-project" data-track={project.track}>
@@ -253,69 +316,81 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
         <ConnectionBanner state={connection} />
       ) : null}
 
-      <header class="wb-project-head">
-        <div class="wb-project-title-row">
-          <div class="wb-project-titles">
-            <h1 class="wb-page-title">{project.name}</h1>
-            <Chip tone="accent">{project.track === 'org' ? 'Organisation' : project.track === 'med' ? 'Med' : 'Tech'}</Chip>
-            {project.status === 'archived' ? <Chip tone="quiet">Archived</Chip> : null}
-            {readOnly ? (
-              <Chip tone="quiet" icon={<IconEye size={13} />} title={`Your role: ${role ?? 'viewer'}`}>
-                View only
-              </Chip>
-            ) : null}
-          </div>
-          {/* Stays at the top right whatever the title does. */}
-          <div class="wb-project-title-menu">
-            <Menu
-              align="right"
-              items={menuItems}
-              trigger={(props) => (
-                <button type="button" class="wb-icon-button" aria-label="Project menu" {...props}>
-                  <IconDots />
-                </button>
-              )}
-            />
-          </div>
-        </div>
+      <header class="wb-project-bar">
+        <h1 class="wb-project-name">{project.name}</h1>
+        <span
+          class={`wb-pill wb-pill-${project.status === 'archived' ? 'quiet' : readOnly ? 'quiet' : 'accent'}`}
+          title={readOnly ? `Your role: ${role ?? 'viewer'}` : undefined}
+        >
+          {statusWord}
+        </span>
 
-        <div class="wb-project-meta">
-          {project.kind === 'grant' && project.config?.funder ? (
-            <span class="wb-mono-soft">{String(project.config.funder)}</span>
-          ) : null}
-          {project.kind === 'grant' && project.config?.contract_no ? (
-            <span class="wb-mono">{String(project.config.contract_no)}</span>
-          ) : null}
-          <span class={`wb-live-dot wb-live-${connection}`}>
+        <span class="wb-spacer" />
+
+        <span class="wb-presence" role="group" aria-label={`Team: ${members.length}, ${peers.length} here now`}>
+          <span
+            class={`wb-live-dot wb-live-${connection}`}
+            title={connection === 'live' ? 'Live: changes appear as they happen' : connection === 'reconnecting' ? 'Reconnecting' : 'Offline'}
+          >
             <span class="wb-live-bulb" aria-hidden="true" />
-            {connection === 'live' ? 'Live' : connection === 'reconnecting' ? 'Reconnecting' : 'Offline'}
+            <span class="wb-sr">
+              {connection === 'live' ? 'Live' : connection === 'reconnecting' ? 'Reconnecting' : 'Offline'}
+            </span>
           </span>
-          <AvatarStack people={presentPeople} label="Here now" size={26} />
-        </div>
+          <span class="wb-avatar-stack">
+            {team.map((member) => {
+              const profile = profiles[member.user_id];
+              const peer = here.get(member.user_id);
+              const name = profile?.full_name?.trim() || profile?.email || 'Member';
+              const where = peer ? `here now, on ${TAB_LABEL[peer.tab as TabKey] ?? 'this project'}` : 'not here right now';
+              return (
+                <Avatar
+                  key={member.user_id}
+                  id={member.user_id}
+                  name={profile?.full_name}
+                  email={profile?.email}
+                  size={28}
+                  active={Boolean(peer) || member.user_id === auth.userId}
+                  class={peer || member.user_id === auth.userId ? 'is-here' : 'is-away'}
+                  title={member.user_id === auth.userId ? `${name} (you)` : `${name}, ${where}`}
+                />
+              );
+            })}
+            {members.length > team.length ? (
+              <span class="wb-avatar wb-avatar-more" style={{ width: '28px', height: '28px' }}>
+                +{members.length - team.length}
+              </span>
+            ) : null}
+          </span>
+        </span>
 
-        {project.summary ? (
-          <div class="wb-project-summary-wrap">
-            <p
-              id="wb-project-summary"
-              class={`wb-project-summary${summaryOpen ? ' is-open' : ''}`}
-            >
-              {project.summary}
-            </p>
-            {/* Phones only: the tabs matter more than the blurb. */}
-            <button
-              type="button"
-              class="wb-summary-toggle"
-              aria-expanded={summaryOpen}
-              aria-controls="wb-project-summary"
-              onClick={() => setSummaryOpen((open) => !open)}
-            >
-              {summaryOpen ? 'Less' : 'More'}
+        <Button variant="quiet" size="sm" icon={<IconInfo size={16} />} onClick={openAbout} class="wb-about-button">
+          About
+        </Button>
+
+        <button
+          type="button"
+          class="wb-icon-button wb-bell"
+          onClick={openActivity}
+          aria-label={unread.count ? `Activity, ${unread.count} new since you were here` : 'Activity'}
+          title="Activity"
+        >
+          <IconBell />
+          {unread.count ? <span class="wb-bell-count wb-mono">{unread.count > 99 ? '99+' : unread.count}</span> : null}
+        </button>
+
+        <Menu
+          align="right"
+          items={menuItems}
+          trigger={(props) => (
+            <button type="button" class="wb-icon-button" aria-label="Project menu" {...props}>
+              <IconDots />
             </button>
-          </div>
-        ) : null}
+          )}
+        />
       </header>
 
-      <Tabs tabs={tabDefs} active={activeTab} label="Project sections" />
+      <Tabs tabs={tabDefs} active={activeTab} label="Project sections" class="wb-project-tabs" />
 
       <div class="wb-project-body">
         {moduleError ? (
@@ -335,7 +410,17 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
         )}
       </div>
 
-      {exporting ? <p class="wb-hint">Preparing the export.</p> : null}
+      <AboutModal
+        open={route.query.about !== undefined}
+        section={route.query.about ?? ''}
+        onSection={(next) => setQuery({ ...route.query, about: next })}
+        onClose={() => setQuery({ ...route.query, about: null })}
+      />
+
+      <ActivityDrawer
+        open={route.query.activity !== undefined}
+        onClose={() => setQuery({ ...route.query, activity: null })}
+      />
 
       <MembersDialog open={showMembers} onClose={() => setShowMembers(false)} />
       <SettingsDialog open={showSettings} onClose={() => setShowSettings(false)} />
@@ -345,8 +430,10 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
         title={project.status === 'archived' ? 'Bring this project back?' : 'Archive this project?'}
         body={
           project.status === 'archived'
-            ? 'It will show up in the project list again.'
-            : 'Nothing is deleted. It moves out of the main list and can be brought back at any time.'
+            ? 'It will show up under Other projects again.'
+            : isFlaggedPrimary(project)
+              ? 'Nothing is deleted. It moves out of the way and can be brought back at any time. It is the home project, so the portal will open on another project until you choose a new one.'
+              : 'Nothing is deleted. It moves out of the way and can be brought back at any time.'
         }
         confirmLabel={project.status === 'archived' ? 'Bring it back' : 'Archive it'}
         tone={project.status === 'archived' ? 'primary' : 'danger'}
@@ -357,13 +444,14 @@ export function Project({ slug, tab }: { slug: string; tab?: string }) {
           setArchiving(false);
           if (result.ok) {
             toast.good(next === 'archived' ? 'Archived.' : 'Brought back.');
-            navigate('/projects');
+            patchOpenProject(project.id, { status: next });
+            await loadProjectList();
+            if (next === 'archived') navigate('/projects');
           } else {
             toast.bad(result.error?.message ?? 'That did not work.');
           }
         }}
       />
-
     </div>
   );
 }

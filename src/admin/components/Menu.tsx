@@ -12,6 +12,10 @@ export interface MenuItem {
   onSelect: () => void;
   tone?: 'default' | 'danger';
   disabled?: boolean;
+  /** Draws a thin line above this item, to start a new group. */
+  divider?: boolean;
+  /** A small note under the label, e.g. why an item is switched off. */
+  hint?: string;
 }
 
 export interface MenuProps {
@@ -24,10 +28,12 @@ export interface MenuProps {
   }) => ComponentChildren;
   items: MenuItem[];
   align?: 'left' | 'right';
+  /** Opens upwards, for a menu that lives at the bottom of the screen. */
+  placement?: 'down' | 'up';
   label?: string;
 }
 
-export function Menu({ trigger, items, align = 'right', label = 'Menu' }: MenuProps) {
+export function Menu({ trigger, items, align = 'right', placement = 'down', label = 'Menu' }: MenuProps) {
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
   const triggerId = useId();
@@ -39,6 +45,9 @@ export function Menu({ trigger, items, align = 'right', label = 'Menu' }: MenuPr
     };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
+        // Ours, not the panel's underneath: a modal checks defaultPrevented.
+        event.preventDefault();
+        event.stopPropagation();
         setOpen(false);
         wrap.current?.querySelector<HTMLElement>('button,[role="button"]')?.focus();
         return;
@@ -53,12 +62,12 @@ export function Menu({ trigger, items, align = 'right', label = 'Menu' }: MenuPr
       next?.focus();
     };
     document.addEventListener('mousedown', onDocumentDown);
-    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keydown', onKeyDown, true);
     // Land on the first item so the keyboard works straight away.
     window.setTimeout(() => wrap.current?.querySelector<HTMLElement>('.wb-menu-item')?.focus(), 0);
     return () => {
       document.removeEventListener('mousedown', onDocumentDown);
-      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keydown', onKeyDown, true);
     };
   }, [open]);
 
@@ -71,8 +80,13 @@ export function Menu({ trigger, items, align = 'right', label = 'Menu' }: MenuPr
         id: triggerId,
       })}
       {open ? (
-        <div class={`wb-menu wb-menu-${align}`} role="menu" aria-labelledby={triggerId}>
-          {items.map((item) => (
+        <div
+          class={`wb-menu wb-menu-${align}${placement === 'up' ? ' wb-menu-up' : ''}`}
+          role="menu"
+          aria-labelledby={triggerId}
+        >
+          {items.map((item) => [
+            item.divider ? <hr class="wb-menu-divider" key={`${item.key}-divider`} aria-hidden="true" /> : null,
             <button
               key={item.key}
               type="button"
@@ -85,9 +99,12 @@ export function Menu({ trigger, items, align = 'right', label = 'Menu' }: MenuPr
               }}
             >
               {item.icon ? <span class="wb-menu-icon" aria-hidden="true">{item.icon}</span> : null}
-              <span>{item.label}</span>
-            </button>
-          ))}
+              <span class="wb-menu-text">
+                <span>{item.label}</span>
+                {item.hint ? <span class="wb-menu-hint">{item.hint}</span> : null}
+              </span>
+            </button>,
+          ])}
           {items.length === 0 ? <p class="wb-menu-empty">{label} is empty</p> : null}
         </div>
       ) : null}

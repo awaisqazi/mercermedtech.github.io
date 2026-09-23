@@ -32,6 +32,15 @@
  *  5. skeleton-fps  Frames drawn over three seconds while the loading skeleton
  *                   is on screen, because a shimmer that repaints badly reads
  *                   as "the whole thing lags".
+ *  6. demo-screens  The signed-in screens, through `#/demo`: the whole app
+ *                   against the in-memory fixture (src/admin/demo). Visits
+ *                   Today, Plan, a task, the Board, Reports, a report,
+ *                   Partners, a partner, Numbers and its editor, About, the
+ *                   activity drawer, the rail and the Settings menu, at a
+ *                   laptop size and a phone size. Fails on any page error,
+ *                   any missing screen, and any request to Supabase at all:
+ *                   the demo must never touch the network. `--screens=<dir>`
+ *                   saves a PNG of each.
  *
  * No account is used and none is needed: every session in here is fabricated
  * locally and every Supabase host request is intercepted, so nothing ever
@@ -47,6 +56,7 @@
  *   --browser=webkit|chromium|both     (default both)
  *   --only=cold-login,auth-stall       run a subset
  *   --headed        watch it happen
+ *   --screens=<dir> save demo-screens screenshots there
  *
  * Exit code 1 if any scenario fails, so it can sit in CI later.
  */
@@ -75,6 +85,7 @@ const BUILD = !flag('no-build');
 const HEADED = flag('headed');
 const BROWSERS = value('browser', 'both') === 'both' ? ['webkit', 'chromium'] : [value('browser')];
 const ONLY = value('only', '').split(',').filter(Boolean);
+const SCREENS = value('screens', '');
 
 /* ------------------------------------------------------- a fabricated session
  *
@@ -433,6 +444,96 @@ const SCENARIOS = {
       // 50 fps is the floor: below that a person feels it.
       pass: frames.fps >= 50,
       detail: frames,
+      record,
+    };
+  },
+
+  /* 6 --------------------------------------------------------------------- */
+  async 'demo-screens'(page, origin) {
+    const record = instrument(page);
+    const base = `${origin}/admin/#/demo`;
+    const project = '/p/sample-grant';
+    const shots = [];
+    const problems = [];
+    const { mkdir } = await import('node:fs/promises');
+    if (SCREENS) await mkdir(SCREENS, { recursive: true });
+    // The Board step leaves "board" remembered; every load starts on List.
+    await page.addInitScript(() => {
+      try {
+        localStorage.removeItem('wb.taskview');
+      } catch {
+        /* private mode */
+      }
+    });
+
+    // name, address, what must be on screen, and what to do first.
+    const STEPS = [
+      ['today', '/today', '[data-section="team"] .wb-team-row'],
+      ['plan-list', `${project}/plan`, '.wb-row .wb-row-title'],
+      ['task-modal', `${project}/plan?task=demo-task-01`, '.wb-modal .wb-props'],
+      ['board', `${project}/plan`, '.wb-board-column', async () => page.click('.wb-segment:has-text("Board")')],
+      ['reports', `${project}/reports`, '.wb-tl-row.is-next'],
+      ['report-modal', `${project}/reports?report=demo-report-07`, '.wb-modal .wb-checklist'],
+      ['report-precheck', `${project}/reports?report=demo-report-07&check=1`, '.wb-modal .wb-precheck'],
+      ['partners', `${project}/partners`, '.wb-list-row'],
+      ['partner-modal', `${project}/partners?partner=demo-partner-02`, '.wb-modal .wb-props'],
+      ['numbers', `${project}/numbers`, '.wb-measure'],
+      ['edit-numbers-outcomes', `${project}/numbers?edit=outcomes`, '.wb-modal .wb-funnel'],
+      ['edit-numbers-budget', `${project}/numbers?edit=budget`, '.wb-modal .wb-budget-table'],
+      ['about', `${project}/plan?about=start`, '.wb-about .wb-about-heading'],
+      ['about-rulebook', `${project}/overview`, '.wb-about .wb-about-heading'],
+      ['activity-drawer', `${project}/plan?activity=1`, '.wb-modal .wb-activity-person'],
+      ['old-address-outcomes', `${project}/outcomes`, '.wb-card-panel.is-focused, .wb-measure'],
+    ];
+
+    const SIZES = [
+      ['desktop', 1280, 900],
+      ['phone', 390, 844],
+    ];
+
+    for (const [size, width, height] of SIZES) {
+      await page.setViewportSize({ width, height });
+      const steps = [
+        ...STEPS,
+        size === 'desktop'
+          ? ['rail-other-projects', `${project}/plan`, '.wb-rail-projects', async () => page.click('.wb-rail-group-head')]
+          : ['more-sheet', `${project}/plan`, '.wb-more-list', async () => page.click('.wb-bottom-link:has-text("More")')],
+        size === 'desktop'
+          ? ['settings-menu', `${project}/plan`, '.wb-menu', async () => page.click('.wb-rail-tool[aria-label="Settings"]')]
+          : ['project-menu', `${project}/plan`, '.wb-menu', async () => page.click('.wb-project-bar [aria-label="Project menu"]')],
+      ];
+      for (const [name, address, selector, act] of steps) {
+        // A fresh load per screen, so every one starts from the fixture (the
+        // init script below also puts the Plan back on its List view).
+        await page.goto('about:blank');
+        await page.goto(`${base}${address}`, { waitUntil: 'load' });
+        try {
+          await page.waitForSelector('.wb-row, .wb-board, .wb-today, .wb-timeline, .wb-list, .wb-numbers', {
+            timeout: 8_000,
+          });
+          if (act) await act();
+          await page.waitForSelector(selector, { timeout: 8_000, state: 'visible' });
+          await page.waitForTimeout(350);
+          if (SCREENS) {
+            const file = `${SCREENS}/${size}-${name}.png`;
+            await page.screenshot({ path: file });
+            shots.push(file);
+          }
+        } catch (error) {
+          problems.push(`${size} ${name}: ${String(error).split('\n')[0]}`);
+        }
+      }
+    }
+
+    const leaked = record.requests.length;
+    return {
+      pass: problems.length === 0 && record.pageErrors.length === 0 && leaked === 0,
+      detail: {
+        screens: `${SIZES.length * (STEPS.length + 2) - problems.length} of ${SIZES.length * (STEPS.length + 2)} reached`,
+        supabaseRequests: `${leaked} (must be 0)`,
+        problems: problems.length ? problems.join(' | ') : 'none',
+        saved: SCREENS ? `${shots.length} screenshots in ${SCREENS}` : 'not saved (pass --screens=<dir>)',
+      },
       record,
     };
   },

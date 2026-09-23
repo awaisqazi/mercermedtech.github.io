@@ -5,18 +5,16 @@
  * status select, which is what a keyboard or a screen reader uses. The drop
  * target is announced by a class change and each column is a labelled region.
  *
- * Details do not open inside a column — a column is about 200px wide — so the
- * open card lights up here and its details appear in the drawer beside the
- * board. A `?task=<id>` link therefore opens the drawer when the board is the
- * view somebody left switched on.
+ * Details do not open inside a column (a column is about 200px wide): the
+ * open card lights up here and its details appear in the same task panel the
+ * list uses, which the Plan owns.
  */
-import { useCallback, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import type { Task, TaskStatus, WorkstreamDef } from '../../lib/types';
 import { STATUS_LABEL, TASK_STATUSES } from '../../lib/types';
 import { updateRow, useProject } from '../../lib/store';
 import { toast } from '../../lib/toasts';
 import { TaskCard } from './TaskCard';
-import { TaskDrawer } from './TaskDrawer';
 
 export interface TaskBoardProps {
   tasks: Task[];
@@ -30,9 +28,6 @@ export function TaskBoard({ tasks, workstreams, openId, onOpen }: TaskBoardProps
   const [dragging, setDragging] = useState<string | null>(null);
   const [over, setOver] = useState<TaskStatus | null>(null);
 
-  const openTask = openId ? (tasks.find((task) => task.id === openId) ?? null) : null;
-  // Stable, so the drawer's key handling is not torn down on every render.
-  const closeDrawer = useCallback(() => onOpen(null), [onOpen]);
 
   const drop = async (status: TaskStatus) => {
     const id = dragging;
@@ -106,16 +101,6 @@ export function TaskBoard({ tasks, workstreams, openId, onOpen }: TaskBoardProps
         );
       })}
     </div>
-
-    {openTask ? (
-      <TaskDrawer
-        key={openTask.id}
-        task={openTask}
-        workstreams={workstreams}
-        onClose={closeDrawer}
-        onDeleted={closeDrawer}
-      />
-    ) : null}
     </>
   );
 }

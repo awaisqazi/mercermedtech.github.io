@@ -77,7 +77,7 @@ export function NewProjectDialog({ open, onClose }: { open: boolean; onClose: ()
     if (result.ok && result.project) {
       toast.good('Project created.');
       onClose();
-      navigate(`/p/${result.project.slug}/overview`);
+      navigate(`/p/${result.project.slug}/plan`);
     } else {
       setError(result.error?.message ?? 'That did not work.');
     }

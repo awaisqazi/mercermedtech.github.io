@@ -1,45 +1,21 @@
 /**
- * The grant module.
+ * The grant module: four sections, each one file in this folder.
  *
- * ---------------------------------------------------------------------------
- * HOW A TAB IS PUT TOGETHER
- * ---------------------------------------------------------------------------
- * Each tab is one file in this folder, exporting one component that takes no
- * props. Every tab below is now built; a new one is a new file plus a case in
- * the switch, and nothing outside this folder needs to change. `ComingSoon` is
- * still here for a tab that is stubbed out on the way to being written.
+ *   Plan       every task, grouped by what needs doing when (PlanView)
+ *   Reports    the reporting months as a timeline; each opens a panel
+ *   Partners   county coverage and the partner list; each opens a panel
+ *   Numbers    outcomes and budget at a glance; "Edit numbers" opens the
+ *              full tables (Outcomes.tsx and Budget.tsx, unchanged in spirit)
  *
- * Two files in this folder are not tabs:
- *   shared.ts       reading `config` and `project_state` safely: the funnel
- *                   (and its `side` entries), the metric map behind the
- *                   headline rates, the term, the budget lines and the report
- *                   checklist. Everything returns a usable value when the
- *                   setting is missing.
- *   StateFields.tsx number and date inputs bound to a key inside a
- *                   `project_state` blob, the way LiveField binds a column.
+ * What used to be the Overview, the Rulebook and the Activity tabs now lives
+ * in the About panel and the activity drawer, both owned by the project frame
+ * (screens/Project.tsx). Old addresses are redirected there.
  *
- * What a tab has to work with:
- *
- *   const { project, config, readOnly, canManage, members, profiles } = useProject();
- *   const reports  = useReports();          // rows, kept live
- *   const partners = usePartners();
- *   const tasks    = useTasks();
- *   const [metrics, patchMetrics] = useProjectState('metrics');
- *   const [budget,  patchBudget]  = useProjectState('budget');
- *
- *   await updateRow('reports', id, { status: 'submitted' });   // one column
- *   await insertRow('partners', { name: 'New partner' });
- *   await deleteRow('partners', id);
- *   await patchBudget((current) => ({ ...current, billed: { ...next } }));
- *
- * Components worth reusing rather than rewriting:
- *
- *   <TaskSection />                     the whole deliverables surface
- *   <DocsSection section="notes:budget" />   documents plus the block editor
- *   <SourcesList sources={row.sources} onChange={...} />
- *   <CommentThread entity="report" id={row.id} />
- *   <LiveText /> <LiveNumber /> <LiveDate /> <LiveSelect /> <LiveCheckbox />
- *   <Bar value={...} target={...} />  <ProgressRing />  <Chip />  <EmptyState />
+ * Helpers that are not sections:
+ *   shared.ts        reading `config` and `project_state` safely: funnel,
+ *                    metric map, term, budget lines, report checklist.
+ *   StateFields.tsx  number and date inputs bound to a key inside a
+ *                    `project_state` blob, the way LiveField binds a column.
  *
  * Two rules the rest of the portal keeps to:
  *   - Nothing about any particular grant is written into this repo. Targets,
@@ -50,33 +26,28 @@
  *     for everyone.
  */
 import type { ModuleProps } from '../../screens/Project';
-import { Overview } from './Overview';
-import { Deliverables } from './Deliverables';
+import { useProject } from '../../lib/store';
+import { PlanView } from '../../components/tasks/PlanView';
+import type { WorkstreamDef } from '../../lib/types';
 import { Reports } from './Reports';
-import { Outcomes } from './Outcomes';
-import { Budget } from './Budget';
 import { Partners } from './Partners';
-import { Rulebook } from './Rulebook';
-import { Activity } from './Activity';
+import { Numbers } from './Numbers';
+
+function Plan() {
+  const { config } = useProject();
+  return <PlanView workstreams={(config.workstreams ?? []) as WorkstreamDef[]} />;
+}
 
 export default function GrantModule({ tab }: ModuleProps) {
   switch (tab) {
-    case 'deliverables':
-      return <Deliverables />;
     case 'reports':
       return <Reports />;
-    case 'outcomes':
-      return <Outcomes />;
-    case 'budget':
-      return <Budget />;
     case 'partners':
       return <Partners />;
-    case 'rulebook':
-      return <Rulebook />;
-    case 'activity':
-      return <Activity />;
-    case 'overview':
+    case 'numbers':
+      return <Numbers />;
+    case 'plan':
     default:
-      return <Overview />;
+      return <Plan />;
   }
 }

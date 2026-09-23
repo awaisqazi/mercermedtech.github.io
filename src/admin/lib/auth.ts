@@ -31,6 +31,12 @@ export interface AuthState {
    * screens use it to say so rather than leaving a placeholder on screen.
    */
   stalled: boolean;
+  /**
+   * When this person was last here before this visit: `profiles.last_seen_at`
+   * as it was read, before this page moved it on. "Changed since you were
+   * here" and the unread count on the activity bell both measure from it.
+   */
+  lastVisit: string | null;
 }
 
 const initial: AuthState = {
@@ -41,6 +47,7 @@ const initial: AuthState = {
   profileError: null,
   recovery: false,
   stalled: false,
+  lastVisit: null,
 };
 
 const store = observable<AuthState>(initial);
@@ -80,6 +87,9 @@ let profileRequest: Promise<void> | null = null;
  */
 let inFlightProfile: { userId: string; work: Promise<void> } | null = null;
 
+/** Whose "last visit" has already been captured on this page. */
+let visitCapturedFor: string | null = null;
+
 async function loadProfile(userId: string, force = false): Promise<void> {
   if (!force && inFlightProfile?.userId === userId) return inFlightProfile.work;
 
@@ -95,10 +105,14 @@ async function loadProfile(userId: string, force = false): Promise<void> {
       store.update((state) => ({ ...state, profileError: toAppError(error) }));
       return;
     }
+    const profile = (data as Profile | null) ?? null;
+    const firstRead = visitCapturedFor !== userId;
+    if (firstRead) visitCapturedFor = userId;
     store.update((state) => ({
       ...state,
-      profile: (data as Profile | null) ?? null,
+      profile,
       profileError: null,
+      lastVisit: firstRead ? (profile?.last_seen_at ?? null) : state.lastVisit,
     }));
   })();
 
@@ -131,6 +145,9 @@ export async function touchLastSeen(): Promise<void> {
   const now = Date.now();
   if (now - lastTouch < LAST_SEEN_INTERVAL_MS) return;
   lastTouch = now;
+  // Read the old value before writing the new one, or "since you were here"
+  // would always mean "since a second ago". Both requests used to race.
+  if (inFlightProfile?.userId === userId) await inFlightProfile.work.catch(() => undefined);
   const { error } = await supabase
     .from('profiles')
     .update({ last_seen_at: new Date().toISOString() })
@@ -294,6 +311,7 @@ export async function signOut(scope: 'local' | 'global' = 'local'): Promise<Resu
     const { error } = await supabase.auth.signOut({ scope });
     if (error) return fail(error);
     store.set({ ...initial, ready: true });
+    visitCapturedFor = null;
     return ok;
   } catch (error) {
     return fail(error);

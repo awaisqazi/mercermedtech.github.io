@@ -8,7 +8,9 @@
  * saved, and the error says which line is wrong.
  */
 import { useEffect, useState } from 'preact/hooks';
-import { updateProject, useProject } from '../lib/store';
+import { patchOpenProject, updateProject, useProject } from '../lib/store';
+import { isAdmin, useAuth } from '../lib/auth';
+import { pickPrimary, setPrimaryProject, useProjectList } from '../lib/projects';
 import { toast } from '../lib/toasts';
 import type { ProjectConfig, ProjectStatus, Track } from '../lib/types';
 import { Button } from '../components/Button';
@@ -29,6 +31,24 @@ const STATUSES: Array<{ value: ProjectStatus; label: string }> = [
 
 export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { project, canManage } = useProject();
+  const auth = useAuth();
+  const list = useProjectList();
+  const [homeBusy, setHomeBusy] = useState(false);
+  const isHome = Boolean(project && pickPrimary(list.projects)?.id === project.id);
+
+  const makeHome = async () => {
+    if (!project) return;
+    setHomeBusy(true);
+    const result = await setPrimaryProject(project.id);
+    setHomeBusy(false);
+    if (result.ok) {
+      patchOpenProject(project.id, { config: { ...project.config, primary: true } });
+      setConfigText(JSON.stringify({ ...project.config, primary: true }, null, 2));
+      toast.good(`${project.name} is now the home project.`);
+    } else {
+      toast.bad(result.error?.message ?? 'That did not work.');
+    }
+  };
   const [name, setName] = useState('');
   const [summary, setSummary] = useState('');
   const [track, setTrack] = useState<Track>('org');
@@ -162,6 +182,22 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
               />
             )}
           </Field>
+        </div>
+
+        <div class="wb-home-setting">
+          <div>
+            <p class="wb-label">Home project</p>
+            <p class="wb-hint">
+              {isHome
+                ? 'This is the home project: the Workbench opens on its Plan and it sits at the top of the sidebar.'
+                : 'The Workbench opens on the home project and keeps it at the top of the sidebar.'}
+            </p>
+          </div>
+          {!isHome && isAdmin(auth) && project?.status === 'active' ? (
+            <Button variant="secondary" size="sm" busy={homeBusy} onClick={makeHome}>
+              Make this the home project
+            </Button>
+          ) : null}
         </div>
 
         <Field

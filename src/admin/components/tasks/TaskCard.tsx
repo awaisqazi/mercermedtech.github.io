@@ -15,7 +15,6 @@ import { Chip } from '../Chip';
 import { LiveSelect } from '../LiveField';
 import { Select, optionsFrom } from '../Select';
 import { IconAccount, IconChevronDown, IconWarning } from '../Icons';
-import { TaskDetails } from './TaskDetails';
 import { workstreamLabel } from './shared';
 
 export interface TaskCardProps {
@@ -65,7 +64,8 @@ export function TaskCard({
 
   const overdue = isOverdue(task.due) && task.status !== 'done';
   // "Unassigned" typed as a label says nothing the assignee select doesn't.
-  const ownerLabel = /^(unassigned|nobody|none|n\/a|tbd)$/i.test(task.owner.trim()) ? '' : task.owner.trim();
+  const owner = (task.owner ?? '').trim();
+  const ownerLabel = /^(unassigned|nobody|none|n\/a|tbd)$/i.test(owner) ? '' : owner;
   const assigneeOptions = [
     { value: '', label: 'Nobody' },
     ...members.map((member) => ({
@@ -172,11 +172,6 @@ export function TaskCard({
         </div>
       </div>
 
-      {open && inlineDetails ? (
-        <div class="wb-task-details">
-          <TaskDetails task={task} workstreams={workstreams} onDeleted={onDelete} />
-        </div>
-      ) : null}
     </article>
   );
 }

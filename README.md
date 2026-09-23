@@ -123,6 +123,80 @@ only credential in the code is the Supabase **publishable** key, which is meant
 to be shipped to browsers; row level security does the real work, and every
 read happens as the signed-in person.
 
+### How it is laid out
+
+The Workbench revolves around one project, the **home project**. `#/` opens
+its Plan, and it sits at the top of the left rail with its own sections. Other
+projects are folded away under "Other projects" (archived ones behind a second
+fold), followed by Today, People and Account.
+
+**Choosing the home project.** An owner or administrator opens the project
+and picks **Make this the home project** from the project menu (the `...` at
+the end of the header) or from Project settings. That writes
+`"primary": true` into the project's `config` and removes it from any other
+project; no column or migration is involved. If no project is flagged, the
+only active project is home; if there are several, the most recently updated.
+The rules live in `src/admin/lib/projects.ts`.
+
+**A project** has one quiet header line (name, status, who is here, About,
+the activity bell with a count of what changed since your last visit, and a
+menu) and four sections for a grant, two for a general project:
+
+| Address | What it is |
+| --- | --- |
+| `#/p/<slug>/plan` | Every task, grouped: Needs attention, This week, Next, Later, Done. Filter chips (Mine, Critical, Overdue, Unassigned, workstream, search) and a Board view. `/` searches, `n` adds a task. |
+| `#/p/<slug>/reports` | The reporting months as a timeline. |
+| `#/p/<slug>/partners` | County coverage and the partner list. |
+| `#/p/<slug>/numbers` | Outcomes and budget at a glance; "Edit numbers" opens the full tables. |
+| `#/p/<slug>/notes` | General projects only: their notes. |
+
+Detail opens on top of the section, and the address says what is open, so it
+can be pasted to a colleague: `?task=<id>`, `?report=<id>` (`&check=1` for
+the pre-submission check), `?partner=<id>`, `?about=<section>`,
+`?activity=1`, `?edit=outcomes` or `?edit=budget`. The About panel holds what
+used to be on the surface: the long description, the contract facts, the
+funding sentence, the "about" documents and the Rulebook.
+
+**Addresses from before the redesign still work** and land here:
+
+| Old | New |
+| --- | --- |
+| `/overview` | `/plan?about=start` (the About panel, on the section you last read) |
+| `/deliverables`, `/tasks` | `/plan` |
+| `/outcomes` | `/numbers?focus=outcomes` |
+| `/budget` | `/numbers?focus=budget` |
+| `/rulebook` | `/plan?about=rulebook` |
+| `/activity` | `/plan?activity=1` |
+| `#/` (old Home) | the home project's Plan; the old Home is now `#/today` |
+
+**Today** (`#/today`) is My work, Due this week (tasks and the next report),
+Team (who has been around, what each has open, the last thing each changed)
+and Since you were here. Every section draws as soon as its own request
+lands; all of them are sent at once (`loadToday` in `src/admin/lib/queries.ts`).
+
+**Starting and importing projects** is rare, so it is in the **Settings** menu
+(the gear at the foot of the rail, the project menu, or "More" on a phone),
+not on any screen. `#/projects` lists every project.
+
+**Timing a slow load.** Set `localStorage['wb.timing'] = '1'` and reload:
+every request the Today and project screens make is printed as
+`[wb timing] today.tasks 184 ms (landed 912 ms after the page started)`, and
+all of them are kept in `window.__wbTiming`.
+
+### The review demo (`#/demo`)
+
+`/admin/#/demo` runs the whole Workbench against an invented project ("Sample
+Grant": about forty tasks, nineteen reports, twelve partners, three people)
+with no account and **no network at all**: the Supabase client is swapped for
+an in-memory stand-in (`src/admin/demo/`) that answers from a fixture, applies
+writes to it, logs activity the way the database trigger does, and replays
+changes through a fake realtime channel. Two colleagues are "here", and the
+first task you open gets a due-date change from one of them a few seconds
+later, so presence and the "someone changed this" toast can be seen. A
+ribbon says it is demo data; a reload starts again from the fixture. Nothing
+links to it. The fixture is downloaded only by the demo, and like everything
+in this public repository it contains nothing real.
+
 ### If the Workbench hangs
 
 **What to do, in order.**
@@ -153,8 +227,9 @@ So now:
   (12 s), after which a stall becomes an ordinary error;
 - **a load that is still going after four seconds says so** instead of leaving
   a placeholder on screen in silence;
-- **Home and the project screen offer Try again**, which re-checks the session
-  first, because a stuck session is usually the real problem;
+- **Today and the project screen offer Try again**, which re-checks the session
+  first, because a stuck session is usually the real problem (on Today each
+  part has its own ceiling, so what has arrived stays on screen);
 - **a page restored from the back-forward cache re-checks its sign-in and
   rebuilds its realtime channel** rather than trusting what it woke up with;
 - **localStorage can refuse** (Safari private browsing, tracking prevention)
@@ -185,10 +260,21 @@ Lock described above, and — the important two — stalls the token endpoint an
 then the REST endpoint and insists the app still reaches a screen somebody can
 act on. It also counts frames while the loading skeleton is up.
 
+The `demo-screens` scenario drives the signed-in screens through `#/demo`
+(Today, Plan, a task, the Board, Reports, a report, Partners, a partner,
+Numbers and its editors, About, the activity drawer, the rail and the menus)
+at 1280×900 and 390×844, and fails if any of them is missing, if the page
+throws, or if a single request reaches Supabase. Add `--screens=<folder>` to
+keep a screenshot of each:
+
+```bash
+node scripts/webkit-smoke.mjs --only=demo-screens --screens=/tmp/workbench
+```
+
 It **cannot sign in**: there are no credentials in this repository and none
-should be added. Everything past the sign-in screen — real project data, the
-realtime channel, presence, two people editing at once — is still only ever
-tested by hand, in Safari, signed in.
+should be added. Real project data, the real realtime channel and two real
+people editing at once are still only ever tested by hand, in Safari, signed
+in.
 
 ## How deploying works
 

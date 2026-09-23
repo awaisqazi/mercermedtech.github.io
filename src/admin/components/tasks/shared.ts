@@ -1,36 +1,10 @@
 /**
  * Shared shapes and small helpers for the task components. The same set backs
- * "Tasks" in a general project and "Deliverables" in a grant, so nothing in
- * here knows which it is.
+ * the Plan in a grant and in a general project, so nothing in here knows
+ * which it is.
  */
 import type { Horizon, Task, TaskPriority, TaskStatus, WorkstreamDef } from '../../lib/types';
 import { daysUntil, firstName } from '../../lib/format';
-
-/**
- * A `who` filter value that stands for a free-text owner label rather than a
- * member. Prefixed so it can never collide with a user id.
- */
-export const OWNER_PREFIX = 'owner:';
-
-export interface TaskFilters {
-  search: string;
-  ws: string;
-  status: TaskStatus | '';
-  who: string;
-  horizon: Horizon | '';
-  hideDone: boolean;
-}
-
-export const EMPTY_FILTERS: TaskFilters = {
-  search: '',
-  ws: '',
-  status: '',
-  who: '',
-  // Done work is history, not a to-do list: it starts out of the way and the
-  // toolbar remembers whoever wants it back.
-  hideDone: true,
-  horizon: '',
-};
 
 export type TaskView = 'list' | 'board';
 
@@ -38,40 +12,6 @@ export type TaskView = 'list' | 'board';
 export function workstreamLabel(key: string, workstreams: WorkstreamDef[]): string {
   if (!key) return '';
   return workstreams.find((entry) => entry.key === key)?.label ?? key;
-}
-
-export interface MatchContext {
-  /** Matches `who` against the assignee id and the free-text owner label. */
-  nameOf: (userId: string | null) => string;
-}
-
-export function matchesFilters(task: Task, filters: TaskFilters, context: MatchContext): boolean {
-  if (filters.hideDone && task.status === 'done') return false;
-  if (filters.ws && task.ws !== filters.ws) return false;
-  if (filters.status && task.status !== filters.status) return false;
-  if (filters.horizon && task.horizon !== filters.horizon) return false;
-
-  if (filters.who) {
-    if (filters.who === 'unassigned') {
-      if (task.assignee || task.owner.trim()) return false;
-    } else if (filters.who.startsWith(OWNER_PREFIX)) {
-      // An owner label picked from the list: it has to be that exact label.
-      if (task.owner.trim() !== filters.who.slice(OWNER_PREFIX.length)) return false;
-    } else if (task.assignee !== filters.who) {
-      // Also let a free-text owner label stand in for a person.
-      const name = firstName(context.nameOf(filters.who)).toLowerCase();
-      if (!name || !task.owner.toLowerCase().includes(name)) return false;
-    }
-  }
-
-  if (filters.search) {
-    const needle = filters.search.toLowerCase();
-    const haystack = [task.title, task.ws, task.owner, task.why, task.done_when, task.notes]
-      .join(' ')
-      .toLowerCase();
-    if (!haystack.includes(needle)) return false;
-  }
-  return true;
 }
 
 /* ------------------------------------------------------------- ordering --- */
@@ -117,16 +57,6 @@ export function sortTasks(tasks: Task[]): Task[] {
   });
 }
 
-/** The distinct free-text owner labels in use, in alphabetical order. */
-export function ownerLabels(tasks: Task[]): string[] {
-  const seen = new Set<string>();
-  for (const task of tasks) {
-    const label = task.owner.trim();
-    if (label && !/^(unassigned|nobody|none|n\/a|tbd)$/i.test(label)) seen.add(label);
-  }
-  return [...seen].sort((a, b) => a.localeCompare(b));
-}
-
 /** Critical, blocked, or overdue: the things worth interrupting someone for. */
 export function needsAttention(task: Task): boolean {
   if (task.status === 'done') return false;
@@ -147,8 +77,105 @@ export function nextSort(tasks: Task[]): number {
   return tasks.reduce((highest, task) => Math.max(highest, task.sort), 0) + 10;
 }
 
-export const HORIZON_HEADING: Record<Horizon, string> = {
-  now: 'Now',
+/* ------------------------------------------------------ the Plan list --- */
+
+/**
+ * The Plan's groups, in reading order. A task sits in exactly one:
+ *   attention  not done, and critical, blocked or overdue
+ *   week       not done, and planned for now or due within seven days
+ *   next       planned for next
+ *   later      planned for later
+ *   done       finished (folded away, with a count)
+ */
+export type PlanGroup = 'attention' | 'week' | 'next' | 'later' | 'done';
+
+export const PLAN_GROUPS: PlanGroup[] = ['attention', 'week', 'next', 'later', 'done'];
+
+export const PLAN_GROUP_LABEL: Record<PlanGroup, string> = {
+  attention: 'Needs attention',
+  week: 'This week',
   next: 'Next',
   later: 'Later',
+  done: 'Done',
 };
+
+export function planGroupOf(task: Task): PlanGroup {
+  if (task.status === 'done') return 'done';
+  if (needsAttention(task)) return 'attention';
+  const days = daysUntil(task.due);
+  if (task.horizon === 'now' || (days !== null && days <= 7)) return 'week';
+  return task.horizon === 'later' ? 'later' : 'next';
+}
+
+/** What a quick-add in each group creates. */
+export const PLAN_GROUP_DEFAULTS: Record<Exclude<PlanGroup, 'done'>, { horizon: Horizon; pri: TaskPriority }> = {
+  attention: { horizon: 'now', pri: 'critical' },
+  week: { horizon: 'now', pri: 'normal' },
+  next: { horizon: 'next', pri: 'normal' },
+  later: { horizon: 'later', pri: 'normal' },
+};
+
+export interface PlanFilters {
+  search: string;
+  mine: boolean;
+  critical: boolean;
+  overdue: boolean;
+  unassigned: boolean;
+  /** Workstream keys; empty means all of them. */
+  ws: string[];
+}
+
+export const EMPTY_PLAN_FILTERS: PlanFilters = {
+  search: '',
+  mine: false,
+  critical: false,
+  overdue: false,
+  unassigned: false,
+  ws: [],
+};
+
+const NOBODY = /^(unassigned|nobody|none|n\/a|tbd)$/i;
+
+/** Assigned to me, or carrying my first name in the free-text owner label. */
+export function isMine(task: Task, me: string | null, myName: string): boolean {
+  if (me && task.assignee === me) return true;
+  const first = firstName(myName).toLowerCase();
+  return Boolean(first) && first.length > 1 && (task.owner ?? '').toLowerCase().includes(first);
+}
+
+export function isUnassigned(task: Task): boolean {
+  const owner = (task.owner ?? '').trim();
+  return !task.assignee && (!owner || NOBODY.test(owner));
+}
+
+export function matchesPlan(task: Task, filters: PlanFilters, me: string | null, myName: string): boolean {
+  if (filters.mine && !isMine(task, me, myName)) return false;
+  if (filters.critical && task.pri !== 'critical') return false;
+  if (filters.overdue && !isOverdueTask(task)) return false;
+  if (filters.unassigned && !isUnassigned(task)) return false;
+  if (filters.ws.length && !filters.ws.includes(task.ws)) return false;
+  if (filters.search) {
+    const needle = filters.search.toLowerCase();
+    const haystack = [task.title, task.ws, task.owner, task.why, task.done_when, task.notes]
+      .join(' ')
+      .toLowerCase();
+    if (!haystack.includes(needle)) return false;
+  }
+  return true;
+}
+
+/** Soonest due first inside a group, then the usual order. */
+export function comparePlan(a: Task, b: Task): number {
+  const dueA = a.due || '9999-12-31';
+  const dueB = b.due || '9999-12-31';
+  const priority = (PRIORITY_RANK[a.pri] ?? 9) - (PRIORITY_RANK[b.pri] ?? 9);
+  if (a.status === 'blocked' && b.status !== 'blocked') return -1;
+  if (b.status === 'blocked' && a.status !== 'blocked') return 1;
+  if (dueA !== dueB) return dueA < dueB ? -1 : 1;
+  return priority || a.sort - b.sort;
+}
+
+/** Changed by somebody else since this person was last here. */
+export function changedSince(task: { updated_at: string; updated_by: string | null }, since: string | null, me: string | null): boolean {
+  return Boolean(since && task.updated_at > since && task.updated_by && task.updated_by !== me);
+}

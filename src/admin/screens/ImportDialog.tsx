@@ -91,7 +91,7 @@ export function ImportDialog({ open, onClose }: { open: boolean; onClose: () => 
       setPhase('done');
       toast.good('Project imported.');
       close();
-      navigate(`/p/${outcome.project.slug}/overview`);
+      navigate(`/p/${outcome.project.slug}/plan`);
       return;
     }
     setFailure(outcome.error?.message ?? 'The import stopped part way.');

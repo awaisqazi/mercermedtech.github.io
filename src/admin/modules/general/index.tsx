@@ -1,25 +1,15 @@
 /**
- * The general-project module: Overview, Tasks, Notes, Activity.
+ * The general-project module: Plan and Notes.
  *
- * Loaded on demand by the project frame. It takes the active tab and nothing
- * else; the data all comes from the project store.
+ * Loaded on demand by the project frame. What used to be Overview and
+ * Activity now lives in the About panel and the activity drawer, which the
+ * frame owns for every kind of project.
  */
 import type { ModuleProps } from '../../screens/Project';
-import { Overview } from './Overview';
-import { Tasks } from './Tasks';
+import { PlanView } from '../../components/tasks/PlanView';
 import { Notes } from './Notes';
-import { Activity } from './Activity';
 
 export default function GeneralModule({ tab }: ModuleProps) {
-  switch (tab) {
-    case 'tasks':
-      return <Tasks />;
-    case 'notes':
-      return <Notes />;
-    case 'activity':
-      return <Activity />;
-    case 'overview':
-    default:
-      return <Overview />;
-  }
+  if (tab === 'notes') return <Notes />;
+  return <PlanView />;
 }
