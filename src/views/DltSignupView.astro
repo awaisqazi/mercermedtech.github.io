@@ -1,0 +1,71 @@
+---
+/**
+ * Digital Literacy Training sign-up page, in one language.
+ *
+ * Hidden on purpose: BaseLayout carries "standalone" (noindex, no hreflang
+ * pair) and astro.config.mjs keeps /sign-up/ out of the sitemap. Nothing on
+ * the site links here. The address is handed out directly.
+ *
+ * NJDOL rule: the page body never advertises the health care programs, and
+ * it carries the funding sentence through FundingLine.
+ *
+ * Owner's rule for this page: the form is the contact path, so the page body
+ * itself carries no phone number and no call button. The Tech-track header
+ * stays as on the landing page; the page ends with the standard site footer
+ * (owner's call), phone number included. The school email appears once, as a
+ * quiet line under the form.
+ *
+ * navLinks is empty on purpose: the Tech-track nav is a list of in-page
+ * anchors (#qualify, #learn, ...) that only exist on the landing page.
+ */
+import '../styles/components/dl.css';
+import '../styles/components/signup.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import DltSignupForm from '../components/DltSignupForm.astro';
+import FundingLine from '../components/FundingLine.astro';
+import { site } from '../data/site';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const page = t(locale).dltSignup;
+const path = '/digital-literacy/sign-up/';
+---
+
+<BaseLayout
+  locale={locale}
+  path={path}
+  title={page.seo.title}
+  description={page.seo.description}
+  variant="dlt"
+  footer="site"
+  bodyClass="dl-page signup-page"
+  navLinks={[]}
+  standalone
+>
+  <main id="main" class="signup-main">
+    <div class="signup-column">
+      <span class="signup-eyebrow">{page.eyebrow}</span>
+      <h1>{page.heading}</h1>
+      <p class="signup-lead">{page.lead}</p>
+
+      <section class="signup-qualify" aria-labelledby="signup-qualify-title">
+        <h2 id="signup-qualify-title">{page.qualifyHeading}</h2>
+        <p>{page.qualifyLine}</p>
+      </section>
+
+      <DltSignupForm locale={locale} />
+
+      <p class="signup-note">{page.note}</p>
+
+      <p class="signup-questions">
+        {page.questionsBefore}<a href={`mailto:${site.email}`}>{site.email}</a>.
+      </p>
+
+      <FundingLine locale={locale} class="signup-funding" />
+    </div>
+  </main>
+</BaseLayout>

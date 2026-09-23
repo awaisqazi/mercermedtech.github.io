@@ -1,0 +1,633 @@
+/*
+ * The partner outreach kit page. It sits inside the same centred column as
+ * the sign-up page (signup.css), so only the pieces that page does not have
+ * live here: the two download buttons, the preview grid, and the file list.
+ */
+
+.kit-column {
+    width: min(100%, 820px);
+}
+
+.kit-section {
+    margin: 0 0 2.25rem;
+}
+
+.kit-section h2 {
+    font-size: 1.15rem;
+    margin: 0 0 0.75rem;
+}
+
+.kit-note {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+}
+
+.kit-steps {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+/* ---------- the two download cards ---------- */
+
+.kit-downloads {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+}
+
+.kit-download {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--tech);
+    border-radius: var(--radius-md);
+}
+
+.kit-download-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.kit-download-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-sm);
+    background: var(--tech-light);
+    color: var(--tech-dark);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.kit-download h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.3;
+    color: var(--text-main);
+}
+
+.kit-download p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    flex: 1;
+}
+
+.kit-download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    align-self: flex-start;
+    padding: 0.7rem 1.1rem;
+    border-radius: var(--radius-sm);
+    background: var(--tech);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: background 0.15s var(--ease-out);
+}
+
+.kit-download-btn:hover,
+.kit-download-btn:focus-visible {
+    background: var(--tech-dark);
+    color: #fff;
+}
+
+/* ---------- the preview grid ---------- */
+
+.kit-previews {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.kit-previews li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.kit-previews img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: #fff;
+}
+
+.kit-previews span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ---------- the file list ---------- */
+
+.kit-variant {
+    margin: 0 0 1.5rem;
+}
+
+.kit-variant h3 {
+    font-size: 0.95rem;
+    margin: 0 0 0.5rem;
+    color: var(--tech-dark);
+}
+
+.kit-file-list {
+    margin: 0;
+    display: grid;
+    gap: 0.6rem;
+    padding: 1rem 1.15rem;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-radius: var(--radius-md);
+}
+
+.kit-file-list dt {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.kit-file-list dd {
+    margin: 0 0 0.35rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.9rem;
+}
+
+/* The site's base link colour is the body colour, which is right for a
+   sentence and wrong for a list of file names that are all links. */
+.kit-file-list dd a {
+    font-size: 0.85rem;
+    word-break: break-word;
+    color: var(--tech-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.kit-file-list dd a:hover,
+.kit-file-list dd a:focus-visible {
+    color: var(--tech);
+}
+
+/* ---------- the rules box ---------- */
+
+.kit-rules {
+    border-left: 3px solid var(--tech);
+    background: var(--tech-light);
+    border-radius: var(--radius-md);
+    padding: 1.15rem 1.35rem;
+    margin: 0 0 1.5rem;
+}
+
+.kit-rules h2 {
+    font-size: 1rem;
+    margin: 0 0 0.5rem;
+    color: var(--tech-dark);
+}
+
+.kit-rules ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.45rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+@media (max-width: 480px) {
+    .kit-previews {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ---------- zoom: thumbnail links and the lightbox ---------- */
+
+.kit-preview-link {
+    position: relative;
+    display: block;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.kit-preview-link img {
+    display: block;
+    transition: transform 0.2s var(--ease-out);
+}
+
+.kit-preview-link:hover img,
+.kit-preview-link:focus-visible img {
+    transform: scale(1.03);
+}
+
+.kit-preview-zoom {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--radius-full);
+    background: rgba(20, 38, 42, 0.78);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.kit-lightbox {
+    /* The site reset zeroes margins, which pins a dialog to the corner. */
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: fit-content;
+    height: fit-content;
+    max-width: min(96vw, 1200px);
+    max-height: 96vh;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: #fff;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+
+.kit-lightbox::backdrop {
+    background: rgba(10, 20, 24, 0.7);
+}
+
+.kit-lightbox-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.75rem 0.6rem 1rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.kit-lightbox-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.kit-lightbox-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: var(--radius-sm);
+    background: var(--tech);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.kit-lightbox-download:hover,
+.kit-lightbox-download:focus-visible {
+    background: var(--tech-dark);
+    color: #fff;
+}
+
+.kit-lightbox img {
+    display: block;
+    max-width: 96vw;
+    max-height: calc(96vh - 3.5rem);
+    width: auto;
+    height: auto;
+}
+
+.kit-lightbox-close {
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--surface-3);
+    color: var(--text-main);
+    font-size: 1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.kit-lightbox-close:hover,
+.kit-lightbox-close:focus-visible {
+    background: var(--tech);
+    color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .kit-preview-link img {
+        transition: none;
+    }
+}
+
+/* ==========================================================================
+   The partner briefing that opens the page.
+   The section bodies reuse dl.css (dl-checks, dl-steps, dl-list, dl-callout,
+   dl-note), so only the pieces those do not cover live here.
+   ========================================================================== */
+
+.brief-prepared {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+}
+
+/* ---------- the funded-by strip ---------- */
+
+.brief-funded {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    margin: 0 0 1.75rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-md);
+}
+
+.brief-funded img {
+    width: 64px;
+    height: auto;
+    flex-shrink: 0;
+}
+
+.brief-funded-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tech-dark);
+    margin-bottom: 0.25rem;
+}
+
+.brief-funded-line {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+}
+
+/* ---------- the mini table of contents ---------- */
+
+.brief-toc {
+    margin: 0 0 2.25rem;
+    padding: 1rem 1.15rem;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-radius: var(--radius-md);
+}
+
+.brief-toc-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 0.6rem;
+}
+
+.brief-toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.75rem;
+}
+
+.brief-toc a {
+    font-size: 0.88rem;
+    color: var(--tech-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.brief-toc a:hover,
+.brief-toc a:focus-visible {
+    color: var(--tech);
+}
+
+/* ---------- "send someone our way", the one block that must not be missed ---------- */
+
+.brief-refer {
+    margin: 0 0 2.25rem;
+    padding: 1.5rem 1.5rem 1.35rem;
+    background: linear-gradient(135deg, var(--tech-light) 0%, rgba(255, 255, 255, 0.9) 100%);
+    border: 1px solid rgba(59, 91, 219, 0.28);
+    border-radius: var(--radius-lg);
+}
+
+.brief-refer h2 {
+    font-size: 1.3rem;
+    margin: 0 0 0.5rem;
+    color: var(--tech-dark);
+}
+
+.brief-refer > p {
+    margin: 0 0 1.15rem;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+.brief-refer-btn {
+    width: 100%;
+    padding: 1.05rem 1.5rem;
+    font-size: 1rem;
+}
+
+.brief-refer-url {
+    margin: 0.65rem 0 1.15rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    word-break: break-word;
+}
+
+.brief-refer-points {
+    gap: 0.6rem;
+}
+
+.brief-refer-points span {
+    font-size: 0.92rem;
+}
+
+/* ---------- the training pathway ---------- */
+
+.brief-stages {
+    list-style: none;
+    counter-reset: brief-stage;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+}
+
+.brief-stages li {
+    counter-increment: brief-stage;
+    position: relative;
+    padding: 1rem 1.15rem 1rem 3.25rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-md);
+}
+
+.brief-stages li::before {
+    content: counter(brief-stage);
+    position: absolute;
+    left: 1.15rem;
+    top: 1rem;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.brief-stages strong {
+    display: block;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.brief-stages span {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+/* ---------- what participants learn ---------- */
+
+.brief-chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.brief-chips li {
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    background: var(--tech-light);
+    color: var(--tech-dark);
+    font-size: 0.88rem;
+    font-weight: 500;
+}
+
+/* ---------- what we ask, what you get ---------- */
+
+.brief-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.brief-columns h3 {
+    font-size: 0.95rem;
+    margin: 0 0 0.75rem;
+    color: var(--tech-dark);
+}
+
+/* ---------- contacts ---------- */
+
+.brief-contacts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.brief-contacts li {
+    padding: 1.15rem 1.25rem;
+    background: var(--surface-1);
+    border: 1px solid rgba(59, 91, 219, 0.18);
+    border-radius: var(--radius-md);
+    display: grid;
+    gap: 0.25rem;
+}
+
+.brief-contacts strong {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.05rem;
+}
+
+.brief-contact-role {
+    font-size: 0.85rem;
+    color: var(--tech-dark);
+}
+
+.brief-contact-scope {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.brief-contacts a {
+    font-size: 0.88rem;
+    color: var(--tech-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    word-break: break-word;
+    margin-top: 0.25rem;
+}
+
+/* ---------- where the briefing ends and the kit begins ---------- */
+
+.kit-open {
+    margin: 3rem 0 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid rgba(59, 91, 219, 0.18);
+}
+
+.kit-open h2 {
+    font-size: 1.45rem;
+    margin: 0 0 0.5rem;
+}
+
+@media (max-width: 480px) {
+    .brief-funded {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+}

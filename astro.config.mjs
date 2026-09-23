@@ -25,9 +25,22 @@ export default defineConfig({
         defaultLocale: 'en',
         locales: { en: 'en-US', es: 'es-US' },
       },
-      // The staff portal under /admin/ is a private, login-protected tool. It
-      // carries noindex,nofollow and must never appear in the sitemap.
-      filter: (page) => !new URL(page).pathname.startsWith('/admin'),
+      // Two kinds of page stay out of the sitemap.
+      //   /admin/      the staff portal, a private login-protected tool that
+      //                carries noindex,nofollow.
+      //   .../sign-up/ the Digital Literacy sign-up page, in both languages.
+      //                It is noindex and nothing links to it: the address is
+      //                handed out directly to partners and to people who ask.
+      //   /partners/   one outreach kit page per partner agency, also noindex
+      //                and also unlinked. The address is emailed to the agency.
+      filter: (page) => {
+        const { pathname } = new URL(page);
+        return (
+          !pathname.startsWith('/admin') &&
+          !pathname.includes('/sign-up') &&
+          !pathname.includes('/partners/')
+        );
+      },
     }),
     // Preact powers the /admin/ portal only. The public marketing pages stay
     // plain Astro, so nothing here ships to them.

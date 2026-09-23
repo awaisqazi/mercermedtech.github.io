@@ -747,6 +747,314 @@ export const es: Dictionary = {
     },
   },
 
+  /* ---------- Página de inscripción de Habilidades Digitales (oculta) ---------- */
+  /**
+   * Nada en el sitio enlaza a esta página. La dirección se entrega directamente,
+   * a las agencias y a quien la pida. BaseLayout lleva "standalone", así que la
+   * página es noindex y no entra en el sitemap.
+   */
+  dltSignup: {
+    seo: {
+      title: 'Inscríbase en Habilidades Digitales | Mercer Med Tech',
+      description:
+        'Inscríbase en la Capacitación en Habilidades Digitales en Lawrenceville, NJ. Sin costo si califica. Unas 5 a 6 semanas, en línea o en persona.',
+    },
+    eyebrow: 'Rama Tech',
+    heading: 'Inscríbase en la Capacitación en Habilidades Digitales (Digital Literacy Training)',
+    lead: 'Si califica, no le cuesta nada. La capacitación dura unas 5 a 6 semanas, en línea y con la opción de venir en persona a Lawrenceville, y se da en inglés y en español. Llene este formulario y le llamamos.',
+    qualifyHeading: 'Quién califica',
+    qualifyLine:
+      'Usted vive en Nueva Jersey, tiene 18 años o más, recibe TANF o SNAP, y vive en el condado de Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset o Union.',
+    note: 'Confirmamos si califica con la agencia de servicios sociales de su condado. No necesita una referencia de nadie para inscribirse.',
+    /** Regla del dueño para esta página: el formulario es la vía de contacto.
+     *  Sin número de teléfono y sin botón de llamada. El correo aparece una
+     *  sola vez, en esta línea debajo del formulario. */
+    questionsBefore: 'Si tiene dudas, escríbanos a ',
+    form: {
+      nameLabel: 'Su nombre',
+      namePlaceholder: 'Nombre y apellido',
+      phoneLabel: 'Número de teléfono',
+      phonePlaceholder: '(609) 555 1234',
+      emailLabel: 'Correo electrónico',
+      emailPlaceholder: 'usted@ejemplo.com',
+      countyLabel: '¿En qué condado vive?',
+      countyOther: 'Otro condado',
+      benefitsLabel: '¿Recibe TANF o SNAP?',
+      benefitsYes: 'Sí',
+      benefitsNo: 'No',
+      benefitsNotSure: 'No estoy seguro',
+      languageLabel: '¿En qué idioma quiere la clase?',
+      languageEnglish: 'Inglés',
+      languageSpanish: 'Español',
+      attendLabel: '¿Cómo prefiere asistir?',
+      attendOnline: 'En línea',
+      attendInPerson: 'En persona en Lawrenceville',
+      attendEither: 'Cualquiera de las dos',
+      bestTimeLabel: '¿Cuándo es buen momento para comunicarnos con usted?',
+      bestTimePlaceholder: 'Cualquier hora sirve',
+      referralLabel: 'Le refirió una agencia o un trabajador de caso (caseworker)',
+      referralPlaceholder: 'Nombre de la agencia o de la persona',
+      messageLabel: '¿Algo que quiera contarnos?',
+      messagePlaceholder: 'Por ejemplo: qué quiere aprender, o qué horarios le sirven.',
+      pickOne: 'Elija uno',
+      optional: 'opcional',
+      consent:
+        'Sí, pueden llamarme o escribirme sobre esto. No compartimos su información con nadie.',
+      submit: 'Enviar mi inscripción',
+      sending: 'Enviando',
+      successTitle: 'Listo. Ya está en la lista.',
+      successBody:
+        'Alguien de la escuela se comunicará con usted, por lo general dentro de dos días hábiles.',
+      errorTitle: 'No pudimos enviarlo.',
+      errorBody: `Disculpe, algo falló de nuestro lado. Escriba a ${site.email} y seguimos desde ahí.`,
+      securityIncomplete:
+        'Complete la verificación de seguridad de arriba y envíe su inscripción otra vez.',
+      securityUnavailable:
+        'La verificación de seguridad no cargó. Actualice la página o escríbanos por correo.',
+    },
+  },
+
+  /* ---------- Página del kit de difusión para agencias (oculta) ---------- */
+  /**
+   * Una página por agencia, en /partners/<agencia>/. Nada enlaza a ella: la
+   * dirección se le manda a la agencia por correo. BaseLayout lleva
+   * "standalone", así que la página es noindex, y astro.config.mjs deja
+   * /partners/ fuera del sitemap.
+   */
+  partnerKit: {
+    seo: {
+      title: 'Resumen para agencias aliadas | Mercer Med Tech',
+      description:
+        'Resumen para el personal del condado sobre Habilidades Digitales: quién califica, cómo enviar a alguien, qué cubre la capacitación y el kit.',
+    },
+    eyebrow: 'Para agencias aliadas',
+    heading: 'Capacitación en Habilidades Digitales (Digital Literacy Training): resumen para agencias',
+    preparedFor:
+      'Preparado para el equipo de WorkFirst New Jersey del Hunterdon County Educational Services Commission.',
+    /**
+     * El resumen que ahora abre la página, para el personal del condado que
+     * tiene que explicar el programa y decidir a quién manda. Reglas del NJDOL
+     * que valen en cada línea: la elegibilidad es "TANF o SNAP", no se nombra
+     * ningún otro programa, y no se dan días ni horas de clase.
+     */
+    brief: {
+      fundedByLabel: 'Con fondos de',
+      sealAlt: 'Sello del Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey',
+      lead: 'La Capacitación en Habilidades Digitales (Digital Literacy Training) es capacitación en computación, inteligencia artificial y búsqueda de trabajo, sin costo, para adultos que reciben TANF o SNAP en la Región Central. Tiene fondos de una subvención del Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey, y Mercer Med Tech es una de seis organizaciones con esta subvención en el estado. El primer grupo empieza la primera semana de octubre de 2026, y de ahí empieza un grupo nuevo cada 5 a 6 semanas, en grupos de 10 a 12 personas.',
+      tocLabel: 'En esta página',
+      refer: {
+        heading: 'Mándenos a alguien',
+        intro: 'Con un enlace basta. Déselo a la persona, o llénenlo juntos mientras la tiene enfrente.',
+        ctaLabel: 'Formulario de inscripción',
+        url: 'mercermedtech.com/es/digital-literacy/sign-up',
+        points: [
+          'No hay formulario de referencia que llenar.',
+          'Un trabajador de caso (caseworker) puede enviar el formulario por la persona.',
+          'Confirmamos con su oficina que la persona recibe TANF o SNAP antes de que empiece.',
+        ],
+      },
+      /** La presentación de la sesión informativa del 22 de septiembre, en PDF. */
+      presentation: {
+        heading: 'La presentación de nuestra sesión del 22 de septiembre',
+        note: 'Las 13 diapositivas que repasamos, en PDF para compartir con su equipo.',
+        ctaLabel: 'Descargar las diapositivas (PDF, unos 1.8 MB)',
+      },
+      qualify: {
+        heading: 'Quién califica',
+        checks: [
+          {
+            title: 'Vive en Nueva Jersey y tiene 18 años o más',
+            body: '18 años o más el primer día de la capacitación.',
+          },
+          {
+            title: 'Recibe TANF o SNAP ahora',
+            body: 'Beneficios por medio de WorkFirst New Jersey.',
+          },
+          {
+            title: 'Vive en uno de siete condados',
+            body: 'Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset o Union.',
+          },
+          {
+            title: 'Quiere capacitarse y buscar trabajo',
+            body: 'Puede asistir y trabajar con nosotros en la búsqueda de trabajo.',
+          },
+        ],
+        noEducation:
+          'No se pide ningún nivel de estudios. Nadie necesita un diploma ni el puntaje de un examen para empezar.',
+        gaNote: 'General Assistance no califica bajo esta subvención.',
+      },
+      how: {
+        heading: 'Cómo funciona',
+        steps: [
+          {
+            title: 'La persona usa el enlace de inscripción',
+            body: 'El formulario es corto, y un trabajador de caso lo puede llenar por ella.',
+          },
+          {
+            title: 'Confirmamos que califica',
+            body: 'Revisamos con su oficina que recibe TANF o SNAP antes de que empiece.',
+          },
+          {
+            title: 'Revisión de lo que ya sabe y un plan',
+            body: 'En 7 días cada persona hace una revisión de lo que ya sabe y un Individual Employment Plan, y anotamos los apoyos que va a necesitar.',
+          },
+          {
+            title: 'Capacitación con su grupo',
+            body: 'Todas las clases son en línea. Hay apoyo en persona en el campus de Lawrenceville durante las horas de oficina programadas, y los estudiantes reciben ese horario al empezar.',
+          },
+        ],
+        aosos:
+          'Las personas de Hunterdon y Somerset también necesitan un número AOSOS. Nosotros los pedimos por lotes a la oficina de Employment Services del NJDOL en el Greater Raritan One-Stop, así que la persona no tiene que ocuparse de eso.',
+      },
+      pathway: {
+        heading: 'La ruta de la capacitación',
+        stages: [
+          {
+            title: '60 horas de base con Mercer Med Tech',
+            body: 'Manejo de la computadora, archivos y carpetas, internet y correo electrónico, programas de productividad y lo básico de ciberseguridad. Empieza con una revisión inicial, tiene revisiones de avance y termina con un proyecto final.',
+          },
+          {
+            title: '32 horas en línea con NJIT',
+            body: 'El AI Literacy Microcredential, 20 horas, y el Digital Literacy Microcredential, 12 horas. Son los certificados de la lista ETPL que el NJDOL cuenta.',
+          },
+          {
+            title: '20 horas de enriquecimiento, en vivo por internet',
+            body: 'Tecnologías emergentes y manejo del dinero.',
+          },
+          {
+            title: 'Ruta avanzada',
+            body: 'Más capacitación de la lista ETPL, caso por caso, con la aprobación del NJDOL.',
+          },
+        ],
+        total:
+          'Unas 110 horas en 5 a 6 semanas. Quien ya tiene lo básico puede pasar la parte de base con un examen.',
+      },
+      learn: {
+        heading: 'Qué aprenden',
+        items: [
+          'Lo básico de la computadora',
+          'Internet, correo electrónico y reuniones en línea',
+          'Microsoft Office y Google Workspace',
+          'Seguridad en línea',
+          'Inteligencia artificial',
+          'Manejo del dinero',
+          'Preparación para el trabajo',
+        ],
+      },
+      leaveWith: {
+        heading: 'Con qué salen',
+        items: [
+          'Un certificado reconocido por la industria, incluido el AI Literacy Microcredential de NJIT.',
+          'Un currículum terminado, práctica de entrevista y un plan para buscar trabajo.',
+          'Ayuda para encontrar trabajo que sigue después: atención uno a uno, presentaciones con empleadores y llamadas a los 30, 60 y 90 días.',
+        ],
+        workActivity:
+          'El tiempo de capacitación cuenta para el plan de actividad laboral, y nosotros documentamos la asistencia.',
+      },
+      barriers: {
+        heading: 'Apoyos que podemos dar, caso por caso',
+        items: [
+          'Ayuda con el transporte para quien decida venir en persona.',
+          'Una computadora portátil y acceso a internet en casa.',
+          'Costos de examen, de certificado y de identificación.',
+          'Ropa para la entrevista.',
+          'Orientaciones virtuales para el personal de la agencia.',
+        ],
+        note: 'Cada apoyo se decide caso por caso según lo que diga el plan de la persona, se entrega antes de que haga falta y queda documentado para el NJDOL.',
+        childcare: 'El cuidado de niños no es un apoyo estándar, y lo podemos ver caso por caso.',
+      },
+      exchange: {
+        heading: 'Qué pedimos y qué reciben',
+        askHeading: 'Qué pedimos',
+        ask: [
+          'Hablen del programa y compartan el enlace.',
+          'Díganos a quién mandaron.',
+          'Ayúdenos a confirmar que la persona califica cuando se lo pidamos.',
+          'Cuéntenos cómo es su proceso de admisión.',
+        ],
+        getHeading: 'Qué reciben',
+        get: [
+          'Un correo semanal con la lista de quién se inscribió, en el formato de ustedes si tienen uno.',
+          'Registros de asistencia y de graduación para el reporte de actividad laboral.',
+          'Reporte mensual al NJDOL por condado.',
+          'La información de los participantes se mantiene confidencial.',
+          'Orientaciones virtuales para su personal cuando las pidan.',
+        ],
+      },
+      contacts: {
+        heading: 'Sus contactos',
+        people: [
+          {
+            name: 'Awais Qazi',
+            role: 'Coordinador del programa, especialista en admisión y reclutamiento',
+            scope: 'Referencias, elegibilidad, inscripción, reportes semanales.',
+            email: 'awais.a.qazi@gmail.com',
+          },
+          {
+            name: 'Shazia Qazi',
+            role: 'Directora del programa, asesora de orientación laboral',
+            scope: 'Planes, búsqueda de trabajo, empleadores, seguimiento.',
+            email: 'mercermedtech@gmail.com',
+          },
+        ],
+      },
+    },
+    kitHeading: 'Kit de difusión',
+    kitIntro:
+      'Publicaciones listas para usar, un volante y un correo que puede reenviar, en inglés y en español, con el logo de ustedes o sin él. Cada pieza lleva el sello del NJDOL y la frase de financiamiento requerida.',
+    howToHeading: 'Cómo usarlo',
+    howToSteps: [
+      'Elija una carpeta y úsela en todo, para que lo que publique se vea como un solo conjunto.',
+      'Publique las imágenes tal como están. Cada una ya viene en el tamaño del lugar donde va.',
+      'Pegue los textos de social-captions.txt debajo de la imagen.',
+      'Reenvíe el correo a su lista, en texto simple o en HTML.',
+      'El volante en PDF se imprime en papel tamaño Letter, en una página.',
+    ],
+    downloadHeading: 'Descargue el kit completo',
+    downloadNote: 'Las dos carpetas traen las mismas piezas con los mismos nombres de archivo.',
+    variants: [
+      {
+        label: 'Con el logo de ustedes',
+        note: 'Mercer Med Tech con el sello del Hunterdon County Educational Services Commission.',
+      },
+      {
+        label: 'Solo Mercer Med Tech',
+        note: 'Las mismas piezas sin el sello de la agencia.',
+      },
+    ],
+    zipNote: 'Descargar ZIP, unos 17 MB',
+    previewHeading: 'Qué trae',
+    previews: [
+      { caption: 'Publicación para el feed, 1080 x 1350', alt: 'La publicación para el feed, versión en inglés' },
+      { caption: 'Portada de historia o reel, 1080 x 1920', alt: 'La portada de historia, versión en inglés' },
+      { caption: 'Facebook o vista previa de enlace, 1200 x 630', alt: 'La imagen de Facebook, versión en inglés' },
+      { caption: 'Volante, PDF tamaño Letter', alt: 'El volante de una página, versión en inglés' },
+    ],
+    zoomLabel: 'Ampliar',
+    zoomDialogLabel: 'Vista previa a tamaño completo',
+    zoomClose: 'Cerrar',
+    zoomDownload: 'Descargar este archivo',
+    filesHeading: 'Cada archivo por separado',
+    filesNote: 'EN es inglés y ES es español. Publique los dos, o el que lea su gente.',
+    fileGroups: [
+      'Publicación para el feed de Instagram, 1080 x 1350',
+      'Publicación cuadrada, 1080 x 1080',
+      'Portada de historia o reel, 1080 x 1920',
+      'Facebook o vista previa de enlace, 1200 x 630',
+      'Volante en PDF, listo para imprimir',
+      'Volante como imagen, PNG de 300 ppp',
+      'Textos para publicar y correo',
+    ],
+    rulesHeading: 'Reglas que hay que mantener',
+    rules: [
+      'Use el texto tal como está escrito. Ya se revisó contra lo que permite la subvención.',
+      'La elegibilidad se escribe como TANF o SNAP. No ponga otro programa en su lugar, ni describa a las personas por sus ingresos.',
+      'No agregue un número de teléfono, ni días ni horas de clase.',
+    ],
+    rulesSignupBefore: 'Mande a las personas a la página de inscripción: ',
+    contactBefore: 'Si tiene dudas: ',
+  },
+
   /* ---------- Páginas de programa y 404 ---------- */
   programPage: {
     /**

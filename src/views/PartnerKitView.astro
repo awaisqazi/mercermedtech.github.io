@@ -1,0 +1,463 @@
+---
+/**
+ * Partner briefing page, in one language: a one page summary of the program
+ * for county staff, followed by the outreach kit they hand out.
+ *
+ * Hidden on purpose, exactly like the sign-up page: BaseLayout carries
+ * "standalone" (noindex, no hreflang pair), astro.config.mjs keeps
+ * /partners/ out of the sitemap, and nothing on the site links here. The
+ * address is emailed to the agency.
+ *
+ * The kit files are plain static files under public/partners/hunterdon-county/,
+ * so every link in that half of the page is a direct download. Nothing is
+ * bundled and nothing is optimized: the agency has to get the exact file we
+ * shipped. The NJDOL seal at the top is the one exception, because it is a
+ * picture on the page rather than something to hand over, so it goes through
+ * Astro's image pipeline like every other image on the site.
+ *
+ * NJDOL rules this page follows line by line: eligibility is written as
+ * "TANF or SNAP", no other Mercer Med Tech program is named, no class days or
+ * times are given, and the funding sentence appears word for word in English
+ * (through FundingLine at the top). The page ends with the standard site footer.
+ *
+ * The page body carries no phone number, the same as the sign-up page. The
+ * header and footer keep theirs.
+ *
+ * navLinks is empty on purpose, the same as the sign-up page: the Tech-track
+ * nav is a list of in-page anchors that only exist on the landing page.
+ */
+import { Image } from 'astro:assets';
+import '../styles/components/dl.css';
+import '../styles/components/signup.css';
+import '../styles/components/partner-kit.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FundingLine from '../components/FundingLine.astro';
+import seal from '../assets/images/njdol-seal.png';
+import { site } from '../data/site';
+import { localePath, t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const page = t(locale).partnerKit;
+const path = '/partners/hunterdon-county/';
+/** Where the files sit in public/. Same folder for both languages. */
+const BASE = '/partners/hunterdon-county';
+
+/**
+ * The two versions of the kit. Both folders hold the same file names, which
+ * is what lets one list below serve them both.
+ */
+const variants = [
+  {
+    dir: 'co-branded',
+    zip: 'digital-literacy-kit-cobranded-hunterdon.zip',
+    ...page.variants[0],
+  },
+  {
+    dir: 'mercer-med-tech',
+    zip: 'digital-literacy-kit-mercer-med-tech.zip',
+    ...page.variants[1],
+  },
+];
+
+/** The 15 files in each folder, grouped the way a person looks for them. */
+const fileGroups = [
+  { heading: page.fileGroups[0], files: ['instagram-post-EN.png', 'instagram-post-ES.png'] },
+  { heading: page.fileGroups[1], files: ['instagram-post-square-EN.png', 'instagram-post-square-ES.png'] },
+  { heading: page.fileGroups[2], files: ['instagram-story-EN.png', 'instagram-story-ES.png'] },
+  { heading: page.fileGroups[3], files: ['facebook-post-EN.png', 'facebook-post-ES.png'] },
+  { heading: page.fileGroups[4], files: ['flyer-EN.pdf', 'flyer-ES.pdf'] },
+  { heading: page.fileGroups[5], files: ['flyer-EN.png', 'flyer-ES.png'] },
+  { heading: page.fileGroups[6], files: ['social-captions.txt', 'email-template.txt', 'email-template.html'] },
+];
+
+// Each thumbnail opens its full size file in the lightbox below.
+const previews = [
+  { file: 'thumb-post.jpg', full: 'co-branded/instagram-post-EN.png', ...page.previews[0] },
+  { file: 'thumb-story.jpg', full: 'co-branded/instagram-story-EN.png', ...page.previews[1] },
+  { file: 'thumb-facebook.jpg', full: 'co-branded/facebook-post-EN.png', ...page.previews[2] },
+  { file: 'thumb-flyer.jpg', full: 'co-branded/flyer-EN.png', ...page.previews[3] },
+];
+
+/** The slide deck from the September 22 session, in the same folder as the kit. */
+const briefingPdf = 'Digital-Literacy-Training-Hunterdon-County-briefing.pdf';
+
+const signupPath = localePath(locale, '/digital-literacy/sign-up/');
+const signupLabel = 'mercermedtech.com/digital-literacy/sign-up';
+
+const b = page.brief;
+
+/**
+ * The mini table of contents. It is built from the section headings rather
+ * than from a second list of its own, so a renamed heading cannot drift away
+ * from the link that points at it, and npm run check:links proves every
+ * anchor resolves.
+ */
+const sections = [
+  { id: 'refer', label: b.refer.heading },
+  { id: 'qualify', label: b.qualify.heading },
+  { id: 'how', label: b.how.heading },
+  { id: 'pathway', label: b.pathway.heading },
+  { id: 'learn', label: b.learn.heading },
+  { id: 'leave-with', label: b.leaveWith.heading },
+  { id: 'barriers', label: b.barriers.heading },
+  { id: 'exchange', label: b.exchange.heading },
+  { id: 'contacts', label: b.contacts.heading },
+  { id: 'kit', label: page.kitHeading },
+];
+---
+
+<BaseLayout
+  locale={locale}
+  path={path}
+  title={page.seo.title}
+  description={page.seo.description}
+  variant="dlt"
+  footer="site"
+  bodyClass="dl-page signup-page"
+  navLinks={[]}
+  standalone
+>
+  <main id="main" class="signup-main">
+    <div class="signup-column kit-column">
+      <span class="signup-eyebrow">{page.eyebrow}</span>
+      <h1>{page.heading}</h1>
+      <p class="brief-prepared">{page.preparedFor}</p>
+      <p class="signup-lead">{b.lead}</p>
+
+      <div class="brief-funded">
+        <Image src={seal} alt={b.sealAlt} width={64} height={64} densities={[1, 2]} format="webp" />
+        <div>
+          <span class="brief-funded-label">{b.fundedByLabel}</span>
+          <FundingLine locale={locale} class="brief-funded-line" />
+        </div>
+      </div>
+
+      <nav class="brief-toc" aria-label={b.tocLabel}>
+        <span class="brief-toc-label">{b.tocLabel}</span>
+        <ul>
+          {sections.map((section) => <li><a href={`#${section.id}`}>{section.label}</a></li>)}
+        </ul>
+      </nav>
+
+      <!-- ===== 1. Send someone our way. The reason the page exists. ===== -->
+      <section class="brief-refer" id="refer" aria-labelledby="brief-refer-title">
+        <h2 id="brief-refer-title">{b.refer.heading}</h2>
+        <p>{b.refer.intro}</p>
+        <a class="btn btn-tech brief-refer-btn" href={signupPath}>
+          <i class="fas fa-arrow-right" aria-hidden="true"></i> {b.refer.ctaLabel}
+        </a>
+        <p class="brief-refer-url">{b.refer.url}</p>
+        <ul class="dl-list brief-refer-points">
+          {
+            b.refer.points.map((point) => (
+              <li>
+                <i class="fas fa-check" aria-hidden="true" />
+                <span>{point}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <!-- ===== The slides from the session, in the same card style as the kit downloads. ===== -->
+      <section class="kit-section" aria-labelledby="brief-presentation-title">
+        <div class="kit-downloads">
+          <article class="kit-download">
+            <div class="kit-download-head">
+              <span class="kit-download-icon" aria-hidden="true">
+                <i class="fas fa-file-pdf"></i>
+              </span>
+              <h3 id="brief-presentation-title">{b.presentation.heading}</h3>
+            </div>
+            <p>{b.presentation.note}</p>
+            <a class="kit-download-btn" href={`${BASE}/${briefingPdf}`} download>
+              <i class="fas fa-download" aria-hidden="true"></i>
+              <span>{b.presentation.ctaLabel}</span>
+            </a>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===== 2. Who qualifies ===== -->
+      <section class="kit-section" id="qualify" aria-labelledby="brief-qualify-title">
+        <h2 id="brief-qualify-title">{b.qualify.heading}</h2>
+        <ul class="dl-checks">
+          {
+            b.qualify.checks.map((check) => (
+              <li>
+                <i class="fas fa-check" aria-hidden="true" />
+                <div>
+                  <strong>{check.title}</strong>
+                  <span>{check.body}</span>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="dl-note">{b.qualify.noEducation}</p>
+        <p class="dl-note">{b.qualify.gaNote}</p>
+      </section>
+
+      <!-- ===== 3. How it works ===== -->
+      <section class="kit-section" id="how" aria-labelledby="brief-how-title">
+        <h2 id="brief-how-title">{b.how.heading}</h2>
+        <ol class="dl-steps">
+          {
+            b.how.steps.map((step) => (
+              <li>
+                <strong>{step.title}</strong>
+                <span>{step.body}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <div class="dl-callout dl-callout--spaced">
+          <i class="fas fa-info-circle" aria-hidden="true"></i>
+          <p>{b.how.aosos}</p>
+        </div>
+      </section>
+
+      <!-- ===== 4. The training pathway ===== -->
+      <section class="kit-section" id="pathway" aria-labelledby="brief-pathway-title">
+        <h2 id="brief-pathway-title">{b.pathway.heading}</h2>
+        <ol class="brief-stages">
+          {
+            b.pathway.stages.map((stage) => (
+              <li>
+                <strong>{stage.title}</strong>
+                <span>{stage.body}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <p class="dl-note">{b.pathway.total}</p>
+      </section>
+
+      <!-- ===== 5. What participants learn ===== -->
+      <section class="kit-section" id="learn" aria-labelledby="brief-learn-title">
+        <h2 id="brief-learn-title">{b.learn.heading}</h2>
+        <ul class="brief-chips">
+          {b.learn.items.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <!-- ===== 6. What they leave with ===== -->
+      <section class="kit-section" id="leave-with" aria-labelledby="brief-leave-title">
+        <h2 id="brief-leave-title">{b.leaveWith.heading}</h2>
+        <ul class="dl-list">
+          {
+            b.leaveWith.items.map((item) => (
+              <li>
+                <i class="fas fa-certificate" aria-hidden="true" />
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="dl-note">{b.leaveWith.workActivity}</p>
+      </section>
+
+      <!-- ===== 7. Barriers ===== -->
+      <section class="kit-section" id="barriers" aria-labelledby="brief-barriers-title">
+        <h2 id="brief-barriers-title">{b.barriers.heading}</h2>
+        <ul class="dl-list">
+          {
+            b.barriers.items.map((item) => (
+              <li>
+                <i class="fas fa-hand-holding-heart" aria-hidden="true" />
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="dl-note">{b.barriers.note}</p>
+        <p class="dl-note">{b.barriers.childcare}</p>
+      </section>
+
+      <!-- ===== 8. What we ask, what you get ===== -->
+      <section class="kit-section" id="exchange" aria-labelledby="brief-exchange-title">
+        <h2 id="brief-exchange-title">{b.exchange.heading}</h2>
+        <div class="brief-columns">
+          <div>
+            <h3>{b.exchange.askHeading}</h3>
+            <ul class="dl-list">
+              {
+                b.exchange.ask.map((item) => (
+                  <li>
+                    <i class="fas fa-arrow-right" aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+          <div>
+            <h3>{b.exchange.getHeading}</h3>
+            <ul class="dl-list">
+              {
+                b.exchange.get.map((item) => (
+                  <li>
+                    <i class="fas fa-check" aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 9. Your contacts ===== -->
+      <section class="kit-section" id="contacts" aria-labelledby="brief-contacts-title">
+        <h2 id="brief-contacts-title">{b.contacts.heading}</h2>
+        <ul class="brief-contacts">
+          {
+            b.contacts.people.map((person) => (
+              <li>
+                <strong>{person.name}</strong>
+                <span class="brief-contact-role">{person.role}</span>
+                <span class="brief-contact-scope">{person.scope}</span>
+                <a href={`mailto:${person.email}`}>{person.email}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <!-- ===== 10. The outreach kit, unchanged below this line ===== -->
+      <section class="kit-open" id="kit" aria-labelledby="brief-kit-title">
+        <h2 id="brief-kit-title">{page.kitHeading}</h2>
+        <p class="kit-note">{page.kitIntro}</p>
+      </section>
+
+      <section class="kit-section" aria-labelledby="kit-how-title">
+        <h2 id="kit-how-title">{page.howToHeading}</h2>
+        <ol class="kit-steps">
+          {page.howToSteps.map((step) => <li>{step}</li>)}
+        </ol>
+      </section>
+
+      <section class="kit-section" aria-labelledby="kit-download-title">
+        <h2 id="kit-download-title">{page.downloadHeading}</h2>
+        <p class="kit-note">{page.downloadNote}</p>
+        <div class="kit-downloads">
+          {
+            variants.map((variant) => (
+              <article class="kit-download">
+                <div class="kit-download-head">
+                  <span class="kit-download-icon" aria-hidden="true">
+                    <i class="fas fa-folder-open" />
+                  </span>
+                  <h3>{variant.label}</h3>
+                </div>
+                <p>{variant.note}</p>
+                <a class="kit-download-btn" href={`${BASE}/${variant.zip}`} download>
+                  <i class="fas fa-download" aria-hidden="true" />
+                  <span>{page.zipNote}</span>
+                </a>
+              </article>
+            ))
+          }
+        </div>
+      </section>
+
+      <section class="kit-section" aria-labelledby="kit-preview-title">
+        <h2 id="kit-preview-title">{page.previewHeading}</h2>
+        <ul class="kit-previews">
+          {
+            previews.map((preview) => (
+              <li>
+                <a class="kit-preview-link" href={`${BASE}/${preview.full}`} data-full={`${BASE}/${preview.full}`} data-alt={preview.alt} target="_blank" rel="noopener">
+                  <img src={`${BASE}/${preview.file}`} alt={preview.alt} loading="lazy" width="600" height="750" />
+                  <span class="kit-preview-zoom"><i class="fas fa-search-plus" aria-hidden="true" /> {page.zoomLabel}</span>
+                </a>
+                <span>{preview.caption}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <dialog class="kit-lightbox" id="kit-lightbox" aria-label={page.zoomDialogLabel}>
+          <div class="kit-lightbox-bar">
+            <span class="kit-lightbox-name" data-name></span>
+            <a class="kit-lightbox-download" data-download href="#" download>
+              <i class="fas fa-download" aria-hidden="true" /> {page.zoomDownload}
+            </a>
+            <button type="button" class="kit-lightbox-close" data-close aria-label={page.zoomClose}>
+              <i class="fas fa-times" aria-hidden="true" />
+            </button>
+          </div>
+          <img alt="" />
+        </dialog>
+      </section>
+
+      <section class="kit-section" aria-labelledby="kit-files-title">
+        <h2 id="kit-files-title">{page.filesHeading}</h2>
+        <p class="kit-note">{page.filesNote}</p>
+        {
+          variants.map((variant) => (
+            <div class="kit-variant">
+              <h3>{variant.label}</h3>
+              <dl class="kit-file-list">
+                {fileGroups.map((group) => (
+                  <>
+                    <dt>{group.heading}</dt>
+                    <dd>
+                      {group.files.map((file) => (
+                        <a href={`${BASE}/${variant.dir}/${file}`}>{file}</a>
+                      ))}
+                    </dd>
+                  </>
+                ))}
+              </dl>
+            </div>
+          ))
+        }
+      </section>
+
+      <section class="kit-rules" aria-labelledby="kit-rules-title">
+        <h2 id="kit-rules-title">{page.rulesHeading}</h2>
+        <ul>
+          {page.rules.map((rule) => <li>{rule}</li>)}
+          <li>{page.rulesSignupBefore}<a href={signupPath}>{signupLabel}</a></li>
+        </ul>
+      </section>
+
+      <p class="signup-questions">
+        {page.contactBefore}<a href={`mailto:${site.email}`}>{site.email}</a>.
+      </p>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  // Thumbnails open full size in a native dialog. Without JavaScript the link
+  // still opens the file in a new tab, so nothing is lost.
+  const box = document.getElementById('kit-lightbox') as HTMLDialogElement | null;
+  const img = box?.querySelector('img');
+  if (box && img && typeof box.showModal === 'function') {
+    document.querySelectorAll<HTMLAnchorElement>('.kit-preview-link').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        const full = link.dataset.full ?? link.href;
+        img.src = full;
+        img.alt = link.dataset.alt ?? '';
+        const dl = box.querySelector<HTMLAnchorElement>('[data-download]');
+        if (dl) dl.href = full;
+        const name = box.querySelector('[data-name]');
+        if (name) name.textContent = full.split('/').pop() ?? '';
+        box.showModal();
+      });
+    });
+    box.querySelector('[data-close]')?.addEventListener('click', () => box.close());
+    box.addEventListener('click', (event) => {
+      if (event.target === box) box.close();
+    });
+    box.addEventListener('close', () => {
+      img.removeAttribute('src');
+    });
+  }
+</script>

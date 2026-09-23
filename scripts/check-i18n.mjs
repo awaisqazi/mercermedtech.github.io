@@ -44,7 +44,16 @@ const isRedirectStub = (page) =>
 // public reads: English only by design, noindex, and with no Spanish twin to
 // pair it with. It is skipped by every rule in this file for that reason.
 const isPortal = (page) => page === 'admin/index.html' || page.startsWith('admin/');
-const isBilingualOrStub = (page) => isErrorPage(page) || isRedirectStub(page) || isPortal(page);
+// Partner outreach kits are DOWNLOADS, not pages. public/partners/<agency>/
+// ships the files we hand an agency, and two of them are .html email
+// templates. They are not read on the site, they have no Spanish twin to pair
+// with (each file is already EN or ES inside one kit), and their wording is
+// the agency's to paste, so no rule in this file applies to them. The kit
+// PAGE itself, /partners/<agency>/index.html, is a normal page and is checked.
+const isPartnerAsset = (page) =>
+  /(^|\/)partners\/[^/]+\/.+/.test(page) && !page.endsWith('/index.html');
+const isBilingualOrStub = (page) =>
+  isErrorPage(page) || isRedirectStub(page) || isPortal(page) || isPartnerAsset(page);
 
 const englishPages = pages
   .map((page) => relative(DIST, page))
@@ -142,7 +151,7 @@ for (const page of spanishPages) {
 /* ---------- 5: punctuation the voice rules forbid ---------- */
 for (const page of pages) {
   const name = relative(DIST, page);
-  if (isPortal(name)) continue;
+  if (isPortal(name) || isPartnerAsset(name)) continue;
   const text = visibleText(readFileSync(page, 'utf8'));
   if (/[!¡]/.test(text)) fail(`/${name}: exclamation mark in the copy`);
   if (/[—–]/.test(text)) fail(`/${name}: em dash or en dash in the copy`);

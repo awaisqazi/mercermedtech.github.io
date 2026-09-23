@@ -41,6 +41,17 @@ const isRedirectStub = (html) => /<meta\s+http-equiv="refresh"/i.test(html);
  */
 const isPortal = (page) => relative(DIST, page).startsWith('admin/');
 
+/**
+ * Files inside a partner outreach kit (public/partners/<agency>/...) are
+ * downloads, not pages. Two of them are .html email templates, which have no
+ * <title> and no meta description on purpose. The kit page itself,
+ * /partners/<agency>/index.html, is a normal page and is measured.
+ */
+const isPartnerAsset = (page) => {
+  const name = relative(DIST, page);
+  return /(^|\/)partners\/[^/]+\/.+/.test(name) && !name.endsWith('/index.html');
+};
+
 /** Turns the handful of entities Astro escapes back into characters, so the
  *  count is the count a person sees, not the count in the source. */
 const decode = (value) =>
@@ -57,7 +68,7 @@ const rows = [];
 
 for (const page of pages.sort()) {
   const html = readFileSync(page, 'utf8');
-  if (isRedirectStub(html) || isPortal(page)) continue;
+  if (isRedirectStub(html) || isPortal(page) || isPartnerAsset(page)) continue;
   const name = `/${relative(DIST, page)}`;
 
   const titleMatch = html.match(/<title>([\s\S]*?)<\/title>/i);

@@ -638,6 +638,14 @@
     color: #fff;
 }
 
+.dl-footer-contact {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1.25rem;
+    row-gap: 0.35rem;
+    align-items: baseline;
+}
+
 .dl-footer-bottom {
     margin-top: 2.5rem;
     padding-top: 1.5rem;

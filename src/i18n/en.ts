@@ -723,6 +723,318 @@ export const en = {
     },
   },
 
+  /* ---------- Digital Literacy Training sign-up page (hidden) ---------- */
+  /**
+   * Nothing on the site links to this page. The address is handed out
+   * directly, to partners and to people who ask, and BaseLayout carries
+   * "standalone" so the page is noindex and stays out of the sitemap.
+   * NJDOL rule: this page never mentions the health care programs.
+   */
+  dltSignup: {
+    seo: {
+      title: 'Sign up for Digital Literacy Training | Mercer Med Tech',
+      description:
+        'Sign up for Digital Literacy Training in Lawrenceville, NJ. No cost if you qualify. About 5 to 6 weeks, online or in person, English and Spanish.',
+    },
+    eyebrow: 'Tech track',
+    heading: 'Sign up for Digital Literacy Training',
+    lead: 'If you qualify it costs you nothing. The training runs about 5 to 6 weeks, online with an in person option in Lawrenceville, and it is taught in English and Spanish. Fill this in and we will call you back.',
+    qualifyHeading: 'Who qualifies',
+    qualifyLine: `You live in New Jersey, you are 18 or older, you receive TANF or SNAP, and you live in ${dlt.countiesSentence}.`,
+    note: 'We confirm your eligibility with your county social services agency. You do not need a referral from anyone to sign up.',
+    /**
+     * Owner's rule for this page: the form is the contact path. No phone
+     * number and no "call us" button anywhere on it. The email address is
+     * allowed once, as this quiet line under the form.
+     */
+    questionsBefore: 'Questions? Write to us at ',
+    form: {
+      nameLabel: 'Your name',
+      namePlaceholder: 'First and last name',
+      phoneLabel: 'Phone number',
+      phonePlaceholder: '(609) 555 1234',
+      emailLabel: 'Email address',
+      emailPlaceholder: 'you@example.com',
+      countyLabel: 'What county do you live in?',
+      countyOther: 'Another county',
+      benefitsLabel: 'Do you receive TANF or SNAP?',
+      benefitsYes: 'Yes',
+      benefitsNo: 'No',
+      benefitsNotSure: 'Not sure',
+      languageLabel: 'What language do you want the class in?',
+      languageEnglish: 'English',
+      languageSpanish: 'Spanish',
+      attendLabel: 'How would you like to attend?',
+      attendOnline: 'Online',
+      attendInPerson: 'In person in Lawrenceville',
+      attendEither: 'Either one',
+      bestTimeLabel: 'When is a good time to reach you?',
+      bestTimePlaceholder: 'Anytime works',
+      referralLabel: 'Referred by an agency or caseworker',
+      referralPlaceholder: 'Name of the agency or the person',
+      messageLabel: 'Anything you want us to know',
+      messagePlaceholder: 'For example: what you want to learn, or what times work for you.',
+      pickOne: 'Pick one',
+      optional: 'optional',
+      consent: 'Yes, you can call or email me about this. We do not share your information with anyone.',
+      submit: 'Send my sign up',
+      sending: 'Sending',
+      successTitle: 'Got it. You are on the list.',
+      successBody: 'Someone from the school will get back to you, usually within two business days.',
+      errorTitle: 'We could not send that.',
+      errorBody: `Sorry, something went wrong on our end. Please write to us at ${site.email} and we will pick it up from there.`,
+      securityIncomplete:
+        'Please complete the security check above, then send your sign up again.',
+      securityUnavailable:
+        'The security check did not load. Please refresh the page or email us.',
+    },
+  },
+
+  /* ---------- Partner outreach kit page (hidden) ---------- */
+  /**
+   * One page per partner agency, at /partners/<agency>/. Nothing links to it:
+   * the address goes to the agency by email. BaseLayout carries "standalone"
+   * so the page is noindex, and astro.config.mjs keeps /partners/ out of the
+   * sitemap. The files themselves live in public/partners/<agency>/.
+   *
+   * NJDOL rule: this page never names another Mercer Med Tech program, and
+   * eligibility is always written as "TANF or SNAP".
+   */
+  partnerKit: {
+    seo: {
+      title: 'Digital Literacy Training partner briefing | Mercer Med Tech',
+      description:
+        'A briefing for county staff on Digital Literacy Training: who qualifies, how to send someone, what the training covers, and the outreach kit.',
+    },
+    eyebrow: 'For partner agencies',
+    heading: 'Digital Literacy Training: partner briefing',
+    preparedFor:
+      'Prepared for the WorkFirst New Jersey team at Hunterdon County Educational Services Commission.',
+    /**
+     * The briefing that now opens the page, for county staff who have to
+     * explain the program and decide who to send. Facts only, in the order a
+     * person asks for them. NJDOL rules that apply to every line: eligibility
+     * is "TANF or SNAP", no other program is named, and no days or times are
+     * given for any class.
+     */
+    brief: {
+      fundedByLabel: 'Funded by',
+      sealAlt: 'Seal of the New Jersey Department of Labor and Workforce Development',
+      lead: 'Digital Literacy Training is computer, AI and job search training at no cost, for adults receiving TANF or SNAP in the Central Region. It is grant funded by the New Jersey Department of Labor and Workforce Development, and Mercer Med Tech is one of six grantees across the state. The first group starts the first week of October 2026, and a new group starts every 5 to 6 weeks after that, in groups of 10 to 12.',
+      tocLabel: 'On this page',
+      refer: {
+        heading: 'Send someone our way',
+        intro: 'One link does it. Give it to the person, or fill it in with them while they are in front of you.',
+        ctaLabel: 'Sign-up form',
+        url: 'mercermedtech.com/digital-literacy/sign-up',
+        points: [
+          'There is no referral form to complete.',
+          'A caseworker may submit the form on someone else’s behalf.',
+          'We confirm TANF or SNAP status with your office before anyone starts.',
+        ],
+      },
+      /** The slide deck from the September 22 information session, as a PDF. */
+      presentation: {
+        heading: 'The presentation from our September 22 session',
+        note: 'The 13 slides we walked through, as a PDF to share with your team.',
+        ctaLabel: 'Download the slides (PDF, about 1.8 MB)',
+      },
+      qualify: {
+        heading: 'Who qualifies',
+        checks: [
+          {
+            title: 'A New Jersey resident, 18 or older',
+            body: 'Age 18 or older on the first day of training.',
+          },
+          {
+            title: 'Currently receiving TANF or SNAP',
+            body: 'Benefits through WorkFirst New Jersey.',
+          },
+          {
+            title: 'Living in one of seven counties',
+            body: 'Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset or Union.',
+          },
+          {
+            title: 'Ready to train and look for work',
+            body: 'Able to attend and to work with us on the job search.',
+          },
+        ],
+        noEducation:
+          'There is no education requirement. Nobody needs a diploma or a test score to start.',
+        gaNote: 'General Assistance is not eligible under this grant.',
+      },
+      how: {
+        heading: 'How it works',
+        steps: [
+          {
+            title: 'They use the sign-up link',
+            body: 'The form is short, and a caseworker can fill it in for them.',
+          },
+          {
+            title: 'We confirm eligibility',
+            body: 'We check TANF or SNAP status with your office before anyone starts.',
+          },
+          {
+            title: 'Skills check and a plan',
+            body: 'Within 7 days each person completes a skills check and an Individual Employment Plan, and we flag any support they will need.',
+          },
+          {
+            title: 'Training with their group',
+            body: 'Every class is online. In-person support is available at our Lawrenceville campus during scheduled office hours, and students get that schedule at the start.',
+          },
+        ],
+        aosos:
+          'Hunterdon and Somerset residents also need an AOSOS number. We request those in batches from the NJDOL Employment Services office at the Greater Raritan One-Stop, so it is not something the person has to chase.',
+      },
+      pathway: {
+        heading: 'The training pathway',
+        stages: [
+          {
+            title: '60 hours of foundations with Mercer Med Tech',
+            body: 'Computer operation, files and folders, internet and email, productivity software, and cybersecurity basics. It opens with a baseline check, has progress checks along the way, and ends with a capstone.',
+          },
+          {
+            title: '32 hours online with NJIT',
+            body: 'The AI Literacy Microcredential, 20 hours, and the Digital Literacy Microcredential, 12 hours. These are the ETPL listed credentials NJDOL counts.',
+          },
+          {
+            title: '20 hours of enrichment, live online',
+            body: 'Emerging technologies, and financial literacy.',
+          },
+          {
+            title: 'Advanced pathway',
+            body: 'Further ETPL training, case by case, with NJDOL approval.',
+          },
+        ],
+        total:
+          'About 110 hours across 5 to 6 weeks. Someone who already has the basics can test past the foundations.',
+      },
+      learn: {
+        heading: 'What participants learn',
+        items: [
+          'Computer basics',
+          'Internet, email and online meetings',
+          'Microsoft Office and Google Workspace',
+          'Online safety',
+          'AI literacy',
+          'Money management',
+          'Getting ready for work',
+        ],
+      },
+      leaveWith: {
+        heading: 'What they leave with',
+        items: [
+          'An industry-recognized credential, including the AI Literacy Microcredential from NJIT.',
+          'A finished resume, interview practice, and a job search plan.',
+          'Career services that keep going: one-to-one help, introductions to employers, and check-ins at 30, 60 and 90 days.',
+        ],
+        workActivity:
+          'Training time counts toward a work activity plan, and we document attendance.',
+      },
+      barriers: {
+        heading: 'Barriers we can help with, case by case',
+        items: [
+          'Travel help for anyone who chooses to come in.',
+          'A laptop and internet access at home.',
+          'Exam, credential and ID fees.',
+          'Interview clothing.',
+          'Virtual orientations for partner staff.',
+        ],
+        note: 'Each support is decided case by case from the need written in the person’s plan, provided before it is needed, and documented for NJDOL.',
+        childcare: 'Childcare is not a standard support, and we can look at it case by case.',
+      },
+      exchange: {
+        heading: 'What we ask, what you get',
+        askHeading: 'What we ask',
+        ask: [
+          'Tell people about the program and share the link.',
+          'Tell us who you have sent.',
+          'Help us confirm eligibility when we ask.',
+          'Tell us what your intake steps are.',
+        ],
+        getHeading: 'What you get',
+        get: [
+          'A weekly email listing who enrolled, in your format if you have one.',
+          'Attendance and completion records for work activity reporting.',
+          'Monthly reporting to NJDOL by county.',
+          'Participant information kept confidential.',
+          'Virtual orientations for your staff on request.',
+        ],
+      },
+      contacts: {
+        heading: 'Your contacts',
+        people: [
+          {
+            name: 'Awais Qazi',
+            role: 'Program Coordinator, Onboarding and Recruitment Specialist',
+            scope: 'Referrals, eligibility, enrollment, weekly reports.',
+            email: 'awais.a.qazi@gmail.com',
+          },
+          {
+            name: 'Shazia Qazi',
+            role: 'Program Director, Career Services Advisor',
+            scope: 'Plans, job search, employers, follow-ups.',
+            email: 'mercermedtech@gmail.com',
+          },
+        ],
+      },
+    },
+    kitHeading: 'Outreach kit',
+    kitIntro:
+      'Ready-made posts, a flyer and an email you can forward, in English and Spanish, with your logo or without it. Every piece carries the NJDOL seal and the required funding sentence.',
+    howToHeading: 'How to use it',
+    howToSteps: [
+      'Pick one folder and use it throughout, so everything you put out looks like one set.',
+      'Post the images as they are. Each one is already the right size for where it goes.',
+      'Paste the captions from social-captions.txt under the image.',
+      'Forward the email to your list, as plain text or as HTML.',
+      'The flyer PDF prints on Letter paper, one page.',
+    ],
+    downloadHeading: 'Download the whole kit',
+    downloadNote: 'Both folders hold the same pieces under the same file names.',
+    variants: [
+      {
+        label: 'With your logo',
+        note: 'Mercer Med Tech with the Hunterdon County Educational Services Commission mark.',
+      },
+      {
+        label: 'Mercer Med Tech only',
+        note: 'The same pieces without the partner mark.',
+      },
+    ],
+    zipNote: 'Download ZIP, about 17 MB',
+    previewHeading: 'What is inside',
+    previews: [
+      { caption: 'Feed post, 1080 x 1350', alt: 'The feed post, English version' },
+      { caption: 'Story or reel cover, 1080 x 1920', alt: 'The story cover, English version' },
+      { caption: 'Facebook or link preview, 1200 x 630', alt: 'The Facebook image, English version' },
+      { caption: 'Flyer, Letter size PDF', alt: 'The one page flyer, English version' },
+    ],
+    zoomLabel: 'Zoom',
+    zoomDialogLabel: 'Full size preview',
+    zoomClose: 'Close',
+    zoomDownload: 'Download this file',
+    filesHeading: 'Every file on its own',
+    filesNote: 'EN is English and ES is Spanish. Post both, or pick the one your readers use.',
+    fileGroups: [
+      'Instagram feed post, 1080 x 1350',
+      'Square post, 1080 x 1080',
+      'Story or reel cover, 1080 x 1920',
+      'Facebook or link preview, 1200 x 630',
+      'Flyer, print ready PDF',
+      'Flyer as a picture, 300 dpi PNG',
+      'Captions and email',
+    ],
+    rulesHeading: 'Rules to keep',
+    rules: [
+      'Use the wording as it is written. It was checked against what the grant allows.',
+      'Eligibility is written as TANF or SNAP. Do not put another program in its place, and do not describe people by their income.',
+      'Do not add a phone number, and do not add class days or times.',
+    ],
+    rulesSignupBefore: 'Send people to the sign-up page: ',
+    contactBefore: 'Questions: ',
+  },
+
   /* ---------- Program pages and 404 ---------- */
   programPage: {
     /**
