@@ -31,6 +31,10 @@ const PAIRS = [
  */
 const EXPECTED_MISSES = [
   {
+    match: /^mercermedtech@gmail\.com$/,
+    why: 'the public address moved to contact@mercermedtech.com on 2026-09-27; the Gmail box still receives it through forwarding',
+  },
+  {
     match: /en espa/i,
     why: 'the Spanish summary block was replaced by full Spanish pages under /es/',
   },

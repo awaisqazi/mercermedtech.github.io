@@ -9,7 +9,7 @@ export const site = {
   url: 'https://www.mercermedtech.com',
   positioningLine: 'Med and Tech. Two paths to a better job.',
   phone: { display: '(609) 712-5499', href: 'tel:+16097125499', e164: '+1-609-712-5499' },
-  email: 'mercermedtech@gmail.com',
+  email: 'contact@mercermedtech.com',
   address: {
     street: '168 Franklin Corner Rd, Bldg 2, Suite #140',
     city: 'Lawrenceville',
