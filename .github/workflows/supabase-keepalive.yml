@@ -1,7 +1,9 @@
 name: Supabase keep-alive
 
 # Free-tier Supabase projects pause after 7 days with no API traffic. This POSTs
-# to the public.ping() RPC twice a week so the project stays awake.
+# to the public.ping() RPC every day (and on every push to main) so the project
+# stays awake. The twice-weekly schedule let the project pause in October 2026
+# because GitHub did not fire every scheduled run.
 #
 # The key below is the Supabase *publishable* key. It is public by design — it
 # is compiled into the browser bundle of the portal itself and is protected by
@@ -11,8 +13,10 @@ name: Supabase keep-alive
 
 on:
   schedule:
-    # 13:00 UTC every Monday and Thursday
-    - cron: '0 13 * * 1,4'
+    # 13:17 UTC every day (an off-the-hour minute is less likely to be dropped)
+    - cron: '17 13 * * *'
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions: {}
