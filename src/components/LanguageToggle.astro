@@ -45,10 +45,11 @@ const options = alternatePaths(path);
 </div>
 
 <script>
-  // Carry the current #section across when the reader switches language.
+  // Carry the current query (?pid=, ?return=) and #section across when the
+  // reader switches language.
   document.querySelectorAll<HTMLAnchorElement>('a[data-lang-link]').forEach((link) => {
     link.addEventListener('click', () => {
-      if (window.location.hash) link.href = `${link.pathname}${window.location.hash}`;
+      link.href = `${link.pathname}${window.location.search}${window.location.hash}`;
     });
   });
 </script>

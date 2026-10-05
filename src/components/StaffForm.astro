@@ -22,7 +22,7 @@
 import '../styles/components/contact.css';
 import '../styles/components/staff-form.css';
 import { WORKER_ORIGIN, type StaffForm } from '../data/staffForms';
-import { t, type Locale } from '../i18n';
+import { localePath, t, type Locale } from '../i18n';
 
 interface Props {
   locale: Locale;
@@ -40,13 +40,14 @@ const total = form.sections.length;
 const stepLabel = (index: number) =>
   `${ui.stepOf.replace('{n}', String(index + 1)).replace('{total}', String(total))} · ${L(form.sections[index].title)}`;
 const endpoint = `${WORKER_ORIGIN}${form.route}`;
+const hubPath = localePath(locale, '/onboarding/');
 
 /** Public Turnstile site key, the same widget as the sign-up form. The secret lives only in the Worker. */
 const TURNSTILE_SITEKEY = '0x4AAAAAAFABG_uSmI7QN2sd';
 const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
 ---
 
-<div class="staff-wizard" data-wizard>
+<div class="staff-wizard" data-wizard data-hub-step={form.hubStep} data-hub-path={hubPath}>
   <div class="contact-card signup-card staff-card">
     <div class="wiz-progress" data-wiz-progress>
       <p class="wiz-label" data-wiz-label>{stepLabel(0)}</p>
@@ -153,6 +154,7 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
                           name={field.entry}
                           required={field.required}
                           autocomplete={field.autocomplete ?? 'off'}
+                          data-prefill={field.prefill}
                           aria-describedby={helpId}
                           maxlength="500"
                           pattern={field.kind === 'tel' ? '[0-9\\(\\)\\-\\s\\+\\.]{7,}' : undefined}
@@ -303,6 +305,7 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
       <i class="fas fa-check-circle" aria-hidden="true"></i>
       <h2>{successTitle}</h2>
       <p>{successBody}</p>
+      <a class="btn btn-primary" href={hubPath} data-hub-link hidden>{ui.backToHub}</a>
       <button type="button" class="btn btn-secondary" data-wiz-restart>{ui.startAnother}</button>
     </div>
   </div>
@@ -702,6 +705,7 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
         if (response.ok && result && result.ok === true) {
           clearStore();
           form.reset();
+          form.dispatchEvent(new CustomEvent('staff-form-sent'));
           form.hidden = true;
           if (progress) progress.hidden = true;
           done.hidden = false;
@@ -732,6 +736,39 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
       go(0);
     });
 
+    /* ---------- onboarding hub: ?pid= prefill, ?return=onboarding ---------- */
+
+    const params = new URLSearchParams(window.location.search);
+    const pid = (params.get('pid') || '').trim().slice(0, 40);
+    const fromHub = params.get('return') === 'onboarding';
+    const hubKey = `mmt-onboarding-v1:${pid || 'default'}`;
+    const prefillPid = () => {
+      if (!pid) return;
+      form.querySelectorAll<HTMLInputElement>('input[data-prefill="pid"]').forEach((input) => {
+        if (!input.value.trim()) input.value = pid;
+      });
+    };
+    const hubLink = wizard.querySelector<HTMLAnchorElement>('[data-hub-link]');
+    if (fromHub && hubLink) {
+      const back = new URL(wizard.dataset.hubPath || '/onboarding/', window.location.origin);
+      if (pid) back.searchParams.set('pid', pid);
+      hubLink.href = back.pathname + back.search;
+      hubLink.hidden = false;
+      wizard.querySelector<HTMLElement>('[data-wiz-restart]')?.setAttribute('hidden', '');
+    }
+    const markHubDone = () => {
+      try {
+        const state = JSON.parse(localStorage.getItem(hubKey) || '{}');
+        state.done = { ...(state.done || {}), [wizard.dataset.hubStep || '']: true };
+        state.lang = document.documentElement.lang.startsWith('es') ? 'es' : 'en';
+        localStorage.setItem(hubKey, JSON.stringify(state));
+      } catch {
+        /* storage off: the hub just shows the step as not done */
+      }
+    };
+    form.addEventListener('staff-form-sent', markHubDone);
+
     go(restore(), false);
+    prefillPid();
   }
 </script>

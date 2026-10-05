@@ -38,13 +38,15 @@ export default defineConfig({
       //                staff open it with the participant at Day 0.
       //   /loaner/     the laptop loaner agreement page, in both languages.
       //                noindex, unlinked; staff open it at laptop pickup.
+      //   /onboarding/ the Day 0 hub and its two acknowledgment forms, in
+      //                both languages. noindex, unlinked.
       filter: (page) => {
         const { pathname } = new URL(page);
         return (
           !pathname.startsWith('/admin') &&
           !pathname.includes('/sign-up') &&
           !pathname.includes('/partners/') &&
-          !/^\/(es\/)?(iep|loaner)\//.test(pathname)
+          !/^\/(es\/)?(iep|loaner|onboarding)\//.test(pathname)
         );
       },
     }),

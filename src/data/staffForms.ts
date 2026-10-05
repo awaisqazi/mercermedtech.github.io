@@ -23,6 +23,8 @@
  * scripts/check-form-contract.mjs checks the built pages against this file.
  */
 
+import { ONBOARDING_TEXT } from './onboardingText';
+
 export type Bilingual = { en: string; es: string };
 
 export interface Choice {
@@ -44,6 +46,8 @@ export interface Field {
   scaleLabels?: [Bilingual, Bilingual];
   /** Lays two short fields side by side on wide screens. */
   half?: boolean;
+  /** "pid": filled from the page's ?pid= when the field is empty (the onboarding hub passes it). */
+  prefill?: 'pid';
 }
 
 /** One step of the stepped form. */
@@ -62,6 +66,8 @@ export interface StaffForm {
   id: string;
   /** Worker route, relative to the Worker origin. */
   route: string;
+  /** The onboarding hub step this form completes (marked done on success). */
+  hubStep: 'orientation' | 'attendance' | 'iep' | 'loaner';
   sections: Section[];
 }
 
@@ -74,6 +80,8 @@ const bi = (value: string): Choice => {
 };
 /** Choice that reads the same in both languages. */
 const same = (value: string): Choice => ({ value, label: { en: value, es: value } });
+/** Choice built from a {en, es} pair; Google stores "English / Español". */
+const pair = (b: Bilingual): Choice => ({ value: `${b.en} / ${b.es}`, label: b });
 
 const YES_NO = [bi('Yes / Sí'), same('No')];
 const COHORTS: Choice[] = [
@@ -94,6 +102,7 @@ const IEP_QUESTIONS: Section[] = [
         {
           entry: 'entry.1304183266',
           kind: 'text',
+          prefill: 'pid',
           label: { en: 'Participant ID', es: 'Número de participante' },
           help: { en: 'Staff will add it if you leave it blank.', es: 'El personal lo agregará si lo deja en blanco.' },
         },
@@ -224,6 +233,7 @@ const iepField = (entry: string): Field => {
 export const IEP_FORM: StaffForm = {
   id: 'iep-intake-form',
   route: '/iep-submit',
+  hubStep: 'iep',
   sections: [
     {
       title: { en: 'About you', es: 'Sobre usted' },
@@ -259,12 +269,13 @@ export const POLICY_PDF = '/loaner/IT-Asset-Policy-v2.1.pdf';
 export const LOANER_FORM: StaffForm = {
   id: 'loaner-agreement-form',
   route: '/loaner-submit',
+  hubStep: 'loaner',
   sections: [
     {
       title: { en: 'Who', es: 'Participante' },
       fields: [
         { entry: 'entry.218598507', kind: 'text', required: true, autocomplete: 'name', label: { en: 'Full name', es: 'Nombre completo' } },
-        { entry: 'entry.991666087', kind: 'text', half: true, label: { en: 'Participant ID', es: 'Número de participante' } },
+        { entry: 'entry.991666087', kind: 'text', half: true, prefill: 'pid', label: { en: 'Participant ID', es: 'Número de participante' } },
         { entry: 'entry.1600795715', kind: 'select', required: true, half: true, label: { en: 'Cohort', es: 'Grupo (cohorte)' }, choices: COHORTS },
         { entry: 'entry.1242110529', kind: 'tel', required: true, half: true, autocomplete: 'tel', label: { en: 'Phone', es: 'Teléfono' } },
         { entry: 'entry.172260136', kind: 'email', half: true, autocomplete: 'email', label: { en: 'Email', es: 'Correo electrónico' } },
@@ -400,4 +411,124 @@ export const LOANER_RULES: { title: Bilingual; rules: Bilingual[] }[] = [
 export const LOANER_ACK: Bilingual = {
   en: 'I received the items listed above. I read the rules and had the chance to ask questions. I understand that the laptop is on loan and belongs to MMT until both conditions in rule 7 are met, and I agree to report and return items as the rules describe.',
   es: 'Recibí los equipos indicados arriba. Leí las reglas y tuve la oportunidad de hacer preguntas. Entiendo que la computadora es un préstamo y pertenece a MMT hasta que se cumplan las dos condiciones de la regla 7, y acepto avisar y devolver los equipos como indican las reglas.',
+};
+
+/* ------------------------------------------------------------------ */
+/* Orientation acknowledgment (Day 0)                                  */
+/* ------------------------------------------------------------------ */
+
+const ESIGN: Bilingual = {
+  en: "I understand that submitting this form is my electronic signature of this acknowledgment, with today's date.",
+  es: 'Entiendo que enviar este formulario es mi firma electrónica de esta constancia, con la fecha de hoy.',
+};
+const LANGUAGES = [bi('English / Inglés'), bi('Spanish / Español'), bi('Other / Otro')];
+
+/** Entry ids of "What we reviewed today", items 1 to 10, in order. */
+const REVIEWED_ENTRIES = [
+  'entry.1346685229', 'entry.215316043', 'entry.1053964272', 'entry.579512024', 'entry.474856397',
+  'entry.78612865', 'entry.1050140810', 'entry.1655283020', 'entry.1807351277', 'entry.193330402',
+];
+
+export const ORIENTATION_FORM: StaffForm = {
+  id: 'orientation-ack-form',
+  route: '/orientation-submit',
+  hubStep: 'orientation',
+  sections: [
+    {
+      title: { en: 'About you', es: 'Sobre usted' },
+      fields: [
+        { entry: 'entry.1471528192', kind: 'text', required: true, autocomplete: 'name', label: { en: 'Full name', es: 'Nombre completo' } },
+        { entry: 'entry.1770051824', kind: 'text', half: true, prefill: 'pid', label: { en: 'Participant ID', es: 'Número de participante' } },
+        { entry: 'entry.10204145', kind: 'select', required: true, half: true, label: { en: 'Cohort', es: 'Grupo (cohorte)' }, choices: COHORTS },
+        { entry: 'entry.772617296', kind: 'date', required: true, half: true, label: { en: 'Orientation date', es: 'Fecha de la orientación' } },
+        {
+          entry: 'entry.1284929009',
+          kind: 'radio',
+          required: true,
+          label: { en: 'Orientation format', es: 'Forma de la orientación' },
+          choices: [bi('On campus / En el campus'), bi('By video (Teams) / Por video (Teams)')],
+        },
+        { entry: 'entry.1336084267', kind: 'radio', required: true, label: { en: 'Language used', es: 'Idioma usado' }, choices: LANGUAGES },
+      ],
+    },
+    {
+      title: { en: 'What we reviewed today', es: 'Lo que revisamos hoy' },
+      help: {
+        en: 'Tick each line after staff explain it and answer your questions.',
+        es: 'Marque cada línea después de que el personal se la explique y conteste sus preguntas.',
+      },
+      fields: ONBOARDING_TEXT.reviewed.map((item, i): Field => ({
+        entry: REVIEWED_ENTRIES[i],
+        kind: 'consent',
+        required: true,
+        label: { en: `${i + 1}. ${item.en}`, es: `${i + 1}. ${item.es}` },
+        choices: [bi('Reviewed / Revisado')],
+      })),
+    },
+    {
+      title: { en: 'Your rights', es: 'Sus derechos' },
+      fields: [
+        {
+          entry: 'entry.1989745465',
+          kind: 'checkbox',
+          label: { en: 'Documents I received today', es: 'Documentos que recibí hoy' },
+          choices: ONBOARDING_TEXT.documents.map(pair),
+        },
+      ],
+    },
+    {
+      title: { en: 'How MMT contacts me', es: 'Cómo me contacta MMT' },
+      fields: [
+        { entry: 'entry.689742014', kind: 'radio', required: true, label: { en: 'Preferred language', es: 'Idioma preferido' }, choices: LANGUAGES },
+        {
+          entry: 'entry.1911042786',
+          kind: 'radio',
+          required: true,
+          label: { en: 'Preferred channel', es: 'Medio preferido' },
+          choices: [bi('Text / Mensaje de texto'), bi('Email / Correo electrónico'), bi('Call / Llamada')],
+        },
+        { entry: 'entry.1045206646', kind: 'tel', required: true, half: true, autocomplete: 'tel', label: { en: 'Phone', es: 'Teléfono' } },
+        { entry: 'entry.2086272203', kind: 'email', half: true, autocomplete: 'email', label: { en: 'Email', es: 'Correo electrónico' } },
+      ],
+    },
+    {
+      title: { en: 'Review and sign', es: 'Revisar y firmar' },
+      review: true,
+      fields: [
+        { entry: 'entry.1254232444', kind: 'consent', required: true, label: ONBOARDING_TEXT.statement, choices: [bi('I agree / Estoy de acuerdo')] },
+        { entry: 'entry.153113344', kind: 'consent', required: true, label: ESIGN, choices: [bi('I understand / Entiendo')] },
+        { entry: 'entry.252742418', kind: 'text', required: true, label: { en: 'MMT staff member name', es: 'Nombre del miembro del personal de MMT' } },
+      ],
+    },
+  ],
+};
+
+/* ------------------------------------------------------------------ */
+/* Attendance and make-up policy acknowledgment (Day 0)                */
+/* ------------------------------------------------------------------ */
+
+export const ATTENDANCE_FORM: StaffForm = {
+  id: 'attendance-ack-form',
+  route: '/attendance-submit',
+  hubStep: 'attendance',
+  sections: [
+    {
+      title: { en: 'About you', es: 'Sobre usted' },
+      fields: [
+        { entry: 'entry.744899166', kind: 'text', required: true, autocomplete: 'name', label: { en: 'Full name', es: 'Nombre completo' } },
+        { entry: 'entry.1495786921', kind: 'text', half: true, prefill: 'pid', label: { en: 'Participant ID', es: 'Número de participante' } },
+        { entry: 'entry.1213289457', kind: 'select', required: true, half: true, label: { en: 'Cohort', es: 'Grupo (cohorte)' }, choices: COHORTS },
+      ],
+    },
+    { title: { en: 'The policy', es: 'La política' }, fields: [] },
+    {
+      title: { en: 'Review and sign', es: 'Revisar y firmar' },
+      review: true,
+      fields: [
+        { entry: 'entry.519691599', kind: 'consent', required: true, label: ONBOARDING_TEXT.attendanceStatement, choices: [bi('I agree / Estoy de acuerdo')] },
+        { entry: 'entry.220830493', kind: 'consent', required: true, label: ESIGN, choices: [bi('I understand / Entiendo')] },
+        { entry: 'entry.1624648588', kind: 'text', required: true, label: { en: 'Career Services Advisor name', es: 'Nombre del/de la Asesor(a) de Servicios de Carrera' } },
+      ],
+    },
+  ],
 };

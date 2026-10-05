@@ -9,11 +9,13 @@
 //      URL must NOT appear on the page: that is the point of the Worker, and
 //      it is checked below.
 //
-//   3. the two unlisted staff forms (src/components/StaffForm.astro, fields in
-//      src/data/staffForms.ts): IEP intake on /iep/ (id="iep-intake-form")
-//      and the laptop loaner agreement on /loaner/ (id="loaner-agreement-form").
-//      They post to the Worker's /iep-submit and /loaner-submit routes; their
-//      Google Form addresses must not appear on the page either.
+//   3. the unlisted staff forms (src/components/StaffForm.astro, fields in
+//      src/data/staffForms.ts): IEP intake on /iep/, the laptop loaner
+//      agreement on /loaner/, and the orientation and attendance policy
+//      acknowledgments on /onboarding/orientation/ and /onboarding/attendance/.
+//      They post to the Worker's /iep-submit, /loaner-submit,
+//      /orientation-submit and /attendance-submit routes; their Google Form
+//      addresses must not appear on the page either.
 //
 // The forms are separate Google Forms with separate action URLs and
 // separate entry.* names. Nothing is shared: do not reuse an id between them.
@@ -137,6 +139,27 @@ const STAFF_FORMS = {
       'entry.2031520752', 'entry.266658418', 'entry.539715692', 'entry.2080556034',
       'entry.1883769004', 'entry.1669196297', 'entry.1838727109',
       'entry.195835422_year', 'entry.195835422_month', 'entry.195835422_day',
+    ],
+  },
+  'orientation-ack-form': {
+    action: `${SIGNUP_ACTION}/orientation-submit`,
+    googleId: '1FAIpQLSdJsP3uE2COzYwfQILx19lBDkYgv8sbaisLFh1SFkaSq70_Ig',
+    fields: [
+      'entry.1471528192', 'entry.1770051824', 'entry.10204145',
+      'entry.772617296_year', 'entry.772617296_month', 'entry.772617296_day',
+      'entry.1284929009', 'entry.1336084267',
+      'entry.1346685229', 'entry.215316043', 'entry.1053964272', 'entry.579512024', 'entry.474856397',
+      'entry.78612865', 'entry.1050140810', 'entry.1655283020', 'entry.1807351277', 'entry.193330402',
+      'entry.1989745465', 'entry.689742014', 'entry.1911042786', 'entry.1045206646', 'entry.2086272203',
+      'entry.1254232444', 'entry.153113344', 'entry.252742418',
+    ],
+  },
+  'attendance-ack-form': {
+    action: `${SIGNUP_ACTION}/attendance-submit`,
+    googleId: '1FAIpQLSfmkHmyukTsnV4226QmsLQHOPL7yHR9I2I2NjAPVVi2ONv6UQ',
+    fields: [
+      'entry.744899166', 'entry.1495786921', 'entry.1213289457',
+      'entry.519691599', 'entry.220830493', 'entry.1624648588',
     ],
   },
 };

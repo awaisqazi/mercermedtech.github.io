@@ -10,13 +10,17 @@
  * fields plus cf-turnstile-response. It gets back JSON {ok:true} or
  * {ok:false, error:"…"} with a matching status.
  *
- * Two more routes take the unlisted staff forms on the site and forward them
+ * Further routes take the unlisted staff forms on the site and forward them
  * to their Google Forms the same way, so neither Google Form address is in
  * the page source:
  *   POST /iep-submit     www.mercermedtech.com/iep/ (and /es/iep/)
  *                        binding IEP_FORM_ACTION (plain text, formResponse URL)
  *   POST /loaner-submit  www.mercermedtech.com/loaner/ (and /es/loaner/)
  *                        binding LOANER_FORM_ACTION (plain text, formResponse URL)
+ *   POST /orientation-submit  .../onboarding/orientation/ (and /es/...)
+ *                        binding ORIENTATION_FORM_ACTION
+ *   POST /attendance-submit   .../onboarding/attendance/ (and /es/...)
+ *                        binding ATTENDANCE_FORM_ACTION
  * Same body as the sign-up (form-encoded entry.* fields plus
  * cf-turnstile-response), plus Google's date parts (entry.N_year/_month/_day)
  * and "Other" text (entry.N.other_option_response). Differences from the
@@ -45,6 +49,8 @@ const MAX_FIELDS = 120;
 const STAFF_ROUTES = {
   '/iep-submit': 'IEP_FORM_ACTION',
   '/loaner-submit': 'LOANER_FORM_ACTION',
+  '/orientation-submit': 'ORIENTATION_FORM_ACTION',
+  '/attendance-submit': 'ATTENDANCE_FORM_ACTION',
 };
 
 const ALLOWED_FIELD = /^entry\.\d+$/;

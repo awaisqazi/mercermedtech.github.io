@@ -1,0 +1,71 @@
+---
+/**
+ * The two Day 0 acknowledgment pages, in one language:
+ *   kind "orientation"  /onboarding/orientation/  (Orientation Acknowledgment)
+ *   kind "attendance"   /onboarding/attendance/   (Attendance and Make-up Policy)
+ *
+ * Hidden like /iep/ and /loaner/: BaseLayout "standalone" (noindex) and
+ * astro.config.mjs keeps /onboarding/ out of the sitemap. The form is the
+ * stepped StaffForm; on submit the mmt-signup Worker (/orientation-submit,
+ * /attendance-submit) forwards the answers to the Google Form, and the
+ * school's Apps Script files the PDF in the participant's IEP folder and
+ * ticks "Orientation ack" or "Attendance policy" on the tracker.
+ * The wording comes from src/data/onboardingText.ts.
+ */
+import '../styles/components/dl.css';
+import '../styles/components/signup.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StaffForm from '../components/StaffForm.astro';
+import PolicyPanels from '../components/PolicyPanels.astro';
+import { ATTENDANCE_FORM, ORIENTATION_FORM } from '../data/staffForms';
+import { ONBOARDING_TEXT } from '../data/onboardingText';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  kind: 'orientation' | 'attendance';
+}
+
+const { locale, kind } = Astro.props;
+const d = t(locale);
+const orientation = kind === 'orientation';
+const page = orientation ? d.orientationAck : d.attendanceAck;
+const form = orientation ? ORIENTATION_FORM : ATTENDANCE_FORM;
+const sections = orientation
+  ? [ONBOARDING_TEXT.rights, ONBOARDING_TEXT.responsibilities, ONBOARDING_TEXT.concern]
+  : ONBOARDING_TEXT.attendance;
+const path = orientation ? '/onboarding/orientation/' : '/onboarding/attendance/';
+---
+
+<BaseLayout
+  locale={locale}
+  path={path}
+  title={page.seo.title}
+  description={page.seo.description}
+  variant="dlt"
+  footer="dlt"
+  bodyClass="dl-page signup-page staff-form-page"
+  navLinks={[]}
+  standalone
+>
+  <main id="main" class="signup-main">
+    <div class="signup-column">
+      <span class="signup-eyebrow">{page.eyebrow}</span>
+      <h1>{page.heading}</h1>
+      <p class="signup-lead">{page.lead}</p>
+
+      <StaffForm
+        locale={locale}
+        form={form}
+        submitLabel={page.submit}
+        successTitle={page.successTitle}
+        successBody={page.successBody}
+        agreementAt={orientation ? 2 : 1}
+      >
+        <div slot="agreement">
+          <PolicyPanels locale={locale} heading={page.rulesHeading} help={page.rulesHelp} sections={sections} />
+        </div>
+      </StaffForm>
+    </div>
+  </main>
+</BaseLayout>

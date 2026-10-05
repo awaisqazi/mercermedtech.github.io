@@ -11,7 +11,7 @@ Endpoint: https://mmt-signup.mercermedtech.workers.dev
 - `npx wrangler secret put TURNSTILE_SECRET` once; paste the widget's secret key
   from Cloudflare → Turnstile. Never commit it.
 
-## /iep-submit and /loaner-submit (unlisted staff forms)
+## Staff form routes (unlisted staff forms)
 
 The native forms on https://www.mercermedtech.com/iep/ and /loaner/ (and the
 /es/ pages) POST form-encoded `entry.*` fields plus `cf-turnstile-response` to
@@ -23,7 +23,11 @@ and `entry.N.other_option_response`) to the Google Form. Only
 Google answers 400 when a required question is missing; the Worker passes
 that on as 422 `rejected`.
 
-- Set `IEP_FORM_ACTION` and `LOANER_FORM_ACTION` (the two formResponse URLs)
+`/orientation-submit` and `/attendance-submit` work the same way for the Day 0
+acknowledgments on /onboarding/orientation/ and /onboarding/attendance/.
+
+- Set `IEP_FORM_ACTION`, `LOANER_FORM_ACTION`, `ORIENTATION_FORM_ACTION` and
+  `ATTENDANCE_FORM_ACTION` (the formResponse URLs)
   once in Cloudflare (Workers, mmt-signup, Settings, Variables and Secrets,
   plain text). They are not in `wrangler.toml` because this repository is
   public. The older `IEP_FORM_URL` and `LOANER_FORM_URL` are no longer read.

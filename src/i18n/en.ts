@@ -833,6 +833,7 @@ export const en = {
     securityHeading: 'Security check',
     startAnother: 'Start another form',
     fieldRequired: 'Please answer this question.',
+    backToHub: 'Back to onboarding',
     honeypotLabel: 'Leave this empty',
   },
 
@@ -883,6 +884,101 @@ export const en = {
     agreementHeading: 'C. How this loan works',
     agreementHelp: 'Open each part and read it with the staff member before you sign.',
     ackHeading: 'Participant acknowledgment',
+  },
+
+  /* ---------- Onboarding hub and Day 0 acknowledgment pages (hidden) ---------- */
+  /**
+   * /onboarding/: one checklist page for Day 0, opened by staff once per
+   * learner (?pid= carries the participant ID into every form). The two
+   * acknowledgment forms live at /onboarding/orientation/ and
+   * /onboarding/attendance/. All noindex, unlinked, out of the sitemap.
+   */
+  onboarding: {
+    seo: {
+      title: 'Day 0 onboarding | Mercer Med Tech',
+      description: 'Day 0 onboarding for Digital Literacy Training participants: every step in one place, with MMT staff.',
+    },
+    eyebrow: 'Digital Literacy Training',
+    heading: 'Welcome to Day 0',
+    lead: 'Work through these six steps with an MMT staff member. Each one opens here and brings you back when it is done.',
+    languageLabel: 'Language for every form',
+    english: 'English',
+    spanish: 'Español',
+    progress: '{done} of {total} done',
+    notStarted: 'Not started',
+    done: 'Done',
+    markDone: 'Mark as done',
+    markNotDone: 'Mark as not done',
+    open: 'Open',
+    reset: 'Reset this checklist',
+    resetConfirm: 'Clear the progress on this device?',
+    staffToggle: 'Staff',
+    staffHeading: 'For staff',
+    staffOrder: 'Order: welcome and orientation, then the IEP, then the attendance policy and the laptop, then the class site.',
+    staffRule: 'Nothing before the IEP signature: no assessment, device, account or service until the IEP is signed and dated.',
+    staffPid: 'Open this page once per learner with ?pid= and the MMT participant ID; it is filled in on every form.',
+    staffPidLabel: 'Participant ID for this learner',
+    staffPidApply: 'Use this ID',
+    steps: {
+      welcome: {
+        title: 'Welcome',
+        body: 'Your Learner Handbook explains how the program works. Keep it handy.',
+        handbook: 'Learner Handbook (PDF)',
+        kitNote: 'Staff give you your printed Welcome kit. It has your calendar and class links.',
+      },
+      orientation: {
+        title: 'Orientation acknowledgment',
+        body: 'What we reviewed today, your rights and responsibilities, and how to raise a concern.',
+      },
+      iep: {
+        title: 'Individual Employment Plan (IEP)',
+        body: 'Your goals and the supports that help. Staff meet with you to finish and sign it.',
+      },
+      attendance: {
+        title: 'Attendance and make-up policy',
+        body: 'How your hours count, what to do if you fall behind, and what you need to finish.',
+      },
+      loaner: {
+        title: 'Laptop loaner agreement',
+        body: 'The rules for your laptop, and the two conditions for it to become yours.',
+      },
+      classSite: {
+        title: 'Your class site',
+        body: 'Your lessons are on the class site. Log in with the username on your printed login card, then make your own password.',
+        link: 'Open the class site',
+        guide: 'Getting started on the class site (PDF)',
+      },
+    },
+  },
+
+  orientationAck: {
+    seo: {
+      title: 'Orientation acknowledgment | Mercer Med Tech',
+      description: 'Orientation acknowledgment for Digital Literacy Training participants. Completed with MMT staff at Day 0.',
+    },
+    eyebrow: 'Digital Literacy Training',
+    heading: 'Orientation acknowledgment',
+    lead: 'Staff go through each line with you at orientation and answer your questions.',
+    rulesHeading: 'Read together',
+    rulesHelp: 'Open each part and read it with the staff member.',
+    submit: 'Sign and send',
+    successTitle: 'Thank you.',
+    successBody: 'Your orientation acknowledgment is recorded.',
+  },
+
+  attendanceAck: {
+    seo: {
+      title: 'Attendance policy acknowledgment | Mercer Med Tech',
+      description: 'Attendance and make-up policy acknowledgment for Digital Literacy Training participants, completed with MMT staff.',
+    },
+    eyebrow: 'Digital Literacy Training',
+    heading: 'Attendance and make-up policy',
+    lead: 'Read the policy with a staff member, in the language you choose, then sign.',
+    rulesHeading: 'The policy',
+    rulesHelp: 'Open each part and read it with the staff member.',
+    submit: 'Sign and send',
+    successTitle: 'Thank you.',
+    successBody: 'Your attendance policy acknowledgment is recorded.',
   },
 
   /* ---------- Partner outreach kit page (hidden) ---------- */

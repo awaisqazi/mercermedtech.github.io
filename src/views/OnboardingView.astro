@@ -1,0 +1,343 @@
+---
+/**
+ * The Day 0 onboarding hub, in one language: /onboarding/ and /es/onboarding/.
+ *
+ * Hidden like /iep/ and /loaner/: BaseLayout "standalone" (noindex) and
+ * astro.config.mjs keeps /onboarding/ out of the sitemap. Staff open it once
+ * per learner, ideally with ?pid=<MMT participant ID>.
+ *
+ * - Six step cards. Each form opens in this tab with ?return=onboarding (and
+ *   ?pid=), and its success screen links back here and marks the step done.
+ * - Progress and the language choice live in localStorage under
+ *   "mmt-onboarding-v1:<pid or default>", shared by both languages, so the
+ *   English / Español switch at the top (and the header switch) keeps it.
+ * - The language switch is a link to the other locale's page with the same
+ *   query string; every card on that page links the other locale's forms
+ *   and PDFs.
+ * - "Staff" shows the order, the IEP rule and a participant ID box.
+ */
+import '../styles/components/dl.css';
+import '../styles/components/signup.css';
+import '../styles/components/onboarding.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+import { localePath, t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const page = t(locale).onboarding;
+const s = page.steps;
+const lang = locale === 'es' ? 'ES' : 'EN';
+
+/**
+ * The Welcome kit PDFs carry the class Teams links with passcodes, and this
+ * repository and site are public, so they are not published; staff hand out
+ * the printed kit. Set to true only with a version without meeting links.
+ */
+const WELCOME_KIT_PUBLISHED = false;
+
+interface StepLink {
+  href: string;
+  label: string;
+  /** A form page: gets ?return=onboarding and ?pid= added. */
+  form?: boolean;
+  external?: boolean;
+}
+interface Step {
+  key: string;
+  title: string;
+  body: string;
+  note?: string;
+  links: StepLink[];
+  /** Steps without a form are marked done by hand. */
+  manual: boolean;
+}
+
+const steps: Step[] = [
+  {
+    key: 'welcome',
+    title: s.welcome.title,
+    body: s.welcome.body,
+    note: WELCOME_KIT_PUBLISHED ? undefined : s.welcome.kitNote,
+    links: [{ href: `/onboarding/learner-handbook-${lang.toLowerCase()}.pdf`, label: s.welcome.handbook, external: true }],
+    manual: true,
+  },
+  {
+    key: 'orientation',
+    title: s.orientation.title,
+    body: s.orientation.body,
+    links: [{ href: localePath(locale, '/onboarding/orientation/'), label: page.open, form: true }],
+    manual: false,
+  },
+  {
+    key: 'iep',
+    title: s.iep.title,
+    body: s.iep.body,
+    links: [{ href: localePath(locale, '/iep/'), label: page.open, form: true }],
+    manual: false,
+  },
+  {
+    key: 'attendance',
+    title: s.attendance.title,
+    body: s.attendance.body,
+    links: [{ href: localePath(locale, '/onboarding/attendance/'), label: page.open, form: true }],
+    manual: false,
+  },
+  {
+    key: 'loaner',
+    title: s.loaner.title,
+    body: s.loaner.body,
+    links: [{ href: localePath(locale, '/loaner/'), label: page.open, form: true }],
+    manual: false,
+  },
+  {
+    key: 'classSite',
+    title: s.classSite.title,
+    body: s.classSite.body,
+    links: [
+      { href: site.classSite.url, label: s.classSite.link, external: true },
+      { href: `/onboarding/DLT_Guide_ClassSite_GettingStarted_${lang}.pdf`, label: s.classSite.guide, external: true },
+    ],
+    manual: true,
+  },
+];
+---
+
+<BaseLayout
+  locale={locale}
+  path="/onboarding/"
+  title={page.seo.title}
+  description={page.seo.description}
+  variant="dlt"
+  footer="dlt"
+  bodyClass="dl-page signup-page onboarding-page staff-form-page"
+  navLinks={[]}
+  standalone
+>
+  <main id="main" class="signup-main">
+    <div class="signup-column onb-column" data-onboarding data-locale={locale} data-total={steps.length}>
+      <div class="onb-top">
+        <span class="signup-eyebrow">{page.eyebrow}</span>
+        <button type="button" class="onb-staff-toggle" aria-expanded="false" aria-controls="onb-staff" data-staff-toggle>
+          <i class="fas fa-user-shield" aria-hidden="true"></i>
+          {page.staffToggle}
+        </button>
+      </div>
+
+      <section class="onb-staff" id="onb-staff" hidden data-staff-panel aria-labelledby="onb-staff-title">
+        <h2 id="onb-staff-title">{page.staffHeading}</h2>
+        <ul>
+          <li>{page.staffOrder}</li>
+          <li><strong>{page.staffRule}</strong></li>
+          <li>{page.staffPid}</li>
+        </ul>
+        <form class="onb-pid" data-pid-form>
+          <label for="onb-pid-input">{page.staffPidLabel}</label>
+          <div class="onb-pid-row">
+            <input id="onb-pid-input" type="text" maxlength="40" autocomplete="off" data-pid-input />
+            <button type="submit" class="btn btn-secondary">{page.staffPidApply}</button>
+          </div>
+        </form>
+      </section>
+
+      <h1>{page.heading}</h1>
+      <p class="signup-lead">{page.lead}</p>
+
+      <div class="onb-lang" role="group" aria-label={page.languageLabel}>
+        <span class="onb-lang-label">{page.languageLabel}</span>
+        <div class="onb-lang-switch">
+          {
+            (['en', 'es'] as Locale[]).map((option) =>
+              option === locale ? (
+                <span class="onb-lang-option is-current" aria-current="true" lang={option}>
+                  {option === 'en' ? page.english : page.spanish}
+                </span>
+              ) : (
+                <a class="onb-lang-option" href={localePath(option, '/onboarding/')} lang={option} hreflang={option} data-lang-choice={option}>
+                  {option === 'en' ? page.english : page.spanish}
+                </a>
+              )
+            )
+          }
+        </div>
+      </div>
+
+      <div class="onb-progress">
+        <p class="onb-progress-label" data-progress-label data-template={page.progress} aria-live="polite">
+          {page.progress.replace('{done}', '0').replace('{total}', String(steps.length))}
+        </p>
+        <div class="wiz-bar"><span data-progress-fill style="width: 0%"></span></div>
+      </div>
+
+      <ol class="onb-steps">
+        {
+          steps.map((step, index) => (
+            <li class="onb-card" data-step={step.key}>
+              <div class="onb-card-head">
+                <span class="onb-num" aria-hidden="true">
+                  <span class="onb-num-n">{index + 1}</span>
+                  <i class="fas fa-check" aria-hidden="true"></i>
+                </span>
+                <h2>{step.title}</h2>
+                <span class="onb-status" data-status data-done-label={page.done} data-todo-label={page.notStarted}>
+                  {page.notStarted}
+                </span>
+              </div>
+              <p class="onb-body">{step.body}</p>
+              {step.note && <p class="onb-note">{step.note}</p>}
+              <div class="onb-actions">
+                {step.links.map((link, i) => (
+                  <a
+                    class:list={['btn', i === 0 ? 'btn-primary' : 'btn-secondary', 'onb-link']}
+                    href={link.href}
+                    data-form-link={link.form ? '' : undefined}
+                    target={link.external ? '_blank' : undefined}
+                    rel={link.external ? 'noopener' : undefined}
+                  >
+                    {link.label}
+                    <i class:list={['fas', link.external ? 'fa-external-link-alt' : 'fa-arrow-right']} aria-hidden="true"></i>
+                  </a>
+                ))}
+                <button
+                  type="button"
+                  class="onb-mark"
+                  data-mark
+                  data-mark-done={page.markDone}
+                  data-mark-undo={page.markNotDone}
+                  hidden={!step.manual}
+                >
+                  {page.markDone}
+                </button>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <p class="onb-reset">
+        <button type="button" class="onb-reset-btn" data-reset data-confirm={page.resetConfirm}>{page.reset}</button>
+      </p>
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  /*
+   * Hub state: { lang, done: { step: true } } in localStorage under
+   * "mmt-onboarding-v1:<pid or default>". Form steps are marked done by the
+   * form pages (StaffForm) on a successful send; welcome and class site by hand.
+   */
+  const root = document.querySelector<HTMLElement>('[data-onboarding]');
+  if (root) {
+    const locale = root.dataset.locale === 'es' ? 'es' : 'en';
+    const params = new URLSearchParams(window.location.search);
+    const pid = (params.get('pid') || '').trim().slice(0, 40);
+    const key = `mmt-onboarding-v1:${pid || 'default'}`;
+
+    type State = { lang?: string; done?: Record<string, boolean> };
+    const read = (): State => {
+      try {
+        return JSON.parse(localStorage.getItem(key) || '{}') || {};
+      } catch {
+        return {};
+      }
+    };
+    const write = (state: State) => {
+      try {
+        localStorage.setItem(key, JSON.stringify(state));
+      } catch {
+        /* storage off: the page still works, it just forgets */
+      }
+    };
+
+    // This page's language is the choice (it also covers the header switch).
+    write({ ...read(), lang: locale });
+
+    const query = (extra: Record<string, string>) => {
+      const q = new URLSearchParams();
+      Object.entries(extra).forEach(([k, v]) => v && q.set(k, v));
+      const text = q.toString();
+      return text ? `?${text}` : '';
+    };
+
+    // Form links: back here afterwards, with the participant ID.
+    root.querySelectorAll<HTMLAnchorElement>('[data-form-link]').forEach((link) => {
+      link.href = link.pathname + query({ return: 'onboarding', pid });
+    });
+
+    // Language links (ours and the header's) keep ?pid= and store the choice.
+    const carry = query({ pid, staff: params.get('staff') || '' });
+    document.querySelectorAll<HTMLAnchorElement>('[data-lang-choice], a[data-lang-link]').forEach((link) => {
+      link.href = link.pathname + carry;
+      link.addEventListener('click', () => {
+        const target = link.getAttribute('data-lang-choice') || (link.pathname.startsWith('/es/') ? 'es' : 'en');
+        write({ ...read(), lang: target });
+      });
+    });
+
+    // Status.
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-step]')];
+    const total = Number(root.dataset.total) || cards.length;
+    const label = root.querySelector<HTMLElement>('[data-progress-label]');
+    const fill = root.querySelector<HTMLElement>('[data-progress-fill]');
+    const render = () => {
+      const done = read().done || {};
+      let count = 0;
+      cards.forEach((card) => {
+        const isDone = !!done[card.dataset.step || ''];
+        if (isDone) count += 1;
+        card.classList.toggle('is-done', isDone);
+        const status = card.querySelector<HTMLElement>('[data-status]');
+        if (status) status.textContent = (isDone ? status.dataset.doneLabel : status.dataset.todoLabel) || '';
+        const mark = card.querySelector<HTMLButtonElement>('[data-mark]');
+        if (mark) {
+          mark.textContent = (isDone ? mark.dataset.markUndo : mark.dataset.markDone) || '';
+          mark.setAttribute('aria-pressed', String(isDone));
+        }
+      });
+      if (label) label.textContent = (label.dataset.template || '').replace('{done}', String(count)).replace('{total}', String(total));
+      if (fill) fill.style.width = `${(count / total) * 100}%`;
+    };
+    cards.forEach((card) => {
+      card.querySelector<HTMLButtonElement>('[data-mark]')?.addEventListener('click', () => {
+        const state = read();
+        const step = card.dataset.step || '';
+        const done = { ...(state.done || {}) };
+        done[step] = !done[step];
+        write({ ...state, done });
+        render();
+      });
+    });
+    root.querySelector<HTMLButtonElement>('[data-reset]')?.addEventListener('click', (event) => {
+      const button = event.currentTarget as HTMLButtonElement;
+      if (!window.confirm(button.dataset.confirm || '')) return;
+      write({ lang: locale, done: {} });
+      render();
+    });
+    render();
+    // Coming back from a form in another tab of history: refresh the status.
+    window.addEventListener('pageshow', render);
+    window.addEventListener('storage', render);
+
+    // Staff panel.
+    const toggle = root.querySelector<HTMLButtonElement>('[data-staff-toggle]');
+    const panel = root.querySelector<HTMLElement>('[data-staff-panel]');
+    const setStaff = (open: boolean) => {
+      if (!toggle || !panel) return;
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+    };
+    setStaff(params.get('staff') === '1');
+    toggle?.addEventListener('click', () => setStaff(Boolean(panel && panel.hidden)));
+    const pidInput = root.querySelector<HTMLInputElement>('[data-pid-input]');
+    if (pidInput) pidInput.value = pid;
+    root.querySelector<HTMLFormElement>('[data-pid-form]')?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const next = (pidInput?.value || '').trim().slice(0, 40);
+      window.location.search = query({ pid: next, staff: '1' });
+    });
+  }
+</script>

@@ -1,0 +1,43 @@
+---
+/**
+ * Collapsible sections of policy text in one language, for the stepped staff
+ * forms (rendered into StaffForm's "agreement" slot). Paragraphs that end in
+ * ":" introduce the list; the others follow it, as in the source documents.
+ */
+import type { Locale } from '../i18n';
+import type { PolicySection } from '../data/onboardingText';
+
+interface Props {
+  locale: Locale;
+  heading: string;
+  help: string;
+  sections: PolicySection[];
+}
+
+const { locale, heading, help, sections } = Astro.props;
+const lead = (s: PolicySection) => s.paras.filter((p) => p.en.endsWith(':'));
+const tail = (s: PolicySection) => s.paras.filter((p) => !p.en.endsWith(':'));
+const headingId = `policy-${heading.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+---
+
+<section class="staff-rules" aria-labelledby={headingId}>
+  <h3 id={headingId}>{heading}</h3>
+  <p>{help}</p>
+  {
+    sections.map((section) => (
+      <details>
+        <summary>{section.title[locale]}</summary>
+        <div class="staff-rules-body">
+          {lead(section).map((p) => <p>{p[locale]}</p>)}
+          {section.items.length > 0 &&
+            (section.numbered ? (
+              <ol>{section.items.map((item) => <li>{item[locale]}</li>)}</ol>
+            ) : (
+              <ul>{section.items.map((item) => <li>{item[locale]}</li>)}</ul>
+            ))}
+          {tail(section).map((p) => <p>{p[locale]}</p>)}
+        </div>
+      </details>
+    ))
+  }
+</section>

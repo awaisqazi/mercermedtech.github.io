@@ -1,0 +1,317 @@
+/*
+ * The Day 0 onboarding hub (/onboarding/). One column of step cards with a
+ * status each, a big English / Español switch, a slim progress bar, and a
+ * staff panel. Buttons and the progress bar reuse buttons.css and
+ * staff-form.css (.wiz-bar).
+ */
+@import './staff-form.css';
+
+.onb-column {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.onb-column h1 {
+    margin: 0;
+}
+
+.onb-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.onb-staff-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 40px;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.onb-staff-toggle[aria-expanded='true'] {
+    border-color: var(--tech);
+    color: var(--tech-dark);
+    background: var(--tech-light);
+}
+
+.onb-staff {
+    padding: 1rem 1.1rem;
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--tech);
+    background: #fff;
+}
+
+.onb-staff[hidden] {
+    display: none;
+}
+
+.onb-staff h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    color: var(--tech-dark);
+}
+
+.onb-staff ul {
+    margin: 0 0 0.9rem;
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.onb-pid label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.onb-pid-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.onb-pid-row input {
+    flex: 1 1 160px;
+    min-height: 44px;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-sm);
+    font: inherit;
+}
+
+/* ---------- language switch ---------- */
+
+.onb-lang {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    flex-wrap: wrap;
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius-md);
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.onb-lang-label {
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.onb-lang-switch {
+    display: inline-flex;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--tech-light);
+}
+
+.onb-lang-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 7.5rem;
+    min-height: 48px;
+    padding: 0.5rem 1.2rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--tech-dark);
+    text-decoration: none;
+}
+
+.onb-lang-option.is-current {
+    background: var(--tech);
+    color: #fff;
+    box-shadow: 0 6px 16px -6px rgba(67, 56, 202, 0.55);
+}
+
+a.onb-lang-option:hover,
+a.onb-lang-option:focus-visible {
+    background: #fff;
+}
+
+/* ---------- progress ---------- */
+
+.onb-progress-label {
+    margin: 0 0 0.45rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--tech-dark);
+}
+
+/* ---------- step cards ---------- */
+
+.onb-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.9rem;
+}
+
+.onb-card {
+    padding: 1.1rem 1.2rem;
+    border-radius: var(--radius-md);
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 10px 30px -18px rgba(15, 23, 42, 0.25);
+    display: grid;
+    gap: 0.6rem;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.onb-card.is-done {
+    border-color: rgba(0, 166, 156, 0.45);
+    background: linear-gradient(135deg, #fff 0%, var(--primary-light) 100%);
+}
+
+.onb-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.onb-card-head h2 {
+    flex: 1 1 auto;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.3;
+}
+
+.onb-num {
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 50%;
+    background: var(--tech-light);
+    color: var(--tech-dark);
+    font-weight: 800;
+}
+
+.onb-num i,
+.onb-card.is-done .onb-num-n {
+    display: none;
+}
+
+.onb-card.is-done .onb-num {
+    background: var(--primary);
+    color: #fff;
+}
+
+.onb-card.is-done .onb-num i {
+    display: inline;
+}
+
+.onb-status {
+    flex: 0 0 auto;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.onb-card.is-done .onb-status {
+    background: var(--primary);
+    color: #fff;
+}
+
+.onb-body,
+.onb-note {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.onb-body {
+    color: var(--text-main);
+}
+
+.onb-note {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.onb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.onb-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    padding: 0.75rem 1.25rem;
+}
+
+.onb-mark,
+.onb-reset-btn {
+    min-height: 44px;
+    padding: 0.5rem 0.9rem;
+    border: 0;
+    background: none;
+    color: var(--tech-dark);
+    font: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+
+.onb-mark[hidden] {
+    display: none;
+}
+
+.onb-reset {
+    margin: 0;
+    text-align: center;
+}
+
+.onb-reset-btn {
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.88rem;
+}
+
+@media (max-width: 640px) {
+    .onb-lang {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .onb-lang-switch {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .onb-lang-option {
+        min-width: 0;
+    }
+
+    .onb-actions .btn {
+        flex: 1 1 100%;
+        justify-content: center;
+    }
+
+    .onb-card-head {
+        flex-wrap: wrap;
+    }
+}

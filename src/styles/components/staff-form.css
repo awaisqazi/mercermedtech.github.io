@@ -626,3 +626,41 @@
 .staff-form[hidden] {
     display: none;
 }
+
+/* `.btn { display: inline-flex }` would otherwise show a hidden button or link. */
+.wiz-done .btn[hidden] {
+    display: none;
+}
+
+/* Policy text inside the collapsible panels (PolicyPanels.astro). */
+.staff-rules-body {
+    display: grid;
+    gap: 0.55rem;
+    padding: 0 1rem 0.9rem;
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: var(--text-main);
+}
+
+.staff-rules-body p {
+    margin: 0;
+    color: var(--text-main);
+}
+
+.staff-rules .staff-rules-body ol,
+.staff-rules .staff-rules-body ul {
+    padding: 0 0 0 1.4rem;
+}
+
+.staff-rules .staff-rules-body ul {
+    list-style: disc;
+}
+
+.staff-rules .staff-rules-body ol {
+    list-style: decimal;
+}
+
+.staff-rules .staff-rules-body li {
+    display: list-item;
+    padding-left: 0.2rem;
+}

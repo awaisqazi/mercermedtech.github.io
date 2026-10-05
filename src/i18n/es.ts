@@ -856,6 +856,7 @@ export const es: Dictionary = {
     securityHeading: 'Verificación de seguridad',
     startAnother: 'Empezar otro formulario',
     fieldRequired: 'Conteste esta pregunta.',
+    backToHub: 'Volver a la inscripción',
     honeypotLabel: 'Deje esto en blanco',
   },
 
@@ -908,6 +909,101 @@ export const es: Dictionary = {
     agreementHeading: 'C. Cómo funciona este préstamo',
     agreementHelp: 'Abra cada parte y léala con el miembro del personal antes de firmar.',
     ackHeading: 'Declaración del participante',
+  },
+
+  /* ---------- Inscripción del Día 0 y constancias (ocultas) ---------- */
+  /**
+   * /es/onboarding/: una lista de pasos para el Día 0 que el personal abre
+   * una vez por participante (?pid= lleva el número de participante a cada
+   * formulario). Las dos constancias están en /es/onboarding/orientation/ y
+   * /es/onboarding/attendance/. Todo noindex, sin enlaces y fuera del sitemap.
+   */
+  onboarding: {
+    seo: {
+      title: 'Inscripción del Día 0 | Mercer Med Tech',
+      description: 'Inscripción del Día 0 para participantes de Habilidades Digitales: todos los pasos en un lugar, con el personal de MMT.',
+    },
+    eyebrow: 'Habilidades Digitales',
+    heading: 'Bienvenido al Día 0',
+    lead: 'Haga estos seis pasos con un miembro del personal de MMT. Cada uno se abre aquí y le regresa a esta página cuando termina.',
+    languageLabel: 'Idioma de todos los formularios',
+    english: 'English',
+    spanish: 'Español',
+    progress: '{done} de {total} listos',
+    notStarted: 'Sin empezar',
+    done: 'Listo',
+    markDone: 'Marcar como listo',
+    markNotDone: 'Marcar como no listo',
+    open: 'Abrir',
+    reset: 'Reiniciar esta lista',
+    resetConfirm: '¿Borrar el avance en este equipo?',
+    staffToggle: 'Personal',
+    staffHeading: 'Para el personal',
+    staffOrder: 'Orden: bienvenida y orientación, luego el IEP, luego la política de asistencia y la computadora, y al final el sitio de la clase.',
+    staffRule: 'Nada antes de la firma del IEP: ninguna evaluación, equipo, cuenta ni servicio hasta que el IEP esté firmado y fechado.',
+    staffPid: 'Abra esta página una vez por participante con ?pid= y el número de participante de MMT; se llena en cada formulario.',
+    staffPidLabel: 'Número de participante de esta persona',
+    staffPidApply: 'Usar este número',
+    steps: {
+      welcome: {
+        title: 'Bienvenida',
+        body: 'Su Manual del participante explica cómo funciona el programa. Téngalo a la mano.',
+        handbook: 'Manual del participante (PDF)',
+        kitNote: 'El personal le entrega su Kit de bienvenida impreso. Tiene su calendario y los enlaces de clase.',
+      },
+      orientation: {
+        title: 'Constancia de orientación',
+        body: 'Lo que revisamos hoy, sus derechos y responsabilidades, y cómo presentar una inquietud.',
+      },
+      iep: {
+        title: 'Plan Individual de Empleo (IEP)',
+        body: 'Sus metas y los apoyos que le ayudan. El personal se reúne con usted para terminarlo y firmarlo.',
+      },
+      attendance: {
+        title: 'Política de asistencia y recuperación',
+        body: 'Cómo cuentan sus horas, qué hacer si se atrasa y qué necesita para terminar.',
+      },
+      loaner: {
+        title: 'Acuerdo de préstamo de computadora portátil',
+        body: 'Las reglas de su computadora y las dos condiciones para que pase a ser suya.',
+      },
+      classSite: {
+        title: 'El sitio de su clase',
+        body: 'Sus lecciones están en el sitio de la clase. Entre con el usuario de su tarjeta de acceso impresa y luego cree su propia contraseña.',
+        link: 'Abrir el sitio de la clase',
+        guide: 'Primeros pasos en el sitio de la clase (PDF)',
+      },
+    },
+  },
+
+  orientationAck: {
+    seo: {
+      title: 'Constancia de orientación | Mercer Med Tech',
+      description: 'Constancia de orientación para participantes de Habilidades Digitales. Se completa con el personal de MMT el Día 0.',
+    },
+    eyebrow: 'Habilidades Digitales',
+    heading: 'Constancia de orientación',
+    lead: 'El personal revisa cada línea con usted en la orientación y contesta sus preguntas.',
+    rulesHeading: 'Para leer juntos',
+    rulesHelp: 'Abra cada parte y léala con el miembro del personal.',
+    submit: 'Firmar y enviar',
+    successTitle: 'Gracias.',
+    successBody: 'Su constancia de orientación quedó registrada.',
+  },
+
+  attendanceAck: {
+    seo: {
+      title: 'Constancia de la política de asistencia | Mercer Med Tech',
+      description: 'Constancia de la Política de Asistencia y Recuperación para participantes de Habilidades Digitales, con el personal de MMT.',
+    },
+    eyebrow: 'Habilidades Digitales',
+    heading: 'Política de asistencia y recuperación',
+    lead: 'Lea la política con un miembro del personal, en el idioma que elija, y luego firme.',
+    rulesHeading: 'La política',
+    rulesHelp: 'Abra cada parte y léala con el miembro del personal.',
+    submit: 'Firmar y enviar',
+    successTitle: 'Gracias.',
+    successBody: 'Su constancia de la política de asistencia quedó registrada.',
   },
 
   /* ---------- Página del kit de difusión para agencias (oculta) ---------- */
