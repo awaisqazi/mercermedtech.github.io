@@ -831,6 +831,33 @@ export const en = {
     noscript: 'This form needs JavaScript. Please turn it on, or ask a staff member.',
   },
 
+  /* ---------- Laptop loaner agreement page (hidden) ---------- */
+  /**
+   * /loaner/: the IT Asset Agreement (laptop loan) as a Google Form, filled in
+   * with staff at laptop pickup. Nothing links here, BaseLayout carries
+   * "standalone" (noindex) and astro.config.mjs keeps /loaner/ out of the
+   * sitemap. The form address comes from the mmt-signup Worker after a
+   * Turnstile check. The policy PDF lives in public/loaner/.
+   */
+  loaner: {
+    seo: {
+      title: 'Laptop loaner agreement | Mercer Med Tech',
+      description:
+        'Laptop loaner agreement for Digital Literacy Training participants. MMT staff complete it with you at laptop pickup.',
+    },
+    eyebrow: 'Digital Literacy Training',
+    heading: 'Laptop loaner agreement',
+    lead: 'MMT staff complete this with you when you pick up your laptop.',
+    policyBefore: 'Before you sign, read the full policy: ',
+    policyLink: 'Mercer Med Tech IT Asset Policy v2.1 (PDF)',
+    checking: 'A quick security check runs first. The form opens here when it is done.',
+    loading: 'Opening the form.',
+    fallback: 'Please try again or ask a staff member.',
+    retry: 'Try again',
+    iframeTitle: 'Laptop loaner agreement form',
+    noscript: 'This form needs JavaScript. Please turn it on, or ask a staff member.',
+  },
+
   /* ---------- Partner outreach kit page (hidden) ---------- */
   /**
    * One page per partner agency, at /partners/<agency>/. Nothing links to it:

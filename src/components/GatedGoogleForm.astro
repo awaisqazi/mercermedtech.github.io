@@ -1,0 +1,223 @@
+---
+/**
+ * A Google Form that only loads after a Cloudflare Turnstile check.
+ *
+ * The form's address is never in the page source. The reader passes the
+ * Turnstile check, the page posts the token to the mmt-signup Worker
+ * (`endpoint`, for example .../iep-form or .../loaner-form), and the Worker
+ * answers with the form's embed URL, which becomes the iframe's src. Until
+ * the Worker has that URL, or if the check fails, the reader sees the
+ * fallback line and a retry button. Used by the unlisted /iep/ and /loaner/
+ * pages; one per page.
+ */
+import type { Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  /** The mmt-signup Worker route that returns {ok, url}. */
+  endpoint: string;
+  text: {
+    checking: string;
+    loading: string;
+    fallback: string;
+    retry: string;
+    iframeTitle: string;
+    noscript: string;
+  };
+}
+
+const { locale, endpoint, text } = Astro.props;
+
+/** Public Turnstile site key, the same widget the sign-up page uses. The secret lives only in the Worker. */
+const TURNSTILE_SITEKEY = '0x4AAAAAAFABG_uSmI7QN2sd';
+---
+
+<section
+  class="gate-box"
+  id="gate-box"
+  data-sitekey={TURNSTILE_SITEKEY}
+  data-endpoint={endpoint}
+  data-language={locale}
+  aria-live="polite"
+>
+  <p class="gate-status" id="gate-status">{text.checking}</p>
+  <div class="signup-turnstile" id="gate-turnstile"></div>
+  <p class="gate-status gate-status-error" id="gate-error" hidden>{text.fallback}</p>
+  <button type="button" class="btn btn-tech gate-retry" id="gate-retry" hidden>{text.retry}</button>
+  <noscript><p class="gate-status gate-status-error">{text.noscript}</p></noscript>
+</section>
+
+<div class="gate-frame" id="gate-frame" data-title={text.iframeTitle} data-loading={text.loading} hidden></div>
+
+
+<script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+
+<script>
+  /*
+   * Turnstile first, then ask the Worker for the form's embed URL and load it
+   * in the iframe. The URL is only accepted if it is a Google Forms address.
+   */
+  const TIMEOUT_MS = 12000;
+  const WAIT_FOR_SCRIPT_MS = 10000;
+  const FORM_URL = /^https:\/\/docs\.google\.com\/forms\//;
+
+  const gate = document.getElementById('gate-box');
+  const host = document.getElementById('gate-turnstile');
+  const status = document.getElementById('gate-status');
+  const error = document.getElementById('gate-error');
+  const retry = document.getElementById('gate-retry') as HTMLButtonElement | null;
+  const frame = document.getElementById('gate-frame');
+
+  const ENDPOINT = gate?.dataset.endpoint || '';
+
+  if (gate && host && status && error && retry && frame && ENDPOINT) {
+    const turnstileApi = () => (window as any).turnstile;
+    let widgetId: string | undefined;
+    let busy = false;
+
+    const fail = () => {
+      busy = false;
+      status.hidden = true;
+      error.hidden = false;
+      retry.hidden = false;
+    };
+
+    const openForm = (url: string) => {
+      const iframe = document.createElement('iframe');
+      iframe.src = url;
+      iframe.title = frame.dataset.title || '';
+      iframe.loading = 'eager';
+      iframe.setAttribute('referrerpolicy', 'no-referrer');
+      frame.replaceChildren(iframe);
+      frame.hidden = false;
+      gate.hidden = true;
+    };
+
+    const requestForm = async (token: string) => {
+      if (busy) return;
+      busy = true;
+      status.textContent = frame.dataset.loading || '';
+      status.hidden = false;
+      error.hidden = true;
+      retry.hidden = true;
+
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), TIMEOUT_MS);
+      try {
+        const response = await fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+          signal: controller.signal,
+        });
+        const data = await response.json().catch(() => null);
+        if (response.ok && data && typeof data.url === 'string' && FORM_URL.test(data.url)) {
+          openForm(data.url);
+          return;
+        }
+        fail();
+      } catch {
+        fail();
+      } finally {
+        window.clearTimeout(timer);
+      }
+    };
+
+    const renderWidget = () => {
+      widgetId = turnstileApi().render(host, {
+        sitekey: gate.dataset.sitekey,
+        theme: 'light',
+        language: gate.dataset.language === 'es' ? 'es' : 'en',
+        callback: (token: string) => {
+          requestForm(token);
+        },
+        'error-callback': () => {
+          fail();
+        },
+        'expired-callback': () => {
+          if (frame.hidden) fail();
+        },
+      });
+    };
+
+    retry.addEventListener('click', () => {
+      error.hidden = true;
+      retry.hidden = true;
+      status.hidden = false;
+      const api = turnstileApi();
+      if (api && widgetId !== undefined) {
+        api.reset(widgetId);
+      } else {
+        window.location.reload();
+      }
+    });
+
+    const startedAt = Date.now();
+    const waitForTurnstile = () => {
+      const api = turnstileApi();
+      if (api && typeof api.render === 'function') {
+        renderWidget();
+        return;
+      }
+      if (Date.now() - startedAt > WAIT_FOR_SCRIPT_MS) {
+        fail();
+        return;
+      }
+      window.setTimeout(waitForTurnstile, 150);
+    };
+    waitForTurnstile();
+  }
+</script>
+
+<style>
+  .gate-box {
+    margin: 1.5rem 0 2rem;
+    padding: 1.25rem 1rem;
+    border: 1px solid var(--border, #e2e8f0);
+    border-radius: 12px;
+    background: #fff;
+    text-align: center;
+  }
+
+  .gate-box[hidden],
+  .gate-frame[hidden],
+  .gate-status[hidden],
+  .gate-retry[hidden] {
+    display: none;
+  }
+
+  .gate-status {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  .gate-status-error {
+    color: #b02a37;
+    font-weight: 600;
+  }
+
+  .gate-retry {
+    margin-top: 0.75rem;
+  }
+
+  .gate-frame {
+    margin: 1.5rem 0 2rem;
+  }
+
+  .gate-frame :global(iframe) {
+    display: block;
+    width: 100%;
+    min-height: 1800px;
+    border: 0;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  @media (max-width: 640px) {
+    .gate-frame :global(iframe) {
+      min-height: 2200px;
+    }
+  }
+</style>

@@ -855,6 +855,34 @@ export const es: Dictionary = {
     noscript: 'Este formulario necesita JavaScript. Actívelo o pida ayuda a un miembro del personal.',
   },
 
+  /* ---------- Página del acuerdo de préstamo de computadora (oculta) ---------- */
+  /**
+   * /es/loaner/: el Acuerdo de Equipos de TI (préstamo de la computadora)
+   * como formulario de Google, que se llena con el personal al recoger la
+   * computadora. Nada enlaza aquí, BaseLayout lleva "standalone" (noindex) y
+   * astro.config.mjs deja /loaner/ fuera del sitemap. La dirección del
+   * formulario la entrega el Worker mmt-signup tras la verificación de
+   * Turnstile. El PDF de la política está en public/loaner/.
+   */
+  loaner: {
+    seo: {
+      title: 'Acuerdo de préstamo de computadora | Mercer Med Tech',
+      description:
+        'Acuerdo de préstamo de computadora portátil para participantes de Habilidades Digitales. Se completa con el personal de MMT.',
+    },
+    eyebrow: 'Habilidades Digitales',
+    heading: 'Acuerdo de préstamo de computadora portátil',
+    lead: 'El personal de MMT completa este formulario con usted cuando recoge su computadora portátil.',
+    policyBefore: 'Antes de firmar, lea la política completa: ',
+    policyLink: 'Política de Equipos de TI v2.1 de Mercer Med Tech (PDF, en inglés)',
+    checking: 'Primero se hace una breve verificación de seguridad. Después, el formulario se abre aquí.',
+    loading: 'Abriendo el formulario.',
+    fallback: 'Inténtelo de nuevo o pida ayuda a un miembro del personal.',
+    retry: 'Intentar de nuevo',
+    iframeTitle: 'Formulario del acuerdo de préstamo de computadora',
+    noscript: 'Este formulario necesita JavaScript. Actívelo o pida ayuda a un miembro del personal.',
+  },
+
   /* ---------- Página del kit de difusión para agencias (oculta) ---------- */
   /**
    * Una página por agencia, en /partners/<agencia>/. Nada enlaza a ella: la

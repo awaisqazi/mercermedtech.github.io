@@ -36,13 +36,15 @@ export default defineConfig({
       //   /iep/        the IEP intake page for enrolled Digital Literacy
       //                participants, in both languages. noindex, unlinked;
       //                staff open it with the participant at Day 0.
+      //   /loaner/     the laptop loaner agreement page, in both languages.
+      //                noindex, unlinked; staff open it at laptop pickup.
       filter: (page) => {
         const { pathname } = new URL(page);
         return (
           !pathname.startsWith('/admin') &&
           !pathname.includes('/sign-up') &&
           !pathname.includes('/partners/') &&
-          !/^\/(es\/)?iep\//.test(pathname)
+          !/^\/(es\/)?(iep|loaner)\//.test(pathname)
         );
       },
     }),

@@ -1,0 +1,91 @@
+---
+/**
+ * Laptop loaner agreement page for Digital Literacy Training participants,
+ * in one language.
+ *
+ * Hidden on purpose: BaseLayout carries "standalone" (noindex, no hreflang
+ * pair) and astro.config.mjs keeps /loaner/ out of the sitemap. Nothing on the
+ * site links here; staff open it with the participant at laptop pickup.
+ *
+ * The Google Form (IT Asset Agreement Form v2.0) loads through
+ * GatedGoogleForm: Turnstile first, then the mmt-signup Worker's
+ * POST /loaner-form hands over the embed URL (Worker variable
+ * LOANER_FORM_URL). The policy PDF is public/loaner/IT-Asset-Policy-v2.1.pdf,
+ * linked only from this page. On submit, the school's Apps Script files the
+ * signed agreement in the participant's IEP folder and ticks "Laptop issued".
+ *
+ * Tech-track header and the minimal Tech-track footer (which carries the NJDOL
+ * funding sentence), as on the IEP intake page.
+ */
+import '../styles/components/dl.css';
+import '../styles/components/signup.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GatedGoogleForm from '../components/GatedGoogleForm.astro';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const page = t(locale).loaner;
+const path = '/loaner/';
+const POLICY_PDF = '/loaner/IT-Asset-Policy-v2.1.pdf';
+---
+
+<BaseLayout
+  locale={locale}
+  path={path}
+  title={page.seo.title}
+  description={page.seo.description}
+  variant="dlt"
+  footer="dlt"
+  bodyClass="dl-page signup-page loaner-page"
+  navLinks={[]}
+  standalone
+>
+  <main id="main" class="signup-main">
+    <div class="signup-column">
+      <span class="signup-eyebrow">{page.eyebrow}</span>
+      <h1>{page.heading}</h1>
+      <p class="signup-lead">{page.lead}</p>
+
+      <p class="loaner-policy">
+        <i class="fas fa-file-pdf" aria-hidden="true"></i>
+        <span>{page.policyBefore}<a href={POLICY_PDF} target="_blank" rel="noopener">{page.policyLink}</a></span>
+      </p>
+
+      <GatedGoogleForm
+        locale={locale}
+        endpoint="https://mmt-signup.mercermedtech.workers.dev/loaner-form"
+        text={page}
+      />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .loaner-policy {
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    margin: 0 0 1rem;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    background: var(--tech-light);
+    color: var(--text-dark, #1e293b);
+    font-size: 0.98rem;
+    line-height: 1.5;
+  }
+
+  .loaner-policy i {
+    color: var(--tech-dark);
+  }
+
+  .loaner-policy a {
+    color: var(--tech-dark);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+</style>

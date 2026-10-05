@@ -10,13 +10,14 @@
  * fields plus cf-turnstile-response. It gets back JSON {ok:true} or
  * {ok:false, error:"…"} with a matching status.
  *
- * Second route, POST /iep-form, for the unlisted IEP intake page
- * (www.mercermedtech.com/iep/ and /es/iep/). The page sends JSON {token}
- * with a Turnstile token; on a good token the Worker answers
- * {ok:true, url} with the Google Form's embed URL, so the form address is
- * never in the page source. Extra binding:
- *   IEP_FORM_URL      plain text: the IEP intake Google Form's embed URL
- * Only the two production origins may call it; anything else gets 403.
+ * Two more routes hand an unlisted page its Google Form embed URL after a
+ * Turnstile check, so the form address is never in the page source. The page
+ * sends JSON {token}; on a good token the Worker answers {ok:true, url}.
+ *   POST /iep-form     for www.mercermedtech.com/iep/ (and /es/iep/)
+ *                      binding IEP_FORM_URL (plain text)
+ *   POST /loaner-form  for www.mercermedtech.com/loaner/ (and /es/loaner/)
+ *                      binding LOANER_FORM_URL (plain text)
+ * Only the two production origins may call them; anything else gets 403.
  */
 
 const ALLOWED_ORIGINS = new Set([
@@ -26,7 +27,7 @@ const ALLOWED_ORIGINS = new Set([
   'http://localhost:4321',
 ]);
 
-/** /iep-form is for the live site only, so no localhost origins here. */
+/** The form-URL routes are for the live site only, so no localhost origins here. */
 const IEP_ORIGINS = new Set(['https://www.mercermedtech.com', 'https://mercermedtech.com']);
 const IEP_HOSTNAMES = new Set(['www.mercermedtech.com', 'mercermedtech.com']);
 const MAX_TOKEN_LENGTH = 4096;
@@ -71,11 +72,18 @@ function iepJson(body, status, origin) {
   });
 }
 
+/** Route -> the Worker variable that holds that page's form embed URL. */
+const FORM_URL_ROUTES = {
+  '/iep-form': 'IEP_FORM_URL',
+  '/loaner-form': 'LOANER_FORM_URL',
+};
+
 /**
- * POST /iep-form  {token}  ->  {ok:true, url}  or  {ok:false, error}.
+ * POST /iep-form or /loaner-form  {token}  ->  {ok:true, url}  or  {ok:false, error}.
  * The token must pass Turnstile and have been solved on mercermedtech.com.
  */
-async function handleIepForm(request, env, origin) {
+async function handleFormUrl(request, env, origin, binding) {
+  const formUrl = env[binding];
   if (!IEP_ORIGINS.has(origin)) {
     return iepJson({ ok: false, error: 'origin' }, 403, origin);
   }
@@ -85,7 +93,7 @@ async function handleIepForm(request, env, origin) {
   if (request.method !== 'POST') {
     return iepJson({ ok: false, error: 'method' }, 405, origin);
   }
-  if (!env.IEP_FORM_URL || !env.TURNSTILE_SECRET) {
+  if (!formUrl || !env.TURNSTILE_SECRET) {
     return iepJson({ ok: false, error: 'not configured' }, 503, origin);
   }
 
@@ -119,17 +127,18 @@ async function handleIepForm(request, env, origin) {
     return iepJson({ ok: false, error: 'turnstile failed' }, 403, origin);
   }
 
-  return iepJson({ ok: true, url: env.IEP_FORM_URL }, 200, origin);
+  return iepJson({ ok: true, url: formUrl }, 200, origin);
 }
 
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
 
-    // The IEP intake route has its own CORS rules; every other address keeps
-    // the sign-up behaviour below exactly as before.
-    if (new URL(request.url).pathname === '/iep-form') {
-      return handleIepForm(request, env, origin);
+    // The form-URL routes have their own CORS rules; every other address
+    // keeps the sign-up behaviour below exactly as before.
+    const binding = FORM_URL_ROUTES[new URL(request.url).pathname];
+    if (binding) {
+      return handleFormUrl(request, env, origin, binding);
     }
 
     if (request.method === 'OPTIONS') {
