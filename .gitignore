@@ -22,3 +22,30 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Claude Code / local agent state (don't rely on the global ignore)
+.claude/
+
+# scratch and API dumps
+tree.json
+*.scratch.*
+scratch/
+
+# environment and secrets (any variant), keep examples
+.env.*
+!.env.example
+# Cloudflare Workers local secrets and state
+.dev.vars
+.wrangler/
+# Supabase CLI local state
+supabase/.temp/
+supabase/.branches/
+supabase/.env
+
+# test and browser artifacts
+playwright-report/
+test-results/
+*.log
+
+# editors
+.vscode/
