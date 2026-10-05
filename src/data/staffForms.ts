@@ -46,10 +46,16 @@ export interface Field {
   half?: boolean;
 }
 
+/** One step of the stepped form. */
 export interface Section {
   title: Bilingual;
   help?: Bilingual;
   fields: Field[];
+  /**
+   * The last step: shows a summary of every earlier answer (with Edit links)
+   * above its own fields, the Turnstile check and the submit button.
+   */
+  review?: boolean;
 }
 
 export interface StaffForm {
@@ -79,10 +85,8 @@ const COHORTS: Choice[] = [
 /* IEP intake                                                          */
 /* ------------------------------------------------------------------ */
 
-export const IEP_FORM: StaffForm = {
-  id: 'iep-intake-form',
-  route: '/iep-submit',
-  sections: [
+/** Every IEP question, grouped as in the Google Form. The steps below pick from it. */
+const IEP_QUESTIONS: Section[] = [
     {
       title: { en: 'About you', es: 'Sobre usted' },
       fields: [
@@ -209,6 +213,40 @@ export const IEP_FORM: StaffForm = {
         },
       ],
     },
+];
+
+const iepField = (entry: string): Field => {
+  const field = IEP_QUESTIONS.flatMap((section) => section.fields).find((f) => f.entry === entry);
+  if (!field) throw new Error(`IEP field ${entry} is not in IEP_QUESTIONS`);
+  return field;
+};
+
+export const IEP_FORM: StaffForm = {
+  id: 'iep-intake-form',
+  route: '/iep-submit',
+  sections: [
+    {
+      title: { en: 'About you', es: 'Sobre usted' },
+      fields: ['entry.379282059', 'entry.1304183266', 'entry.104008577', 'entry.1937477227', 'entry.2145008359', 'entry.848829829', 'entry.2076425752'].map(iepField),
+    },
+    {
+      title: { en: 'Contact', es: 'Contacto' },
+      fields: ['entry.1924799731', 'entry.1102082198', 'entry.1384494948', 'entry.1590196068'].map(iepField),
+    },
+    {
+      title: { en: 'At home', es: 'En casa' },
+      fields: ['entry.829820065', 'entry.66685863', 'entry.8668350', 'entry.1470120309', 'entry.1043545198'].map(iepField),
+    },
+    {
+      title: { en: 'Your goals', es: 'Sus metas' },
+      help: { en: 'Write your goals in your own words.', es: 'Escriba sus metas con sus propias palabras.' },
+      fields: ['entry.401174236', 'entry.1313047665', 'entry.1390254369', 'entry.1106911370', 'entry.1335508969'].map(iepField),
+    },
+    {
+      title: { en: 'Skills and supports', es: 'Habilidades y apoyos' },
+      fields: ['entry.1812726087', 'entry.957542179', 'entry.1467659682'].map(iepField),
+    },
+    { title: { en: 'Review and send', es: 'Revisar y enviar' }, fields: [], review: true },
   ],
 };
 
@@ -223,7 +261,7 @@ export const LOANER_FORM: StaffForm = {
   route: '/loaner-submit',
   sections: [
     {
-      title: { en: 'A. Participant', es: 'A. Participante' },
+      title: { en: 'Who', es: 'Participante' },
       fields: [
         { entry: 'entry.218598507', kind: 'text', required: true, autocomplete: 'name', label: { en: 'Full name', es: 'Nombre completo' } },
         { entry: 'entry.991666087', kind: 'text', half: true, label: { en: 'Participant ID', es: 'Número de participante' } },
@@ -233,7 +271,7 @@ export const LOANER_FORM: StaffForm = {
       ],
     },
     {
-      title: { en: 'B. Items issued', es: 'B. Equipos entregados' },
+      title: { en: 'Equipment', es: 'Equipos' },
       fields: [
         { entry: 'entry.1843487727', kind: 'text', required: true, half: true, label: { en: 'Laptop asset tag', es: 'Etiqueta de inventario de la computadora' } },
         { entry: 'entry.1109047904', kind: 'text', required: true, half: true, label: { en: 'Laptop serial number', es: 'Número de serie de la computadora' } },
@@ -256,7 +294,7 @@ export const LOANER_FORM: StaffForm = {
       ],
     },
     {
-      title: { en: 'D. Agreement and signature', es: 'D. Acuerdo y firma' },
+      title: { en: 'Agreement', es: 'Acuerdo' },
       fields: [
         {
           entry: 'entry.1883769004',
@@ -278,6 +316,12 @@ export const LOANER_FORM: StaffForm = {
           },
           choices: [bi('I understand / Entiendo')],
         },
+      ],
+    },
+    {
+      title: { en: 'Review and sign', es: 'Revisar y firmar' },
+      review: true,
+      fields: [
         { entry: 'entry.1838727109', kind: 'text', required: true, half: true, label: { en: 'Staff witness name', es: 'Nombre del miembro del personal que es testigo' } },
         { entry: 'entry.195835422', kind: 'date', required: true, half: true, label: { en: 'Date of issue', es: 'Fecha de entrega' } },
       ],

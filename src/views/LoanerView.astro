@@ -43,7 +43,7 @@ let ruleNumber = 0;
   description={page.seo.description}
   variant="dlt"
   footer="dlt"
-  bodyClass="dl-page signup-page loaner-page"
+  bodyClass="dl-page signup-page loaner-page staff-form-page"
   navLinks={[]}
   standalone
 >
@@ -67,7 +67,7 @@ let ruleNumber = 0;
         agreementAt={2}
       >
         <section class="staff-rules" slot="agreement" aria-labelledby="loaner-rules-title">
-          <h2 id="loaner-rules-title">{page.agreementHeading}</h2>
+          <h3 id="loaner-rules-title">{page.agreementHeading}</h3>
           <p>{page.agreementHelp}</p>
           {
             LOANER_RULES.map((group) => (

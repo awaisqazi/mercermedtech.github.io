@@ -9,8 +9,15 @@
  * the mmt-signup Worker, which checks the token and forwards the answers to
  * the Google Form. The Google Form address is never on the page.
  *
- * The "agreement" slot is drawn just before the section at `agreementAt`
- * (the loaner page puts its collapsible rules there, above the signature).
+ * Stepped: each section of the spec is one step with its own card, a slim
+ * progress bar and "Step 2 of 6" label, Back and Next (sticky at the bottom
+ * on phones). Next checks only the current step. The last section is the
+ * review step: a plain-language summary with Edit links, its own fields,
+ * Turnstile and the submit button. Answers are kept in sessionStorage (one
+ * key per form, shared by both languages) until the form is sent.
+ *
+ * The "agreement" slot is drawn at the top of the step at `agreementAt`
+ * (the loaner page puts its collapsible rules there, above the consents).
  */
 import '../styles/components/contact.css';
 import '../styles/components/staff-form.css';
@@ -29,6 +36,9 @@ interface Props {
 const { locale, form, submitLabel, successTitle, successBody, agreementAt = -1 } = Astro.props;
 const ui = t(locale).staffForm;
 const L = (b: { en: string; es: string }) => b[locale];
+const total = form.sections.length;
+const stepLabel = (index: number) =>
+  `${ui.stepOf.replace('{n}', String(index + 1)).replace('{total}', String(total))} · ${L(form.sections[index].title)}`;
 const endpoint = `${WORKER_ORIGIN}${form.route}`;
 
 /** Public Turnstile site key, the same widget as the sign-up form. The secret lives only in the Worker. */
@@ -36,17 +46,73 @@ const TURNSTILE_SITEKEY = '0x4AAAAAAFABG_uSmI7QN2sd';
 const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
 ---
 
-<div class="contact-card signup-card staff-card">
-  <form id={form.id} class="contact-form staff-form" action={endpoint} method="post" novalidate data-staff-form>
-    <p class="staff-required-note">{ui.requiredNote}</p>
+<div class="staff-wizard" data-wizard>
+  <div class="contact-card signup-card staff-card">
+    <div class="wiz-progress" data-wiz-progress>
+      <p class="wiz-label" data-wiz-label>{stepLabel(0)}</p>
+      <div
+        class="wiz-bar"
+        role="progressbar"
+        aria-label={ui.progressLabel}
+        aria-valuemin="1"
+        aria-valuemax={total}
+        aria-valuenow="1"
+        data-wiz-bar
+      >
+        <span style={`width: ${100 / total}%`} data-wiz-fill></span>
+      </div>
+      <ol class="wiz-steps">
+        {
+          form.sections.map((section, index) => (
+            <li data-wiz-dot aria-current={index === 0 ? 'step' : undefined}>
+              <span class="wiz-dot-number" aria-hidden="true">{index + 1}</span>
+              <span class="wiz-dot-title">{L(section.title)}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
 
-    {
-      form.sections.map((section, sectionIndex) => (
-        <>
-          {sectionIndex === agreementAt && <slot name="agreement" />}
-          <fieldset class="staff-section">
-            <legend class="staff-section-title">{L(section.title)}</legend>
+    <form
+      id={form.id}
+      class="contact-form staff-form"
+      action={endpoint}
+      method="post"
+      novalidate
+      data-staff-form
+      data-step-of={ui.stepOf}
+      data-not-answered={ui.notAnswered}
+      data-checked={ui.checked}
+      data-edit={ui.edit}
+      data-other={ui.otherLabel}
+    >
+      <div class="staff-error-summary" data-error-summary role="alert" tabindex="-1" hidden>
+        <p>{ui.errorSummary}</p>
+        <ul></ul>
+      </div>
+
+      {
+        form.sections.map((section, sectionIndex) => (
+          <section
+            class="wiz-step"
+            data-step={sectionIndex}
+            data-title={L(section.title)}
+            hidden={sectionIndex > 0}
+            aria-labelledby={`${form.id}-step-${sectionIndex}`}
+          >
+            <h2 class="staff-section-title" id={`${form.id}-step-${sectionIndex}`} tabindex="-1">
+              {L(section.title)}
+            </h2>
+            {sectionIndex === 0 && <p class="staff-required-note">{ui.requiredNote}</p>}
+            {sectionIndex === agreementAt && <slot name="agreement" />}
+            {section.review && (
+              <div class="wiz-review">
+                <p class="staff-help">{ui.reviewHelp}</p>
+                <div data-review></div>
+              </div>
+            )}
             {section.help && <p class="staff-help">{L(section.help)}</p>}
+            {section.fields.length > 0 && (
             <div class="staff-grid">
               {section.fields.map((field) => {
                 const id = idOf(field.entry);
@@ -66,11 +132,11 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
                     {L(field.help)}
                   </span>
                 );
-                const error = <span class="staff-error" data-error-for={field.entry} hidden>{ui.fixErrors}</span>;
+                const error = <span class="staff-error" data-error-for={field.entry} hidden>{ui.fieldRequired}</span>;
 
                 if (['text', 'tel', 'email', 'date'].includes(field.kind)) {
                   return (
-                    <div class:list={['form-field', 'staff-field', { 'staff-half': field.half }]} data-field={field.entry}>
+                    <div class:list={['form-field', 'staff-field', { 'staff-half': field.half }]} data-field={field.entry} data-label={L(field.label)}>
                       <label class="form-label" for={id}>{label}</label>
                       {help}
                       {field.kind === 'date' ? (
@@ -82,7 +148,7 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
                         </>
                       ) : (
                         <input
-                          type={field.kind}
+                          type={field.kind as "text" | "tel" | "email"}
                           id={id}
                           name={field.entry}
                           required={field.required}
@@ -98,7 +164,7 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
                 }
                 if (field.kind === 'textarea') {
                   return (
-                    <div class="form-field staff-field" data-field={field.entry}>
+                    <div class="form-field staff-field" data-field={field.entry} data-label={L(field.label)}>
                       <label class="form-label" for={id}>{label}</label>
                       {help}
                       <textarea id={id} name={field.entry} rows="3" required={field.required} aria-describedby={helpId} maxlength="1500"></textarea>
@@ -108,7 +174,7 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
                 }
                 if (field.kind === 'select') {
                   return (
-                    <div class:list={['form-field', 'staff-field', { 'staff-half': field.half }]} data-field={field.entry}>
+                    <div class:list={['form-field', 'staff-field', { 'staff-half': field.half }]} data-field={field.entry} data-label={L(field.label)}>
                       <label class="form-label" for={id}>{label}</label>
                       {help}
                       <select id={id} name={field.entry} required={field.required}>
@@ -122,7 +188,7 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
                 if (field.kind === 'consent') {
                   const choice = field.choices![0];
                   return (
-                    <div class="form-consent staff-consent staff-field" data-field={field.entry}>
+                    <div class="form-consent staff-consent staff-field" data-field={field.entry} data-label={L(field.label)}>
                       <label>
                         <input type="checkbox" name={field.entry} value={choice.value} required={field.required} />
                         <span>
@@ -138,7 +204,7 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
                 return (
                   <fieldset
                     class:list={['staff-choices', 'staff-field', `staff-${field.kind}`]}
-                    data-field={field.entry}
+                    data-field={field.entry} data-label={L(field.label)}
                     data-required={field.required ? 'true' : undefined}
                     aria-describedby={helpId}
                   >
@@ -182,136 +248,176 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
                 );
               })}
             </div>
-          </fieldset>
-        </>
-      ))
-    }
+            )}
+            {section.review && (
+              <>
+                <!-- Honeypot: hidden from people; the Worker drops any post that fills it. -->
+                <div class="staff-honeypot" aria-hidden="true">
+                  <label>{ui.honeypotLabel} <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+                </div>
+                <!-- Turnstile drops its hidden cf-turnstile-response input here, inside the form. -->
+                <div class="signup-turnstile" data-turnstile data-sitekey={TURNSTILE_SITEKEY} data-language={locale}></div>
+                <p class="signup-security-note" data-turnstile-note hidden>{ui.securityUnavailable}</p>
+              </>
+            )}
+          </section>
+        ))
+      }
 
-    <!-- Honeypot: hidden from people; the Worker drops any post that fills it. -->
-    <div class="staff-honeypot" aria-hidden="true">
-      <label>{ui.honeypotLabel} <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
-    </div>
-
-    <!-- Turnstile drops its hidden cf-turnstile-response input here, inside the form. -->
-    <div class="signup-turnstile" data-turnstile data-sitekey={TURNSTILE_SITEKEY} data-language={locale}></div>
-    <p class="signup-security-note" data-turnstile-note hidden>{ui.securityUnavailable}</p>
-
-    <p class="staff-form-error" data-form-error role="alert" hidden>{ui.fixErrors}</p>
-
-    <button type="submit" class="btn btn-primary form-submit">
-      <span class="form-submit-label">{submitLabel}</span>
-      <i class="fas fa-paper-plane" aria-hidden="true"></i>
-    </button>
-
-    <div
-      class="form-success"
-      role="status"
-      aria-live="polite"
-      hidden
-      data-success-title={successTitle}
-      data-success-body={successBody}
-      data-error-title={ui.errorTitle}
-      data-error-body={ui.errorBody}
-      data-rejected-body={ui.rejectedBody}
-      data-security-body={ui.securityIncomplete}
-      data-submit-label={submitLabel}
-      data-sending-label={ui.sending}
-    >
-      <i class="fas fa-check-circle" aria-hidden="true"></i>
-      <div>
-        <strong>{successTitle}</strong>
-        <span>{successBody}</span>
+      <div class="wiz-nav">
+        <button type="button" class="btn btn-secondary wiz-back" data-wiz-back hidden>
+          <i class="fas fa-arrow-left" aria-hidden="true"></i>
+          <span>{ui.back}</span>
+        </button>
+        <button type="button" class="btn btn-primary wiz-next" data-wiz-next>
+          <span>{ui.next}</span>
+          <i class="fas fa-arrow-right" aria-hidden="true"></i>
+        </button>
+        <button type="submit" class="btn btn-primary form-submit" data-wiz-submit hidden>
+          <span class="form-submit-label">{submitLabel}</span>
+          <i class="fas fa-paper-plane" aria-hidden="true"></i>
+        </button>
       </div>
+
+      <div
+        class="form-success"
+        role="status"
+        aria-live="polite"
+        hidden
+        data-error-title={ui.errorTitle}
+        data-error-body={ui.errorBody}
+        data-rejected-body={ui.rejectedBody}
+        data-security-body={ui.securityIncomplete}
+        data-submit-label={submitLabel}
+        data-sending-label={ui.sending}
+      >
+        <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+        <div>
+          <strong>{ui.errorTitle}</strong>
+          <span>{ui.errorBody}</span>
+        </div>
+      </div>
+    </form>
+
+    <div class="wiz-done" data-wiz-done tabindex="-1" hidden>
+      <i class="fas fa-check-circle" aria-hidden="true"></i>
+      <h2>{successTitle}</h2>
+      <p>{successBody}</p>
+      <button type="button" class="btn btn-secondary" data-wiz-restart>{ui.startAnother}</button>
     </div>
-  </form>
+  </div>
 </div>
 
 <script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
 
 <script>
   /*
-   * Posts the form to the mmt-signup Worker with fetch, so the reader stays on
-   * the page. The Worker answers {ok:true} or {ok:false,error}. Turnstile
-   * guards the submit button: no token, no send.
+   * The stepped form. Next checks the current step only; Back keeps every
+   * answer; answers are saved to sessionStorage as they change. The last step
+   * shows a summary, draws Turnstile and sends the form to the mmt-signup
+   * Worker with fetch. The Worker answers {ok:true} or {ok:false,error}.
    */
   const TIMEOUT_MS = 15000;
   const WAIT_FOR_SCRIPT_MS = 10000;
+  const STORE_PREFIX = 'mmt-staff-form:';
+  const SKIP = new Set(['cf-turnstile-response', 'website']);
 
-  for (const form of document.querySelectorAll<HTMLFormElement>('form[data-staff-form]')) {
+  for (const wizard of document.querySelectorAll<HTMLElement>('[data-wizard]')) {
+    const form = wizard.querySelector<HTMLFormElement>('form[data-staff-form]');
+    if (!form) continue;
+    const steps = [...form.querySelectorAll<HTMLElement>('.wiz-step')];
+    const dots = [...wizard.querySelectorAll<HTMLElement>('[data-wiz-dot]')];
+    const label = wizard.querySelector<HTMLElement>('[data-wiz-label]');
+    const bar = wizard.querySelector<HTMLElement>('[data-wiz-bar]');
+    const fill = wizard.querySelector<HTMLElement>('[data-wiz-fill]');
+    const backBtn = form.querySelector<HTMLButtonElement>('[data-wiz-back]')!;
+    const nextBtn = form.querySelector<HTMLButtonElement>('[data-wiz-next]')!;
+    const submitBtn = form.querySelector<HTMLButtonElement>('[data-wiz-submit]')!;
+    const summary = form.querySelector<HTMLElement>('[data-error-summary]')!;
+    const review = form.querySelector<HTMLElement>('[data-review]');
+    const message = form.querySelector<HTMLElement>('.form-success')!;
+    const done = wizard.querySelector<HTMLElement>('[data-wiz-done]')!;
+    const progress = wizard.querySelector<HTMLElement>('[data-wiz-progress]');
     const host = form.querySelector<HTMLElement>('[data-turnstile]');
     const note = form.querySelector<HTMLElement>('[data-turnstile-note]');
-    const submitBtn = form.querySelector<HTMLButtonElement>('.form-submit');
-    const message = form.querySelector<HTMLElement>('.form-success');
-    const formError = form.querySelector<HTMLElement>('[data-form-error]');
-    if (!host || !submitBtn || !message) continue;
-
-    const labelEl = form.querySelector<HTMLElement>('.form-submit-label');
-    const icon = message.querySelector('i');
-    const strong = message.querySelector('strong');
-    const span = message.querySelector('span');
-    const data = message.dataset;
-    const turnstileApi = () => (window as any).turnstile;
+    const fd = form.dataset;
+    const md = message.dataset;
+    const storeKey = STORE_PREFIX + form.id;
+    const last = steps.length - 1;
+    let current = 0;
     let token = '';
     let widgetId: string | undefined;
     let isSubmitting = false;
 
-    submitBtn.disabled = true;
+    /* ---------- storage ---------- */
 
-    const setBusy = (busy: boolean) => {
-      isSubmitting = busy;
-      submitBtn.disabled = busy || !token;
-      submitBtn.classList.toggle('is-loading', busy);
-      const text = busy ? data.sendingLabel : data.submitLabel;
-      if (labelEl && text) labelEl.textContent = text;
-    };
-
-    const show = (title: string, body: string, isError: boolean) => {
-      if (strong) strong.textContent = title;
-      if (span) span.textContent = body;
-      icon?.classList.toggle('fa-check-circle', !isError);
-      icon?.classList.toggle('fa-circle-exclamation', isError);
-      message.classList.toggle('is-error', isError);
-      message.hidden = false;
-      message.classList.add('is-visible');
-      message.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    };
-
-    /* ---------- the "Other" box and the date parts ---------- */
-
-    for (const text of form.querySelectorAll<HTMLInputElement>('[data-other-text]')) {
-      const box = form.querySelector<HTMLInputElement>(`[data-other-for="${text.dataset.otherText}"]`);
-      text.addEventListener('input', () => {
-        if (box) box.checked = text.value.trim() !== '';
-      });
-    }
-
-    const fillDates = () => {
-      for (const input of form.querySelectorAll<HTMLInputElement>('[data-date-for]')) {
-        const entry = input.dataset.dateFor;
-        const [year = '', month = '', day = ''] = input.value ? input.value.split('-') : [];
-        const set = (part: string, value: string) => {
-          const hidden = form.querySelector<HTMLInputElement>(`input[name="${entry}_${part}"]`);
-          if (hidden) hidden.value = value ? String(Number(value)) : '';
-        };
-        set('year', year);
-        set('month', month);
-        set('day', day);
+    const save = () => {
+      try {
+        const answers: [string, string][] = [];
+        for (const [name, value] of new FormData(form).entries()) {
+          if (!SKIP.has(name) && typeof value === 'string') answers.push([name, value]);
+        }
+        const dates: Record<string, string> = {};
+        form.querySelectorAll<HTMLInputElement>('[data-date-for]').forEach((input) => {
+          dates[input.dataset.dateFor!] = input.value;
+        });
+        sessionStorage.setItem(storeKey, JSON.stringify({ step: current, answers, dates }));
+      } catch {
+        /* private mode or storage off: the form still works without it */
       }
     };
 
-    /* ---------- inline validation ---------- */
+    const restore = (): number => {
+      let saved: { step?: number; answers?: [string, string][]; dates?: Record<string, string> } | null = null;
+      try {
+        saved = JSON.parse(sessionStorage.getItem(storeKey) || 'null');
+      } catch {
+        saved = null;
+      }
+      if (!saved || !Array.isArray(saved.answers)) return 0;
+      for (const [name, value] of saved.answers) {
+        const controls = form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+          `[name="${CSS.escape(name)}"]`
+        );
+        controls.forEach((control) => {
+          if (control instanceof HTMLInputElement && (control.type === 'radio' || control.type === 'checkbox')) {
+            if (control.value === value) control.checked = true;
+          } else if (!(control instanceof HTMLInputElement && control.type === 'hidden')) {
+            control.value = value;
+          }
+        });
+      }
+      for (const [entry, value] of Object.entries(saved.dates || {})) {
+        const input = form.querySelector<HTMLInputElement>(`[data-date-for="${entry}"]`);
+        if (input) input.value = value;
+      }
+      const step = Number(saved.step) || 0;
+      return Math.min(Math.max(step, 0), last);
+    };
+
+    const clearStore = () => {
+      try {
+        sessionStorage.removeItem(storeKey);
+      } catch {
+        /* nothing to clear */
+      }
+    };
+
+    /* ---------- validation ---------- */
+
+    const controlOf = (wrap: HTMLElement) =>
+      wrap.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        'input:not([type=hidden]), select, textarea'
+      );
 
     const fieldValid = (wrap: HTMLElement): boolean => {
       if (wrap.matches('fieldset.staff-choices')) {
-        if (wrap.dataset.required !== 'true') return true;
-        return wrap.querySelector('input:checked') !== null;
+        return wrap.dataset.required !== 'true' || wrap.querySelector('input:checked') !== null;
       }
-      const control = wrap.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
-        'input:not([type=hidden]), select, textarea'
-      );
+      const control = controlOf(wrap);
       if (!control) return true;
-      if (control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement) {
-        if (control.required && !control.value.trim() && control.type !== 'checkbox') return false;
+      if (!(control instanceof HTMLInputElement && control.type === 'checkbox')) {
+        if (control.required && !control.value.trim()) return false;
       }
       return control.checkValidity();
     };
@@ -326,74 +432,256 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
       });
     };
 
-    const validate = (): HTMLElement | null => {
-      let first: HTMLElement | null = null;
-      for (const wrap of form.querySelectorAll<HTMLElement>('.staff-field')) {
+    /** Checks one step; shows the error summary; returns true when it is fine. */
+    const validateStep = (index: number): boolean => {
+      const bad: HTMLElement[] = [];
+      steps[index].querySelectorAll<HTMLElement>('.staff-field').forEach((wrap) => {
         const ok = fieldValid(wrap);
         mark(wrap, ok);
-        if (!ok && !first) first = wrap;
+        if (!ok) bad.push(wrap);
+      });
+      const list = summary.querySelector('ul')!;
+      list.replaceChildren();
+      if (!bad.length) {
+        summary.hidden = true;
+        return true;
       }
-      return first;
+      for (const wrap of bad) {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = '#';
+        link.textContent = wrap.dataset.label || '';
+        link.addEventListener('click', (event) => {
+          event.preventDefault();
+          wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          (controlOf(wrap) as HTMLElement | null)?.focus({ preventScroll: true });
+        });
+        li.append(link);
+        list.append(li);
+      }
+      summary.hidden = false;
+      summary.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      summary.focus({ preventScroll: true });
+      return false;
     };
 
     form.addEventListener('change', (event) => {
       const wrap = (event.target as HTMLElement).closest<HTMLElement>('.staff-field');
       if (wrap && wrap.classList.contains('is-invalid')) mark(wrap, fieldValid(wrap));
+      save();
     });
+    form.addEventListener('input', save);
 
-    /* ---------- Turnstile ---------- */
+    /* ---------- the review summary ---------- */
 
-    const renderWidget = () => {
-      widgetId = turnstileApi().render(host, {
-        sitekey: host.dataset.sitekey,
-        theme: 'light',
-        language: host.dataset.language === 'es' ? 'es' : 'en',
-        'response-field': true,
-        callback: (value: string) => {
-          token = value;
-          if (!isSubmitting) submitBtn.disabled = false;
-        },
-        'expired-callback': () => {
-          token = '';
-          submitBtn.disabled = true;
-        },
-        'error-callback': () => {
-          token = '';
-          submitBtn.disabled = true;
-        },
+    const answerText = (wrap: HTMLElement): string => {
+      if (wrap.matches('fieldset.staff-choices')) {
+        const picked: string[] = [];
+        wrap.querySelectorAll<HTMLInputElement>('input:checked').forEach((input) => {
+          if (input.value === '__other_option__') {
+            const text = wrap.querySelector<HTMLInputElement>('[data-other-text]')?.value.trim();
+            picked.push(`${fd.other}: ${text || ''}`);
+          } else {
+            picked.push(input.closest('label')?.querySelector('span')?.textContent?.trim() || input.value);
+          }
+        });
+        return picked.join(', ');
+      }
+      if (wrap.classList.contains('staff-consent')) {
+        return wrap.querySelector<HTMLInputElement>('input')?.checked ? fd.checked || '' : '';
+      }
+      const control = controlOf(wrap);
+      if (!control) return '';
+      if (control instanceof HTMLSelectElement) {
+        return control.value ? control.selectedOptions[0]?.textContent?.trim() || '' : '';
+      }
+      if (control instanceof HTMLInputElement && control.type === 'date' && control.value) {
+        const [y, m, d] = control.value.split('-').map(Number);
+        return new Date(y, m - 1, d).toLocaleDateString(document.documentElement.lang || undefined, { dateStyle: 'long' });
+      }
+      return control.value.trim();
+    };
+
+    const buildReview = () => {
+      if (!review) return;
+      review.replaceChildren();
+      steps.slice(0, last).forEach((step, index) => {
+        const group = document.createElement('div');
+        group.className = 'wiz-review-group';
+        const head = document.createElement('div');
+        head.className = 'wiz-review-head';
+        const title = document.createElement('h3');
+        title.textContent = step.dataset.title || '';
+        const edit = document.createElement('button');
+        edit.type = 'button';
+        edit.className = 'wiz-edit';
+        edit.textContent = fd.edit || 'Edit';
+        edit.setAttribute('aria-label', `${fd.edit}: ${step.dataset.title}`);
+        edit.addEventListener('click', () => go(index));
+        head.append(title, edit);
+        const list = document.createElement('dl');
+        step.querySelectorAll<HTMLElement>('.staff-field').forEach((wrap) => {
+          const dt = document.createElement('dt');
+          dt.textContent = wrap.dataset.label || '';
+          const dd = document.createElement('dd');
+          const value = answerText(wrap);
+          dd.textContent = value || fd.notAnswered || '';
+          if (!value) dd.className = 'is-empty';
+          list.append(dt, dd);
+        });
+        group.append(head, list);
+        review.append(group);
       });
     };
 
-    const startedAt = Date.now();
-    const waitForTurnstile = () => {
-      const api = turnstileApi();
-      if (api && typeof api.render === 'function') {
-        renderWidget();
-        return;
-      }
-      if (Date.now() - startedAt > WAIT_FOR_SCRIPT_MS) {
-        if (note) note.hidden = false;
-        return;
-      }
-      window.setTimeout(waitForTurnstile, 150);
-    };
-    waitForTurnstile();
+    /* ---------- moving between steps ---------- */
 
-    /* ---------- submit ---------- */
+    const go = (index: number, focus = true) => {
+      current = Math.min(Math.max(index, 0), last);
+      steps.forEach((step, i) => (step.hidden = i !== current));
+      dots.forEach((dot, i) => {
+        if (i === current) dot.setAttribute('aria-current', 'step');
+        else dot.removeAttribute('aria-current');
+        dot.classList.toggle('is-done', i < current);
+      });
+      const text = `${(fd.stepOf || '').replace('{n}', String(current + 1)).replace('{total}', String(steps.length))} · ${steps[current].dataset.title}`;
+      if (label) label.textContent = text;
+      if (bar) {
+        bar.setAttribute('aria-valuenow', String(current + 1));
+        bar.setAttribute('aria-valuetext', text);
+      }
+      if (fill) fill.style.width = `${((current + 1) / steps.length) * 100}%`;
+      backBtn.hidden = current === 0;
+      nextBtn.hidden = current === last;
+      submitBtn.hidden = current !== last;
+      summary.hidden = true;
+      message.hidden = true;
+      if (current === last) {
+        buildReview();
+        startTurnstile();
+      }
+      save();
+      if (focus) {
+        wizard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        steps[current].querySelector<HTMLElement>('h2')?.focus({ preventScroll: true });
+      }
+    };
+
+    nextBtn.addEventListener('click', () => {
+      if (validateStep(current)) go(current + 1);
+    });
+    backBtn.addEventListener('click', () => go(current - 1));
+
+    // Enter on a one-line box moves on instead of sending the form early.
+    form.addEventListener('keydown', (event) => {
+      const target = event.target as HTMLElement;
+      if (event.key !== 'Enter' || !(target instanceof HTMLInputElement)) return;
+      if (['checkbox', 'radio', 'submit', 'button'].includes(target.type)) return;
+      if (current === last) return;
+      event.preventDefault();
+      nextBtn.click();
+    });
+
+    /* ---------- the "Other" box and the date parts ---------- */
+
+    form.querySelectorAll<HTMLInputElement>('[data-other-text]').forEach((text) => {
+      const box = form.querySelector<HTMLInputElement>(`[data-other-for="${text.dataset.otherText}"]`);
+      text.addEventListener('input', () => {
+        if (box) box.checked = text.value.trim() !== '';
+      });
+    });
+
+    const fillDates = () => {
+      form.querySelectorAll<HTMLInputElement>('[data-date-for]').forEach((input) => {
+        const entry = input.dataset.dateFor;
+        const [year = '', month = '', day = ''] = input.value ? input.value.split('-') : [];
+        const set = (part: string, value: string) => {
+          const hidden = form.querySelector<HTMLInputElement>(`input[name="${entry}_${part}"]`);
+          if (hidden) hidden.value = value ? String(Number(value)) : '';
+        };
+        set('year', year);
+        set('month', month);
+        set('day', day);
+      });
+    };
+
+    /* ---------- Turnstile (drawn when the review step first opens) ---------- */
+
+    const turnstileApi = () => (window as any).turnstile;
+    let turnstileStarted = false;
+    const startTurnstile = () => {
+      if (turnstileStarted || !host) return;
+      turnstileStarted = true;
+      const startedAt = Date.now();
+      const wait = () => {
+        const api = turnstileApi();
+        if (api && typeof api.render === 'function') {
+          widgetId = api.render(host, {
+            sitekey: host.dataset.sitekey,
+            theme: 'light',
+            language: host.dataset.language === 'es' ? 'es' : 'en',
+            'response-field': true,
+            callback: (value: string) => {
+              token = value;
+            },
+            'expired-callback': () => {
+              token = '';
+            },
+            'error-callback': () => {
+              token = '';
+            },
+          });
+          return;
+        }
+        if (Date.now() - startedAt > WAIT_FOR_SCRIPT_MS) {
+          if (note) note.hidden = false;
+          return;
+        }
+        window.setTimeout(wait, 150);
+      };
+      wait();
+    };
+
+    /* ---------- sending ---------- */
+
+    const showError = (body: string) => {
+      const strong = message.querySelector('strong');
+      const span = message.querySelector('span');
+      if (strong) strong.textContent = md.errorTitle || '';
+      if (span) span.textContent = body;
+      message.classList.add('is-error', 'is-visible');
+      message.hidden = false;
+      message.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
+    const setBusy = (busy: boolean) => {
+      isSubmitting = busy;
+      submitBtn.disabled = busy;
+      submitBtn.classList.toggle('is-loading', busy);
+      const text = busy ? md.sendingLabel : md.submitLabel;
+      const labelEl = submitBtn.querySelector('.form-submit-label');
+      if (labelEl && text) labelEl.textContent = text;
+    };
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (isSubmitting) return;
-
-      const firstBad = validate();
-      if (formError) formError.hidden = !firstBad;
-      if (firstBad) {
-        firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        firstBad.querySelector<HTMLElement>('input:not([type=hidden]), select, textarea')?.focus({ preventScroll: true });
+      if (current !== last) {
+        nextBtn.click();
         return;
       }
+      // Check every earlier step too, and send the reader to the first gap.
+      const gap = steps.slice(0, last).findIndex((step) =>
+        [...step.querySelectorAll<HTMLElement>('.staff-field')].some((wrap) => !fieldValid(wrap))
+      );
+      if (gap >= 0) {
+        go(gap);
+        validateStep(gap);
+        return;
+      }
+      if (!validateStep(last)) return;
       if (!token) {
-        show(data.errorTitle || '', data.securityBody || '', true);
+        showError(md.securityBody || '');
         return;
       }
 
@@ -412,16 +700,20 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
         });
         const result = await response.json().catch(() => null);
         if (response.ok && result && result.ok === true) {
+          clearStore();
           form.reset();
-          form.querySelectorAll<HTMLElement>('.staff-field').forEach((wrap) => mark(wrap, true));
-          show(data.successTitle || '', data.successBody || '', false);
+          form.hidden = true;
+          if (progress) progress.hidden = true;
+          done.hidden = false;
+          done.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          done.focus({ preventScroll: true });
         } else if (result && result.error === 'rejected') {
-          show(data.errorTitle || '', data.rejectedBody || '', true);
+          showError(md.rejectedBody || '');
         } else {
-          show(data.errorTitle || '', data.errorBody || '', true);
+          showError(md.errorBody || '');
         }
       } catch {
-        show(data.errorTitle || '', data.errorBody || '', true);
+        showError(md.errorBody || '');
       } finally {
         window.clearTimeout(timer);
         token = '';
@@ -429,5 +721,17 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
         setBusy(false);
       }
     });
+
+    wizard.querySelector('[data-wiz-restart]')?.addEventListener('click', () => {
+      clearStore();
+      form.reset();
+      form.querySelectorAll<HTMLElement>('.staff-field').forEach((wrap) => mark(wrap, true));
+      done.hidden = true;
+      form.hidden = false;
+      if (progress) progress.hidden = false;
+      go(0);
+    });
+
+    go(restore(), false);
   }
 </script>

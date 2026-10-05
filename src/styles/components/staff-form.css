@@ -1,8 +1,10 @@
 /*
  * The unlisted staff forms (/iep/ and /loaner/), drawn by StaffForm.astro.
- * Text inputs, selects and the submit button reuse contact.css; this file adds
- * the sections, the radio and checkbox groups, the 1 to 5 scale, inline
- * errors, the honeypot and the loaner page's collapsible rules.
+ * Text inputs, selects and buttons reuse contact.css and buttons.css; this
+ * file adds the stepped shell (progress, one card per step, Back and Next,
+ * sticky on phones), the radio and checkbox tiles, the 1 to 5 scale, inline
+ * errors and the error summary, the review summary, the finished screen, the
+ * honeypot and the loaner page's collapsible rules.
  */
 
 .staff-card {
@@ -15,25 +17,295 @@
     color: var(--text-muted);
 }
 
-.staff-section {
-    margin: 0;
+.staff-section-title {
+    margin: 0 0 0.35rem;
+    font-size: 1.35rem;
+    line-height: 1.25;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.staff-section-title:focus {
+    outline: none;
+}
+
+.wiz-step {
+    display: grid;
+    gap: 1rem;
+    animation: wiz-in 0.25s var(--spring-gentle, ease-out);
+}
+
+.wiz-step[hidden] {
+    display: none;
+}
+
+@keyframes wiz-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ---------- progress ---------- */
+
+.wiz-progress {
+    margin-bottom: 1.5rem;
+}
+
+.wiz-progress[hidden] {
+    display: none;
+}
+
+.wiz-label {
+    margin: 0 0 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--tech-dark);
+}
+
+.wiz-bar {
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+}
+
+.wiz-bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary), var(--tech));
+    transition: width 0.35s var(--spring-gentle, ease-out);
+}
+
+.wiz-steps {
+    display: flex;
+    gap: 0.35rem;
+    margin: 0.75rem 0 0;
     padding: 0;
-    border: 0;
+    list-style: none;
+}
+
+.wiz-steps li {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    flex: 1 1 0;
     min-width: 0;
 }
 
-.staff-section + .staff-section,
-.staff-rules + .staff-section {
-    padding-top: 1.25rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.07);
+.wiz-dot-number {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    font-weight: 700;
+    font-size: 0.7rem;
 }
 
-.staff-section-title {
-    padding: 0;
-    margin-bottom: 0.75rem;
-    font-size: 1.1rem;
+.wiz-dot-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.wiz-steps li.is-done .wiz-dot-number {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary-dark);
+}
+
+.wiz-steps li[aria-current='step'] {
+    color: var(--text-main);
     font-weight: 700;
+}
+
+.wiz-steps li[aria-current='step'] .wiz-dot-number {
+    background: var(--tech);
+    border-color: var(--tech);
+    color: #fff;
+}
+
+/* ---------- Back and Next ---------- */
+
+.wiz-nav {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+}
+
+.wiz-nav [hidden] {
+    display: none;
+}
+
+.wiz-nav .btn {
+    min-height: 52px;
+    padding: 0.9rem 1.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.wiz-nav .wiz-back {
+    margin-right: auto;
+}
+
+.wiz-nav .form-submit {
+    width: auto;
+    margin-top: 0;
+    flex: 1 1 auto;
+}
+
+/* ---------- error summary ---------- */
+
+.staff-error-summary {
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    background: rgba(220, 53, 69, 0.06);
+    color: #b02a37;
+}
+
+.staff-error-summary[hidden] {
+    display: none;
+}
+
+.staff-error-summary:focus {
+    outline: 3px solid rgba(220, 53, 69, 0.35);
+    outline-offset: 2px;
+}
+
+.staff-error-summary p {
+    margin: 0 0 0.35rem;
+    font-weight: 700;
+}
+
+.staff-error-summary ul {
+    margin: 0;
+    padding-left: 1.2rem;
+}
+
+.staff-error-summary a {
+    color: #b02a37;
+    text-decoration: underline;
+}
+
+/* ---------- review ---------- */
+
+.wiz-review {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.wiz-review-group {
+    padding: 0.9rem 1rem;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: var(--radius-sm);
+}
+
+.wiz-review-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.4rem;
+}
+
+.wiz-review-head h3 {
+    margin: 0;
+    font-size: 1rem;
     color: var(--tech-dark);
+}
+
+.wiz-edit {
+    min-height: 40px;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--tech);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--tech-dark);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.wiz-edit:hover,
+.wiz-edit:focus-visible {
+    background: var(--tech-light);
+}
+
+.wiz-review dl {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 0.35rem 1rem;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.wiz-review dt {
+    color: var(--text-muted);
+}
+
+.wiz-review dd {
+    margin: 0;
+    color: var(--text-main);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.wiz-review dd.is-empty {
+    color: var(--text-light);
+    font-weight: 400;
+    font-style: italic;
+}
+
+/* ---------- finished ---------- */
+
+.wiz-done {
+    display: grid;
+    justify-items: center;
+    gap: 0.75rem;
+    padding: 2rem 0.5rem;
+    text-align: center;
+}
+
+.wiz-done[hidden] {
+    display: none;
+}
+
+.wiz-done:focus {
+    outline: none;
+}
+
+.wiz-done i {
+    font-size: 2.75rem;
+    color: var(--primary);
+}
+
+.wiz-done h2 {
+    margin: 0;
+    font-size: 1.6rem;
+}
+
+.wiz-done p {
+    margin: 0 0 0.75rem;
+    max-width: 32rem;
+    color: var(--text-muted);
+    line-height: 1.55;
 }
 
 .staff-grid {
@@ -87,6 +359,8 @@
     display: flex;
     align-items: flex-start;
     gap: 0.6rem;
+    min-height: 48px;
+    align-items: center;
     padding: 0.7rem 0.85rem;
     background: rgba(255, 255, 255, 0.85);
     border: 1px solid rgba(0, 0, 0, 0.08);
@@ -110,10 +384,10 @@
 .contact-form .staff-option input[type='radio'],
 .contact-form .staff-option input[type='checkbox'],
 .contact-form .staff-consent input[type='checkbox'] {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     padding: 0;
-    margin: 0.1rem 0 0;
+    margin: 0;
     flex-shrink: 0;
     accent-color: var(--primary);
     box-shadow: none;
@@ -153,6 +427,12 @@
 }
 
 .staff-consent label {
+    min-height: 48px;
+    align-items: center;
+    padding: 0.7rem 0.85rem;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: var(--radius-sm);
     font-size: 0.95rem;
     color: var(--text-main);
 }
@@ -209,11 +489,9 @@
 .staff-rules {
     display: grid;
     gap: 0.6rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.07);
 }
 
-.staff-rules h2 {
+.staff-rules h3 {
     margin: 0;
     font-size: 1.1rem;
     color: var(--tech-dark);
@@ -232,6 +510,7 @@
 }
 
 .staff-rules summary {
+    min-height: 48px;
     padding: 0.8rem 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -264,15 +543,86 @@
 }
 
 @media (max-width: 640px) {
+    /* The card runs edge to edge, like an app screen. */
+    .staff-wizard {
+        margin: 0 -1rem;
+    }
+
     .staff-card {
-        padding: 1.25rem 1rem;
+        padding: 1.25rem 1rem 0;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
     }
 
     .staff-grid > .staff-half {
         grid-column: 1 / -1;
     }
 
+    .wiz-dot-title {
+        display: none;
+    }
+
+    .wiz-steps li {
+        flex: 0 0 auto;
+    }
+
     .staff-scale .staff-option {
         padding: 0.55rem 0.1rem;
     }
+
+    .wiz-review dl {
+        grid-template-columns: 1fr;
+        gap: 0.1rem;
+    }
+
+    .wiz-review dd {
+        margin-bottom: 0.5rem;
+    }
+
+    /* Back and Next stay under the thumb. */
+    .wiz-nav {
+        position: sticky;
+        bottom: 0;
+        z-index: 5;
+        margin: 0.5rem -1rem 0;
+        padding: 0.75rem 1rem calc(0.75rem + var(--safe-area-bottom, 0px));
+        background: rgba(255, 255, 255, 0.96);
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+    }
+
+    .wiz-nav .btn {
+        flex: 1 1 0;
+        padding: 0.85rem 1rem;
+    }
+
+    .wiz-nav .wiz-back {
+        flex: 0 0 auto;
+        margin-right: 0;
+    }
+
+    /* The floating call button would sit on top of Next. */
+    .staff-form-page .floating-call {
+        display: none;
+    }
+}
+
+/* The site header is fixed: keep scrolled-to targets clear of it. */
+.staff-wizard,
+.staff-error-summary,
+.staff-field,
+.form-success {
+    scroll-margin-top: calc(var(--header-height) + 1rem);
+}
+
+/* Wins over `.wiz-nav .btn { display: inline-flex }` above. */
+.wiz-nav .btn[hidden] {
+    display: none;
+}
+
+/* `.contact-form { display: grid }` would otherwise keep a hidden form on screen. */
+.staff-form[hidden] {
+    display: none;
 }
