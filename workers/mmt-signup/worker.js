@@ -184,9 +184,16 @@ export default {
 
     // The staff-form routes have their own CORS rules; every other address
     // keeps the sign-up behaviour below exactly as before.
-    const binding = STAFF_ROUTES[new URL(request.url).pathname];
+    const pathname = new URL(request.url).pathname;
+    const binding = STAFF_ROUTES[pathname];
     if (binding) {
       return handleStaffSubmit(request, env, origin, binding);
+    }
+    // Only the sign-up form posts to the root. Any other path is a mistake
+    // (for example a form deployed before its Worker route) and must fail
+    // loudly instead of falling through to the sign-up forwarder.
+    if (pathname !== '/') {
+      return json({ ok: false, error: 'unknown route' }, 404, origin);
     }
 
     if (request.method === 'OPTIONS') {
