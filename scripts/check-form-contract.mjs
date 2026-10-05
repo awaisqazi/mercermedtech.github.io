@@ -9,7 +9,13 @@
 //      URL must NOT appear on the page: that is the point of the Worker, and
 //      it is checked below.
 //
-// The two forms are separate Google Forms with separate action URLs and
+//   3. the two unlisted staff forms (src/components/StaffForm.astro, fields in
+//      src/data/staffForms.ts): IEP intake on /iep/ (id="iep-intake-form")
+//      and the laptop loaner agreement on /loaner/ (id="loaner-agreement-form").
+//      They post to the Worker's /iep-submit and /loaner-submit routes; their
+//      Google Form addresses must not appear on the page either.
+//
+// The forms are separate Google Forms with separate action URLs and
 // separate entry.* names. Nothing is shared: do not reuse an id between them.
 //
 // A Google Forms DROPDOWN silently throws away any value it does not
@@ -101,6 +107,41 @@ const SIGNUP_CHOICES = {
   [SIGNUP_FIELDS.bestTime]: BEST_TIME_VALUES,
 };
 
+/* ---------------- 3. the staff forms (/iep/, /loaner/) ---------------- */
+
+/**
+ * Every entry.* name each staff form must send, and its Google Form id, which
+ * must never be on the page. Keep in step with src/data/staffForms.ts and the
+ * mapping in MMT Management WorkSpace/Participants/IEP intake/README.md.
+ */
+const STAFF_FORMS = {
+  'iep-intake-form': {
+    action: `${SIGNUP_ACTION}/iep-submit`,
+    googleId: '1FAIpQLSf47SrEW6gcCgBkZhXEj7l-m5fuYVuYMGk0U637S8xvdzzC4Q',
+    fields: [
+      'entry.379282059', 'entry.1304183266', 'entry.104008577', 'entry.1937477227',
+      'entry.2145008359', 'entry.848829829', 'entry.2076425752', 'entry.1924799731',
+      'entry.1102082198', 'entry.1384494948', 'entry.1590196068', 'entry.829820065',
+      'entry.66685863', 'entry.8668350', 'entry.1470120309', 'entry.401174236',
+      'entry.1313047665', 'entry.1390254369', 'entry.1106911370', 'entry.1335508969',
+      'entry.1812726087', 'entry.957542179', 'entry.957542179.other_option_response',
+      'entry.1467659682', 'entry.1043545198',
+    ],
+  },
+  'loaner-agreement-form': {
+    action: `${SIGNUP_ACTION}/loaner-submit`,
+    googleId: '1FAIpQLSdZFlduup-vf1qElvfBE5LbuzP_1uEvG9A-v3eBgu38s0muoA',
+    fields: [
+      'entry.218598507', 'entry.991666087', 'entry.1600795715', 'entry.1242110529',
+      'entry.172260136', 'entry.1843487727', 'entry.1109047904', 'entry.151926919',
+      'entry.2031520752', 'entry.266658418', 'entry.539715692', 'entry.2080556034',
+      'entry.1883769004', 'entry.1669196297', 'entry.1838727109',
+      'entry.195835422_year', 'entry.195835422_month', 'entry.195835422_day',
+    ],
+  },
+};
+const ALL_GOOGLE_IDS = [SIGNUP_GOOGLE_FORM_ID, ...Object.values(STAFF_FORMS).map((f) => f.googleId)];
+
 const pages = [];
 (function walk(dir) {
   for (const entry of readdirSync(dir)) {
@@ -165,9 +206,28 @@ function checkSignupForm(page, html) {
   }
 }
 
+/** A staff form: Worker action, every entry present, no Google Form address. */
+let staffChecked = 0;
+function checkStaffForm(page, html, id, spec) {
+  staffChecked += 1;
+  const form = html.match(new RegExp(`<form[^>]*id="${id}"[^>]*>`));
+  if (!form || !form[0].includes(`action="${spec.action}"`)) {
+    fail(page, `${id} does not post to ${spec.action}`);
+  }
+  for (const field of spec.fields) {
+    if (!html.includes(`name="${field}"`)) fail(page, `${id} is missing ${field}`);
+  }
+}
+
 for (const page of pages) {
   const html = readFileSync(page, 'utf8');
   if (html.includes('id="dlt-signup-form"')) checkSignupForm(page, html);
+  for (const [id, spec] of Object.entries(STAFF_FORMS)) {
+    if (html.includes(`id="${id}"`)) checkStaffForm(page, html, id, spec);
+  }
+  for (const googleId of ALL_GOOGLE_IDS.slice(1)) {
+    if (html.includes(googleId)) fail(page, 'a staff Google Form address is on the page; it belongs in the Worker only');
+  }
   if (!html.includes('id="request-info-form"')) continue;
   checked += 1;
 
@@ -207,6 +267,6 @@ for (const page of pages) {
 
 console.log(
   `form contract: ${checked} page(s) with the contact form, ` +
-    `${signupChecked} with the sign-up form, ${problems} problem(s).`
+    `${signupChecked} with the sign-up form, ${staffChecked} with a staff form, ${problems} problem(s).`
 );
 process.exit(problems ? 1 : 0);

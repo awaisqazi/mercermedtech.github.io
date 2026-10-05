@@ -7,10 +7,12 @@
  * pair) and astro.config.mjs keeps /loaner/ out of the sitemap. Nothing on the
  * site links here; staff open it with the participant at laptop pickup.
  *
- * The Google Form (IT Asset Agreement Form v2.0) loads through
- * GatedGoogleForm: Turnstile first, then the mmt-signup Worker's
- * POST /loaner-form hands over the embed URL (Worker variable
- * LOANER_FORM_URL). The policy PDF is public/loaner/IT-Asset-Policy-v2.1.pdf,
+ * The form is our own (StaffForm.astro, fields and the IT Asset Agreement
+ * Form v2.0 rules in src/data/staffForms.ts). On submit the browser posts the
+ * answers and the Turnstile token to the mmt-signup Worker
+ * (POST /loaner-submit), which forwards them to the Google Form (Worker
+ * variable LOANER_FORM_ACTION). The policy PDF is
+ * public/loaner/IT-Asset-Policy-v2.1.pdf,
  * linked only from this page. On submit, the school's Apps Script files the
  * signed agreement in the participant's IEP folder and ticks "Laptop issued".
  *
@@ -20,7 +22,8 @@
 import '../styles/components/dl.css';
 import '../styles/components/signup.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import GatedGoogleForm from '../components/GatedGoogleForm.astro';
+import StaffForm from '../components/StaffForm.astro';
+import { LOANER_ACK, LOANER_FORM, LOANER_RULES, POLICY_PDF } from '../data/staffForms';
 import { t, type Locale } from '../i18n';
 
 interface Props {
@@ -30,7 +33,7 @@ interface Props {
 const { locale } = Astro.props;
 const page = t(locale).loaner;
 const path = '/loaner/';
-const POLICY_PDF = '/loaner/IT-Asset-Policy-v2.1.pdf';
+let ruleNumber = 0;
 ---
 
 <BaseLayout
@@ -55,11 +58,36 @@ const POLICY_PDF = '/loaner/IT-Asset-Policy-v2.1.pdf';
         <span>{page.policyBefore}<a href={POLICY_PDF} target="_blank" rel="noopener">{page.policyLink}</a></span>
       </p>
 
-      <GatedGoogleForm
+      <StaffForm
         locale={locale}
-        endpoint="https://mmt-signup.mercermedtech.workers.dev/loaner-form"
-        text={page}
-      />
+        form={LOANER_FORM}
+        submitLabel={page.submit}
+        successTitle={page.successTitle}
+        successBody={page.successBody}
+        agreementAt={2}
+      >
+        <section class="staff-rules" slot="agreement" aria-labelledby="loaner-rules-title">
+          <h2 id="loaner-rules-title">{page.agreementHeading}</h2>
+          <p>{page.agreementHelp}</p>
+          {
+            LOANER_RULES.map((group) => (
+              <details>
+                <summary>{group.title[locale]}</summary>
+                <ol start={ruleNumber + 1}>
+                  {group.rules.map((rule) => {
+                    ruleNumber += 1;
+                    return <li>{rule[locale]}</li>;
+                  })}
+                </ol>
+              </details>
+            ))
+          }
+          <p class="staff-ack">
+            <strong>{page.ackHeading}</strong>
+            {LOANER_ACK[locale]}
+          </p>
+        </section>
+      </StaffForm>
     </div>
   </main>
 </BaseLayout>

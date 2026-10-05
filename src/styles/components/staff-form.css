@@ -1,0 +1,278 @@
+/*
+ * The unlisted staff forms (/iep/ and /loaner/), drawn by StaffForm.astro.
+ * Text inputs, selects and the submit button reuse contact.css; this file adds
+ * the sections, the radio and checkbox groups, the 1 to 5 scale, inline
+ * errors, the honeypot and the loaner page's collapsible rules.
+ */
+
+.staff-card {
+    padding: 2rem;
+}
+
+.staff-required-note {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.staff-section {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.staff-section + .staff-section,
+.staff-rules + .staff-section {
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.staff-section-title {
+    padding: 0;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--tech-dark);
+}
+
+.staff-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1rem 1rem;
+}
+
+.staff-grid > * {
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+
+.staff-grid > .staff-half {
+    grid-column: span 1;
+}
+
+.staff-help {
+    display: block;
+    margin: 0 0 0.25rem;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+/* ---------- radio and checkbox groups ---------- */
+
+.staff-choices {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+
+.staff-choices > legend {
+    padding: 0;
+    margin-bottom: 0.45rem;
+}
+
+.staff-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+    gap: 0.5rem;
+}
+
+.staff-checkbox .staff-options {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+}
+
+.staff-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.7rem 0.85rem;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.staff-option:has(input:checked) {
+    border-color: var(--primary);
+    background: var(--primary-light);
+}
+
+.staff-option:focus-within {
+    box-shadow: 0 0 0 4px rgba(0, 166, 156, 0.15);
+}
+
+.contact-form .staff-option input[type='radio'],
+.contact-form .staff-option input[type='checkbox'],
+.contact-form .staff-consent input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    margin: 0.1rem 0 0;
+    flex-shrink: 0;
+    accent-color: var(--primary);
+    box-shadow: none;
+}
+
+.staff-other {
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.contact-form .staff-other input[type='text'] {
+    flex: 1 1 160px;
+    width: auto;
+    padding: 0.5rem 0.75rem;
+}
+
+/* The 1 to 5 scale: five equal boxes in one row, labels under the ends. */
+.staff-scale .staff-options {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+.staff-scale .staff-option {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.6rem 0.25rem;
+    font-weight: 700;
+}
+
+.staff-scale-labels {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+.staff-consent label {
+    font-size: 0.95rem;
+    color: var(--text-main);
+}
+
+.staff-consent .req {
+    color: var(--primary);
+}
+
+/* ---------- errors ---------- */
+
+.staff-error {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #b02a37;
+}
+
+.staff-error[hidden],
+.staff-form-error[hidden] {
+    display: none;
+}
+
+.staff-field.is-invalid input:not([type='radio']):not([type='checkbox']),
+.staff-field.is-invalid select,
+.staff-field.is-invalid textarea,
+.staff-field.is-invalid .staff-option {
+    border-color: #dc3545;
+}
+
+.staff-consent.is-invalid label {
+    color: #b02a37;
+}
+
+.staff-form-error {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-sm);
+    background: rgba(220, 53, 69, 0.08);
+    color: #b02a37;
+    font-weight: 600;
+    font-size: 0.92rem;
+}
+
+/* Honeypot: off screen for people, still in the form for bots. */
+.staff-honeypot {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* ---------- the loaner agreement's collapsible rules ---------- */
+
+.staff-rules {
+    display: grid;
+    gap: 0.6rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.staff-rules h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--tech-dark);
+}
+
+.staff-rules > p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.staff-rules details {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: var(--radius-sm);
+}
+
+.staff-rules summary {
+    padding: 0.8rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-main);
+}
+
+.staff-rules ol {
+    margin: 0;
+    padding: 0 1rem 0.9rem 2.4rem;
+    display: grid;
+    gap: 0.55rem;
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: var(--text-main);
+}
+
+.staff-ack {
+    margin: 0.25rem 0 0;
+    padding: 0.9rem 1rem;
+    border-left: 3px solid var(--tech);
+    background: var(--tech-light);
+    border-radius: var(--radius-sm);
+    font-size: 0.93rem;
+    line-height: 1.55;
+}
+
+.staff-ack strong {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+@media (max-width: 640px) {
+    .staff-card {
+        padding: 1.25rem 1rem;
+    }
+
+    .staff-grid > .staff-half {
+        grid-column: 1 / -1;
+    }
+
+    .staff-scale .staff-option {
+        padding: 0.55rem 0.1rem;
+    }
+}

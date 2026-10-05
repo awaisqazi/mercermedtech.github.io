@@ -1,0 +1,433 @@
+---
+/**
+ * A native site form for one of the unlisted staff forms (/iep/, /loaner/),
+ * drawn from a field spec in src/data/staffForms.ts.
+ *
+ * Built like the Digital Literacy sign-up (DltSignupForm.astro): our own
+ * fields in the site's form styles, Cloudflare Turnstile inside the form, and
+ * on submit the browser POSTs the entry.* fields plus the Turnstile token to
+ * the mmt-signup Worker, which checks the token and forwards the answers to
+ * the Google Form. The Google Form address is never on the page.
+ *
+ * The "agreement" slot is drawn just before the section at `agreementAt`
+ * (the loaner page puts its collapsible rules there, above the signature).
+ */
+import '../styles/components/contact.css';
+import '../styles/components/staff-form.css';
+import { WORKER_ORIGIN, type StaffForm } from '../data/staffForms';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  form: StaffForm;
+  submitLabel: string;
+  successTitle: string;
+  successBody: string;
+  agreementAt?: number;
+}
+
+const { locale, form, submitLabel, successTitle, successBody, agreementAt = -1 } = Astro.props;
+const ui = t(locale).staffForm;
+const L = (b: { en: string; es: string }) => b[locale];
+const endpoint = `${WORKER_ORIGIN}${form.route}`;
+
+/** Public Turnstile site key, the same widget as the sign-up form. The secret lives only in the Worker. */
+const TURNSTILE_SITEKEY = '0x4AAAAAAFABG_uSmI7QN2sd';
+const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
+---
+
+<div class="contact-card signup-card staff-card">
+  <form id={form.id} class="contact-form staff-form" action={endpoint} method="post" novalidate data-staff-form>
+    <p class="staff-required-note">{ui.requiredNote}</p>
+
+    {
+      form.sections.map((section, sectionIndex) => (
+        <>
+          {sectionIndex === agreementAt && <slot name="agreement" />}
+          <fieldset class="staff-section">
+            <legend class="staff-section-title">{L(section.title)}</legend>
+            {section.help && <p class="staff-help">{L(section.help)}</p>}
+            <div class="staff-grid">
+              {section.fields.map((field) => {
+                const id = idOf(field.entry);
+                const helpId = field.help ? `${id}-help` : undefined;
+                const label = (
+                  <>
+                    {L(field.label)}{' '}
+                    {field.required ? (
+                      <span class="req" aria-hidden="true">*</span>
+                    ) : (
+                      <span class="optional">({ui.optional})</span>
+                    )}
+                  </>
+                );
+                const help = field.help && (
+                  <span class="staff-help" id={helpId}>
+                    {L(field.help)}
+                  </span>
+                );
+                const error = <span class="staff-error" data-error-for={field.entry} hidden>{ui.fixErrors}</span>;
+
+                if (['text', 'tel', 'email', 'date'].includes(field.kind)) {
+                  return (
+                    <div class:list={['form-field', 'staff-field', { 'staff-half': field.half }]} data-field={field.entry}>
+                      <label class="form-label" for={id}>{label}</label>
+                      {help}
+                      {field.kind === 'date' ? (
+                        <>
+                          <input type="date" id={id} required={field.required} aria-describedby={helpId} data-date-for={field.entry} />
+                          <input type="hidden" name={`${field.entry}_year`} />
+                          <input type="hidden" name={`${field.entry}_month`} />
+                          <input type="hidden" name={`${field.entry}_day`} />
+                        </>
+                      ) : (
+                        <input
+                          type={field.kind}
+                          id={id}
+                          name={field.entry}
+                          required={field.required}
+                          autocomplete={field.autocomplete ?? 'off'}
+                          aria-describedby={helpId}
+                          maxlength="500"
+                          pattern={field.kind === 'tel' ? '[0-9\\(\\)\\-\\s\\+\\.]{7,}' : undefined}
+                        />
+                      )}
+                      {error}
+                    </div>
+                  );
+                }
+                if (field.kind === 'textarea') {
+                  return (
+                    <div class="form-field staff-field" data-field={field.entry}>
+                      <label class="form-label" for={id}>{label}</label>
+                      {help}
+                      <textarea id={id} name={field.entry} rows="3" required={field.required} aria-describedby={helpId} maxlength="1500"></textarea>
+                      {error}
+                    </div>
+                  );
+                }
+                if (field.kind === 'select') {
+                  return (
+                    <div class:list={['form-field', 'staff-field', { 'staff-half': field.half }]} data-field={field.entry}>
+                      <label class="form-label" for={id}>{label}</label>
+                      {help}
+                      <select id={id} name={field.entry} required={field.required}>
+                        <option value="" disabled selected>{ui.pickOne}</option>
+                        {field.choices!.map((choice) => <option value={choice.value}>{L(choice.label)}</option>)}
+                      </select>
+                      {error}
+                    </div>
+                  );
+                }
+                if (field.kind === 'consent') {
+                  const choice = field.choices![0];
+                  return (
+                    <div class="form-consent staff-consent staff-field" data-field={field.entry}>
+                      <label>
+                        <input type="checkbox" name={field.entry} value={choice.value} required={field.required} />
+                        <span>
+                          {L(field.label)} <span class="req" aria-hidden="true">*</span>
+                        </span>
+                      </label>
+                      {error}
+                    </div>
+                  );
+                }
+                // radio, scale, checkbox: a group of choices
+                const type = field.kind === 'checkbox' ? 'checkbox' : 'radio';
+                return (
+                  <fieldset
+                    class:list={['staff-choices', 'staff-field', `staff-${field.kind}`]}
+                    data-field={field.entry}
+                    data-required={field.required ? 'true' : undefined}
+                    aria-describedby={helpId}
+                  >
+                    <legend class="form-label">{label}</legend>
+                    {help}
+                    <div class="staff-options">
+                      {field.choices!.map((choice, index) => (
+                        <label class="staff-option">
+                          <input
+                            type={type}
+                            name={field.entry}
+                            value={choice.value}
+                            required={type === 'radio' && field.required && index === 0}
+                          />
+                          <span>{L(choice.label)}</span>
+                        </label>
+                      ))}
+                      {field.other && (
+                        <label class="staff-option staff-other">
+                          <input type="checkbox" name={field.entry} value="__other_option__" data-other-for={field.entry} />
+                          <span>{ui.otherLabel}:</span>
+                          <input
+                            type="text"
+                            name={`${field.entry}.other_option_response`}
+                            placeholder={ui.otherPlaceholder}
+                            aria-label={ui.otherLabel}
+                            maxlength="300"
+                            data-other-text={field.entry}
+                          />
+                        </label>
+                      )}
+                    </div>
+                    {field.scaleLabels && (
+                      <div class="staff-scale-labels" aria-hidden="true">
+                        <span>1 = {L(field.scaleLabels[0])}</span>
+                        <span>5 = {L(field.scaleLabels[1])}</span>
+                      </div>
+                    )}
+                    {error}
+                  </fieldset>
+                );
+              })}
+            </div>
+          </fieldset>
+        </>
+      ))
+    }
+
+    <!-- Honeypot: hidden from people; the Worker drops any post that fills it. -->
+    <div class="staff-honeypot" aria-hidden="true">
+      <label>{ui.honeypotLabel} <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+    </div>
+
+    <!-- Turnstile drops its hidden cf-turnstile-response input here, inside the form. -->
+    <div class="signup-turnstile" data-turnstile data-sitekey={TURNSTILE_SITEKEY} data-language={locale}></div>
+    <p class="signup-security-note" data-turnstile-note hidden>{ui.securityUnavailable}</p>
+
+    <p class="staff-form-error" data-form-error role="alert" hidden>{ui.fixErrors}</p>
+
+    <button type="submit" class="btn btn-primary form-submit">
+      <span class="form-submit-label">{submitLabel}</span>
+      <i class="fas fa-paper-plane" aria-hidden="true"></i>
+    </button>
+
+    <div
+      class="form-success"
+      role="status"
+      aria-live="polite"
+      hidden
+      data-success-title={successTitle}
+      data-success-body={successBody}
+      data-error-title={ui.errorTitle}
+      data-error-body={ui.errorBody}
+      data-rejected-body={ui.rejectedBody}
+      data-security-body={ui.securityIncomplete}
+      data-submit-label={submitLabel}
+      data-sending-label={ui.sending}
+    >
+      <i class="fas fa-check-circle" aria-hidden="true"></i>
+      <div>
+        <strong>{successTitle}</strong>
+        <span>{successBody}</span>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
+
+<script>
+  /*
+   * Posts the form to the mmt-signup Worker with fetch, so the reader stays on
+   * the page. The Worker answers {ok:true} or {ok:false,error}. Turnstile
+   * guards the submit button: no token, no send.
+   */
+  const TIMEOUT_MS = 15000;
+  const WAIT_FOR_SCRIPT_MS = 10000;
+
+  for (const form of document.querySelectorAll<HTMLFormElement>('form[data-staff-form]')) {
+    const host = form.querySelector<HTMLElement>('[data-turnstile]');
+    const note = form.querySelector<HTMLElement>('[data-turnstile-note]');
+    const submitBtn = form.querySelector<HTMLButtonElement>('.form-submit');
+    const message = form.querySelector<HTMLElement>('.form-success');
+    const formError = form.querySelector<HTMLElement>('[data-form-error]');
+    if (!host || !submitBtn || !message) continue;
+
+    const labelEl = form.querySelector<HTMLElement>('.form-submit-label');
+    const icon = message.querySelector('i');
+    const strong = message.querySelector('strong');
+    const span = message.querySelector('span');
+    const data = message.dataset;
+    const turnstileApi = () => (window as any).turnstile;
+    let token = '';
+    let widgetId: string | undefined;
+    let isSubmitting = false;
+
+    submitBtn.disabled = true;
+
+    const setBusy = (busy: boolean) => {
+      isSubmitting = busy;
+      submitBtn.disabled = busy || !token;
+      submitBtn.classList.toggle('is-loading', busy);
+      const text = busy ? data.sendingLabel : data.submitLabel;
+      if (labelEl && text) labelEl.textContent = text;
+    };
+
+    const show = (title: string, body: string, isError: boolean) => {
+      if (strong) strong.textContent = title;
+      if (span) span.textContent = body;
+      icon?.classList.toggle('fa-check-circle', !isError);
+      icon?.classList.toggle('fa-circle-exclamation', isError);
+      message.classList.toggle('is-error', isError);
+      message.hidden = false;
+      message.classList.add('is-visible');
+      message.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
+    /* ---------- the "Other" box and the date parts ---------- */
+
+    for (const text of form.querySelectorAll<HTMLInputElement>('[data-other-text]')) {
+      const box = form.querySelector<HTMLInputElement>(`[data-other-for="${text.dataset.otherText}"]`);
+      text.addEventListener('input', () => {
+        if (box) box.checked = text.value.trim() !== '';
+      });
+    }
+
+    const fillDates = () => {
+      for (const input of form.querySelectorAll<HTMLInputElement>('[data-date-for]')) {
+        const entry = input.dataset.dateFor;
+        const [year = '', month = '', day = ''] = input.value ? input.value.split('-') : [];
+        const set = (part: string, value: string) => {
+          const hidden = form.querySelector<HTMLInputElement>(`input[name="${entry}_${part}"]`);
+          if (hidden) hidden.value = value ? String(Number(value)) : '';
+        };
+        set('year', year);
+        set('month', month);
+        set('day', day);
+      }
+    };
+
+    /* ---------- inline validation ---------- */
+
+    const fieldValid = (wrap: HTMLElement): boolean => {
+      if (wrap.matches('fieldset.staff-choices')) {
+        if (wrap.dataset.required !== 'true') return true;
+        return wrap.querySelector('input:checked') !== null;
+      }
+      const control = wrap.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        'input:not([type=hidden]), select, textarea'
+      );
+      if (!control) return true;
+      if (control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement) {
+        if (control.required && !control.value.trim() && control.type !== 'checkbox') return false;
+      }
+      return control.checkValidity();
+    };
+
+    const mark = (wrap: HTMLElement, ok: boolean) => {
+      wrap.classList.toggle('is-invalid', !ok);
+      const err = wrap.querySelector<HTMLElement>('.staff-error');
+      if (err) err.hidden = ok;
+      wrap.querySelectorAll('input, select, textarea').forEach((el) => {
+        if (ok) el.removeAttribute('aria-invalid');
+        else el.setAttribute('aria-invalid', 'true');
+      });
+    };
+
+    const validate = (): HTMLElement | null => {
+      let first: HTMLElement | null = null;
+      for (const wrap of form.querySelectorAll<HTMLElement>('.staff-field')) {
+        const ok = fieldValid(wrap);
+        mark(wrap, ok);
+        if (!ok && !first) first = wrap;
+      }
+      return first;
+    };
+
+    form.addEventListener('change', (event) => {
+      const wrap = (event.target as HTMLElement).closest<HTMLElement>('.staff-field');
+      if (wrap && wrap.classList.contains('is-invalid')) mark(wrap, fieldValid(wrap));
+    });
+
+    /* ---------- Turnstile ---------- */
+
+    const renderWidget = () => {
+      widgetId = turnstileApi().render(host, {
+        sitekey: host.dataset.sitekey,
+        theme: 'light',
+        language: host.dataset.language === 'es' ? 'es' : 'en',
+        'response-field': true,
+        callback: (value: string) => {
+          token = value;
+          if (!isSubmitting) submitBtn.disabled = false;
+        },
+        'expired-callback': () => {
+          token = '';
+          submitBtn.disabled = true;
+        },
+        'error-callback': () => {
+          token = '';
+          submitBtn.disabled = true;
+        },
+      });
+    };
+
+    const startedAt = Date.now();
+    const waitForTurnstile = () => {
+      const api = turnstileApi();
+      if (api && typeof api.render === 'function') {
+        renderWidget();
+        return;
+      }
+      if (Date.now() - startedAt > WAIT_FOR_SCRIPT_MS) {
+        if (note) note.hidden = false;
+        return;
+      }
+      window.setTimeout(waitForTurnstile, 150);
+    };
+    waitForTurnstile();
+
+    /* ---------- submit ---------- */
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (isSubmitting) return;
+
+      const firstBad = validate();
+      if (formError) formError.hidden = !firstBad;
+      if (firstBad) {
+        firstBad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstBad.querySelector<HTMLElement>('input:not([type=hidden]), select, textarea')?.focus({ preventScroll: true });
+        return;
+      }
+      if (!token) {
+        show(data.errorTitle || '', data.securityBody || '', true);
+        return;
+      }
+
+      fillDates();
+      setBusy(true);
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), TIMEOUT_MS);
+      try {
+        const body = new URLSearchParams(new FormData(form) as unknown as Record<string, string>);
+        const response = await fetch(form.action, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body,
+          signal: controller.signal,
+        });
+        const result = await response.json().catch(() => null);
+        if (response.ok && result && result.ok === true) {
+          form.reset();
+          form.querySelectorAll<HTMLElement>('.staff-field').forEach((wrap) => mark(wrap, true));
+          show(data.successTitle || '', data.successBody || '', false);
+        } else if (result && result.error === 'rejected') {
+          show(data.errorTitle || '', data.rejectedBody || '', true);
+        } else {
+          show(data.errorTitle || '', data.errorBody || '', true);
+        }
+      } catch {
+        show(data.errorTitle || '', data.errorBody || '', true);
+      } finally {
+        window.clearTimeout(timer);
+        token = '';
+        if (widgetId !== undefined) turnstileApi()?.reset(widgetId);
+        setBusy(false);
+      }
+    });
+  }
+</script>

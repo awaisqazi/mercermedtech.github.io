@@ -806,13 +806,30 @@ export const en = {
     },
   },
 
+  /* ---------- Shared wording for the unlisted staff forms (/iep/, /loaner/) ---------- */
+  staffForm: {
+    requiredNote: 'Questions marked * are required.',
+    optional: 'optional',
+    pickOne: 'Pick one',
+    otherLabel: 'Other',
+    otherPlaceholder: 'Write it here',
+    sending: 'Sending',
+    errorTitle: 'We could not send that.',
+    errorBody: 'Please try again or ask a staff member.',
+    rejectedBody: 'Some answers were not accepted. Check the required questions and try again, or ask a staff member.',
+    fixErrors: 'Please answer the questions marked in red.',
+    securityIncomplete: 'Please wait for the security check to finish, then send again.',
+    securityUnavailable: 'The security check did not load. Reload the page or ask a staff member.',
+    honeypotLabel: 'Leave this empty',
+  },
+
   /* ---------- IEP intake page (hidden) ---------- */
   /**
    * /iep/: the Individual Employment Plan intake form for enrolled Digital
    * Literacy Training participants, filled in with staff at Day 0. Nothing
    * links here, BaseLayout carries "standalone" (noindex) and astro.config.mjs
    * keeps /iep/ out of the sitemap. The Google Form address is not in the page:
-   * the mmt-signup Worker hands it over after a Turnstile check.
+   * the page posts to the mmt-signup Worker (/iep-submit), which checks Turnstile and forwards the answers.
    */
   iepIntake: {
     seo: {
@@ -823,21 +840,18 @@ export const en = {
     eyebrow: 'Digital Literacy Training',
     heading: 'Individual Employment Plan (IEP) intake',
     lead: 'Complete this with an MMT staff member at Day 0. Staff will meet with you to finish and sign your IEP.',
-    checking: 'A quick security check runs first. The form opens here when it is done.',
-    loading: 'Opening the form.',
-    fallback: 'Please try again or ask a staff member.',
-    retry: 'Try again',
-    iframeTitle: 'IEP intake form',
-    noscript: 'This form needs JavaScript. Please turn it on, or ask a staff member.',
+    submit: 'Send my answers',
+    successTitle: 'Thank you.',
+    successBody: 'MMT staff will meet with you to complete and sign your IEP.',
   },
 
   /* ---------- Laptop loaner agreement page (hidden) ---------- */
   /**
-   * /loaner/: the IT Asset Agreement (laptop loan) as a Google Form, filled in
+   * /loaner/: the IT Asset Agreement (laptop loan) as a site form, filled in
    * with staff at laptop pickup. Nothing links here, BaseLayout carries
    * "standalone" (noindex) and astro.config.mjs keeps /loaner/ out of the
-   * sitemap. The form address comes from the mmt-signup Worker after a
-   * Turnstile check. The policy PDF lives in public/loaner/.
+   * sitemap. The page posts to the mmt-signup Worker (/loaner-submit),
+   * which checks Turnstile and forwards the answers. The policy PDF lives in public/loaner/.
    */
   loaner: {
     seo: {
@@ -850,12 +864,12 @@ export const en = {
     lead: 'MMT staff complete this with you when you pick up your laptop.',
     policyBefore: 'Before you sign, read the full policy: ',
     policyLink: 'Mercer Med Tech IT Asset Policy v2.1 (PDF)',
-    checking: 'A quick security check runs first. The form opens here when it is done.',
-    loading: 'Opening the form.',
-    fallback: 'Please try again or ask a staff member.',
-    retry: 'Try again',
-    iframeTitle: 'Laptop loaner agreement form',
-    noscript: 'This form needs JavaScript. Please turn it on, or ask a staff member.',
+    submit: 'Sign and send the agreement',
+    successTitle: 'Thank you.',
+    successBody: 'Your agreement is recorded.',
+    agreementHeading: 'C. How this loan works',
+    agreementHelp: 'Open each part and read it with the staff member before you sign.',
+    ackHeading: 'Participant acknowledgment',
   },
 
   /* ---------- Partner outreach kit page (hidden) ---------- */

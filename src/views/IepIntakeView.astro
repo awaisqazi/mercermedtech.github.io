@@ -6,11 +6,11 @@
  * pair) and astro.config.mjs keeps /iep/ out of the sitemap. Nothing on the
  * site links here; staff open it with the participant at Day 0.
  *
- * The Google Form address is NOT in this page. The page shows a Cloudflare
- * Turnstile check first, posts the token to the mmt-signup Worker
- * (POST /iep-form), and the Worker answers with the form's embed URL, which
- * becomes the iframe's src. Until the Worker is deployed with IEP_FORM_URL,
- * or if the check fails, the reader sees the fallback line and a retry button.
+ * The form is our own (StaffForm.astro, fields in src/data/staffForms.ts).
+ * On submit the browser posts the answers and the Turnstile token to the
+ * mmt-signup Worker (POST /iep-submit), which checks the token and forwards
+ * the entry.* fields to the Google Form (Worker variable IEP_FORM_ACTION). The
+ * Google Form address is never in the page.
  *
  * On form submit, the school's Apps Script makes the participant's Drive
  * folder, the prefilled IEP and the weekly note files, and adds the tracker
@@ -24,7 +24,8 @@
 import '../styles/components/dl.css';
 import '../styles/components/signup.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import GatedGoogleForm from '../components/GatedGoogleForm.astro';
+import StaffForm from '../components/StaffForm.astro';
+import { IEP_FORM } from '../data/staffForms';
 import { t, type Locale } from '../i18n';
 
 interface Props {
@@ -53,10 +54,12 @@ const path = '/iep/';
       <h1>{page.heading}</h1>
       <p class="signup-lead">{page.lead}</p>
 
-      <GatedGoogleForm
+      <StaffForm
         locale={locale}
-        endpoint="https://mmt-signup.mercermedtech.workers.dev/iep-form"
-        text={page}
+        form={IEP_FORM}
+        submitLabel={page.submit}
+        successTitle={page.successTitle}
+        successBody={page.successBody}
       />
     </div>
   </main>

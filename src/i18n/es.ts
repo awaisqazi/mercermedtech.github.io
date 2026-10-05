@@ -829,14 +829,31 @@ export const es: Dictionary = {
     },
   },
 
+  /* ---------- Texto común de los formularios del personal (/iep/, /loaner/) ---------- */
+  staffForm: {
+    requiredNote: 'Las preguntas marcadas con * son obligatorias.',
+    optional: 'opcional',
+    pickOne: 'Elija una opción',
+    otherLabel: 'Otro',
+    otherPlaceholder: 'Escríbalo aquí',
+    sending: 'Enviando',
+    errorTitle: 'No pudimos enviarlo.',
+    errorBody: 'Inténtelo de nuevo o pida ayuda a un miembro del personal.',
+    rejectedBody: 'Algunas respuestas no se aceptaron. Revise las preguntas obligatorias e inténtelo de nuevo, o pida ayuda a un miembro del personal.',
+    fixErrors: 'Conteste las preguntas marcadas en rojo.',
+    securityIncomplete: 'Espere a que termine la verificación de seguridad y envíe de nuevo.',
+    securityUnavailable: 'La verificación de seguridad no cargó. Vuelva a cargar la página o pida ayuda a un miembro del personal.',
+    honeypotLabel: 'Deje esto en blanco',
+  },
+
   /* ---------- Página del formulario de ingreso del IEP (oculta) ---------- */
   /**
    * /es/iep/: el formulario de ingreso del Plan Individual de Empleo para
    * participantes inscritos, que se llena con el personal el Día 0. Nada
    * enlaza aquí, BaseLayout lleva "standalone" (noindex) y astro.config.mjs
    * deja /iep/ fuera del sitemap. La dirección del formulario de Google no
-   * está en la página: el Worker mmt-signup la entrega tras la verificación
-   * de Turnstile.
+   * está en la página: la página envía las respuestas al Worker mmt-signup
+   * (/iep-submit), que verifica Turnstile y las reenvía.
    */
   iepIntake: {
     seo: {
@@ -847,22 +864,19 @@ export const es: Dictionary = {
     eyebrow: 'Habilidades Digitales',
     heading: 'Plan Individual de Empleo (IEP): formulario de ingreso',
     lead: 'Complete este formulario con un miembro del personal de MMT el Día 0. El personal se reunirá con usted para terminar y firmar su IEP.',
-    checking: 'Primero se hace una breve verificación de seguridad. Después, el formulario se abre aquí.',
-    loading: 'Abriendo el formulario.',
-    fallback: 'Inténtelo de nuevo o pida ayuda a un miembro del personal.',
-    retry: 'Intentar de nuevo',
-    iframeTitle: 'Formulario de ingreso del IEP',
-    noscript: 'Este formulario necesita JavaScript. Actívelo o pida ayuda a un miembro del personal.',
+    submit: 'Enviar mis respuestas',
+    successTitle: 'Gracias.',
+    successBody: 'El personal de MMT se reunirá con usted para completar y firmar su IEP.',
   },
 
   /* ---------- Página del acuerdo de préstamo de computadora (oculta) ---------- */
   /**
    * /es/loaner/: el Acuerdo de Equipos de TI (préstamo de la computadora)
-   * como formulario de Google, que se llena con el personal al recoger la
+   * como formulario del sitio, que se llena con el personal al recoger la
    * computadora. Nada enlaza aquí, BaseLayout lleva "standalone" (noindex) y
-   * astro.config.mjs deja /loaner/ fuera del sitemap. La dirección del
-   * formulario la entrega el Worker mmt-signup tras la verificación de
-   * Turnstile. El PDF de la política está en public/loaner/.
+   * astro.config.mjs deja /loaner/ fuera del sitemap. La página envía las
+   * respuestas al Worker mmt-signup (/loaner-submit), que verifica Turnstile
+   * y las reenvía al formulario de Google. El PDF de la política está en public/loaner/.
    */
   loaner: {
     seo: {
@@ -875,12 +889,12 @@ export const es: Dictionary = {
     lead: 'El personal de MMT completa este formulario con usted cuando recoge su computadora portátil.',
     policyBefore: 'Antes de firmar, lea la política completa: ',
     policyLink: 'Política de Equipos de TI v2.1 de Mercer Med Tech (PDF, en inglés)',
-    checking: 'Primero se hace una breve verificación de seguridad. Después, el formulario se abre aquí.',
-    loading: 'Abriendo el formulario.',
-    fallback: 'Inténtelo de nuevo o pida ayuda a un miembro del personal.',
-    retry: 'Intentar de nuevo',
-    iframeTitle: 'Formulario del acuerdo de préstamo de computadora',
-    noscript: 'Este formulario necesita JavaScript. Actívelo o pida ayuda a un miembro del personal.',
+    submit: 'Firmar y enviar el acuerdo',
+    successTitle: 'Gracias.',
+    successBody: 'Su acuerdo quedó registrado.',
+    agreementHeading: 'C. Cómo funciona este préstamo',
+    agreementHelp: 'Abra cada parte y léala con el miembro del personal antes de firmar.',
+    ackHeading: 'Declaración del participante',
   },
 
   /* ---------- Página del kit de difusión para agencias (oculta) ---------- */

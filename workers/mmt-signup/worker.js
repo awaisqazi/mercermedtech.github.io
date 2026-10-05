@@ -10,14 +10,21 @@
  * fields plus cf-turnstile-response. It gets back JSON {ok:true} or
  * {ok:false, error:"…"} with a matching status.
  *
- * Two more routes hand an unlisted page its Google Form embed URL after a
- * Turnstile check, so the form address is never in the page source. The page
- * sends JSON {token}; on a good token the Worker answers {ok:true, url}.
- *   POST /iep-form     for www.mercermedtech.com/iep/ (and /es/iep/)
- *                      binding IEP_FORM_URL (plain text)
- *   POST /loaner-form  for www.mercermedtech.com/loaner/ (and /es/loaner/)
- *                      binding LOANER_FORM_URL (plain text)
- * Only the two production origins may call them; anything else gets 403.
+ * Two more routes take the unlisted staff forms on the site and forward them
+ * to their Google Forms the same way, so neither Google Form address is in
+ * the page source:
+ *   POST /iep-submit     www.mercermedtech.com/iep/ (and /es/iep/)
+ *                        binding IEP_FORM_ACTION (plain text, formResponse URL)
+ *   POST /loaner-submit  www.mercermedtech.com/loaner/ (and /es/loaner/)
+ *                        binding LOANER_FORM_ACTION (plain text, formResponse URL)
+ * Same body as the sign-up (form-encoded entry.* fields plus
+ * cf-turnstile-response), plus Google's date parts (entry.N_year/_month/_day)
+ * and "Other" text (entry.N.other_option_response). Differences from the
+ * sign-up route: only the two production origins may call them (403
+ * otherwise), the Turnstile token must have been solved on mercermedtech.com,
+ * a filled-in honeypot field ("website") is accepted and dropped, and only a
+ * 200 from Google counts as delivered (Google answers 400 when a required
+ * question is missing).
  */
 
 const ALLOWED_ORIGINS = new Set([
@@ -27,10 +34,18 @@ const ALLOWED_ORIGINS = new Set([
   'http://localhost:4321',
 ]);
 
-/** The form-URL routes are for the live site only, so no localhost origins here. */
-const IEP_ORIGINS = new Set(['https://www.mercermedtech.com', 'https://mercermedtech.com']);
-const IEP_HOSTNAMES = new Set(['www.mercermedtech.com', 'mercermedtech.com']);
-const MAX_TOKEN_LENGTH = 4096;
+/** The staff-form routes are for the live site only, so no localhost origins here. */
+const STAFF_ORIGINS = new Set(['https://www.mercermedtech.com', 'https://mercermedtech.com']);
+const STAFF_HOSTNAMES = new Set(['www.mercermedtech.com', 'mercermedtech.com']);
+const STAFF_FIELD = /^entry\.\d+(_year|_month|_day|\.other_option_response)?$/;
+const MAX_BODY_BYTES = 64 * 1024;
+const MAX_FIELDS = 120;
+
+/** Route -> the Worker variable that holds that form's formResponse URL. */
+const STAFF_ROUTES = {
+  '/iep-submit': 'IEP_FORM_ACTION',
+  '/loaner-submit': 'LOANER_FORM_ACTION',
+};
 
 const ALLOWED_FIELD = /^entry\.\d+$/;
 const MAX_FIELD_LENGTH = 2000;
@@ -53,7 +68,7 @@ function json(body, status, origin) {
   });
 }
 
-function iepHeaders(origin) {
+function staffHeaders(origin) {
   const headers = {
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -61,53 +76,51 @@ function iepHeaders(origin) {
     'Cache-Control': 'no-store',
     Vary: 'Origin',
   };
-  if (IEP_ORIGINS.has(origin)) headers['Access-Control-Allow-Origin'] = origin;
+  if (STAFF_ORIGINS.has(origin)) headers['Access-Control-Allow-Origin'] = origin;
   return headers;
 }
 
-function iepJson(body, status, origin) {
+function staffJson(body, status, origin) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': 'application/json; charset=utf-8', ...iepHeaders(origin) },
+    headers: { 'Content-Type': 'application/json; charset=utf-8', ...staffHeaders(origin) },
   });
 }
 
-/** Route -> the Worker variable that holds that page's form embed URL. */
-const FORM_URL_ROUTES = {
-  '/iep-form': 'IEP_FORM_URL',
-  '/loaner-form': 'LOANER_FORM_URL',
-};
-
-/**
- * POST /iep-form or /loaner-form  {token}  ->  {ok:true, url}  or  {ok:false, error}.
- * The token must pass Turnstile and have been solved on mercermedtech.com.
- */
-async function handleFormUrl(request, env, origin, binding) {
-  const formUrl = env[binding];
-  if (!IEP_ORIGINS.has(origin)) {
-    return iepJson({ ok: false, error: 'origin' }, 403, origin);
+/** POST /iep-submit or /loaner-submit -> {ok:true} or {ok:false, error}. */
+async function handleStaffSubmit(request, env, origin, binding) {
+  if (!STAFF_ORIGINS.has(origin)) {
+    return staffJson({ ok: false, error: 'origin' }, 403, origin);
   }
   if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: iepHeaders(origin) });
+    return new Response(null, { status: 204, headers: staffHeaders(origin) });
   }
   if (request.method !== 'POST') {
-    return iepJson({ ok: false, error: 'method' }, 405, origin);
+    return staffJson({ ok: false, error: 'method' }, 405, origin);
   }
-  if (!formUrl || !env.TURNSTILE_SECRET) {
-    return iepJson({ ok: false, error: 'not configured' }, 503, origin);
+  const action = env[binding];
+  if (!action || !env.TURNSTILE_SECRET) {
+    return staffJson({ ok: false, error: 'not configured' }, 503, origin);
+  }
+  const length = Number(request.headers.get('Content-Length') || '0');
+  if (length > MAX_BODY_BYTES) {
+    return staffJson({ ok: false, error: 'too large' }, 413, origin);
   }
 
-  let token = '';
+  let incoming;
   try {
-    const body = await request.json();
-    token = typeof body?.token === 'string' ? body.token : '';
+    const text = await request.text();
+    if (text.length > MAX_BODY_BYTES) return staffJson({ ok: false, error: 'too large' }, 413, origin);
+    incoming = new URLSearchParams(text);
   } catch {
-    return iepJson({ ok: false, error: 'bad request' }, 400, origin);
-  }
-  if (!token || token.length > MAX_TOKEN_LENGTH) {
-    return iepJson({ ok: false, error: 'turnstile missing' }, 400, origin);
+    return staffJson({ ok: false, error: 'bad request' }, 400, origin);
   }
 
+  // 1. Turnstile, solved on mercermedtech.com.
+  const token = String(incoming.get('cf-turnstile-response') || '');
+  if (!token || token.length > 4096) {
+    return staffJson({ ok: false, error: 'turnstile missing' }, 400, origin);
+  }
   let verdict;
   try {
     const verify = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
@@ -121,24 +134,53 @@ async function handleFormUrl(request, env, origin, binding) {
     });
     verdict = await verify.json();
   } catch {
-    return iepJson({ ok: false, error: 'turnstile unavailable' }, 502, origin);
+    return staffJson({ ok: false, error: 'turnstile unavailable' }, 502, origin);
   }
-  if (!verdict.success || (verdict.hostname && !IEP_HOSTNAMES.has(verdict.hostname))) {
-    return iepJson({ ok: false, error: 'turnstile failed' }, 403, origin);
+  if (!verdict.success || (verdict.hostname && !STAFF_HOSTNAMES.has(verdict.hostname))) {
+    return staffJson({ ok: false, error: 'turnstile failed' }, 403, origin);
   }
 
-  return iepJson({ ok: true, url: formUrl }, 200, origin);
+  // 2. Honeypot: a person never fills it in. Say yes and drop the post.
+  if (String(incoming.get('website') || '').trim()) {
+    return staffJson({ ok: true }, 200, origin);
+  }
+
+  // 3. Forward only the form's own fields (checkbox questions repeat a name).
+  const outgoing = new URLSearchParams();
+  let count = 0;
+  for (const [name, value] of incoming.entries()) {
+    if (!STAFF_FIELD.test(name)) continue;
+    if (++count > MAX_FIELDS) return staffJson({ ok: false, error: 'too many fields' }, 400, origin);
+    outgoing.append(name, value.slice(0, MAX_FIELD_LENGTH));
+  }
+  if (count === 0) return staffJson({ ok: false, error: 'empty' }, 400, origin);
+
+  let status = 0;
+  try {
+    const google = await fetch(action, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: outgoing,
+      redirect: 'follow',
+    });
+    status = google.status;
+  } catch {
+    status = 0;
+  }
+  if (status === 200) return staffJson({ ok: true }, 200, origin);
+  if (status === 400) return staffJson({ ok: false, error: 'rejected' }, 422, origin);
+  return staffJson({ ok: false, error: 'delivery failed' }, 502, origin);
 }
 
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
 
-    // The form-URL routes have their own CORS rules; every other address
+    // The staff-form routes have their own CORS rules; every other address
     // keeps the sign-up behaviour below exactly as before.
-    const binding = FORM_URL_ROUTES[new URL(request.url).pathname];
+    const binding = STAFF_ROUTES[new URL(request.url).pathname];
     if (binding) {
-      return handleFormUrl(request, env, origin, binding);
+      return handleStaffSubmit(request, env, origin, binding);
     }
 
     if (request.method === 'OPTIONS') {
