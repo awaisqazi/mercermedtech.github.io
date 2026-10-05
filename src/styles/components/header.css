@@ -26,6 +26,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    /* The logo never touches the first nav item. */
+    gap: 2rem;
 }
 
 /* Logo */
@@ -33,6 +35,7 @@
     display: flex;
     align-items: center;
     height: 40px;
+    flex-shrink: 0;
 }
 
 .logo img {
@@ -43,8 +46,22 @@
 
 .nav-menu {
     display: flex;
-    gap: 2rem;
+    /* Spacing tightens with the viewport before any label could wrap. */
+    gap: clamp(0.75rem, 1.2vw, 1.25rem);
     align-items: center;
+}
+
+/* Header buttons are sentence case like the rest of the nav, sized to sit on
+   one line in Spanish ("Pedir información"). */
+.nav-menu .btn {
+    text-transform: none;
+    letter-spacing: 0;
+    white-space: nowrap;
+}
+
+.nav-menu .btn-sm {
+    padding: 0.55rem 1.1rem;
+    font-size: 0.875rem;
 }
 
 .nav-link {
@@ -77,6 +94,59 @@
     color: var(--primary);
 }
 
+/* Student login to the Digital Literacy Training class site.
+   A compact control, not a second pill: icon plus short text, sentence case,
+   a thin indigo outline (Tech track), lighter than the filled button after it.
+   Labels by width: short (1200px and up), tiny "Login"/"Acceso" (1081 to
+   1199px), full label plus subtitle as a full-width row in the mobile menu. */
+.nav-class-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    border: 1.5px solid var(--tech);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--tech-dark);
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    transition: background 0.2s ease;
+}
+
+.nav-class-login:hover,
+.nav-class-login:focus-visible {
+    background: var(--tech-light);
+    color: var(--tech-dark);
+}
+
+.nav-class-login i {
+    font-size: 0.85em;
+}
+
+.nav-class-login-text {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.nav-class-login-label--tiny,
+.nav-class-login-label--full,
+.nav-class-login-sub {
+    display: none;
+}
+
+@media (min-width: 1081px) and (max-width: 1199px) {
+    .nav-class-login-label--short {
+        display: none;
+    }
+
+    .nav-class-login-label--tiny {
+        display: inline;
+    }
+}
+
 /* Mobile Toggle */
 .mobile-menu-toggle {
     display: none;
@@ -98,17 +168,13 @@
    content below it. Above 1300px everything returns to full size.
    ========================================================================== */
 @media (min-width: 1081px) and (max-width: 1300px) {
-    .nav-menu {
-        gap: 1rem;
-    }
-
     .nav-link {
         font-size: 0.875rem;
     }
 
     .nav-menu .btn-sm {
         padding: 0.5rem 0.9rem;
-        font-size: 0.8rem;
+        font-size: 0.825rem;
     }
 
     .nav-menu .lang-switch-option {
@@ -117,6 +183,7 @@
         font-size: 0.8rem;
     }
 }
+
 
 /* ==========================================================================
    Mobile menu.
@@ -181,6 +248,36 @@
         max-width: 18rem;
         min-height: 48px;
         margin-top: 0.75rem;
+    }
+
+    /* Full-width row with the full wording. */
+    .nav-menu .nav-class-login {
+        width: 100%;
+        max-width: 18rem;
+        min-height: 56px;
+        margin-top: 0.75rem;
+        padding: 0.5rem 1rem;
+        gap: 0.75rem;
+        justify-content: flex-start;
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        white-space: normal;
+    }
+
+    .nav-menu .nav-class-login-label--short,
+    .nav-menu .nav-class-login-label--tiny {
+        display: none;
+    }
+
+    .nav-menu .nav-class-login-label--full,
+    .nav-menu .nav-class-login-sub {
+        display: block;
+    }
+
+    .nav-class-login-sub {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--text-muted);
     }
 }
 

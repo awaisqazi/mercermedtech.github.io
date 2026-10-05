@@ -21,6 +21,11 @@ const { locale, links, path, variant = 'home', phoneButton = false } = Astro.pro
 const d = t(locale);
 const navId = variant === 'dlt' ? 'dl-nav' : 'site-nav';
 const homeHref = localePath(locale, '/');
+// The class-site button sits after the plain nav links and before any filled
+// button, so the primary call to action keeps the last, strongest slot.
+const textLinks = links.filter((link) => !link.button);
+const buttonLinks = links.filter((link) => link.button);
+const classLogin = Symbol('classLogin');
 ---
 
 <header class="site-header">
@@ -48,7 +53,34 @@ const homeHref = localePath(locale, '/');
 
     <nav class="nav-menu" id={navId} aria-label={d.ui.primaryNavLabel}>
       {
-        links.map((link) =>
+        [...textLinks, classLogin, ...buttonLinks].map((link) =>
+          link === classLogin ? (
+            /*
+              Student login to the Digital Literacy Training class site.
+              A compact indigo-outlined control (Tech track), lighter than the
+              filled call to action after it. Desktop shows a short label (just
+              "Login" / "Acceso" below 1200px) with the full wording as the
+              tooltip; the mobile menu shows a full-width row with the full
+              label and the subtitle.
+            */
+            <a
+              href={site.classSite.url}
+              class="nav-class-login"
+              target="_blank"
+              rel="noopener"
+              title={d.ui.studentLoginSubtitle}
+              aria-label={d.ui.studentLoginAria}
+            >
+              <i class="fas fa-user-graduate" aria-hidden="true" />
+              <span class="nav-class-login-text">
+                {/* Only one label shows at a time, picked by width in header.css. */}
+                <span class="nav-class-login-label nav-class-login-label--short">{d.ui.studentLoginShort}</span>
+                <span class="nav-class-login-label nav-class-login-label--tiny">{d.ui.studentLoginTiny}</span>
+                <span class="nav-class-login-label nav-class-login-label--full">{d.ui.studentLogin}</span>
+                <span class="nav-class-login-sub">{d.ui.studentLoginSubtitle}</span>
+              </span>
+            </a>
+          ) :
           link.button ? (
             <a href={link.href} class={`btn ${link.button === 'tech' ? 'btn-tech' : 'btn-primary'} btn-sm`}>
               {link.icon && <i class={link.icon} aria-hidden="true" />}

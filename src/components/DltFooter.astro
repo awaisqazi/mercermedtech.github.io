@@ -1,7 +1,9 @@
 ---
 /**
  * Minimal Tech-track footer. NJDOL rule: the only outbound site link is the
- * plain "Mercer Med Tech home" link. No program cross-sell of any kind.
+ * plain "Mercer Med Tech home" link. No program cross-sell of any kind. The
+ * student login goes to this program's own class site, so it is not a
+ * cross-sell.
  */
 import { site } from '../data/site';
 import { localePath, t, type Locale } from '../i18n';
@@ -25,7 +27,11 @@ const d = t(locale);
       <a href={site.phone.href}>{site.phone.display}</a>
       <a href={`mailto:${site.email}`}>{site.email}</a>
     </p>
-    <p><a href={localePath(locale, '/')}>{d.footer.homeLink}</a></p>
+    <p class="dl-footer-links">
+      <a href={localePath(locale, '/')}>{d.footer.homeLink}</a>
+      <span aria-hidden="true">·</span>
+      <a href={site.classSite.url} target="_blank" rel="noopener">{d.footer.studentLogin}</a>
+    </p>
 
     <div class="dl-footer-bottom">
       <p>{site.copyright}</p>

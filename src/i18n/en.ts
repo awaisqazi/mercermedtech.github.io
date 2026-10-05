@@ -30,6 +30,12 @@ export const en = {
      * follows, marked lang="en". In English this key IS that sentence.
      */
     fundingSentenceLocal: dlt.fundingSentence,
+    /** Header button to the Digital Literacy Training class site (Moodle). */
+    studentLogin: 'Student login',
+    studentLoginShort: 'Student login',
+    studentLoginTiny: 'Login',
+    studentLoginSubtitle: 'Digital Literacy Training class site',
+    studentLoginAria: 'Student login: Digital Literacy Training class site (opens in a new tab)',
   },
 
   /* ---------- Header and footer ---------- */
@@ -68,6 +74,7 @@ export const en = {
       contact: 'Request info',
     },
     homeLink: 'Mercer Med Tech home',
+    studentLogin: 'Student login',
     /** State licence plus the Eligible Training Provider List, in both footers. */
     licensingLine: site.licensingEtplLine,
   },
@@ -465,6 +472,15 @@ export const en = {
       qualifyCta: 'See if you qualify',
       callCta: `Call ${site.phone.display}`,
       artLabel: 'A laptop, a certificate, and a rising chart',
+    },
+
+    /** For people already in a group: the way into the class site. */
+    enrolled: {
+      heading: 'Already enrolled?',
+      body: 'Enrolled learners watch lessons, turn in tasks, and check their hours on the class site.',
+      cta: 'Go to the class site',
+      ctaAria: 'Go to the class site (opens in a new tab)',
+      helpBefore: 'Need help signing in? Email ',
     },
 
     strip: {

@@ -61,6 +61,25 @@ const jsonLd = [
                 <i class="fas fa-phone-alt" aria-hidden="true"></i> {page.hero.callCta}
               </a>
             </div>
+
+            <aside class="dl-enrolled" aria-labelledby="dl-enrolled-title">
+              <div>
+                <h2 id="dl-enrolled-title" class="dl-enrolled-heading">{page.enrolled.heading}</h2>
+                <p>{page.enrolled.body}</p>
+                <p class="dl-enrolled-help">
+                  {page.enrolled.helpBefore}<a href={`mailto:${site.classSite.helpEmail}`}>{site.classSite.helpEmail}</a>.
+                </p>
+              </div>
+              <a
+                href={site.classSite.url}
+                class="btn btn-tech-outline btn-sm"
+                target="_blank"
+                rel="noopener"
+                aria-label={page.enrolled.ctaAria}
+              >
+                {page.enrolled.cta} <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+              </a>
+            </aside>
           </div>
 
           <div>

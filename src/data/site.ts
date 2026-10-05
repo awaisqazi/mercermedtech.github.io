@@ -10,6 +10,14 @@ export const site = {
   positioningLine: 'Med and Tech. Two paths to a better job.',
   phone: { display: '(609) 712-5499', href: 'tel:+16097125499', e164: '+1-609-712-5499' },
   email: 'contact@mercermedtech.com',
+  /**
+   * The Moodle class site where enrolled Digital Literacy Training learners
+   * watch lessons, turn in tasks, and check their hours. Opens in a new tab.
+   */
+  classSite: {
+    url: 'https://lms.modishtech.com',
+    helpEmail: 'contact@mercermedtech.com',
+  },
   address: {
     street: '168 Franklin Corner Rd, Bldg 2, Suite #140',
     city: 'Lawrenceville',

@@ -33,6 +33,12 @@ export const es: Dictionary = {
     callAria: `Llamar a ${site.name}`,
     fundingSentenceLocal:
       'Los fondos para esta iniciativa provienen del Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey.',
+    studentLogin: 'Acceso para estudiantes',
+    studentLoginShort: 'Acceso estudiantes',
+    studentLoginTiny: 'Acceso',
+    studentLoginSubtitle: 'Sitio de clase de Capacitación en Habilidades Digitales',
+    studentLoginAria:
+      'Acceso para estudiantes: sitio de clase de Capacitación en Habilidades Digitales (se abre en una pestaña nueva)',
   },
 
   nav: {
@@ -70,6 +76,7 @@ export const es: Dictionary = {
       contact: 'Pedir información',
     },
     homeLink: 'Inicio de Mercer Med Tech',
+    studentLogin: 'Acceso para estudiantes',
     licensingLine:
       'Mercer Med Tech es una escuela vocacional privada aprobada por el estado, con licencia del Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey, y está en la Lista de Proveedores de Capacitación Elegibles de Nueva Jersey (ETPL).',
   },
@@ -484,6 +491,14 @@ export const es: Dictionary = {
       qualifyCta: 'Vea si califica',
       callCta: `Llame al ${site.phone.display}`,
       artLabel: 'Una computadora portátil, un certificado y una gráfica que sube',
+    },
+
+    enrolled: {
+      heading: '¿Ya está inscrito(a)?',
+      body: 'Quienes ya están inscritos ven las lecciones, entregan sus tareas y revisan sus horas en el sitio de clase.',
+      cta: 'Ir al sitio de clase',
+      ctaAria: 'Ir al sitio de clase (se abre en una pestaña nueva)',
+      helpBefore: '¿Necesita ayuda para entrar? Escriba a ',
     },
 
     strip: {
