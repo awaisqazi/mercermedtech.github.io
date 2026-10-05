@@ -147,8 +147,14 @@ export function dltCourseJsonLd(description: string, locale: Locale, name: strin
     },
     hasCourseInstance: {
       '@type': 'CourseInstance',
-      courseMode: 'onsite',
-      courseWorkload: 'P5W',
+      courseMode: 'blended',
+      courseWorkload: 'PT140H',
+      courseSchedule: {
+        '@type': 'Schedule',
+        duration: 'PT20H',
+        repeatFrequency: 'Weekly',
+        repeatCount: 7,
+      },
       location: {
         '@type': 'Place',
         name: site.name,

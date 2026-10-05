@@ -175,11 +175,11 @@ export const es: Dictionary = {
         titleAccent: 'Capacitación en Habilidades Digitales',
         titleRest: ', inscripciones próximamente',
         subtitle:
-          'Empezamos con una revisión corta de lo que usted ya sabe, para que la clase vaya a su nivel. De ahí cubre Microsoft Office y Google Workspace, seguridad en línea, inteligencia artificial y manejo del dinero, y trabaja hacia un certificado reconocido por la industria. Las clases son presenciales en nuestro campus de Lawrenceville, con apoyo en línea, y alguien de aquí le ayuda a buscar trabajo.',
+          'Empezamos con una revisión corta de lo que usted ya sabe, para que la clase vaya a su nivel. De ahí cubre Microsoft Office y Google Workspace, seguridad en línea, inteligencia artificial y manejo del dinero, y trabaja hacia un certificado reconocido por la industria. Las lecciones son grabadas, con horas de apoyo en el campus de Lawrenceville o en Microsoft Teams, usted recibe una computadora portátil, y alguien de aquí le ayuda a buscar trabajo.',
         costLabel: 'Costo',
         costValue: 'Sin costo si califica',
         lengthLabel: 'Duración',
-        lengthValue: 'Unas 5 a 6 semanas',
+        lengthValue: '7 semanas, 20 horas a la semana',
         sessionsLabel: 'Sesiones informativas',
         sessionsValue: 'Pronto compartiremos los detalles',
         locationLabel: 'Dirección',
@@ -469,11 +469,11 @@ export const es: Dictionary = {
         'habilidades digitales nueva jersey, alfabetizacion digital nueva jersey, clases de computacion sin costo, inteligencia artificial, capacitacion tanf snap nj, workfirst new jersey, lawrenceville nj, preparacion para el trabajo, mercer med tech',
       ogTitle: 'Computación e inteligencia artificial sin costo si califica',
       ogDescription:
-        'Aprenda computación, inteligencia artificial y manejo del dinero en unas 5 a 6 semanas en Lawrenceville, NJ. Inscripciones próximamente. (609) 712-5499.',
+        'Aprenda computación, inteligencia artificial y manejo del dinero en 7 semanas, con lecciones grabadas y horas de apoyo en Lawrenceville, NJ, o en línea.',
       twitterDescription:
         'Clases de computación y búsqueda de trabajo en Lawrenceville, NJ, sin costo para adultos de Nueva Jersey con TANF o SNAP. Inscripciones próximamente.',
       schemaDescription:
-        'Capacitación en computación y búsqueda de trabajo para residentes de Nueva Jersey que califican, sin costo. Cada persona empieza con una revisión de lo que ya sabe, para que la clase vaya a su nivel. Cubre lo básico de la computadora, internet y correo electrónico, Microsoft Office y Google Workspace, seguridad en línea y ciberseguridad básica, inteligencia artificial, manejo del dinero y preparación para el trabajo. Los participantes trabajan hacia un certificado reconocido por la industria, incluido un microcertificado en inteligencia artificial, y la ayuda para encontrar trabajo sigue con llamadas a los 30, 60 y 90 días después de empezar a trabajar.',
+        'Capacitación en computación y búsqueda de trabajo para residentes de Nueva Jersey que califican, sin costo. Cada persona empieza con una revisión de lo que ya sabe, para que la clase vaya a su nivel. Cubre lo básico de la computadora, internet y correo electrónico, Microsoft Office y Google Workspace, seguridad en línea y ciberseguridad básica, inteligencia artificial, manejo del dinero y preparación para el trabajo. El programa dura 7 semanas, 20 horas a la semana, con lecciones grabadas y horas de apoyo en el campus o en línea, y cada participante recibe una computadora portátil. Los participantes trabajan hacia la microcredencial de IA de NJIT (NJIT AI Literacy Microcredential), una credencial universitaria que está en la Lista de Proveedores de Capacitación Elegibles de Nueva Jersey (ETPL), y la ayuda para encontrar trabajo sigue con llamadas a los 30, 60 y 90 días después de empezar a trabajar.',
     },
 
     hero: {
@@ -484,7 +484,7 @@ export const es: Dictionary = {
       chips: [
         { icon: 'fas fa-bullhorn', label: 'Inscripciones próximamente' },
         { icon: 'fas fa-tag', label: 'Sin costo si califica' },
-        { icon: 'fas fa-hourglass-half', label: 'Unas 5 a 6 semanas' },
+        { icon: 'fas fa-hourglass-half', label: '7 semanas, 20 horas a la semana' },
         { icon: 'fas fa-map-marker-alt', label: `${site.address.city}, ${site.address.region}` },
         { icon: 'fas fa-language', label: 'Inglés y español' },
       ],
@@ -522,7 +522,7 @@ export const es: Dictionary = {
         { title: 'Vive en uno de siete condados', body: 'Vea la lista abajo.' },
         {
           title: 'Quiere capacitarse y buscar trabajo',
-          body: 'Puede venir a clase y trabajar con nosotros en la búsqueda de empleo.',
+          body: 'Puede dedicar 20 horas a la semana y trabajar con nosotros en la búsqueda de empleo.',
         },
       ],
       countiesHeading: 'Condados que atendemos',
@@ -534,14 +534,14 @@ export const es: Dictionary = {
 
     learn: {
       eyebrow: 'Qué aprende',
-      heading: 'Siete áreas de habilidades, en grupos pequeños',
+      heading: 'Siete áreas de habilidades, en lecciones grabadas que ve cualquier día',
       intro:
         'Todas son prácticas. Usted está frente a la computadora, no leyendo sobre ella. Antes de empezar revisamos lo que ya sabe, para que su capacitación empiece en el nivel que le corresponde.',
       cards: [
         {
           icon: 'fas fa-desktop',
           heading: 'Lo básico de la computadora',
-          body: 'El mouse y el teclado, los archivos y las carpetas, y cómo cambiar la configuración de su equipo.',
+          body: 'Windows 11, el mouse y el teclado, los archivos y las carpetas, y cómo cambiar la configuración de su computadora portátil.',
         },
         {
           icon: 'fas fa-envelope',
@@ -571,7 +571,7 @@ export const es: Dictionary = {
         {
           icon: 'fas fa-briefcase',
           heading: 'Preparación para el trabajo',
-          body: 'Su currículum, las solicitudes en internet, practicar la entrevista y una búsqueda de trabajo que usted pueda seguir por su cuenta.',
+          body: 'Su currículum y su carta de presentación, las solicitudes en internet, practicar la entrevista y una búsqueda de trabajo que usted pueda seguir por su cuenta.',
         },
       ],
     },
@@ -582,8 +582,8 @@ export const es: Dictionary = {
       cards: [
         {
           icon: 'fas fa-certificate',
-          heading: 'Un certificado',
-          body: 'Trabaja hacia un certificado reconocido por la industria, incluido un microcertificado en inteligencia artificial.',
+          heading: 'Una credencial universitaria',
+          body: 'Trabaja hacia la microcredencial de IA de NJIT (NJIT AI Literacy Microcredential), una credencial universitaria que está en la Lista de Proveedores de Capacitación Elegibles de Nueva Jersey (ETPL).',
         },
         {
           icon: 'fas fa-file-alt',
@@ -614,21 +614,28 @@ export const es: Dictionary = {
       items: [
         {
           icon: 'fas fa-user-edit',
-          body: 'En su primera semana, usted y su asesor escriben un plan juntos. Ahí queda qué busca lograr y qué necesita para lograrlo.',
+          body: 'En la orientación, usted y su asesor escriben un plan juntos. Ahí queda qué busca lograr y qué necesita para lograrlo.',
         },
-        { icon: 'fas fa-users', body: 'Grupos pequeños, para que tenga tiempo con el instructor.' },
-        { icon: 'fas fa-language', body: 'Personal que habla inglés y español.' },
+        {
+          icon: 'fas fa-laptop',
+          body: 'Una computadora portátil en la orientación, y un hotspot si lo necesita. La computadora pasa a ser suya cuando termina la capacitación y mantiene un empleo por 90 días.',
+        },
+        {
+          icon: 'fas fa-calendar-check',
+          body: 'Horas de apoyo tres veces por semana, en el campus de Lawrenceville o en Microsoft Teams, y una reunión de seguimiento con el personal cada semana.',
+        },
+        { icon: 'fas fa-language', body: 'Personal que habla inglés y español, y materiales en los dos idiomas.' },
       ],
       panelHeading: 'Ayuda con lo que se le atraviese',
       panelIntro: 'Según lo que usted necesite, es posible que podamos ayudar con:',
       panelItems: [
-        { icon: 'fas fa-laptop', body: 'Conexión a internet en casa.' },
+        { icon: 'fas fa-wifi', body: 'Un hotspot, si necesita internet en casa.' },
         { icon: 'fas fa-bus', body: 'El transporte a la clase.' },
         { icon: 'fas fa-tshirt', body: 'Ropa para la entrevista.' },
         { icon: 'fas fa-id-card', body: 'El costo del examen y de la identificación.' },
       ],
       panelNote:
-        'Lo que usted necesita lo vemos en su plan, en la primera semana. No hay pagos ni estipendios por asistir.',
+        'Lo que usted necesita lo vemos en su plan, en la orientación. No hay pagos ni estipendios por asistir.',
     },
 
     enroll: {
@@ -647,11 +654,11 @@ export const es: Dictionary = {
         },
         {
           title: 'Revisamos lo que sabe y escribimos su plan',
-          body: 'Una revisión corta de lo que ya sabe nos dice en qué nivel empezar. Después, en su primera semana, fijamos sus metas y vemos qué apoyo necesita.',
+          body: 'En la orientación fijamos sus metas y vemos qué apoyo necesita. Una revisión corta de lo que ya sabe nos dice en qué nivel empezar.',
         },
         {
           title: 'Empieza la capacitación con su grupo',
-          body: 'Presencial en el campus de Lawrenceville, con apoyo en línea, unas 5 a 6 semanas.',
+          body: 'Recibe su computadora portátil en la orientación. Las lecciones son grabadas, así que las ve en Moodle el día que le convenga, con horas de apoyo tres veces por semana en el campus de Lawrenceville o en Microsoft Teams. El programa dura 7 semanas, 20 horas a la semana.',
         },
       ],
     },
@@ -702,7 +709,7 @@ export const es: Dictionary = {
         {
           question: '¿Necesito que alguien me refiera?',
           answer:
-            'No. No necesita que un trabajador de caso (caseworker) le refiera. Llámenos al (609) 712-5499 y empezamos directamente con usted.',
+            'No. La oficina de WorkFirst NJ de su condado o un One-Stop Career Center le puede referir, pero también puede inscribirse directamente. Llámenos al (609) 712-5499 y nosotros coordinamos con su condado.',
         },
         {
           question: '¿Cuándo son las sesiones informativas?',
@@ -712,17 +719,17 @@ export const es: Dictionary = {
         {
           question: '¿Necesito mi propia computadora?',
           answer:
-            'No. Usa las computadoras de aquí. Si conectarse a internet en casa es un problema, díganos, y vemos qué podemos hacer dentro de su plan.',
+            'No. Cada participante recibe una computadora portátil en la orientación, y un hotspot si necesita internet en casa. La computadora pasa a ser suya cuando termina la capacitación y mantiene un empleo por 90 días.',
         },
         {
           question: '¿Cuánto dura y cuál es el horario?',
           answer:
-            'Unas 5 a 6 semanas. Llámenos y le decimos los días y las horas del próximo grupo.',
+            '7 semanas, 20 horas a la semana: 5 semanas del curso principal de Mercer Med Tech y luego 2 semanas de la microcredencial de IA de NJIT (NJIT AI Literacy Microcredential). Si necesita más tiempo para terminar NJIT, hay una octava semana opcional. En las primeras 5 semanas las lecciones son grabadas, así que las ve los días que le convienen. Llámenos y le decimos cuándo empieza el próximo grupo.',
         },
         {
-          question: '¿Es presencial?',
+          question: '¿Es presencial o en línea?',
           answer:
-            'Sí. La capacitación es presencial en nuestro campus de Lawrenceville, con apoyo en línea. Los grupos son pequeños.',
+            'Las dos cosas. Las lecciones son grabadas y usted las ve en línea en Moodle. Hay horas de apoyo tres veces por semana, en el campus de Lawrenceville o en Microsoft Teams, y una reunión de seguimiento con el personal cada semana. Los grupos son pequeños.',
         },
         {
           question: '¿Me ayudan a encontrar trabajo?',
@@ -732,7 +739,7 @@ export const es: Dictionary = {
         {
           question: '¿Pueden ayudar con el transporte, o con ropa para la entrevista?',
           answer:
-            'Tal vez. Según lo que necesite, es posible que podamos ayudar con el transporte a la clase, ropa para la entrevista, conexión a internet en casa y el costo del examen o de la identificación. Eso lo vemos con usted en su plan, en la primera semana. No hay pagos ni estipendios por asistir.',
+            'Tal vez. Según lo que necesite, es posible que podamos ayudar con el transporte a la clase, ropa para la entrevista, un hotspot para tener internet en casa y el costo del examen o de la identificación. Eso lo vemos con usted en su plan, en la orientación. No hay pagos ni estipendios por asistir.',
         },
         {
           question: '¿Tienen a alguien que hable español?',
@@ -772,11 +779,11 @@ export const es: Dictionary = {
     seo: {
       title: 'Inscríbase en Habilidades Digitales | Mercer Med Tech',
       description:
-        'Inscríbase en la Capacitación en Habilidades Digitales en Lawrenceville, NJ. Sin costo si califica. Unas 5 a 6 semanas, en línea o en persona.',
+        'Inscríbase en la Capacitación en Habilidades Digitales en Lawrenceville, NJ. Sin costo si califica. 7 semanas, con lecciones grabadas y horas de apoyo.',
     },
     eyebrow: 'Rama Tech',
     heading: 'Inscríbase en la Capacitación en Habilidades Digitales (Digital Literacy Training)',
-    lead: 'Si califica, no le cuesta nada. La capacitación dura unas 5 a 6 semanas, en línea y con la opción de venir en persona a Lawrenceville, y se da en inglés y en español. Llene este formulario y le llamamos.',
+    lead: 'Si califica, no le cuesta nada. La capacitación dura 7 semanas, 20 horas a la semana, con lecciones grabadas y horas de apoyo en el campus de Lawrenceville o en Microsoft Teams, y se da en inglés y en español. Llene este formulario y le llamamos.',
     qualifyHeading: 'Quién califica',
     qualifyLine:
       'Usted vive en Nueva Jersey, tiene 18 años o más, recibe TANF o SNAP, y vive en el condado de Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset o Union.',
@@ -1032,7 +1039,7 @@ export const es: Dictionary = {
     brief: {
       fundedByLabel: 'Con fondos de',
       sealAlt: 'Sello del Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey',
-      lead: 'La Capacitación en Habilidades Digitales (Digital Literacy Training) es capacitación en computación, inteligencia artificial y búsqueda de trabajo, sin costo, para adultos que reciben TANF o SNAP en la Región Central. Tiene fondos de una subvención del Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey, y Mercer Med Tech es una de seis organizaciones con esta subvención en el estado. El primer grupo empieza la primera semana de octubre de 2026, y de ahí empieza un grupo nuevo cada 5 a 6 semanas, en grupos de 10 a 12 personas.',
+      lead: 'La Capacitación en Habilidades Digitales (Digital Literacy Training) es capacitación en computación, inteligencia artificial y búsqueda de trabajo, sin costo, para adultos que reciben TANF o SNAP en la Región Central. Tiene fondos de una subvención del Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey, y Mercer Med Tech es una de seis organizaciones con esta subvención en el estado. El primer grupo empieza la primera semana de octubre de 2026, y de ahí empieza un grupo nuevo más o menos cada 5 semanas, en grupos de 10 a 12 personas.',
       tocLabel: 'En esta página',
       refer: {
         heading: 'Mándenos a alguien',
@@ -1115,11 +1122,11 @@ export const es: Dictionary = {
           },
           {
             title: 'Ruta avanzada',
-            body: 'Más capacitación de la lista ETPL, caso por caso, con la aprobación del NJDOL.',
+            body: 'Más capacitación de la lista ETPL, caso por caso.',
           },
         ],
         total:
-          'Unas 110 horas en 5 a 6 semanas. Quien ya tiene lo básico puede pasar la parte de base con un examen.',
+          '7 semanas, 20 horas a la semana: 5 semanas con Mercer Med Tech y luego 2 semanas de NJIT, con una octava semana opcional para quien necesite más tiempo. Quien ya tiene lo básico trabaja a un nivel más alto en las mismas lecciones.',
       },
       learn: {
         heading: 'Qué aprenden',
@@ -1214,7 +1221,7 @@ export const es: Dictionary = {
         note: 'Las mismas piezas sin el sello de la agencia.',
       },
     ],
-    zipNote: 'Descargar ZIP, unos 17 MB',
+    zipNote: 'Descargar ZIP, unos 10 MB',
     previewHeading: 'Qué trae',
     previews: [
       { caption: 'Publicación para el feed, 1080 x 1350', alt: 'La publicación para el feed, versión en inglés' },

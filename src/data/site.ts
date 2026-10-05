@@ -73,7 +73,7 @@ export const dlt = {
   counties: ['Hunterdon', 'Middlesex', 'Monmouth', 'Mercer', 'Ocean', 'Somerset', 'Union'],
   countiesSentence:
     'Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset, or Union county',
-  length: 'About 5 to 6 weeks',
+  length: '7 weeks, 20 hours a week',
   languages: ['English', 'Spanish'],
   /** Not "now enrolling". See the owner decisions of 2026-09-18. */
   enrollmentLabel: 'Enrolling soon',

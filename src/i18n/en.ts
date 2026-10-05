@@ -165,7 +165,7 @@ export const en = {
         titleAccent: 'Digital Literacy Training',
         titleRest: ', enrolling soon',
         subtitle:
-          'We start with a short skills check so your training fits what you already know. From there you cover Microsoft Office and Google Workspace, online safety, AI, and money management, and you work toward an industry-recognized credential. Training is in person at our Lawrenceville campus, with online support, and someone here helps you look for work.',
+          'We start with a short skills check so your training fits what you already know. From there you cover Microsoft Office and Google Workspace, online safety, AI, and money management, and you work toward an industry-recognized credential. Lessons are recorded, with office hours on campus in Lawrenceville or on Microsoft Teams, you receive a laptop, and someone here helps you look for work.',
         costLabel: 'Cost',
         costValue: 'No cost if you qualify',
         lengthLabel: 'Length',
@@ -445,16 +445,16 @@ export const en = {
     seo: {
       title: 'Digital Literacy Training | Mercer Med Tech',
       description:
-        'Free computer, AI, and job search classes in Lawrenceville, NJ, for New Jersey adults on TANF or SNAP. About 5 to 6 weeks. Call (609) 712-5499.',
+        'Free computer, AI, and job search classes in Lawrenceville, NJ, for New Jersey adults on TANF or SNAP. 7 weeks. Call (609) 712-5499.',
       keywords:
         'digital literacy training New Jersey, no cost computer training, AI literacy, TANF SNAP training NJ, WorkFirst New Jersey, Lawrenceville NJ, career readiness, Mercer Med Tech',
       ogTitle: 'Free computer and AI classes, no cost if you qualify',
       ogDescription:
-        'Learn computers, AI, and money skills in about 5 to 6 weeks in Lawrenceville, NJ. Enrolling soon. Call (609) 712-5499.',
+        'Learn computers, AI, and money skills in 7 weeks, with recorded lessons and office hours in Lawrenceville, NJ, or online. Call (609) 712-5499.',
       twitterDescription:
         'Computer and job search classes in Lawrenceville, NJ, at no cost for New Jersey adults on TANF or SNAP. Enrolling soon.',
       schemaDescription:
-        'Computer skills and job search training for eligible New Jersey residents, at no cost. Every participant starts with a skills check, so the training fits what they already know. Covers computer basics, internet and email, Microsoft Office and Google Workspace, online safety and cybersecurity basics, AI literacy, money management, and getting ready for work. Participants work toward an industry-recognized credential, including an AI literacy micro-credential, and career services continue with check-ins at 30, 60, and 90 days after starting a job.',
+        'Computer skills and job search training for eligible New Jersey residents, at no cost. Every participant starts with a skills check, so the training fits what they already know. Covers computer basics, internet and email, Microsoft Office and Google Workspace, online safety and cybersecurity basics, AI literacy, money management, and getting ready for work. The program runs 7 weeks at 20 hours a week, with recorded lessons and office hours on campus or online, and every participant receives a laptop. Participants work toward the NJIT AI Literacy Microcredential, a college credential on New Jersey’s Eligible Training Provider List, and career services continue with check-ins at 30, 60, and 90 days after starting a job.',
     },
 
     hero: {
@@ -504,7 +504,7 @@ export const en = {
         { title: 'You live in one of seven counties', body: 'See the list below.' },
         {
           title: 'You are ready to train and look for work',
-          body: 'You can come to class and work with us on the job search.',
+          body: 'You can put in 20 hours a week and work with us on the job search.',
         },
       ],
       countiesHeading: 'Counties served',
@@ -516,14 +516,14 @@ export const en = {
 
     learn: {
       eyebrow: 'What you learn',
-      heading: 'Seven skill areas, taught in small groups',
+      heading: 'Seven skill areas, in recorded lessons you watch any day',
       intro:
         'Every one of them is hands-on. You are on a computer, not reading about one. Before you start, we check what you already know, so your training starts at the right level for you.',
       cards: [
         {
           icon: 'fas fa-desktop',
           heading: 'Computer basics',
-          body: 'The mouse and the keyboard, files and folders, and changing the settings on your machine.',
+          body: 'Windows 11, the mouse and the keyboard, files and folders, and changing the settings on your laptop.',
         },
         {
           icon: 'fas fa-envelope',
@@ -553,7 +553,7 @@ export const en = {
         {
           icon: 'fas fa-briefcase',
           heading: 'Getting ready for work',
-          body: 'Your resume, applying online, practicing interviews, and a job search you can keep going on your own.',
+          body: 'Your resume and cover letter, applying online, practicing interviews, and a job search you can keep going on your own.',
         },
       ],
     },
@@ -564,8 +564,8 @@ export const en = {
       cards: [
         {
           icon: 'fas fa-certificate',
-          heading: 'A credential',
-          body: 'You work toward an industry-recognized credential, including an AI literacy micro-credential.',
+          heading: 'A college credential',
+          body: 'You work toward the NJIT AI Literacy Microcredential, a college credential on New Jersey’s Eligible Training Provider List.',
         },
         {
           icon: 'fas fa-file-alt',
@@ -596,21 +596,28 @@ export const en = {
       items: [
         {
           icon: 'fas fa-user-edit',
-          body: 'In your first week, you and your advisor write a plan together. It says what you are aiming for and what you need to get there.',
+          body: 'At orientation, you and your advisor write a plan together. It says what you are aiming for and what you need to get there.',
         },
-        { icon: 'fas fa-users', body: 'Small groups, so you get time with the instructor.' },
-        { icon: 'fas fa-language', body: 'Staff who speak English and Spanish.' },
+        {
+          icon: 'fas fa-laptop',
+          body: 'A laptop at orientation, and a hotspot if you need one. The laptop becomes yours when you finish the training and keep a job for 90 days.',
+        },
+        {
+          icon: 'fas fa-calendar-check',
+          body: 'Office hours three times a week, on campus in Lawrenceville or on Microsoft Teams, and a check-in with staff every week.',
+        },
+        { icon: 'fas fa-language', body: 'Staff who speak English and Spanish, and materials in both languages.' },
       ],
       panelHeading: 'Help with the things that get in the way',
       panelIntro: 'Depending on what you need, we may be able to help with:',
       panelItems: [
-        { icon: 'fas fa-laptop', body: 'Getting online at home.' },
+        { icon: 'fas fa-wifi', body: 'A hotspot, if you need internet at home.' },
         { icon: 'fas fa-bus', body: 'Getting to class.' },
         { icon: 'fas fa-tshirt', body: 'Clothes for an interview.' },
         { icon: 'fas fa-id-card', body: 'Exam and ID fees.' },
       ],
       panelNote:
-        'We work out what you need in your plan, in your first week. There are no stipends or payments for attending.',
+        'We work out what you need in your plan, at orientation. There are no stipends or payments for attending.',
     },
 
     enroll: {
@@ -628,11 +635,11 @@ export const en = {
         },
         {
           title: 'We check your skills and write your plan',
-          body: 'A short skills check tells us where to start you. Then, in your first week, we set your goals and work out what support you need.',
+          body: 'At orientation we set your goals and work out what support you need. A short skills check tells us where to start you.',
         },
         {
           title: 'You start training with your group',
-          body: 'In person at the Lawrenceville campus, with online support, for about 5 to 6 weeks.',
+          body: 'You receive your laptop at orientation. Lessons are recorded, so you watch them in Moodle on any day, with office hours on campus in Lawrenceville or on Microsoft Teams three times a week. The program runs 7 weeks, 20 hours a week.',
         },
       ],
     },
@@ -682,7 +689,7 @@ export const en = {
         {
           question: 'Do I need a referral?',
           answer:
-            'No. You do not need a caseworker to send you. Call us at (609) 712-5499 and we will start with you directly.',
+            'No. Your county WorkFirst NJ office or One-Stop Career Center can refer you, but you can also apply directly. Call us at (609) 712-5499 and we will coordinate with your county.',
         },
         {
           question: 'When are the information sessions?',
@@ -692,15 +699,17 @@ export const en = {
         {
           question: 'Do I need my own computer?',
           answer:
-            'No. You use our computers here. If getting online at home is a problem, tell us, and we will see what we can do as part of your plan.',
+            'No. Every participant receives a laptop at orientation, and a hotspot if you need internet at home. The laptop becomes yours when you finish the training and keep a job for 90 days.',
         },
         {
           question: 'How long is it, and what are the hours?',
-          answer: 'About 5 to 6 weeks. Call us and we will tell you the days and hours for the next group.',
+          answer:
+            '7 weeks, 20 hours a week: 5 weeks of the Mercer Med Tech core course, then 2 weeks of the NJIT AI Literacy Microcredential. If you need more time to finish NJIT, there is an optional eighth week. In the first 5 weeks, lessons are recorded, so you watch them on the days that fit your week. Call us and we will tell you when the next group starts.',
         },
         {
-          question: 'Is it in person?',
-          answer: 'Yes. Training is in person at our Lawrenceville campus, with online support. Groups are small.',
+          question: 'Is it in person or online?',
+          answer:
+            'Both. Lessons are recorded and you watch them online in Moodle. Office hours are three times a week, on campus in Lawrenceville or on Microsoft Teams, and you check in with staff once a week. Groups are small.',
         },
         {
           question: 'Will you help me find a job?',
@@ -710,7 +719,7 @@ export const en = {
         {
           question: 'Can you help with getting to class, or clothes for an interview?',
           answer:
-            'Maybe. Depending on what you need, we may be able to help with getting to class, clothes for an interview, getting online at home, and exam or ID fees. We work that out with you in your plan in your first week. There are no stipends or payments for attending.',
+            'Maybe. Depending on what you need, we may be able to help with getting to class, clothes for an interview, a hotspot for internet at home, and exam or ID fees. We work that out with you in your plan at orientation. There are no stipends or payments for attending.',
         },
         {
           question: 'Do you have anyone who speaks Spanish?',
@@ -750,11 +759,11 @@ export const en = {
     seo: {
       title: 'Sign up for Digital Literacy Training | Mercer Med Tech',
       description:
-        'Sign up for Digital Literacy Training in Lawrenceville, NJ. No cost if you qualify. About 5 to 6 weeks, online or in person, English and Spanish.',
+        'Sign up for Digital Literacy Training in Lawrenceville, NJ. No cost if you qualify. 7 weeks, recorded lessons and office hours, English and Spanish.',
     },
     eyebrow: 'Tech track',
     heading: 'Sign up for Digital Literacy Training',
-    lead: 'If you qualify it costs you nothing. The training runs about 5 to 6 weeks, online with an in person option in Lawrenceville, and it is taught in English and Spanish. Fill this in and we will call you back.',
+    lead: 'If you qualify it costs you nothing. The training runs 7 weeks at 20 hours a week, with recorded lessons and office hours on campus in Lawrenceville or on Microsoft Teams, and it is taught in English and Spanish. Fill this in and we will call you back.',
     qualifyHeading: 'Who qualifies',
     qualifyLine: `You live in New Jersey, you are 18 or older, you receive TANF or SNAP, and you live in ${dlt.countiesSentence}.`,
     note: 'We confirm your eligibility with your county social services agency. You do not need a referral from anyone to sign up.',
@@ -1011,7 +1020,7 @@ export const en = {
     brief: {
       fundedByLabel: 'Funded by',
       sealAlt: 'Seal of the New Jersey Department of Labor and Workforce Development',
-      lead: 'Digital Literacy Training is computer, AI and job search training at no cost, for adults receiving TANF or SNAP in the Central Region. It is grant funded by the New Jersey Department of Labor and Workforce Development, and Mercer Med Tech is one of six grantees across the state. The first group starts the first week of October 2026, and a new group starts every 5 to 6 weeks after that, in groups of 10 to 12.',
+      lead: 'Digital Literacy Training is computer, AI and job search training at no cost, for adults receiving TANF or SNAP in the Central Region. It is grant funded by the New Jersey Department of Labor and Workforce Development, and Mercer Med Tech is one of six grantees across the state. The first group starts the first week of October 2026, and a new group starts about every 5 weeks after that, in groups of 10 to 12.',
       tocLabel: 'On this page',
       refer: {
         heading: 'Send someone our way',
@@ -1094,11 +1103,11 @@ export const en = {
           },
           {
             title: 'Advanced pathway',
-            body: 'Further ETPL training, case by case, with NJDOL approval.',
+            body: 'Further ETPL training, case by case.',
           },
         ],
         total:
-          'About 110 hours across 5 to 6 weeks. Someone who already has the basics can test past the foundations.',
+          '7 weeks at 20 hours a week: 5 weeks with Mercer Med Tech, then 2 weeks of NJIT, with an optional eighth week for anyone who needs more time. Someone who already has the basics works at a higher level in the same lessons.',
       },
       learn: {
         heading: 'What participants learn',
@@ -1193,7 +1202,7 @@ export const en = {
         note: 'The same pieces without the partner mark.',
       },
     ],
-    zipNote: 'Download ZIP, about 17 MB',
+    zipNote: 'Download ZIP, about 10 MB',
     previewHeading: 'What is inside',
     previews: [
       { caption: 'Feed post, 1080 x 1350', alt: 'The feed post, English version' },
