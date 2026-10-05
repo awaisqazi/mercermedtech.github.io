@@ -129,6 +129,7 @@ const STAFF_FORMS = {
       'entry.1812726087', 'entry.957542179', 'entry.957542179.other_option_response',
       'entry.1467659682', 'entry.1043545198',
     ],
+    required: ['entry.1384494948', 'entry.1590196068'],
   },
   'loaner-agreement-form': {
     action: `${SIGNUP_ACTION}/loaner-submit`,
@@ -140,6 +141,7 @@ const STAFF_FORMS = {
       'entry.1883769004', 'entry.1669196297', 'entry.1838727109',
       'entry.195835422_year', 'entry.195835422_month', 'entry.195835422_day',
     ],
+    required: ['entry.1242110529', 'entry.172260136'],
   },
   'orientation-ack-form': {
     action: `${SIGNUP_ACTION}/orientation-submit`,
@@ -153,14 +155,17 @@ const STAFF_FORMS = {
       'entry.1989745465', 'entry.689742014', 'entry.1911042786', 'entry.1045206646', 'entry.2086272203',
       'entry.1254232444', 'entry.153113344', 'entry.252742418',
     ],
+    required: ['entry.1045206646', 'entry.2086272203'],
   },
   'attendance-ack-form': {
     action: `${SIGNUP_ACTION}/attendance-submit`,
     googleId: '1FAIpQLSfmkHmyukTsnV4226QmsLQHOPL7yHR9I2I2NjAPVVi2ONv6UQ',
     fields: [
       'entry.744899166', 'entry.1495786921', 'entry.1213289457',
+      'entry.1011028555', 'entry.1654515592',
       'entry.519691599', 'entry.220830493', 'entry.1624648588',
     ],
+    required: ['entry.1011028555', 'entry.1654515592'],
   },
 };
 const ALL_GOOGLE_IDS = [SIGNUP_GOOGLE_FORM_ID, ...Object.values(STAFF_FORMS).map((f) => f.googleId)];
@@ -239,6 +244,11 @@ function checkStaffForm(page, html, id, spec) {
   }
   for (const field of spec.fields) {
     if (!html.includes(`name="${field}"`)) fail(page, `${id} is missing ${field}`);
+  }
+  // Phone and email are required on every staff form (owner's rule, 2026-10-05).
+  for (const field of spec.required || []) {
+    const input = html.match(new RegExp(`<input[^>]*name="${field.replace('.', '\\.')}"[^>]*>`));
+    if (!input || !/\srequired[\s>=]/.test(input[0])) fail(page, `${id}: ${field} must be required`);
   }
 }
 

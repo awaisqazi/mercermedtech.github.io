@@ -843,6 +843,8 @@ export const en = {
     startAnother: 'Start another form',
     fieldRequired: 'Please answer this question.',
     backToHub: 'Back to onboarding',
+    phoneFormat: 'Enter a 10-digit phone number, for example 609-555-0123.',
+    emailFormat: 'Enter an email address, for example name@example.com.',
     honeypotLabel: 'Leave this empty',
   },
 

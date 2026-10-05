@@ -132,7 +132,7 @@ const IEP_QUESTIONS: Section[] = [
           choices: [bi('Phone / Teléfono'), bi('Email / Correo electrónico'), bi('Text / Mensaje de texto')],
         },
         { entry: 'entry.1384494948', kind: 'tel', required: true, half: true, autocomplete: 'tel', label: { en: 'Phone', es: 'Teléfono' } },
-        { entry: 'entry.1590196068', kind: 'email', half: true, autocomplete: 'email', label: { en: 'Email', es: 'Correo electrónico' } },
+        { entry: 'entry.1590196068', kind: 'email', required: true, half: true, autocomplete: 'email', label: { en: 'Email', es: 'Correo electrónico' } },
       ],
     },
     {
@@ -278,7 +278,7 @@ export const LOANER_FORM: StaffForm = {
         { entry: 'entry.991666087', kind: 'text', half: true, prefill: 'pid', label: { en: 'Participant ID', es: 'Número de participante' } },
         { entry: 'entry.1600795715', kind: 'select', required: true, half: true, label: { en: 'Cohort', es: 'Grupo (cohorte)' }, choices: COHORTS },
         { entry: 'entry.1242110529', kind: 'tel', required: true, half: true, autocomplete: 'tel', label: { en: 'Phone', es: 'Teléfono' } },
-        { entry: 'entry.172260136', kind: 'email', half: true, autocomplete: 'email', label: { en: 'Email', es: 'Correo electrónico' } },
+        { entry: 'entry.172260136', kind: 'email', required: true, half: true, autocomplete: 'email', label: { en: 'Email', es: 'Correo electrónico' } },
       ],
     },
     {
@@ -488,7 +488,7 @@ export const ORIENTATION_FORM: StaffForm = {
           choices: [bi('Text / Mensaje de texto'), bi('Email / Correo electrónico'), bi('Call / Llamada')],
         },
         { entry: 'entry.1045206646', kind: 'tel', required: true, half: true, autocomplete: 'tel', label: { en: 'Phone', es: 'Teléfono' } },
-        { entry: 'entry.2086272203', kind: 'email', half: true, autocomplete: 'email', label: { en: 'Email', es: 'Correo electrónico' } },
+        { entry: 'entry.2086272203', kind: 'email', required: true, half: true, autocomplete: 'email', label: { en: 'Email', es: 'Correo electrónico' } },
       ],
     },
     {
@@ -521,6 +521,13 @@ export const ATTENDANCE_FORM: StaffForm = {
       ],
     },
     { title: { en: 'The policy', es: 'La política' }, fields: [] },
+    {
+      title: { en: 'How MMT contacts you', es: 'Cómo le contacta MMT' },
+      fields: [
+        { entry: 'entry.1011028555', kind: 'tel', required: true, half: true, autocomplete: 'tel', label: { en: 'Phone', es: 'Teléfono' } },
+        { entry: 'entry.1654515592', kind: 'email', required: true, half: true, autocomplete: 'email', label: { en: 'Email', es: 'Correo electrónico' } },
+      ],
+    },
     {
       title: { en: 'Review and sign', es: 'Revisar y firmar' },
       review: true,

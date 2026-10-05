@@ -864,6 +864,8 @@ export const es: Dictionary = {
     startAnother: 'Empezar otro formulario',
     fieldRequired: 'Conteste esta pregunta.',
     backToHub: 'Volver a la inscripción',
+    phoneFormat: 'Escriba un número de teléfono de 10 dígitos, por ejemplo 609-555-0123.',
+    emailFormat: 'Escriba un correo electrónico, por ejemplo nombre@ejemplo.com.',
     honeypotLabel: 'Deje esto en blanco',
   },
 

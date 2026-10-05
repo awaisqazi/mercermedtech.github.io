@@ -44,6 +44,10 @@ const hubPath = localePath(locale, '/onboarding/');
 
 /** Public Turnstile site key, the same widget as the sign-up form. The secret lives only in the Worker. */
 const TURNSTILE_SITEKEY = '0x4AAAAAAFABG_uSmI7QN2sd';
+/** A US phone number: 10 digits, with optional spaces, dashes, dots or parentheses (and an optional leading 1). */
+const PHONE_PATTERN = '\\s*(\\+?1[\\s.\\-]?)?\\(?[0-9]{3}\\)?[\\s.\\-]?[0-9]{3}[\\s.\\-]?[0-9]{4}\\s*';
+/** name@domain.tld, nothing fancier. */
+const EMAIL_PATTERN = '[^@\\s]+@[^@\\s]+\\.[^@\\s]{2,}';
 const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
 ---
 
@@ -133,7 +137,12 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
                     {L(field.help)}
                   </span>
                 );
-                const error = <span class="staff-error" data-error-for={field.entry} hidden>{ui.fieldRequired}</span>;
+                const formatMsg = field.kind === 'tel' ? ui.phoneFormat : field.kind === 'email' ? ui.emailFormat : ui.fieldRequired;
+                const error = (
+                  <span class="staff-error" data-error-for={field.entry} data-required-msg={ui.fieldRequired} data-format-msg={formatMsg} hidden>
+                    {ui.fieldRequired}
+                  </span>
+                );
 
                 if (['text', 'tel', 'email', 'date'].includes(field.kind)) {
                   return (
@@ -157,7 +166,8 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
                           data-prefill={field.prefill}
                           aria-describedby={helpId}
                           maxlength="500"
-                          pattern={field.kind === 'tel' ? '[0-9\\(\\)\\-\\s\\+\\.]{7,}' : undefined}
+                          pattern={field.kind === 'tel' ? PHONE_PATTERN : field.kind === 'email' ? EMAIL_PATTERN : undefined}
+                          inputmode={field.kind === 'tel' ? 'tel' : field.kind === 'email' ? 'email' : undefined}
                         />
                       )}
                       {error}
@@ -428,7 +438,13 @@ const idOf = (entry: string) => `${form.id}-${entry.replace('entry.', 'q')}`;
     const mark = (wrap: HTMLElement, ok: boolean) => {
       wrap.classList.toggle('is-invalid', !ok);
       const err = wrap.querySelector<HTMLElement>('.staff-error');
-      if (err) err.hidden = ok;
+      if (err) {
+        err.hidden = ok;
+        // Empty: "please answer"; filled but not valid: the format hint.
+        const control = controlOf(wrap);
+        const filled = !!control && 'value' in control && String(control.value).trim() !== '' && control.type !== 'checkbox';
+        err.textContent = (filled ? err.dataset.formatMsg : err.dataset.requiredMsg) || err.textContent;
+      }
       wrap.querySelectorAll('input, select, textarea').forEach((el) => {
         if (ok) el.removeAttribute('aria-invalid');
         else el.setAttribute('aria-invalid', 'true');
