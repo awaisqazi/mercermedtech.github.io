@@ -2,6 +2,11 @@
 # Deploy from this folder:  npx wrangler deploy
 # The Turnstile secret is NOT here; it is set once with:
 #   npx wrangler secret put TURNSTILE_SECRET
+# IEP_FORM_URL (the IEP intake form's embed URL, served by POST /iep-form) is
+# also NOT here, because this repository is public. It is a plain-text
+# variable set in the Cloudflare dashboard. A plain `wrangler deploy` drops
+# dashboard variables that are not in this file, so deploy with:
+#   npx wrangler deploy --keep-vars
 name = "mmt-signup"
 main = "worker.js"
 compatibility_date = "2026-09-01"

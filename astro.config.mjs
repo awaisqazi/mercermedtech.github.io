@@ -33,12 +33,16 @@ export default defineConfig({
       //                handed out directly to partners and to people who ask.
       //   /partners/   one outreach kit page per partner agency, also noindex
       //                and also unlinked. The address is emailed to the agency.
+      //   /iep/        the IEP intake page for enrolled Digital Literacy
+      //                participants, in both languages. noindex, unlinked;
+      //                staff open it with the participant at Day 0.
       filter: (page) => {
         const { pathname } = new URL(page);
         return (
           !pathname.startsWith('/admin') &&
           !pathname.includes('/sign-up') &&
-          !pathname.includes('/partners/')
+          !pathname.includes('/partners/') &&
+          !/^\/(es\/)?iep\//.test(pathname)
         );
       },
     }),

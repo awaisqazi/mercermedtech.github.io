@@ -806,6 +806,31 @@ export const en = {
     },
   },
 
+  /* ---------- IEP intake page (hidden) ---------- */
+  /**
+   * /iep/: the Individual Employment Plan intake form for enrolled Digital
+   * Literacy Training participants, filled in with staff at Day 0. Nothing
+   * links here, BaseLayout carries "standalone" (noindex) and astro.config.mjs
+   * keeps /iep/ out of the sitemap. The Google Form address is not in the page:
+   * the mmt-signup Worker hands it over after a Turnstile check.
+   */
+  iepIntake: {
+    seo: {
+      title: 'Individual Employment Plan (IEP) intake | Mercer Med Tech',
+      description:
+        'IEP intake for Digital Literacy Training participants. Complete it with an MMT staff member at Day 0.',
+    },
+    eyebrow: 'Digital Literacy Training',
+    heading: 'Individual Employment Plan (IEP) intake',
+    lead: 'Complete this with an MMT staff member at Day 0. Staff will meet with you to finish and sign your IEP.',
+    checking: 'A quick security check runs first. The form opens here when it is done.',
+    loading: 'Opening the form.',
+    fallback: 'Please try again or ask a staff member.',
+    retry: 'Try again',
+    iframeTitle: 'IEP intake form',
+    noscript: 'This form needs JavaScript. Please turn it on, or ask a staff member.',
+  },
+
   /* ---------- Partner outreach kit page (hidden) ---------- */
   /**
    * One page per partner agency, at /partners/<agency>/. Nothing links to it:

@@ -829,6 +829,32 @@ export const es: Dictionary = {
     },
   },
 
+  /* ---------- Página del formulario de ingreso del IEP (oculta) ---------- */
+  /**
+   * /es/iep/: el formulario de ingreso del Plan Individual de Empleo para
+   * participantes inscritos, que se llena con el personal el Día 0. Nada
+   * enlaza aquí, BaseLayout lleva "standalone" (noindex) y astro.config.mjs
+   * deja /iep/ fuera del sitemap. La dirección del formulario de Google no
+   * está en la página: el Worker mmt-signup la entrega tras la verificación
+   * de Turnstile.
+   */
+  iepIntake: {
+    seo: {
+      title: 'Formulario de ingreso del IEP | Mercer Med Tech',
+      description:
+        'Formulario de ingreso del IEP para participantes de Habilidades Digitales. Se completa con el personal de MMT el Día 0.',
+    },
+    eyebrow: 'Habilidades Digitales',
+    heading: 'Plan Individual de Empleo (IEP): formulario de ingreso',
+    lead: 'Complete este formulario con un miembro del personal de MMT el Día 0. El personal se reunirá con usted para terminar y firmar su IEP.',
+    checking: 'Primero se hace una breve verificación de seguridad. Después, el formulario se abre aquí.',
+    loading: 'Abriendo el formulario.',
+    fallback: 'Inténtelo de nuevo o pida ayuda a un miembro del personal.',
+    retry: 'Intentar de nuevo',
+    iframeTitle: 'Formulario de ingreso del IEP',
+    noscript: 'Este formulario necesita JavaScript. Actívelo o pida ayuda a un miembro del personal.',
+  },
+
   /* ---------- Página del kit de difusión para agencias (oculta) ---------- */
   /**
    * Una página por agencia, en /partners/<agencia>/. Nada enlaza a ella: la
