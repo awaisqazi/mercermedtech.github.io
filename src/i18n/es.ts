@@ -1109,16 +1109,16 @@ export const es: Dictionary = {
         heading: 'La ruta de la capacitación',
         stages: [
           {
-            title: '60 horas de base con Mercer Med Tech',
-            body: 'Manejo de la computadora, archivos y carpetas, internet y correo electrónico, programas de productividad y lo básico de ciberseguridad. Empieza con una revisión inicial, tiene revisiones de avance y termina con un proyecto final.',
+            title: '5 semanas del curso principal de Mercer Med Tech',
+            body: '60 horas de lecciones: la computadora portátil y Windows, archivos, Microsoft 365 y las herramientas de Google, internet, correo electrónico y videollamadas, herramientas de dinero en línea, seguridad en línea y la IA en el trabajo, y luego el currículum, la carta de presentación y la búsqueda de empleo. Con las horas de apoyo, los servicios de carrera y la práctica, cada semana tiene 20 horas. Empieza con una evaluación Northstar y termina con la misma evaluación.',
           },
           {
-            title: '32 horas en línea con NJIT',
-            body: 'El AI Literacy Microcredential, 20 horas, y el Digital Literacy Microcredential, 12 horas. Son los certificados de la lista ETPL que el NJDOL cuenta.',
+            title: '2 semanas de la microcredencial de IA de NJIT',
+            body: 'La NJIT AI Literacy Microcredential (with Instruction), 30 horas, listado ETPL 52937, la credencial que el NJDOL cuenta. La dirige un facilitador de MMT, junto con el club de empleo y ayuda individual para buscar trabajo.',
           },
           {
-            title: '20 horas de enriquecimiento, en vivo por internet',
-            body: 'Tecnologías emergentes y manejo del dinero.',
+            title: 'Una octava semana opcional',
+            body: 'Para quien necesite más tiempo para terminar el curso de NJIT.',
           },
           {
             title: 'Ruta avanzada',

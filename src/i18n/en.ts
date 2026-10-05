@@ -1090,16 +1090,16 @@ export const en = {
         heading: 'The training pathway',
         stages: [
           {
-            title: '60 hours of foundations with Mercer Med Tech',
-            body: 'Computer operation, files and folders, internet and email, productivity software, and cybersecurity basics. It opens with a baseline check, has progress checks along the way, and ends with a capstone.',
+            title: '5 weeks of the Mercer Med Tech core course',
+            body: '60 lesson hours: the laptop and Windows, files, Microsoft 365 and Google tools, internet, email and video meetings, money tools online, online safety and AI at work, then the resume, cover letter and job search. With office hours, career services and practice, every week is 20 hours. It opens with a Northstar skills check and closes with the same check.',
           },
           {
-            title: '32 hours online with NJIT',
-            body: 'The AI Literacy Microcredential, 20 hours, and the Digital Literacy Microcredential, 12 hours. These are the ETPL listed credentials NJDOL counts.',
+            title: '2 weeks of the NJIT AI Literacy Microcredential',
+            body: 'The AI Literacy Microcredential with Instruction, 30 hours, ETPL listing 52937, the credential NJDOL counts. An MMT facilitator leads it, alongside job club and one-on-one job help.',
           },
           {
-            title: '20 hours of enrichment, live online',
-            body: 'Emerging technologies, and financial literacy.',
+            title: 'An optional eighth week',
+            body: 'For anyone who needs more time to finish the NJIT course.',
           },
           {
             title: 'Advanced pathway',
