@@ -15,7 +15,7 @@ export const site = {
    * watch lessons, turn in tasks, and check their hours. Opens in a new tab.
    */
   classSite: {
-    url: 'https://lms.modishtech.com',
+    url: 'https://learn.mercermedtech.com',
     helpEmail: 'contact@mercermedtech.com',
   },
   address: {

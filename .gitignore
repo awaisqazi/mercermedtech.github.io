@@ -49,3 +49,9 @@ test-results/
 
 # editors
 .vscode/
+
+# Internal LMS infrastructure notes: never commit (this repo is public).
+**/LMS-INFRASTRUCTURE*.md
+**/LMS infrastructure/
+**/infra-snapshot*
+**/*.infra.md
