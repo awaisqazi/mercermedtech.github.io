@@ -934,7 +934,7 @@ export const es: Dictionary = {
     },
     eyebrow: 'Habilidades Digitales',
     heading: 'Bienvenido al Día 0',
-    lead: 'Haga estos seis pasos con un miembro del personal de MMT. Cada uno se abre aquí y le regresa a esta página cuando termina.',
+    lead: 'Haga estos pasos con un miembro del personal de MMT. Cada uno se abre aquí y le regresa a esta página cuando termina.',
     languageLabel: 'Idioma de todos los formularios',
     english: 'English',
     spanish: 'Español',
@@ -948,8 +948,11 @@ export const es: Dictionary = {
     resetConfirm: '¿Borrar el avance en este equipo?',
     staffToggle: 'Personal',
     staffHeading: 'Para el personal',
-    staffOrder: 'Orden: bienvenida y orientación, luego el IEP, luego la política de asistencia y la computadora, y al final el sitio de la clase.',
+    staffOrder: 'Orden: bienvenida, luego los documentos, luego la orientación, luego el IEP, luego la política de asistencia y la computadora, y al final el sitio de la clase.',
     staffRule: 'Nada antes de la firma del IEP: ninguna evaluación, equipo, cuenta ni servicio hasta que el IEP esté firmado y fechado.',
+    staffDocs:
+      'Documentos: escanee o fotografíe cada uno y guárdelo en la carpeta del participante bajo Proof of ID, Proof of residence o Proof of eligibility, con el tipo de documento en el nombre del archivo. El formulario de admisión firmado va bajo Proof of eligibility. El número de Seguro Social y la fecha de nacimiento se escriben a mano solo en el formulario impreso, nunca se teclean ni se envían por correo.',
+    staffDocsDeadline: 'Los documentos de elegibilidad deben estar en el expediente dentro de los 30 días de la inscripción. Si hoy falta algo, anote en las notas de caso la fecha en que debe entregarse.',
     staffPid: 'Abra esta página una vez por participante con ?pid= y el número de participante de MMT; se llena en cada formulario.',
     staffPidLabel: 'Número de participante de esta persona',
     staffPidApply: 'Usar este número',
@@ -959,6 +962,38 @@ export const es: Dictionary = {
         body: 'Su Manual del participante explica cómo funciona el programa. Téngalo a la mano.',
         handbook: 'Manual del participante (PDF)',
         kitNote: 'El personal le entrega su Kit de bienvenida impreso. Tiene su calendario y los enlaces de clase.',
+      },
+      documents: {
+        title: 'Sus documentos',
+        body: 'El Estado de Nueva Jersey nos pide guardar una copia de estos en su expediente. Marque cada uno con el miembro del personal cuando lo entregue.',
+        note: 'Si hoy no tiene alguno, tráigalo a su próxima sesión en el campus. Todo debe estar en su expediente dentro de 30 días.',
+        doneRule: 'Este paso queda listo cuando todas las casillas están marcadas.',
+        items: {
+          intake: {
+            label: 'Formulario de admisión y evaluación inicial de NJ, completo y firmado',
+            hint: 'Usted llena la parte de arriba con el personal. El personal llena el recuadro de la oficina. Su número de Seguro Social y su fecha de nacimiento se escriben a mano solo en el formulario de papel.',
+          },
+          id: {
+            label: 'Prueba de quién es usted (una)',
+            hint: 'Licencia de conducir, identificación de Nueva Jersey, pasaporte, tarjeta de residente permanente u otra identificación con foto.',
+          },
+          residence: {
+            label: 'Prueba de su dirección en Nueva Jersey (una)',
+            hint: 'Una identificación con su dirección actual, un contrato de renta, una factura de servicios o correo oficial reciente con su nombre y dirección.',
+          },
+          eligibility: {
+            label: 'Prueba de elegibilidad (una)',
+            hint: 'Su carta de aprobación de TANF, SNAP o Asistencia General, o una referencia o confirmación de su administrador(a) de caso del condado.',
+          },
+          ssn: {
+            label: 'Número de Seguro Social anotado',
+            hint: 'Escrito a mano en el formulario de admisión. Traiga su tarjeta si la tiene. Nunca se lo pedimos en línea ni por correo electrónico.',
+          },
+          selective: {
+            label: 'Registro en el Servicio Selectivo, si le corresponde',
+            hint: 'Los hombres nacidos después de 1959 que tienen de 18 a 25 años deben estar registrados. El personal puede verificarlo con usted en sss.gov. Marque esta casilla si no le corresponde.',
+          },
+        },
       },
       orientation: {
         title: 'Constancia de orientación',

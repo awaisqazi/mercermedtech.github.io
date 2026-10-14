@@ -14,7 +14,11 @@
  * - The language switch is a link to the other locale's page with the same
  *   query string; every card on that page links the other locale's forms
  *   and PDFs.
- * - "Staff" shows the order, the IEP rule and a participant ID box.
+ * - The "documents" step is a checklist of what NJDOL needs in the
+ *   participant file (intake form, proof of ID, residence, eligibility, SSN
+ *   by hand, Selective Service). It is done when every box is checked; the
+ *   boxes are stored with the hub state.
+ * - "Staff" shows the order, the IEP rule, the filing notes and a participant ID box.
  */
 import '../styles/components/dl.css';
 import '../styles/components/signup.css';
@@ -54,6 +58,9 @@ interface Step {
   links: StepLink[];
   /** Steps without a form are marked done by hand. */
   manual: boolean;
+  /** A checklist step: done when every item is checked. */
+  checklist?: { key: string; label: string; hint: string }[];
+  doneRule?: string;
 }
 
 const steps: Step[] = [
@@ -64,6 +71,16 @@ const steps: Step[] = [
     note: WELCOME_KIT_PUBLISHED ? undefined : s.welcome.kitNote,
     links: [{ href: `/onboarding/learner-handbook-${lang.toLowerCase()}.pdf`, label: s.welcome.handbook, external: true }],
     manual: true,
+  },
+  {
+    key: 'documents',
+    title: s.documents.title,
+    body: s.documents.body,
+    note: s.documents.note,
+    links: [],
+    manual: false,
+    checklist: Object.entries(s.documents.items).map(([key, item]) => ({ key, label: item.label, hint: item.hint })),
+    doneRule: s.documents.doneRule,
   },
   {
     key: 'orientation',
@@ -132,6 +149,8 @@ const steps: Step[] = [
         <ul>
           <li>{page.staffOrder}</li>
           <li><strong>{page.staffRule}</strong></li>
+          <li>{page.staffDocs}</li>
+          <li>{page.staffDocsDeadline}</li>
           <li>{page.staffPid}</li>
         </ul>
         <form class="onb-pid" data-pid-form>
@@ -187,6 +206,22 @@ const steps: Step[] = [
                 </span>
               </div>
               <p class="onb-body">{step.body}</p>
+              {step.checklist && (
+                <ul class="onb-checklist" data-checklist>
+                  {step.checklist.map((item) => (
+                    <li>
+                      <label class="onb-check">
+                        <input type="checkbox" data-check={item.key} />
+                        <span class="onb-check-text">
+                          <span class="onb-check-label">{item.label}</span>
+                          <span class="onb-check-hint">{item.hint}</span>
+                        </span>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {step.doneRule && <p class="onb-done-rule">{step.doneRule}</p>}
               {step.note && <p class="onb-note">{step.note}</p>}
               <div class="onb-actions">
                 {step.links.map((link, i) => (
@@ -237,7 +272,7 @@ const steps: Step[] = [
     const pid = (params.get('pid') || '').trim().slice(0, 40);
     const key = `mmt-onboarding-v1:${pid || 'default'}`;
 
-    type State = { lang?: string; done?: Record<string, boolean> };
+    type State = { lang?: string; done?: Record<string, boolean>; checks?: Record<string, Record<string, boolean>> };
     const read = (): State => {
       try {
         return JSON.parse(localStorage.getItem(key) || '{}') || {};
@@ -284,10 +319,21 @@ const steps: Step[] = [
     const label = root.querySelector<HTMLElement>('[data-progress-label]');
     const fill = root.querySelector<HTMLElement>('[data-progress-fill]');
     const render = () => {
-      const done = read().done || {};
+      const state = read();
+      const done = state.done || {};
+      const checks = state.checks || {};
       let count = 0;
       cards.forEach((card) => {
-        const isDone = !!done[card.dataset.step || ''];
+        const step = card.dataset.step || '';
+        const boxes = [...card.querySelectorAll<HTMLInputElement>('[data-check]')];
+        let isDone = !!done[step];
+        if (boxes.length) {
+          const checked = checks[step] || {};
+          boxes.forEach((box) => {
+            box.checked = !!checked[box.dataset.check || ''];
+          });
+          isDone = boxes.every((box) => box.checked);
+        }
         if (isDone) count += 1;
         card.classList.toggle('is-done', isDone);
         const status = card.querySelector<HTMLElement>('[data-status]');
@@ -302,6 +348,16 @@ const steps: Step[] = [
       if (fill) fill.style.width = `${(count / total) * 100}%`;
     };
     cards.forEach((card) => {
+      card.querySelectorAll<HTMLInputElement>('[data-check]').forEach((box) => {
+        box.addEventListener('change', () => {
+          const state = read();
+          const step = card.dataset.step || '';
+          const checks = { ...(state.checks || {}) };
+          checks[step] = { ...(checks[step] || {}), [box.dataset.check || '']: box.checked };
+          write({ ...state, checks });
+          render();
+        });
+      });
       card.querySelector<HTMLButtonElement>('[data-mark]')?.addEventListener('click', () => {
         const state = read();
         const step = card.dataset.step || '';
@@ -314,7 +370,7 @@ const steps: Step[] = [
     root.querySelector<HTMLButtonElement>('[data-reset]')?.addEventListener('click', (event) => {
       const button = event.currentTarget as HTMLButtonElement;
       if (!window.confirm(button.dataset.confirm || '')) return;
-      write({ lang: locale, done: {} });
+      write({ lang: locale, done: {}, checks: {} });
       render();
     });
     render();

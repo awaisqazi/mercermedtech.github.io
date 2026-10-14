@@ -911,7 +911,7 @@ export const en = {
     },
     eyebrow: 'Digital Literacy Training',
     heading: 'Welcome to Day 0',
-    lead: 'Work through these six steps with an MMT staff member. Each one opens here and brings you back when it is done.',
+    lead: 'Work through these steps with an MMT staff member. Each one opens here and brings you back when it is done.',
     languageLabel: 'Language for every form',
     english: 'English',
     spanish: 'Español',
@@ -925,8 +925,11 @@ export const en = {
     resetConfirm: 'Clear the progress on this device?',
     staffToggle: 'Staff',
     staffHeading: 'For staff',
-    staffOrder: 'Order: welcome and orientation, then the IEP, then the attendance policy and the laptop, then the class site.',
+    staffOrder: 'Order: welcome, then the documents, then orientation, then the IEP, then the attendance policy and the laptop, then the class site.',
     staffRule: 'Nothing before the IEP signature: no assessment, device, account or service until the IEP is signed and dated.',
+    staffDocs:
+      'Documents: scan or photograph each one and save it in the participant folder under Proof of ID, Proof of residence or Proof of eligibility, with the document type in the file name. The signed intake form goes under Proof of eligibility. Social Security number and date of birth are written by hand on the printed intake form only, never typed or emailed.',
+    staffDocsDeadline: 'Eligibility documents must be in the participant file within 30 days of enrollment. If something is missing today, write the date it is due in the case notes.',
     staffPid: 'Open this page once per learner with ?pid= and the MMT participant ID; it is filled in on every form.',
     staffPidLabel: 'Participant ID for this learner',
     staffPidApply: 'Use this ID',
@@ -936,6 +939,38 @@ export const en = {
         body: 'Your Learner Handbook explains how the program works. Keep it handy.',
         handbook: 'Learner Handbook (PDF)',
         kitNote: 'Staff give you your printed Welcome kit. It has your calendar and class links.',
+      },
+      documents: {
+        title: 'Your documents',
+        body: 'The State of New Jersey asks us to keep a copy of these in your file. Check each one with the staff member as you hand it over.',
+        note: 'If you do not have one of these today, bring it to your next on-campus session. Everything must be in your file within 30 days.',
+        doneRule: 'This step is done when every box is checked.',
+        items: {
+          intake: {
+            label: 'NJ Intake and Initial Assessment form, completed and signed',
+            hint: 'You fill in the top part with staff. Staff fill in the office box. Your Social Security number and date of birth are written by hand on the paper form only.',
+          },
+          id: {
+            label: 'Proof of who you are (one)',
+            hint: 'Driver license, New Jersey ID, passport, permanent resident card, or another photo ID.',
+          },
+          residence: {
+            label: 'Proof of your New Jersey address (one)',
+            hint: 'An ID with your current address, a lease, a utility bill, or recent official mail with your name and address.',
+          },
+          eligibility: {
+            label: 'Proof of eligibility (one)',
+            hint: 'Your TANF, SNAP or General Assistance award letter, or a referral or confirmation from your county case manager.',
+          },
+          ssn: {
+            label: 'Social Security number recorded',
+            hint: 'Written by hand on the intake form. Bring your card if you have it. We never ask for it online or by email.',
+          },
+          selective: {
+            label: 'Selective Service registration, if it applies to you',
+            hint: 'Men born after 1959 who are 18 to 25 must be registered. Staff can check at sss.gov with you. Check this box if it does not apply.',
+          },
+        },
       },
       orientation: {
         title: 'Orientation acknowledgment',

@@ -315,3 +315,59 @@ a.onb-lang-option:focus-visible {
         flex-wrap: wrap;
     }
 }
+
+/* ---------- document checklist (the "documents" step) ---------- */
+.onb-checklist {
+    margin: 0.25rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.onb-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: var(--radius-md);
+    background: #fff;
+    cursor: pointer;
+}
+
+.onb-check:has(input:checked) {
+    border-color: var(--tech);
+    background: var(--tech-light);
+}
+
+.onb-check input {
+    flex: none;
+    width: 1.35rem;
+    height: 1.35rem;
+    margin: 0.1rem 0 0;
+    accent-color: var(--tech);
+    cursor: pointer;
+}
+
+.onb-check-text {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.onb-check-label {
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.onb-check-hint {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: var(--text-muted);
+}
+
+.onb-done-rule {
+    margin: 0.5rem 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
