@@ -175,7 +175,7 @@ export const es: Dictionary = {
         titleAccent: 'Capacitación en Habilidades Digitales',
         titleRest: ', inscripciones próximamente',
         subtitle:
-          'Empezamos con una revisión corta de lo que usted ya sabe, para que la clase vaya a su nivel. De ahí cubre Microsoft Office y Google Workspace, seguridad en línea, inteligencia artificial y manejo del dinero, y trabaja hacia un certificado reconocido por la industria. Las lecciones son grabadas, con horas de apoyo en el campus de Lawrenceville o en Microsoft Teams, usted recibe una computadora portátil, y alguien de aquí le ayuda a buscar trabajo.',
+          'Empezamos con una revisión corta de lo que usted ya sabe, para que la clase vaya a su nivel. De ahí cubre Microsoft Office y Google Workspace, seguridad en línea, inteligencia artificial y manejo del dinero, y trabaja hacia un certificado reconocido por la industria. Las lecciones son grabadas, con sesiones en vivo los martes y jueves (en el campus de Lawrenceville o en Microsoft Teams) y los viernes (en Teams), usted recibe una computadora portátil, y alguien de aquí le ayuda a buscar trabajo.',
         costLabel: 'Costo',
         costValue: 'Sin costo si califica',
         lengthLabel: 'Duración',
@@ -622,7 +622,7 @@ export const es: Dictionary = {
         },
         {
           icon: 'fas fa-calendar-check',
-          body: 'Horas de apoyo tres veces por semana, en el campus de Lawrenceville o en Microsoft Teams, y una reunión de seguimiento con el personal cada semana.',
+          body: 'Sesiones en vivo los martes y jueves, de 10:00 am a 1:00 pm, en el campus de Lawrenceville o en Microsoft Teams, y los viernes, de 10:00 am a 1:00 pm, en Teams, además de una reunión de seguimiento con el personal cada semana.',
         },
         { icon: 'fas fa-language', body: 'Personal que habla inglés y español, y materiales en los dos idiomas.' },
       ],
@@ -658,7 +658,7 @@ export const es: Dictionary = {
         },
         {
           title: 'Empieza la capacitación con su grupo',
-          body: 'Recibe su computadora portátil en la orientación. Las lecciones son grabadas, así que las ve en Moodle el día que le convenga, con horas de apoyo tres veces por semana en el campus de Lawrenceville o en Microsoft Teams. El programa dura 7 semanas, 20 horas a la semana.',
+          body: 'Recibe su computadora portátil en la orientación. Las lecciones son grabadas, así que las ve en Moodle el día que le convenga, con sesiones en vivo los martes y jueves, de 10:00 am a 1:00 pm, en el campus de Lawrenceville o en Microsoft Teams, y los viernes, de 10:00 am a 1:00 pm, en Teams. El programa dura 7 semanas, 20 horas a la semana.',
         },
       ],
     },
@@ -729,7 +729,7 @@ export const es: Dictionary = {
         {
           question: '¿Es presencial o en línea?',
           answer:
-            'Las dos cosas. Las lecciones son grabadas y usted las ve en línea en Moodle. Hay horas de apoyo tres veces por semana, en el campus de Lawrenceville o en Microsoft Teams, y una reunión de seguimiento con el personal cada semana. Los grupos son pequeños.',
+            'Las dos cosas. La mayor parte de la semana son lecciones grabadas y tareas en Moodle, que usted hace a su ritmo dentro de la semana. Las sesiones en vivo, en hora del Este, son los martes y jueves, de 10:00 am a 1:00 pm, en el campus de Lawrenceville (Suite 140) o en Microsoft Teams, y los viernes, de 10:00 am a 1:00 pm, en Teams. La instructora puede agregar sesiones adicionales, que se anuncian en Moodle. También tiene una reunión de seguimiento con el personal cada semana. Los grupos son pequeños.',
         },
         {
           question: '¿Me ayudan a encontrar trabajo?',

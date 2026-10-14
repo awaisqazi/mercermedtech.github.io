@@ -165,7 +165,7 @@ export const en = {
         titleAccent: 'Digital Literacy Training',
         titleRest: ', enrolling soon',
         subtitle:
-          'We start with a short skills check so your training fits what you already know. From there you cover Microsoft Office and Google Workspace, online safety, AI, and money management, and you work toward an industry-recognized credential. Lessons are recorded, with office hours on campus in Lawrenceville or on Microsoft Teams, you receive a laptop, and someone here helps you look for work.',
+          'We start with a short skills check so your training fits what you already know. From there you cover Microsoft Office and Google Workspace, online safety, AI, and money management, and you work toward an industry-recognized credential. Lessons are recorded, with live sessions on Tuesday and Thursday (on campus in Lawrenceville or on Microsoft Teams) and Friday (on Teams), you receive a laptop, and someone here helps you look for work.',
         costLabel: 'Cost',
         costValue: 'No cost if you qualify',
         lengthLabel: 'Length',
@@ -604,7 +604,7 @@ export const en = {
         },
         {
           icon: 'fas fa-calendar-check',
-          body: 'Office hours three times a week, on campus in Lawrenceville or on Microsoft Teams, and a check-in with staff every week.',
+          body: 'Live sessions on Tuesday and Thursday, 10:00 am to 1:00 pm, on campus in Lawrenceville or on Microsoft Teams, and Friday, 10:00 am to 1:00 pm, on Teams, plus a check-in with staff every week.',
         },
         { icon: 'fas fa-language', body: 'Staff who speak English and Spanish, and materials in both languages.' },
       ],
@@ -639,7 +639,7 @@ export const en = {
         },
         {
           title: 'You start training with your group',
-          body: 'You receive your laptop at orientation. Lessons are recorded, so you watch them in Moodle on any day, with office hours on campus in Lawrenceville or on Microsoft Teams three times a week. The program runs 7 weeks, 20 hours a week.',
+          body: 'You receive your laptop at orientation. Lessons are recorded, so you watch them in Moodle on any day, with live sessions on Tuesday and Thursday, 10:00 am to 1:00 pm, on campus in Lawrenceville or on Microsoft Teams, and Friday, 10:00 am to 1:00 pm, on Teams. The program runs 7 weeks, 20 hours a week.',
         },
       ],
     },
@@ -709,7 +709,7 @@ export const en = {
         {
           question: 'Is it in person or online?',
           answer:
-            'Both. Lessons are recorded and you watch them online in Moodle. Office hours are three times a week, on campus in Lawrenceville or on Microsoft Teams, and you check in with staff once a week. Groups are small.',
+            'Both. Most of the week is recorded lessons and tasks in Moodle, done at your own pace within the week. The live sessions, Eastern time, are Tuesday and Thursday, 10:00 am to 1:00 pm, on campus in Lawrenceville (Suite 140) or on Microsoft Teams, and Friday, 10:00 am to 1:00 pm, on Teams. The instructor may add extra sessions, announced in Moodle. You also check in with staff once a week. Groups are small.',
         },
         {
           question: 'Will you help me find a job?',

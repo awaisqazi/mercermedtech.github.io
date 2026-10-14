@@ -236,8 +236,8 @@ export const ONBOARDING_TEXT: {
           "es": "Cualquier día: vea cada lección, lea, practique y entregue la tarea. Cada lección es de unas 3 horas de trabajo. Sus 3 horas cuentan cuando entrega la tarea."
         },
         {
-          "en": "Office hours: Tuesday and Thursday, 10:00 am to 1:00 pm, on campus or on Teams, and Friday, 11:30 am to 1:00 pm, on Teams. Office hours are your choice. The time you spend there counts toward your 20 hours.",
-          "es": "Horas de apoyo: martes y jueves, de 10:00 am a 1:00 pm, en el campus o en Teams, y viernes, de 11:30 am a 1:00 pm, en Teams. Usted decide si va. El tiempo que pasa ahí cuenta para sus 20 horas."
+          "en": "Office hours (live sessions with the instructor, Eastern time), from the week of October 19: Tuesday and Thursday, 10:00 am to 1:00 pm, on campus (Suite 140) or on Teams, and Friday, 10:00 am to 1:00 pm, on Teams. These are the only scheduled live times; everything else is recorded lessons and tasks in Moodle. The instructor may add extra sessions, announced in Moodle. Office hours are your choice. The time you spend there counts toward your 20 hours.",
+          "es": "Horas de apoyo (sesiones en vivo con la instructora, hora del Este), desde la semana del 19 de octubre: martes y jueves, de 10:00 am a 1:00 pm, en el campus (Suite 140) o en Teams, y viernes, de 10:00 am a 1:00 pm, en Teams. Son los únicos horarios en vivo; lo demás son lecciones grabadas y tareas en Moodle. La instructora puede agregar sesiones adicionales, que se anuncian en Moodle. Usted decide si va. El tiempo que pasa ahí cuenta para sus 20 horas."
         },
         {
           "en": "Weekly check-in: required. Once a week you meet with a staff member for 10 to 15 minutes, at office hours, on Teams, or by phone if that is the only way that week. You also send a short check-in form in Moodle. Next week's lessons open after you send it.",
@@ -252,8 +252,8 @@ export const ONBOARDING_TEXT: {
           "es": "Anotamos al minuto las horas de apoyo, las reuniones de seguimiento y las sesiones de carrera en la Asistencia de Moodle. En el campus, usted marca su asistencia con el código QR de la pantalla. En Teams, el personal le marca según la lista de la reunión."
         },
         {
-          "en": "Career services count 2 hours a week: the Friday career workshop on Teams, 10:00 to 11:30 am (1.5 hours), plus 30 minutes with your Career Services Advisor, as a career check-in or a one-on-one meeting. This time is recorded apart from your weekly check-in.",
-          "es": "Los servicios de carrera cuentan 2 horas por semana: el taller de carrera del viernes en Teams, de 10:00 a 11:30 am (1.5 horas), más 30 minutos con su Asesor(a) de Servicios de Carrera, como reunión de seguimiento de carrera o reunión individual. Este tiempo se anota aparte de su reunión de seguimiento semanal."
+          "en": "Career services count 2 hours a week: the Friday career workshop on Teams, 10:00 to 11:30 am, in the Friday live session (1.5 hours), plus 30 minutes with your Career Services Advisor, as a career check-in or a one-on-one meeting. This time is recorded apart from your weekly check-in.",
+          "es": "Los servicios de carrera cuentan 2 horas por semana: el taller de carrera del viernes en Teams, de 10:00 a 11:30 am, dentro de la sesión en vivo del viernes (1.5 horas), más 30 minutos con su Asesor(a) de Servicios de Carrera, como reunión de seguimiento de carrera o reunión individual. Este tiempo se anota aparte de su reunión de seguimiento semanal."
         },
         {
           "en": "Moodle practice counts 30 minutes for each of the 4 weekly practice items you finish, up to 2 hours a week.",
@@ -261,7 +261,7 @@ export const ONBOARDING_TEXT: {
         },
         {
           "en": "Office hours and check-ins are not recorded. Lessons are recorded by the instructor, with no learners on screen.",
-          "es": "Las horas de apoyo y las reuniones de seguimiento no se graban. El instructor graba las lecciones sin participantes en pantalla."
+          "es": "Las horas de apoyo y las reuniones de seguimiento no se graban. La instructora graba las lecciones sin participantes en pantalla."
         },
         {
           "en": "MMT sends your weekly hours to your county caseworker.",
@@ -377,8 +377,8 @@ export const ONBOARDING_TEXT: {
           "es": "Cumple en los 6 proyectos finales (currículum, carta de presentación, presupuesto del hogar, presentación corta, correo profesional a un empleador y perfil en Job Source o My Career NJ)."
         },
         {
-          "en": "The Northstar post check, taken with a proctor in week 5: on campus at office hours, or in a scheduled online time on Teams with a proctor watching, as Northstar's rules require.",
-          "es": "La evaluación final de Northstar, hecha con supervisión en la semana 5: en el campus en las horas de apoyo, o en un horario fijo en línea por Teams con una persona que supervisa, como lo piden las reglas de Northstar."
+          "en": "The Northstar post check, taken with a proctor in week 5 during office hours: on campus, or on Teams with a proctor watching, as Northstar's rules require.",
+          "es": "La evaluación final de Northstar, hecha con supervisión en la semana 5 durante las horas de apoyo: en el campus, o por Teams con una persona que supervisa, como lo piden las reglas de Northstar."
         }
       ]
     },
