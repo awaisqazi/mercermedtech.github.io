@@ -28,11 +28,7 @@ const program = programById('digital-literacy-training')!;
   </div>
 
   <article class="tech-card tech-card--feature">
-    <div class="tech-card-icon"><i class={program.icon} aria-hidden="true"></i></div>
-    <span class="tech-card-badge">
-      <i class={program.badgeIcon ?? 'fas fa-tag'} aria-hidden="true"></i>
-      {program.badge?.[locale]}
-    </span>
+    <span class="tech-card-badge">{program.badge?.[locale]}</span>
     <h4>{program.name[locale]}</h4>
     <p>{program.summary[locale]}</p>
     <ul class="tech-card-list">
@@ -43,23 +39,17 @@ const program = programById('digital-literacy-training')!;
     <ul class="tech-card-modules">
       {
         modules.map((module) => (
-          <li>
-            <i class={module.icon} aria-hidden="true" /> {module.label}
-          </li>
+          <li>{module.label}</li>
         ))
       }
     </ul>
 
-    <p class="tech-card-sessions">
-      <i class="fas fa-calendar-check" aria-hidden="true"></i>
-      {sessionsLine}
-    </p>
+    <p class="tech-card-sessions">{sessionsLine}</p>
 
     <div class="tech-card-actions">
       {
         actions.map((action) => (
           <a href={action.href} class={`btn btn-${action.style}`}>
-            {action.icon && <i class={action.icon} aria-hidden="true" />}
             {action.label}
           </a>
         ))

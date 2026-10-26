@@ -24,7 +24,8 @@
 }
 
 .breadcrumbs a:hover {
-    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 .breadcrumbs span[aria-hidden] {
@@ -32,10 +33,10 @@
 }
 
 .program-hero h1 {
-    font-size: clamp(2rem, 4.6vw, 3rem);
+    font-size: clamp(2.25rem, 5.4vw, 3.75rem);
     font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
+    letter-spacing: -0.04em;
+    line-height: 1.04;
     margin-bottom: 1rem;
 }
 
@@ -46,57 +47,47 @@
     margin-bottom: 1.5rem;
 }
 
+/* Status: a plain bold line between hairlines. No icon, no side bar. */
 .program-status-banner {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.6rem;
     max-width: 62ch;
-    margin: 0 0 1.75rem;
-    padding: 0.95rem 1.15rem;
-    background: rgba(0, 166, 156, 0.1);
-    border-left: 3px solid var(--primary);
-    border-radius: var(--radius-sm);
+    margin: 0 0 var(--space-6);
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
     font-weight: 600;
     color: var(--text-main);
     line-height: 1.5;
 }
 
-.program-status-banner i {
-    color: var(--primary);
-    margin-top: 0.25rem;
-}
-
+/* Facts on a heavy rule, label over value. */
 .program-facts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin: 2rem 0 2.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    column-gap: var(--space-5);
+    margin: var(--space-6) 0 var(--space-7);
     padding: 0;
     list-style: none;
 }
 
 .program-facts li {
-    padding: 1rem 1.15rem;
-    background: var(--surface-1);
-    border: 1px solid rgba(0, 166, 156, 0.15);
-    border-radius: var(--radius-md);
+    padding: var(--space-3) 0 var(--space-4);
+    border-top: 2px solid var(--rule-strong);
 }
 
 .program-fact-label {
     display: block;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 0.8125rem;
+    font-weight: 600;
     color: var(--text-light);
     margin-bottom: 0.2rem;
 }
 
 .program-fact-value {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.15rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
     color: var(--text-main);
+    font-variant-numeric: tabular-nums;
 }
 
 .program-detail {
@@ -104,8 +95,8 @@
 }
 
 .program-detail h2 {
-    font-size: 1.25rem;
-    color: var(--primary);
+    font-size: 1.375rem;
+    color: var(--text-main);
     margin-top: 2rem;
     margin-bottom: 0.75rem;
 }
@@ -127,14 +118,12 @@
     line-height: 1.6;
 }
 
+/* The one Med tint on the page. */
 .program-aside {
-    margin-top: 2.5rem;
-    padding: 1.75rem;
-    background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.9) 0%,
-            rgba(224, 247, 246, 0.7) 100%);
-    border: 1px solid rgba(0, 166, 156, 0.18);
-    border-radius: var(--radius-lg);
+    margin-top: var(--space-7);
+    padding: var(--space-6);
+    background: var(--primary-light);
+    border-radius: var(--radius-md);
 }
 
 .program-aside h2 {
@@ -143,13 +132,9 @@
 }
 
 .program-aside p {
-    color: var(--text-muted);
+    color: var(--text-main);
     max-width: 68ch;
     margin-bottom: 0.85rem;
-}
-
-.program-aside .btn {
-    min-height: 48px;
 }
 
 .program-actions {
@@ -179,6 +164,20 @@
 
 .program-back a {
     color: var(--primary-dark);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+
+@media (max-width: 576px) {
+    .program-aside {
+        padding: var(--space-5) var(--space-4);
+    }
+
+    .program-facts {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: var(--space-4);
+    }
 }
 
 /* 404 */

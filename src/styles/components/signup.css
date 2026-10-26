@@ -8,7 +8,7 @@
  */
 
 .signup-page {
-    background: linear-gradient(180deg, var(--tech-light) 0%, #fff 340px);
+    background: var(--surface-1);
 }
 
 .signup-main {
@@ -23,15 +23,21 @@
 }
 
 .signup-eyebrow {
-    display: inline-block;
-    padding: 0.35rem 0.85rem;
-    border-radius: 999px;
-    background: var(--tech-light);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
     color: var(--tech-dark);
-    font-size: 0.78rem;
+    font-size: 0.8125rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
+}
+
+.signup-eyebrow::before {
+    content: '';
+    width: 28px;
+    height: 3px;
+    background: var(--tech);
 }
 
 .signup-column h1 {
@@ -48,8 +54,7 @@
 }
 
 .signup-qualify {
-    border-left: 3px solid var(--primary);
-    background: var(--primary-light);
+    border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 1.1rem 1.25rem;
     margin: 0 0 2rem;
@@ -58,7 +63,7 @@
 .signup-qualify h2 {
     font-size: 1rem;
     margin: 0 0 0.35rem;
-    color: var(--primary-dark);
+    color: var(--text-main);
 }
 
 .signup-qualify p {

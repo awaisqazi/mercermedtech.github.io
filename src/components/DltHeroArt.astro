@@ -1,5 +1,8 @@
 ---
-/** Original illustration, brand colours, no photography. Inline so it inherits nothing. */
+/**
+ * Flat line drawing in the Tech colours: a laptop and a certificate. No
+ * gradients, no floating dots, no photography. Inline so it inherits nothing.
+ */
 interface Props {
   label: string;
 }
@@ -7,59 +10,29 @@ const { label } = Astro.props;
 ---
 
 <svg class="dl-hero-art" viewBox="0 0 440 340" role="img" aria-label={label}>
-  <defs>
-    <linearGradient id="dlScreen" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#00A69C"></stop>
-      <stop offset="100%" stop-color="#3B5BDB"></stop>
-    </linearGradient>
-    <linearGradient id="dlBadge" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#3B5BDB"></stop>
-      <stop offset="100%" stop-color="#2B44A8"></stop>
-    </linearGradient>
-  </defs>
+  <!-- laptop lid -->
+  <rect x="50" y="56" width="300" height="196" rx="8" fill="#FFFFFF" stroke="#18222D" stroke-width="2"></rect>
+  <rect x="66" y="72" width="268" height="164" rx="2" fill="#E7ECFD"></rect>
 
-  <circle cx="368" cy="66" r="54" fill="#E7ECFD"></circle>
-  <circle cx="62" cy="252" r="34" fill="#E0F7F6"></circle>
-
-  <!-- laptop -->
-  <rect x="58" y="70" width="290" height="186" rx="16" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"></rect>
-  <rect x="72" y="84" width="262" height="158" rx="10" fill="url(#dlScreen)"></rect>
-
-  <!-- screen content -->
-  <rect x="90" y="102" width="86" height="10" rx="5" fill="#FFFFFF" opacity="0.92"></rect>
-  <rect x="90" y="122" width="150" height="8" rx="4" fill="#FFFFFF" opacity="0.6"></rect>
-  <rect x="90" y="138" width="120" height="8" rx="4" fill="#FFFFFF" opacity="0.6"></rect>
-
-  <rect x="90" y="164" width="140" height="9" rx="4.5" fill="#FFFFFF" opacity="0.35"></rect>
-  <rect x="90" y="164" width="96" height="9" rx="4.5" fill="#FFFFFF" opacity="0.95"></rect>
-  <rect x="90" y="186" width="140" height="9" rx="4.5" fill="#FFFFFF" opacity="0.35"></rect>
-  <rect x="90" y="186" width="58" height="9" rx="4.5" fill="#FFFFFF" opacity="0.95"></rect>
-
-  <!-- small rising chart on screen -->
-  <rect x="252" y="188" width="14" height="24" rx="4" fill="#FFFFFF" opacity="0.55"></rect>
-  <rect x="272" y="172" width="14" height="40" rx="4" fill="#FFFFFF" opacity="0.75"></rect>
-  <rect x="292" y="152" width="14" height="60" rx="4" fill="#FFFFFF" opacity="0.95"></rect>
+  <!-- screen content: a document with lines of text -->
+  <rect x="86" y="92" width="96" height="10" fill="#2B44A8"></rect>
+  <rect x="86" y="116" width="168" height="5" fill="#3B5BDB" opacity="0.55"></rect>
+  <rect x="86" y="130" width="148" height="5" fill="#3B5BDB" opacity="0.55"></rect>
+  <rect x="86" y="144" width="160" height="5" fill="#3B5BDB" opacity="0.55"></rect>
+  <rect x="86" y="170" width="112" height="5" fill="#3B5BDB" opacity="0.55"></rect>
+  <rect x="86" y="184" width="132" height="5" fill="#3B5BDB" opacity="0.55"></rect>
+  <rect x="86" y="208" width="60" height="12" rx="2" fill="#3B5BDB"></rect>
 
   <!-- laptop base -->
-  <rect x="34" y="256" width="338" height="16" rx="8" fill="#E2E8F0"></rect>
-  <rect x="178" y="260" width="50" height="6" rx="3" fill="#CBD5E1"></rect>
+  <path d="M24 252 H376 L364 270 H36 Z" fill="#FFFFFF" stroke="#18222D" stroke-width="2" stroke-linejoin="round"></path>
+  <line x1="176" y1="259" x2="224" y2="259" stroke="#18222D" stroke-width="2" stroke-linecap="round"></line>
 
-  <!-- credential badge -->
-  <circle cx="344" cy="196" r="38" fill="#FFFFFF" stroke="#E7ECFD" stroke-width="4"></circle>
-  <circle cx="344" cy="196" r="28" fill="url(#dlBadge)"></circle>
-  <path
-    d="M332 196 l8 9 l16 -19"
-    fill="none"
-    stroke="#FFFFFF"
-    stroke-width="5"
-    stroke-linecap="round"
-    stroke-linejoin="round"></path>
-  <rect x="334" y="230" width="8" height="22" rx="3" fill="#3B5BDB"></rect>
-  <rect x="346" y="230" width="8" height="22" rx="3" fill="#2B44A8"></rect>
-
-  <!-- floating marks -->
-  <circle cx="404" cy="140" r="6" fill="#00A69C"></circle>
-  <circle cx="44" cy="120" r="5" fill="#3B5BDB"></circle>
-  <circle cx="392" cy="286" r="4" fill="#3B5BDB" opacity="0.6"></circle>
-  <circle cx="96" cy="300" r="5" fill="#00A69C" opacity="0.5"></circle>
+  <!-- certificate -->
+  <rect x="290" y="150" width="122" height="150" rx="4" fill="#FFFFFF" stroke="#18222D" stroke-width="2"></rect>
+  <rect x="306" y="168" width="90" height="3" fill="#3B5BDB"></rect>
+  <rect x="306" y="184" width="70" height="4" fill="#18222D" opacity="0.7"></rect>
+  <rect x="306" y="196" width="82" height="4" fill="#18222D" opacity="0.35"></rect>
+  <rect x="306" y="206" width="62" height="4" fill="#18222D" opacity="0.35"></rect>
+  <circle cx="351" cy="252" r="20" fill="none" stroke="#3B5BDB" stroke-width="3"></circle>
+  <path d="M341 252 l7 7 l13 -14" fill="none" stroke="#3B5BDB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
 </svg>

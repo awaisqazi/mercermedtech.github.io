@@ -55,13 +55,11 @@ const jsonLd = [
             <h1>{page.hero.headingBefore}<span class="text-gradient-tech">{page.hero.headingAccent}</span></h1>
             <p class="dl-lead">{page.hero.lead}</p>
             <ul class="dl-chips">
-              {page.hero.chips.map((chip) => <li><i class={chip.icon} aria-hidden="true"></i> {chip.label}</li>)}
+              {page.hero.chips.map((chip) => <li>{chip.label}</li>)}
             </ul>
             <div class="dl-actions">
               <a href="#interest" class="btn btn-tech">{page.hero.interestCta}</a>
-              <a href={`mailto:${site.email}`} class="btn btn-tech-outline">
-                <i class="fas fa-envelope" aria-hidden="true"></i> {page.hero.emailCta}
-              </a>
+              <a href={`mailto:${site.email}`} class="btn btn-tech-outline">{page.hero.emailCta}</a>
             </div>
 
             <aside class="dl-enrolled" aria-labelledby="dl-enrolled-title">
@@ -145,7 +143,6 @@ const jsonLd = [
           {
             page.qualify.checks.map((check) => (
               <li>
-                <i class="fas fa-check" aria-hidden="true" />
                 <div>
                   <strong>{check.title}</strong>
                   <span>{check.body}</span>
@@ -155,7 +152,7 @@ const jsonLd = [
           }
         </ul>
 
-        <h3 class="dl-eyebrow">{page.qualify.countiesHeading}</h3>
+        <h3 class="dl-subhead dl-counties-heading">{page.qualify.countiesHeading}</h3>
         <ul class="dl-county-chips" aria-label={page.qualify.countiesHeading}>
           {dlt.counties.map((county) => <li>{county}</li>)}
         </ul>
@@ -163,7 +160,6 @@ const jsonLd = [
         <p class="dl-note">{page.qualify.note}</p>
 
         <div class="dl-callout dl-callout--spaced">
-          <i class="fas fa-question-circle" aria-hidden="true"></i>
           <p>
             <strong>{page.qualify.calloutStrong}</strong>{page.qualify.calloutBefore}
             <a href="#interest">{page.qualify.calloutLinkLabel}</a>{page.qualify.calloutAfter}
@@ -185,7 +181,6 @@ const jsonLd = [
           {
             page.learn.cards.map((card) => (
               <article class="dl-card">
-                <div class="dl-card-icon"><i class={card.icon} aria-hidden="true" /></div>
                 <h3>{card.heading}</h3>
                 <p>{card.body}</p>
               </article>
@@ -207,7 +202,6 @@ const jsonLd = [
           {
             page.outcomes.cards.map((card) => (
               <article class="dl-card">
-                <div class="dl-card-icon"><i class={card.icon} aria-hidden="true" /></div>
                 <h3>{card.heading}</h3>
                 <p>{card.body}</p>
               </article>
@@ -230,7 +224,6 @@ const jsonLd = [
               {
                 page.support.items.map((item) => (
                   <li>
-                    <i class={item.icon} aria-hidden="true" />
                     <span>{item.body}</span>
                   </li>
                 ))
@@ -245,7 +238,6 @@ const jsonLd = [
               {
                 page.support.panelItems.map((item) => (
                   <li>
-                    <i class={item.icon} aria-hidden="true" />
                     <span>{item.body}</span>
                   </li>
                 ))
@@ -301,7 +293,6 @@ const jsonLd = [
               {
                 page.partners.howItems.map((item) => (
                   <li>
-                    <i class={item.icon} aria-hidden="true" />
                     <span set:html={item.body} />
                   </li>
                 ))

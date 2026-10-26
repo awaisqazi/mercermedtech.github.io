@@ -8,8 +8,7 @@ interface Props {
 }
 
 const { heading, intro, organizations } = Astro.props;
-// The list is printed twice so the marquee loops without a visible seam.
-const marquee = [...organizations, ...organizations];
+
 ---
 
 <section id="organizations" class="section-padding bg-surface-1">
@@ -18,10 +17,8 @@ const marquee = [...organizations, ...organizations];
       <h2>{heading}</h2>
       <p class="text-muted">{intro}</p>
     </div>
-    <div class="scrolling-wrapper">
-      <div class="scrolling-content">
-        {marquee.map((name) => <div class="org-item"><p>{name}</p></div>)}
-      </div>
-    </div>
+    <ul class="org-list">
+      {organizations.map((name) => <li>{name}</li>)}
+    </ul>
   </div>
 </section>

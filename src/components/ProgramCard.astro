@@ -20,13 +20,9 @@ const label = comingSoon ? (program.cta ? program.cta[locale] : waitlistLabel) :
 ---
 
 <article class={`program-card-glass carousel-slide${comingSoon ? ' coming-soon' : ''}`}>
-  <div class="program-icon">
-    <i class={program.icon} aria-hidden="true"></i>
-  </div>
   {
     program.badge && (
       <div class="program-stats-badge">
-        <i class={program.badgeIcon ?? 'fas fa-clock'} aria-hidden="true" />
         <span>{program.badge[locale]}</span>
       </div>
     )
@@ -38,11 +34,11 @@ const label = comingSoon ? (program.cta ? program.cta[locale] : waitlistLabel) :
   {
     comingSoon ? (
       <a href={waitlistHref} class="btn btn-secondary full-width">
-        {label} <i class="fas fa-arrow-right program-card-arrow" aria-hidden="true" />
+        {label}
       </a>
     ) : (
       <button type="button" class="btn btn-secondary full-width" data-modal-target={`${program.id}-modal`}>
-        {label} <i class="fas fa-arrow-right program-card-arrow" aria-hidden="true" />
+        {label}
       </button>
     )
   }

@@ -8,7 +8,7 @@
 .announce-strip {
     /* Clears the fixed header, which is out of flow. */
     margin-top: var(--header-height);
-    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    background: var(--tech-dark);
     color: #fff;
 }
 
@@ -16,19 +16,14 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    gap: 0.4rem 0.75rem;
+    justify-content: flex-start;
+    gap: 0 0.75rem;
     margin: 0;
-    padding: 0.4rem 0;
-    font-size: 0.92rem;
+    padding: 0.25rem 0;
+    font-size: 0.9375rem;
     font-weight: 600;
     line-height: 1.4;
-    text-align: center;
-}
-
-.announce-strip i {
-    font-size: 0.85rem;
-    opacity: 0.85;
+    text-align: left;
 }
 
 .announce-strip a {
@@ -36,20 +31,23 @@
     align-items: center;
     /* 44px tap target without making the strip tall on desktop. */
     min-height: 44px;
-    padding: 0 0.85rem;
-    border-radius: var(--radius-full);
-    background: rgba(255, 255, 255, 0.16);
+    padding: 0 0.25rem;
     color: #fff;
     font-weight: 700;
     text-decoration: underline;
-    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
     white-space: nowrap;
 }
 
 .announce-strip a:hover,
 .announce-strip a:focus-visible {
-    background: rgba(255, 255, 255, 0.28);
     color: #fff;
+    text-decoration-thickness: 2px;
+}
+
+.announce-strip :focus-visible {
+    outline-color: #fff;
 }
 
 /* The strip now carries the header offset, so the hero drops its own. */
@@ -60,8 +58,8 @@
 @media (max-width: 640px) {
     .announce-strip p {
         padding: 0.35rem 0;
-        font-size: 0.9375rem;
-        text-wrap: balance;
+        padding: 0.6rem 0 0.1rem;
+        text-wrap: pretty;
     }
 
     .announce-strip + .hero {

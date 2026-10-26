@@ -46,15 +46,8 @@ const { locale, med, tech } = Astro.props;
         <h2 class="section-title">{med.heading}</h2>
         <p>{med.body}</p>
 
-        <ul class="fa-ul grants-list">
-          {
-            med.bullets.map((bullet) => (
-              <li>
-                <span class="fa-li"><i class={`${bullet.icon} text-primary`} aria-hidden="true" /></span>
-                {bullet.label}
-              </li>
-            ))
-          }
+        <ul class="grants-list">
+          {med.bullets.map((bullet) => <li>{bullet.label}</li>)}
         </ul>
 
         <aside class="financial-aid-footer">

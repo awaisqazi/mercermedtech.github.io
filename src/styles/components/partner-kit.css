@@ -514,14 +514,14 @@
     border-radius: 50%;
     background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
     color: #fff;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     font-size: 0.85rem;
     font-weight: 700;
 }
 
 .brief-stages strong {
     display: block;
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     font-size: 1rem;
     margin-bottom: 0.25rem;
 }
@@ -587,7 +587,7 @@
 }
 
 .brief-contacts strong {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     font-size: 1.05rem;
 }
 

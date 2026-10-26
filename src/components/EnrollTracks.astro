@@ -60,7 +60,6 @@ const addressLines = [site.address.streetDisplay, `${site.address.city}, ${site.
           {
             medEnrolling.map((program) => (
               <div class="enroll-program">
-                <i class={program.icon} aria-hidden="true" />
                 <span>{(program.listName ?? program.name)[locale]}</span>
               </div>
             ))
@@ -71,7 +70,6 @@ const addressLines = [site.address.streetDisplay, `${site.address.city}, ${site.
           {
             med.chips.map((chip) => (
               <div class="enroll-chip">
-                <div class="enroll-chip-icon"><i class={chip.icon} aria-hidden="true" /></div>
                 <div>
                   <div class="enroll-chip-label">{chip.label}</div>
                   <div class="enroll-chip-value">
@@ -103,7 +101,6 @@ const addressLines = [site.address.streetDisplay, `${site.address.city}, ${site.
 
         <div class="term-schedule" aria-label={med.scheduleLabel}>
           <div class="term-schedule-header">
-            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
             <span>{med.scheduleLabel}</span>
           </div>
           <ul class="term-list term-list--tba">
@@ -131,7 +128,6 @@ const addressLines = [site.address.streetDisplay, `${site.address.city}, ${site.
           {
             tech.chips.map((chip) => (
               <div class="enroll-chip">
-                <div class="enroll-chip-icon"><i class={chip.icon} aria-hidden="true" /></div>
                 <div>
                   <div class="enroll-chip-label">{chip.label}</div>
                   <div class="enroll-chip-value">
@@ -152,16 +148,13 @@ const addressLines = [site.address.streetDisplay, `${site.address.city}, ${site.
         </div>
 
         <p class="enroll-qualify">
-          <i class="fas fa-check-circle" aria-hidden="true"></i>
-          <span><strong>{tech.qualifyLabel}</strong> {tech.qualifyText}</span>
+          <strong>{tech.qualifyLabel}</strong> {tech.qualifyText}
         </p>
 
         <div class="enroll-features" aria-label={tech.featuresLabel}>
           {
             tech.features.map((feature) => (
-              <span>
-                <i class={feature.icon} aria-hidden="true" /> {feature.label}
-              </span>
+              <span>{feature.label}</span>
             ))
           }
         </div>
@@ -170,7 +163,6 @@ const addressLines = [site.address.streetDisplay, `${site.address.city}, ${site.
           {
             tech.actions.map((action) => (
               <a href={action.href} class={`btn btn-${action.style}`}>
-                {action.icon && <i class={action.icon} aria-hidden="true" />}
                 {action.label}
               </a>
             ))

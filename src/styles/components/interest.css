@@ -5,13 +5,8 @@
    ========================================================================== */
 
 .contact-card.interest-card {
-    background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.94) 0%,
-            rgba(231, 236, 253, 0.8) 100%);
-    border-color: rgba(59, 91, 219, 0.2);
-    box-shadow:
-        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
-        0 25px 60px -15px rgba(59, 91, 219, 0.2);
+    background: var(--surface-1);
+    border-color: var(--border);
 }
 
 .interest-card .form-label .req,
@@ -24,7 +19,7 @@
 .interest-card .contact-form select:focus,
 .interest-card .contact-form textarea:focus {
     border-color: var(--tech);
-    box-shadow: 0 0 0 4px rgba(59, 91, 219, 0.15);
+    box-shadow: 0 0 0 3px rgba(59, 91, 219, 0.2);
 }
 
 .interest-card :focus-visible {
@@ -42,13 +37,13 @@
 .interest-contact-note {
     padding: 0;
     margin: 0 0 0.6rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--tech-dark);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--text-main);
 }
 
 .interest-card .form-hint {
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     line-height: 1.45;
     color: var(--text-muted);
     margin: 0;
@@ -80,7 +75,7 @@
 /* Narrow Tech column on the home page: tighter padding and spacing so the
    column does not run far past the Med column beside it. */
 .contact-card.interest-card--compact {
-    padding: 1.5rem 1.25rem;
+    padding: var(--space-5) 1.25rem;
 }
 
 .interest-card--compact .contact-form {
@@ -98,23 +93,24 @@
 }
 
 .tech-interest h4 {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--tech-dark);
-    margin: 0 0 0.4rem;
+    font-size: 1.375rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-main);
+    margin: 0 0 var(--space-2);
 }
 
 .tech-interest > p {
     color: var(--text-muted);
-    font-size: 0.98rem;
-    margin: 0 0 1.25rem;
+    font-size: 1rem;
+    margin: 0 0 var(--space-4);
 }
 
 /* ---------- Digital Literacy page: the #interest section ---------- */
 .dl-interest-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
-    gap: 3rem;
+    gap: var(--space-8);
     align-items: start;
 }
 
@@ -127,15 +123,7 @@
 
 @media (max-width: 640px) {
     .contact-card.interest-card--compact {
-        padding: 1.5rem 1.25rem;
-    }
-
-    .interest-contact-note {
-        font-size: 0.9375rem;
-    }
-
-    .interest-card .form-hint {
-        font-size: 0.875rem;
+        padding: var(--space-5) var(--space-4);
     }
 
     .tech-interest > p {

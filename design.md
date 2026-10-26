@@ -109,7 +109,7 @@ Never use these shapes:
   one noun and four decisions you did not make.
 - **Vague superlatives.** "leading", "premier", "best-in-class".
 - **Headline case in the source string.** Write "What it costs", not "What It
-  Costs". Let CSS uppercase buttons if it wants to.
+  Costs". Buttons are sentence case too.
 - **Em-dashes, en-dashes, and exclamation marks.** Repeated here because they
   keep coming back.
 
@@ -187,15 +187,15 @@ Contrast checked: `--tech` on white 5.6:1, `--tech-dark` on white 8.4:1,
 body text. A Tech-track element never uses teal, and a Med-track element never
 uses indigo.
 
-### Lockup gradient and wordmark
+### Lockup and the split mark
 
-`--lockup-gradient: linear-gradient(135deg, #00A69C 0%, #3B5BDB 100%)` is
-reserved for two things only: the "Med + Tech" wordmark treatment and the hero
-accent word. Never a section background.
+The old 135deg teal-to-indigo `--lockup-gradient` is retired; the variable
+now points at `--mark-split` (see section 1b). There is no gradient text.
 
 The wordmark is CSS text, never an image: `.medtech-lockup` renders "Med" in
-teal, a thin divider, and "Tech" in indigo, in Outfit 700. It appears in the
-hero eyebrow, the programs section header, and the footer brand line.
+teal, a thin divider, and "Tech" in indigo, in Plus Jakarta Sans 800. It
+appears in the hero eyebrow, the programs section header, and the footer
+brand line.
 
 **Positioning line:** "Med and Tech. Two paths to a better job." Use it in the
 hero, meta copy, and the footer. Keep it within the voice rules in section 1.
@@ -244,6 +244,89 @@ NJDOL is affiliated with Digital Literacy Training only. Therefore:
 
 ---
 
+## 1b. Visual language
+
+The site should look like a real school that knows its trade, not like a
+software template. Quiet, editorial, typographic. These rules outrank any
+older component note further down; when the two disagree, this section wins.
+
+### Never use
+
+- **Callouts with a coloured side bar** (a left border in a track colour),
+  with or without a check or info icon. Use a plain paragraph with a bold
+  lead-in ("**Who qualifies:** You live in New Jersey..."), or a bordered note:
+  1px `--border`, 8px radius, white, a small heading if it needs one.
+- **Icon-in-pill chip lists.** Use a two-column list on hairlines (each item
+  has a 1px `--rule` top border) or an inline run separated by a middle dot.
+- **Glass and gradient surfaces:** translucent panels, `backdrop-filter`,
+  radial "blob" backgrounds, animated meshes, sheen sweeps, glow rings.
+- **Cards nested in cards**, and drop shadows on content. A surface is one
+  level deep.
+- **Uppercase, letter-spaced, pill-shaped buttons.** Buttons are sentence
+  case.
+- **Gradient badges and gradient text.** Status lines are text in the track
+  colour.
+- **Decorative icons before list items, card titles or headings.** Keep an
+  icon only where it says what something is: phone, email and map pin in the
+  contact section and footer, social logos, the carousel chevrons, the
+  external-link mark, the form's success and error state.
+- **Centred section headers.** Text is left-aligned. Centred text is for the
+  404 page only.
+- Stock photos and new illustrations. The two campus photos and the flat
+  Tech line drawing on the Digital Literacy hero are the only images.
+
+### Always use
+
+- **Surfaces.** White (`--surface-1`) is the page. Paper (`--surface-2`,
+  #F6F5F1) is the one neutral alternate band. A solid tint is used for at
+  most one or two blocks per page: `--primary-light` for a Med block (the Med
+  hero panel, the program page funding note) and `--tech-light` for a Tech
+  block (the Tech hero panel, the Digital Literacy card, the #interest
+  section). Tints are flat colour, never a gradient.
+- **Rules.** Hairline = 1px `--rule`. Heavy rule = 2px `--rule-strong`
+  (ink), used over tables, FAQ lists, criteria and steps. A track column is
+  headed by a 3px rule in its track colour (enroll columns, program
+  columns).
+- **Type.** Plus Jakarta Sans only (400 to 800). Display headings 800,
+  tight tracking (-0.03em to -0.04em): hero H1 `clamp(2.5rem, 6.4vw,
+  4.75rem)`, section H2 `clamp(2rem, 4.4vw, 3rem)`. Body 1rem/1.6, lead
+  1.125 to 1.1875rem, muted text `--text-muted` (7:1 on white).
+- **Spacing.** Use the `--space-1` to `--space-9` scale in `tokens.css`
+  (4px base: 4, 8, 12, 16, 24, 32, 48, 64, 96px). Sections are `--space-9`
+  tall on desktop, `--space-8` on phones.
+- **Eyebrow.** At most one per section: 0.8125rem capitals, 0.12em tracking,
+  after a 28px by 3px bar. Classes: `.eyebrow` (school level, split bar),
+  `.eyebrow--med`, `.eyebrow--tech`, `.dl-eyebrow` (Tech page).
+- **Numerals, not circles.** Ordered things are numbered with large numerals
+  in the track colour (`01`, `02`), weight 800, on a heavy rule: the Digital
+  Literacy steps, and the Med 01 / Tech 02 hero panels (the numerals also
+  carry the order rule).
+- **Buttons.** Sentence case, weight 700, 1rem, 6px radius, 48px tall, solid
+  fill (`--primary-dark` for Med, `--tech` for Tech) or a 2px outline. Hover
+  darkens the fill. No shadow, no lift, no sheen.
+- **Facts and lists.** Label over value on hairlines (enroll facts, program
+  facts), two to a row where they fit.
+
+### The signature mark
+
+One detail is ours: the **split mark**, Med teal then Tech indigo with a hard
+stop (`--mark-split`, never a blend). It appears as:
+
+- the 3px top edge of the header and the footer;
+- the 28px bar in front of a school-level eyebrow and the Med + Tech lockup;
+- the underline under the hero accent words ("Two paths").
+
+Colour ownership still applies: on a Tech-only surface (the Digital Literacy
+page) the same shapes are indigo only, and on a Med-only surface teal only.
+Do not invent a second motif.
+
+### Mobile first
+
+Design and check at 375 and 390px first. 1rem gutters, 16px form text,
+44px tap targets, no horizontal scroll, button pairs stack full width.
+
+---
+
 ## 2. Color System
 
 The brand is built on a single hero color (medical teal) with neutral surfaces
@@ -264,12 +347,10 @@ and a complementary accent for gradients and highlights.
 | `--text-light`     | `#94A3B8` | Hint text, eyebrow labels.                   |
 | `--border`         | `#CBD5E1` | Default 1px border.                          |
 
-### Signature gradient
+### No gradients
 
-`linear-gradient(135deg, #00A69C 0%, #20C997 100%)`
-
-Used sparingly: hero accent text, primary button, badge backgrounds. Never as
-a full-section background (it competes with content).
+There is no signature gradient any more. Colour is flat: see section 1b for
+surfaces, tints and the split mark. `--accent` is kept for legacy rules only.
 
 ### Accessibility
 
@@ -284,7 +365,7 @@ a full-section background (it competes with content).
 
 | Use                | Family              | Weight    |
 | ------------------ | ------------------- | --------- |
-| Headings (H1–H4)   | Outfit              | 600–800   |
+| Headings (H1–H4)   | Plus Jakarta Sans   | 700–800   |
 | Body / UI          | Plus Jakarta Sans   | 400–700   |
 | Numbers / labels   | Plus Jakarta Sans   | 600       |
 | Tabular numbers    | (any) `font-variant-numeric: tabular-nums` |
@@ -297,15 +378,14 @@ a full-section background (it competes with content).
 - **Body:** 1rem / 1.6 line-height
 - **Lead body:** 1.125rem (hero copy, intros)
 - **Small / meta:** 0.875rem
-- **Eyebrow / label:** 0.78rem, uppercase, letter-spacing 0.08em, weight 700
+- **Eyebrow / label:** 0.8125rem, uppercase, letter-spacing 0.12em, weight 700, after the 3px bar
 
 ### Rules
 
 - One H1 per page, used in the hero.
-- Use `text-gradient` only on a single keyword or short phrase per heading,
-  never on whole sentences.
-- Avoid uppercase for paragraph text. Reserve uppercase for buttons (existing
-  pattern), eyebrows, and chip labels.
+- No gradient text. `.text-gradient` is now a solid track colour.
+- Avoid uppercase except eyebrows, track tags and table group rows. Buttons
+  are sentence case.
 - Line length for body copy: target 50–75 characters (`max-width: 56ch`–`64ch`).
 - Use tabular-nums on tables, pricing, and any aligned numeric column.
 
@@ -319,14 +399,11 @@ a full-section background (it competes with content).
   `0.5 / 0.75 / 1 / 1.5 / 2 / 2.5 / 3 / 4rem`.
 - **Grid:** prefer `auto-fit, minmax(220–300px, 1fr)` for card grids so they
   reflow naturally on mid-sized viewports without bespoke breakpoints.
-- **Radius:**
-  - `--radius-sm` 8px, inputs, small chips
-  - `--radius-md` 16px, cards
-  - `--radius-lg` 24px, hero images, modals, the announcement card
-  - `--radius-full` 9999px, pills, buttons, badges
-- **Shadow:** kept soft and tinted. Default form is
-  `0 20px 40px rgba(0,0,0,0.1)` for content cards; teal-tinted
-  `0 25px 60px -15px rgba(0,166,156,0.18)` for brand-glass surfaces.
+- **Radius:** `--radius-sm` 6px (buttons, inputs), `--radius-md` and
+  `--radius-lg` 8px (notes, cards, tints, modals). `--radius-full` is not
+  used for buttons, badges or chips.
+- **Shadow:** none on content. The only shadow is the small one under the
+  floating call button, which sits over the page.
 
 ---
 
@@ -338,11 +415,11 @@ The home page is one long scroll, in this order. Anchor IDs are nav targets.
    fixed header
 1. `#hero`: Lockup eyebrow, H1, trust chips, and two equal track panels
    (Med first), plus a quiet "Request information" link
-2. `#enroll`: Two enrollment cards in the glass system, Med first, with the
+2. `#enroll`: Two enrollment columns under track-colour rules, Med first, with the
    **Term Schedule** panel inside the Med card
 3. `#about`: The Med + Tech story and state-approval credentials
 4. `#programs`: Wrapper holding `.programs-tracks`, a two-column layout with
-   `#programs-med` (left, the glass carousel) and `#programs-tech` (right, the
+   `#programs-med` (left, the card carousel) and `#programs-tech` (right, the
    Digital Literacy feature card). Below 1024px they stack, Med first.
    `#programs` stays on the wrapper so older links keep working.
 5. `#tuition`: Tuition at a Glance table, grouped into Med and Tech
@@ -369,57 +446,30 @@ NJDOL rule in section 1a: no cross-sell, funding line in the footer.
 
 ### Buttons
 
-- **Primary:** gradient teal background, white text, full radius, uppercase,
-  letter-spacing 0.02em. Lift `-3px` on hover.
-- **Secondary:** white background, 2px primary border, primary text. Light teal
-  fill on hover.
-- **Min target:** 48px tall on mobile to meet tap-target accessibility.
-- **Icons:** keep optional, always paired with text. Use Font Awesome 5/6 free
-  set already loaded in the page.
+- **Primary (Med):** solid `--primary-dark`, white text, 6px radius, sentence
+  case, weight 700, 48px tall. Hover `#00655F`.
+- **Secondary (Med):** transparent, 2px `--primary-dark` outline and text.
+  Hover fills `--primary-light`.
+- **Tech:** `.btn-tech` solid `--tech`, hover `--tech-dark`;
+  `.btn-tech-outline` 2px indigo outline.
+- No gradient, no shadow, no lift. **Min target:** 48px (44px for `.btn-sm`
+  on phones).
+- **Icons:** none in buttons, except the external-link mark on a link that
+  leaves the site.
 
-### Glass / brand cards
+### Cards and notes
 
-The "liquid teal glass" treatment is reserved for **brand-defining moments**:
+Program cards: white, 1px `--rule` border, 8px radius, no icon tile, no
+shadow; the border turns teal on hover. Notes (`.dl-callout`, `.dl-panel`,
+`.dl-enrolled`, the admissions block, the loans note): white, 1px
+`--border`, 8px radius. Reasons, criteria and modules are not cards: they
+are items on a rule (section 1b).
 
-- Enrollment announcement cards (`.enroll-card`)
-- Contact form card (`.contact-card`)
-- Admissions Requirements block (`.admissions-block`)
-- Program modals (`.modal-content`)
+### Term Schedule
 
-Recipe:
-
-```css
-background: linear-gradient(135deg,
-    rgba(255,255,255,0.92) 0%,
-    rgba(224,247,246,0.78) 50%,
-    rgba(255,255,255,0.92) 100%);
-backdrop-filter: blur(28px) saturate(180%);
-border: 1px solid rgba(0,166,156,0.18-0.25);
-box-shadow:
-    0 0 0 1px rgba(255,255,255,0.5) inset,
-    0 25px 60px -15px rgba(0,166,156,0.18);
-```
-
-Don't apply this to every card. Standard cards stay on `--surface-1` with
-neutral borders.
-
-### Standard cards
-
-Used for "Why MMT" value props, faculty cards, and similar repeated content:
-
-```css
-background: var(--surface-1);
-border: 1px solid rgba(0, 166, 156, 0.12);
-border-radius: var(--radius-md);
-padding: 1.75rem 1.5rem;
-hover: translateY(-4px) + teal-tinted shadow.
-```
-
-### Term Schedule panel
-
-A 4-column grid of term start dates inside the announcement card. The current
-or next-upcoming term is highlighted with a `.term-current` modifier
-(teal-tinted background + shadow). Wraps to 2 columns on phones.
+"When the next groups start" sits at the foot of the Med enroll column as a
+small heading and a ruled list: program name, then its status line. No inner
+panel.
 
 ### Tuition table
 
@@ -445,18 +495,17 @@ Always include a `<caption class="visually-hidden">` for screen readers.
   so the success state always resolves even if the cross-origin iframe load
   event is unreliable.
 
-### Badges & pills
+### Status lines (formerly badges)
 
-- **Enrollment badge:** gradient fill, white text, uppercase. Static, no pulse
-  dot: Digital Literacy Training is "Enrolling soon", not live, and a pulsing
-  badge claims otherwise. Med uses the teal gradient, Tech the indigo one.
-- **Eyebrow chip / pill badge:** `--primary-light` background, primary-dark
-  text, small.
+- **Enrollment status:** bold sentence-case text in the track colour above
+  the title ("Enrolling year-round", "Enrolling soon · No cost if you
+  qualify"). Static. No fill, no pill, no pulse.
+- Hours on a program card: small bold teal text.
 
 ### Floating Mobile Call CTA
 
 - Fixed bottom-right, mobile only (≤768px).
-- Gradient pill, 48px+ tall, calls `tel:+16097125499` directly.
+- Solid fill, 6px radius, 48px+ tall, calls `tel:+16097125499` directly.
 - Always visible. Respects safe-area insets.
 
 ---
@@ -469,8 +518,7 @@ Always include a `<caption class="visually-hidden">` for screen readers.
   modal/success entrances.
 - **Standard durations:** 200-300ms (UI), 400-500ms (modal), 8s (ambient
   shimmer).
-- **Hover lift:** `translateY(-3px)` for buttons, `-4px` for standard cards,
-  `-8px` for prominent cards.
+- **No hover lift.** Hover changes colour only. Scroll reveal fades stay.
 - Always honor `@media (prefers-reduced-motion: reduce)`, disable shimmer,
   pulse, and parallax effects.
 
@@ -478,11 +526,12 @@ Always include a `<caption class="visually-hidden">` for screen readers.
 
 ## 8. Iconography & Imagery
 
-- **Icons:** Font Awesome free, solid style. Sized 1rem-1.5rem inside chips/
-  badges. Always `aria-hidden="true"` when paired with text.
-- **Imagery:** clean, well-lit, real-people-focused photography of healthcare
-  training. Avoid stocky "doctor in lab coat smiling at camera" tropes when
-  possible.
+- **Icons:** Font Awesome free, solid style, only where they carry meaning
+  (section 1b): contact rows, footer, social, carousel chevrons, external
+  link, form status. Small plain glyphs in the track colour, never in a
+  tinted tile. Always `aria-hidden="true"` when paired with text.
+- **Imagery:** only real photos of the school. No stock photography and no
+  new illustrations.
 - **Logo:** `images/logo-modern.png`. Inverts to white on dark surfaces via
   `filter: brightness(0) invert(1);`. Maintain ≥ 24px clearspace on all sides.
 
@@ -571,7 +620,8 @@ Always include a `<caption class="visually-hidden">` for screen readers.
 - [ ] Salary numbers are tied to a cited source (BLS, NHA, school catalog).
 - [ ] All interactive elements keyboard-reachable, focusable, and labeled.
 - [ ] Mobile review at 375px and 414px viewports.
-- [ ] If adding a brand-glass card, use the recipe in section 6.
+- [ ] Follow section 1b: no side-bar callouts, icon pills, glass, gradients
+      or nested cards; left-aligned; hairlines and numerals.
 - [ ] If adding a table, follow the responsive `data-label` pattern.
 - [ ] Run a Rich Results test if you touch the JSON-LD block.
 - [ ] No new staff direct phone numbers added to public-facing markup.
@@ -612,7 +662,7 @@ Do not publish a specific start date unless it has been confirmed by the school.
 
 ---
 
-*Last updated: 2026-09-19*
+*Last updated: 2026-10-27*
 
 ---
 

@@ -1,5 +1,7 @@
 /* ==========================================================================
    Why Mercer Med Tech + Admissions requirements block
+   Reasons on hairlines in a grid, no icon tiles, no cards. Admissions is one
+   plain bordered sheet with a ruled list.
    ========================================================================== */
 
 .why-section {
@@ -9,72 +11,49 @@
 .why-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.25rem;
-    margin-top: 3rem;
+    column-gap: var(--space-6);
+    margin-top: var(--space-7);
 }
 
 .why-card {
-    background: var(--surface-1);
-    border: 1px solid rgba(0, 166, 156, 0.12);
-    border-radius: var(--radius-md);
-    padding: 1.75rem 1.5rem;
-    transition: transform 0.3s var(--spring-gentle),
-        box-shadow 0.3s var(--spring-gentle),
-        border-color 0.3s ease;
-}
-
-.why-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 32px rgba(0, 166, 156, 0.12);
-    border-color: rgba(0, 166, 156, 0.25);
-}
-
-.why-icon {
-    width: 48px;
-    height: 48px;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, rgba(0, 166, 156, 0.15), rgba(32, 201, 151, 0.06));
-    color: var(--primary);
-    border-radius: var(--radius-sm);
-    font-size: 1.15rem;
-    margin-bottom: 1rem;
+    padding: var(--space-4) 0 var(--space-6);
+    border-top: 1px solid var(--rule-strong);
 }
 
 .why-card h3 {
-    font-size: 1.1rem;
-    margin-bottom: 0.4rem;
+    font-size: 1.1875rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    margin-bottom: var(--space-2);
     color: var(--text-main);
 }
 
 .why-card p {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: var(--text-muted);
     line-height: 1.55;
     margin: 0;
 }
 
-/* Admissions Block */
+/* Admissions: one white sheet, hairline border. */
 .admissions-block {
-    margin-top: 4rem;
-    padding: 2.5rem;
-    background: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.85) 0%,
-            rgba(224, 247, 246, 0.6) 100%);
-    -webkit-backdrop-filter: blur(20px) saturate(170%);
-    backdrop-filter: blur(20px) saturate(170%);
-    border: 1px solid rgba(0, 166, 156, 0.18);
-    border-radius: var(--radius-lg);
+    margin-top: var(--space-7);
+    padding: var(--space-7) var(--space-6);
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
 }
 
 .admissions-header {
-    text-align: center;
-    margin-bottom: 2rem;
+    max-width: 46rem;
+    margin-bottom: var(--space-5);
 }
 
 .admissions-header h3 {
-    font-size: 1.75rem;
-    margin-bottom: 0.5rem;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: var(--space-2);
 }
 
 .admissions-header p {
@@ -85,133 +64,67 @@
 .admissions-list {
     list-style: none;
     padding: 0;
-    margin: 0 0 2rem;
+    margin: 0 0 var(--space-6);
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    column-gap: var(--space-6);
 }
 
 .admissions-list li {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1rem 1.1rem;
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    border-radius: var(--radius-md);
-}
-
-.admissions-list i {
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, rgba(0, 166, 156, 0.15), rgba(32, 201, 151, 0.06));
-    color: var(--primary);
-    border-radius: var(--radius-sm);
-    font-size: 1rem;
+    padding: var(--space-3) 0 var(--space-4);
+    border-top: 1px solid var(--rule);
 }
 
 .admissions-list strong {
     display: block;
-    font-family: 'Outfit', sans-serif;
-    font-size: 1rem;
+    font-size: 1.0625rem;
+    font-weight: 800;
     color: var(--text-main);
     margin-bottom: 0.15rem;
 }
 
 .admissions-list span {
-    font-size: 0.9rem;
+    font-size: 0.9375rem;
     color: var(--text-muted);
-    line-height: 1.45;
+    line-height: 1.5;
 }
 
 .admissions-cta {
     display: flex;
     align-items: center;
-    justify-content: center;
     flex-wrap: wrap;
-    gap: 1.25rem;
-    text-align: center;
+    gap: var(--space-4) var(--space-5);
 }
 
 .admissions-cta .meta {
     color: var(--text-muted);
-    font-size: 0.92rem;
+    font-size: 0.9375rem;
 }
 
 .admissions-cta .meta a {
-    color: var(--primary);
-    font-weight: 600;
+    color: var(--tech-dark);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
 }
 
-@media (max-width: 640px) {
-    .admissions-block {
-        padding: 1.75rem 1.25rem;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .why-card {
-        transition: none;
-    }
-
-    .why-card:hover {
-        transform: none;
-    }
-}
-
-/* --------------------------------------------------------------------------
-   Phones: the icon sits beside the card title instead of on its own row.
-   -------------------------------------------------------------------------- */
 @media (max-width: 576px) {
     .why-grid {
-        margin-top: 2rem;
-        gap: 1rem;
+        margin-top: var(--space-6);
     }
 
     .why-card {
-        display: grid;
-        grid-template-columns: 40px minmax(0, 1fr);
-        align-items: center;
-        gap: 0.75rem 0.9rem;
-        padding: 1.25rem;
-    }
-
-    .why-icon {
-        width: 40px;
-        height: 40px;
-        margin: 0;
-        font-size: 1rem;
-    }
-
-    .why-card h3 {
-        margin: 0;
-    }
-
-    .why-card p {
-        grid-column: 1 / -1;
-        font-size: 1rem;
+        padding: var(--space-3) 0 var(--space-5);
     }
 
     .admissions-block {
-        margin-top: 3rem;
+        margin-top: var(--space-6);
+        padding: var(--space-5) var(--space-4);
     }
 
-    .admissions-header h3 {
-        font-size: 1.5rem;
-    }
-
-    .admissions-list {
-        gap: 0.75rem;
-    }
-
-    .admissions-list span {
-        font-size: 0.95rem;
-    }
-
+    .admissions-list span,
     .admissions-cta .meta {
-        font-size: 0.95rem;
+        font-size: 1rem;
     }
 }

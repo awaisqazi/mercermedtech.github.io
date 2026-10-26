@@ -19,12 +19,9 @@ const { heading, intro, people } = Astro.props;
     <div class="faculty-wrapper">
       {
         people.map((person) => (
-          <div class="program-card faculty-card text-center">
-            <div class="program-icon faculty-icon">
-              <i class={person.icon} aria-hidden="true" />
-            </div>
+          <div class="faculty-card">
             <h3>{person.name}</h3>
-            <p class="text-primary font-bold mb-2">{person.role}</p>
+            <p class="faculty-role">{person.role}</p>
             <p>{person.bio}</p>
           </div>
         ))

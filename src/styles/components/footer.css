@@ -4,12 +4,13 @@
 
 .site-footer {
     position: relative;
-    background: linear-gradient(180deg, #16202e 0%, var(--text-main) 100%);
+    /* Solid ink, flat. */
+    background: var(--text-main);
     color: white;
-    padding: 4.5rem 0 2rem;
+    padding: var(--space-8) 0 var(--space-6);
 }
 
-/* Teal top accent line */
+/* The signature mark along the top edge, as on the header. */
 .site-footer::before {
     content: '';
     position: absolute;
@@ -17,14 +18,14 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 50%, var(--primary) 100%);
+    background: var(--mark-split);
 }
 
 .footer-grid {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 4rem;
-    margin-bottom: 4rem;
+    gap: var(--space-7);
+    margin-bottom: var(--space-7);
 }
 
 .footer-brand img {
@@ -34,28 +35,20 @@
 }
 
 .footer-brand p {
-    color: var(--text-light);
+    color: #b8c0c8;
     margin-top: 1rem;
     max-width: 300px;
 }
 
 .footer-col h4 {
-    position: relative;
-    padding-bottom: 0.6rem;
-    color: white;
-    font-size: 1.1rem;
-    margin-bottom: 1.5rem;
-}
-
-.footer-col h4::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 28px;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--primary);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    color: #fff;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
 }
 
 .footer-links li {
@@ -65,13 +58,13 @@
 .footer-links a {
     display: inline-flex;
     align-items: center;
-    color: var(--text-light);
-    transition: color 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+    color: #d5dbe0;
 }
 
 .footer-links a:hover {
-    transform: translateX(3px);
-    color: var(--primary);
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 .footer-links .footer-link-icon {
@@ -91,19 +84,17 @@
 }
 
 .footer-licensing {
-    color: var(--text-light);
-    font-size: 0.85rem;
+    color: #b8c0c8;
+    font-size: 0.875rem;
     line-height: 1.6;
     max-width: 70ch;
-    margin: 0 auto 1.5rem;
-    text-align: center;
+    margin: 0 0 var(--space-4);
 }
 
 .footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 2rem;
-    text-align: center;
-    color: var(--text-light);
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    padding-top: var(--space-5);
+    color: #b8c0c8;
     font-size: 0.875rem;
 }
 

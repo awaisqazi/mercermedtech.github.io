@@ -15,27 +15,53 @@
     /* Brighter teal/green for gradients */
     --accent-hover: #008c82;
 
-    /* Neutrals */
+    /* Neutrals. Flat paper and ink: no translucent surfaces anywhere
+       (design.md, "Visual language"). */
     --surface-1: #ffffff;
-    --surface-2: #f0f4f8;
-    --surface-3: #e2e8f0;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --text-light: #94a3b8;
-    --border: #cbd5e1;
+    /* Paper: the one neutral band colour, a warm off-white. */
+    --surface-2: #f6f5f1;
+    --surface-3: #ebeae4;
+    --text-main: #18222d;
+    /* 7:1 on white. */
+    --text-muted: #4d5a67;
+    /* Labels and meta. 4.9:1 on white, so it can carry real text. */
+    --text-light: #66727e;
+    --border: #d7dade;
 
-    /* Glassmorphism */
-    --glass-bg: rgba(255, 255, 255, 0.9);
-    --glass-border: rgba(255, 255, 255, 0.6);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 166, 156, 0.1);
-    --backdrop-blur: blur(12px);
+    /* Rules. A hairline is 1px of --rule; a heavy rule is 2px of ink. */
+    --rule: #dcdfe2;
+    --rule-strong: #18222d;
+
+    /* The signature mark: Med teal then Tech indigo, hard stop, never a
+       blend. Used as a short 3px bar before eyebrows and as the 3px top edge
+       of the header and footer. */
+    --mark-split: linear-gradient(90deg, var(--primary-dark) 0 50%, var(--tech) 50% 100%);
+
+    /* Spacing scale (4px base). Use these, not ad-hoc values. */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+    --space-9: 6rem;
+
+    /* Legacy aliases kept so older rules still resolve. Nothing new should
+       use them: there is no glass in the visual language. */
+    --glass-bg: #ffffff;
+    --glass-border: var(--rule);
+    --glass-shadow: none;
+    --backdrop-blur: none;
 
     /* Layout */
     --container-width: 1280px;
     --header-height: 80px;
-    --radius-sm: 8px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
+    /* Modest radii. Buttons, inputs and notes all sit at 6 to 8px. */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 8px;
     --radius-full: 9999px;
 
     /* Animation */
@@ -53,12 +79,6 @@
     --safe-area-left: env(safe-area-inset-left, 0px);
     --safe-area-right: env(safe-area-inset-right, 0px);
 
-    /* Enhanced Glassmorphism for Programs Section */
-    --glass-programs-bg: rgba(255, 255, 255, 0.72);
-    --glass-programs-border: rgba(0, 166, 156, 0.15);
-    --glass-programs-blur: blur(24px);
-    --glass-card-glow: 0 0 40px rgba(0, 166, 156, 0.08);
-    --glass-card-glow-hover: 0 0 60px rgba(0, 166, 156, 0.15);
 
     /* Tech track design tokens
        Med  = allied health, keeps the brand teal (--primary family).
@@ -68,7 +88,6 @@
     --tech: #3B5BDB;
     --tech-dark: #2B44A8;
     --tech-light: #E7ECFD;
-    /* Combined lockup gradient. Reserved for the "Med + Tech" wordmark
-       treatment and the hero accent. Never as a section background. */
-    --lockup-gradient: linear-gradient(135deg, #00A69C 0%, #3B5BDB 100%);
+    /* Kept for older rules; the split mark above replaces it. */
+    --lockup-gradient: var(--mark-split);
 }

@@ -9,16 +9,28 @@
     width: 100%;
     height: var(--header-height);
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: var(--backdrop-blur);
-    -webkit-backdrop-filter: var(--backdrop-blur);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
+    /* Solid paper with a hairline. No blur, no shadow. */
+    background: var(--surface-1);
+    border-bottom: 1px solid var(--rule);
+}
+
+/* The signature mark runs along the top edge of every page. */
+.site-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--mark-split);
+}
+
+.dl-page .site-header::before {
+    background: var(--tech);
 }
 
 .site-header.scrolled {
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border-bottom-color: var(--border);
 }
 
 .site-header .container {
@@ -81,8 +93,8 @@
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--primary);
-    transition: width 0.3s var(--ease-out);
+    background: var(--primary-dark);
+    transition: width 0.2s var(--ease-out);
 }
 
 .nav-link:hover::after,
@@ -91,7 +103,7 @@
 }
 
 .nav-link:hover {
-    color: var(--primary);
+    color: var(--primary-dark);
 }
 
 /* Student login to the Digital Literacy Training class site.
@@ -106,7 +118,7 @@
     padding: 0.35rem 0.7rem;
     border: 1.5px solid var(--tech);
     border-radius: var(--radius-sm);
-    background: rgba(255, 255, 255, 0.6);
+    background: transparent;
     color: var(--tech-dark);
     font-size: 0.85rem;
     font-weight: 600;
@@ -213,9 +225,7 @@
         width: 100%;
         height: 100vh;
         height: 100dvh;
-        background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        background: var(--surface-1);
         flex-direction: column;
         align-items: center;
         justify-content: flex-start;
@@ -243,7 +253,7 @@
     .nav-menu.active {
         right: 0;
         visibility: visible;
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+        box-shadow: none;
         transition: right 0.3s var(--ease-out), visibility 0s;
     }
 
@@ -272,7 +282,7 @@
         padding: 0.5rem 1rem;
         gap: 0.75rem;
         justify-content: flex-start;
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-sm);
         font-size: 1rem;
         white-space: normal;
     }
@@ -301,15 +311,16 @@
 .lang-switch {
     display: inline-flex;
     align-items: center;
-    gap: 0.15rem;
-    padding: 0.2rem;
-    border: 1px solid rgba(0, 166, 156, 0.25);
-    border-radius: var(--radius-full);
-    background: rgba(255, 255, 255, 0.7);
+    gap: 0;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-1);
+    overflow: hidden;
 }
 
 .lang-switch--dlt {
-    border-color: rgba(59, 91, 219, 0.25);
+    border-color: var(--border);
 }
 
 .lang-switch-option {
@@ -319,7 +330,7 @@
     min-height: 40px;
     min-width: 44px;
     padding: 0 0.85rem;
-    border-radius: var(--radius-full);
+    border-radius: 0;
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--text-muted);
@@ -328,21 +339,21 @@
 
 a.lang-switch-option:hover {
     color: var(--primary-dark);
-    background: rgba(0, 166, 156, 0.1);
+    background: var(--primary-light);
 }
 
 .dl-page a.lang-switch-option:hover {
     color: var(--tech-dark);
-    background: rgba(59, 91, 219, 0.1);
+    background: var(--tech-light);
 }
 
 .lang-switch-option[aria-current='true'] {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: var(--text-main);
     color: #fff;
 }
 
 .dl-page .lang-switch-option[aria-current='true'] {
-    background: linear-gradient(135deg, var(--tech) 0%, var(--tech-dark) 100%);
+    background: var(--text-main);
 }
 
 @media (max-width: 1080px) {
