@@ -26,8 +26,13 @@ that on as 422 `rejected`.
 `/orientation-submit` and `/attendance-submit` work the same way for the Day 0
 acknowledgments on /onboarding/orientation/ and /onboarding/attendance/.
 
-- Set `IEP_FORM_ACTION`, `LOANER_FORM_ACTION`, `ORIENTATION_FORM_ACTION` and
-  `ATTENDANCE_FORM_ACTION` (the formResponse URLs)
+`/interest-submit` works the same way for the public Digital Literacy interest
+form on / and /digital-literacy/ (and /es/), forwarding to
+`FORM_ACTION_INTEREST`. It also accepts calls from the local dev server
+(`http://localhost:4321`, `http://127.0.0.1:4321`).
+
+- Set `IEP_FORM_ACTION`, `LOANER_FORM_ACTION`, `ORIENTATION_FORM_ACTION`,
+  `ATTENDANCE_FORM_ACTION` and `FORM_ACTION_INTEREST` (the formResponse URLs)
   once in Cloudflare (Workers, mmt-signup, Settings, Variables and Secrets,
   plain text). They are not in `wrangler.toml` because this repository is
   public. The older `IEP_FORM_URL` and `LOANER_FORM_URL` are no longer read.

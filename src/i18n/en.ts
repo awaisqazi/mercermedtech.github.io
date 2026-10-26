@@ -875,8 +875,9 @@ export const en = {
       successTitle: 'Got it. You are on the interest list.',
       successBody: `Someone from the school will get back to you, usually within two business days. If you would rather not wait, call us at ${site.phone.display}.`,
       errorTitle: 'We could not send that.',
-      errorBody: `It looks like you are offline. Please try again, or call us at ${site.phone.display}.`,
-      iframeTitle: 'Form submission target',
+      errorBody: `Sorry, something went wrong on our end. Please try again, or call us at ${site.phone.display}.`,
+      securityIncomplete: 'Please wait for the security check above to finish, then send again.',
+      securityUnavailable: `The security check did not load. Please refresh the page, or call us at ${site.phone.display}.`,
     },
   },
 

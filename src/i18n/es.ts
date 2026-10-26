@@ -889,8 +889,9 @@ export const es: Dictionary = {
       successTitle: 'Listo. Ya está en la lista de interés.',
       successBody: `Alguien de la escuela se comunicará con usted, por lo general dentro de dos días hábiles. Si prefiere no esperar, llámenos al ${site.phone.display}.`,
       errorTitle: 'No pudimos enviarlo.',
-      errorBody: `Parece que no tiene conexión a internet. Inténtelo otra vez o llámenos al ${site.phone.display}.`,
-      iframeTitle: 'Destino del envío del formulario',
+      errorBody: `Disculpe, algo falló de nuestro lado. Inténtelo otra vez o llámenos al ${site.phone.display}.`,
+      securityIncomplete: 'Espere a que termine la verificación de seguridad de arriba y envíe otra vez.',
+      securityUnavailable: `La verificación de seguridad no cargó. Actualice la página o llámenos al ${site.phone.display}.`,
     },
   },
 

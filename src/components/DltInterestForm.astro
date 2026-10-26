@@ -1,5 +1,6 @@
 ---
 import '../styles/components/contact.css';
+import '../styles/components/signup.css';
 import '../styles/components/interest.css';
 import { dlt } from '../data/site';
 import { t, type Locale } from '../i18n';
@@ -11,12 +12,18 @@ import { t, type Locale } from '../i18n';
  * home page (Tech column) and on /digital-literacy/, in both languages. Only
  * the name and one way to reach the person (phone or email) are required.
  *
- * It posts straight to its own Google Form, "Digital Literacy Training:
- * interest form", owned by mercermedtech@gmail.com, the same way the contact
- * form does: a plain POST into a hidden iframe so the reader stays on the
- * page. It is NOT the hidden sign-up form (DltSignupForm.astro, Worker and
- * Turnstile) and it is NOT the contact form: never copy an entry id between
- * the three.
+ * It feeds its own Google Form, "Digital Literacy Training: interest form",
+ * owned by mercermedtech@gmail.com, but not from the browser: like the
+ * hidden sign-up form, it posts to the mmt-signup Cloudflare Worker
+ * (/interest-submit), which checks the Cloudflare Turnstile token and only
+ * then forwards the answers to Google. The Google Form URL lives in the
+ * Worker's FORM_ACTION_INTEREST variable and must never appear on this page:
+ * a bot that can read the page could post to Google directly.
+ *
+ * The entry.* names below are the interest Google Form's own names; the
+ * Worker forwards them untouched. This is NOT the sign-up form
+ * (DltSignupForm.astro) and NOT the contact form: never copy an entry id
+ * between the three.
  *
  * The choice questions are Google Forms dropdown / multiple choice questions,
  * which drop any value they do not know. So every option VALUE below is the
@@ -25,8 +32,10 @@ import { t, type Locale } from '../i18n';
  * then in scripts/check-form-contract.mjs (npm run check:form).
  * Notes and the full entry id map: docs/dlt-interest-form.md.
  */
-const FORM_ACTION =
-  'https://docs.google.com/forms/d/e/1FAIpQLSdt6Zl1Ecv49ALSWxAAtiOkWBLQJ2vV81lgyuCt6CSUGb4xnA/formResponse';
+const WORKER_ENDPOINT = 'https://mmt-signup.mercermedtech.workers.dev/interest-submit';
+
+/** Public Turnstile site key, the same widget as the sign-up form. The secret lives only in the Worker. */
+const TURNSTILE_SITEKEY = '0x4AAAAAAFABG_uSmI7QN2sd';
 const FIELD = {
   name: 'entry.330196929',
   phone: 'entry.1208529879',
@@ -83,9 +92,8 @@ const source = `${placement === 'home' ? 'Home page' : 'Digital Literacy page'} 
   <form
     id="dlt-interest-form"
     class="contact-form"
-    action={FORM_ACTION}
-    method="POST"
-    target="dlt_interest_iframe"
+    action={WORKER_ENDPOINT}
+    method="post"
     data-contact-missing={f.contactMissing}
   >
     <input type="hidden" name={FIELD.source} value={source} />
@@ -174,6 +182,13 @@ const source = `${placement === 'home' ? 'Home page' : 'Digital Literacy page'} 
 
     <p class="form-hint interest-privacy">{f.privacy}</p>
 
+    <!--
+      Turnstile draws itself into this box and drops a hidden
+      cf-turnstile-response input into the form, which the Worker checks.
+    -->
+    <div class="signup-turnstile" data-turnstile data-sitekey={TURNSTILE_SITEKEY} data-language={locale}></div>
+    <p class="signup-security-note" data-turnstile-note hidden>{f.securityUnavailable}</p>
+
     <button type="submit" class="btn btn-tech form-submit">
       <span class="form-submit-label">{f.submit}</span>
       <i class="fas fa-paper-plane" aria-hidden="true"></i>
@@ -188,6 +203,7 @@ const source = `${placement === 'home' ? 'Home page' : 'Digital Literacy page'} 
       data-success-body={f.successBody}
       data-error-title={f.errorTitle}
       data-error-body={f.errorBody}
+      data-security-body={f.securityIncomplete}
       data-submit-label={f.submit}
       data-sending-label={f.sending}
     >
@@ -198,28 +214,28 @@ const source = `${placement === 'home' ? 'Home page' : 'Digital Literacy page'} 
       </div>
     </div>
   </form>
-
-  <iframe
-    name="dlt_interest_iframe"
-    id="dlt_interest_iframe"
-    class="contact-iframe"
-    tabindex="-1"
-    aria-hidden="true"
-    title={f.iframeTitle}></iframe>
 </div>
+
+<script is:inline async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
 
 <script>
   /*
-   * Same technique as ContactForm.astro: the browser posts the form into the
-   * hidden iframe, and we show the confirmation when the iframe loads, or
-   * after 4 seconds, because a cross-origin load event is not reliable.
+   * Same technique as DltSignupForm.astro: the form posts to the mmt-signup
+   * Worker with fetch, so the reader stays on the page and the Google Form
+   * URL never reaches the browser. The Worker answers {ok:true} or
+   * {ok:false,error}. Turnstile guards the submit button: no token, no send.
    * The one addition: phone and email are each optional, but one of the two
    * is required, which HTML cannot say on its own.
    */
-  const form = document.getElementById('dlt-interest-form') as HTMLFormElement | null;
-  const iframe = document.getElementById('dlt_interest_iframe');
+  const WORKER_ENDPOINT = 'https://mmt-signup.mercermedtech.workers.dev/interest-submit';
+  const TIMEOUT_MS = 12000;
+  const WAIT_FOR_SCRIPT_MS = 10000;
 
-  if (form && iframe) {
+  const form = document.getElementById('dlt-interest-form') as HTMLFormElement | null;
+  const host = form?.querySelector<HTMLElement>('[data-turnstile]');
+  const note = form?.querySelector<HTMLElement>('[data-turnstile-note]');
+
+  if (form && host) {
     const phone = form.querySelector<HTMLInputElement>('input[type="tel"]');
     const email = form.querySelector<HTMLInputElement>('input[type="email"]');
     const submitBtn = form.querySelector<HTMLButtonElement>('.form-submit');
@@ -240,8 +256,24 @@ const source = `${placement === 'home' ? 'Home page' : 'Digital Literacy page'} 
       const strong = message.querySelector('strong');
       const span = message.querySelector('span');
       const data = message.dataset;
+
+      let token = '';
+      let widgetId: string | undefined;
       let isSubmitting = false;
-      let safetyTimer: number | null = null;
+
+      // Only JavaScript disables the button, so a reader without JavaScript
+      // keeps the plain form post to the Worker.
+      submitBtn.disabled = true;
+
+      const setBusy = (busy: boolean) => {
+        isSubmitting = busy;
+        submitBtn.disabled = busy || !token;
+        submitBtn.classList.toggle('is-loading', busy);
+        if (labelEl) {
+          const text = busy ? data.sendingLabel : data.submitLabel;
+          if (text) labelEl.textContent = text;
+        }
+      };
 
       const show = (title: string, body: string, isError: boolean) => {
         if (strong) strong.textContent = title;
@@ -256,42 +288,102 @@ const source = `${placement === 'home' ? 'Home page' : 'Digital Literacy page'} 
         message.scrollIntoView({ behavior: 'smooth', block: 'center' });
       };
 
-      const finish = () => {
-        if (!isSubmitting) return;
-        isSubmitting = false;
-        if (safetyTimer) {
-          window.clearTimeout(safetyTimer);
-          safetyTimer = null;
-        }
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('is-loading');
-        if (labelEl && data.submitLabel) labelEl.textContent = data.submitLabel;
-        form.reset();
-        syncContactRule();
-        show(data.successTitle || '', data.successBody || '', false);
+      const showError = (body?: string) => {
+        show(data.errorTitle || '', body || data.errorBody || '', true);
       };
 
-      form.addEventListener('submit', (event) => {
+      /* ---------- Turnstile ---------- */
+
+      const turnstileApi = () => (window as any).turnstile;
+
+      const renderWidget = () => {
+        widgetId = turnstileApi().render(host, {
+          sitekey: host.dataset.sitekey,
+          theme: 'light',
+          language: host.dataset.language === 'es' ? 'es' : 'en',
+          'response-field': true,
+          callback: (value: string) => {
+            token = value;
+            if (!isSubmitting) submitBtn.disabled = false;
+          },
+          'expired-callback': () => {
+            token = '';
+            submitBtn.disabled = true;
+          },
+          'error-callback': () => {
+            token = '';
+            submitBtn.disabled = true;
+          },
+        });
+      };
+
+      const startedAt = Date.now();
+      const waitForTurnstile = () => {
+        const api = turnstileApi();
+        if (api && typeof api.render === 'function') {
+          renderWidget();
+          return;
+        }
+        if (Date.now() - startedAt > WAIT_FOR_SCRIPT_MS) {
+          // Blocked or offline: say so instead of letting a send fail silently.
+          if (note) note.hidden = false;
+          return;
+        }
+        window.setTimeout(waitForTurnstile, 150);
+      };
+      waitForTurnstile();
+
+      /* ---------- submit ---------- */
+
+      form.addEventListener('submit', async (event) => {
         syncContactRule();
         if (!form.checkValidity()) {
           event.preventDefault();
           form.reportValidity();
           return;
         }
-        if (!navigator.onLine) {
-          event.preventDefault();
-          show(data.errorTitle || '', data.errorBody || '', true);
+        event.preventDefault();
+        if (isSubmitting) return;
+
+        if (!token) {
+          showError(data.securityBody);
           return;
         }
-        isSubmitting = true;
-        submitBtn.disabled = true;
-        submitBtn.classList.add('is-loading');
-        if (labelEl && data.sendingLabel) labelEl.textContent = data.sendingLabel;
-        safetyTimer = window.setTimeout(finish, 4000);
-      });
 
-      iframe.addEventListener('load', () => {
-        if (isSubmitting) finish();
+        setBusy(true);
+        const controller = new AbortController();
+        const timer = window.setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+        try {
+          const body = new URLSearchParams(
+            new FormData(form) as unknown as Record<string, string>
+          );
+          const response = await fetch(WORKER_ENDPOINT, {
+            method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body,
+            signal: controller.signal,
+          });
+          const result = await response.json().catch(() => null);
+
+          if (response.ok && result && result.ok === true) {
+            // reset() keeps the hidden "Submitted from" value: it is the
+            // input's default value.
+            form.reset();
+            syncContactRule();
+            token = '';
+            if (widgetId !== undefined) turnstileApi()?.reset(widgetId);
+            show(data.successTitle || '', data.successBody || '', false);
+          } else {
+            showError();
+          }
+        } catch {
+          showError();
+        } finally {
+          window.clearTimeout(timer);
+          setBusy(false);
+        }
       });
     }
   }

@@ -19,9 +19,11 @@
 //
 //   4. the Digital Literacy interest form (src/components/DltInterestForm.astro),
 //      id="dlt-interest-form", on the home page and on /digital-literacy/ in
-//      both languages. A light public interest list: it posts straight to its
-//      own Google Form through a hidden iframe, like the contact form. Only
-//      the name is required by HTML; the page script asks for phone or email.
+//      both languages. A light public interest list: it posts to the Worker's
+//      /interest-submit route (Turnstile checked there, then forwarded to the
+//      Worker's FORM_ACTION_INTEREST); its Google Form address must not appear
+//      on the page. Only the name is required by HTML; the page script asks
+//      for phone or email.
 //
 // The forms are separate Google Forms with separate action URLs and
 // separate entry.* names. Nothing is shared: do not reuse an id between them.
@@ -176,8 +178,10 @@ const STAFF_FORMS = {
 };
 /* ---------------- 4. the Digital Literacy interest form ---------------- */
 
-const INTEREST_ACTION =
-  'https://docs.google.com/forms/d/e/1FAIpQLSdt6Zl1Ecv49ALSWxAAtiOkWBLQJ2vV81lgyuCt6CSUGb4xnA/formResponse';
+const INTEREST_ACTION = `${SIGNUP_ACTION}/interest-submit`;
+
+/** The interest Google Form's id. The Worker holds the real URL; it must never be on a page. */
+const INTEREST_GOOGLE_FORM_ID = '1FAIpQLSdt6Zl1Ecv49ALSWxAAtiOkWBLQJ2vV81lgyuCt6CSUGb4xnA';
 
 /** Every entry.* name the interest form sends, in question order. */
 const INTEREST_FIELDS = {
@@ -298,13 +302,16 @@ function checkStaffForm(page, html, id, spec) {
   }
 }
 
-/** The interest form: Google action, every entry present, only known choices. */
+/** The interest form: Worker action, Turnstile, every entry present, only known choices. */
 let interestChecked = 0;
 function checkInterestForm(page, html) {
   interestChecked += 1;
   const form = html.match(/<form[^>]*id="dlt-interest-form"[^>]*>/);
   if (!form || !form[0].includes(`action="${INTEREST_ACTION}"`)) {
-    fail(page, 'the interest form does not post to its Google Form');
+    fail(page, `the interest form does not post to ${INTEREST_ACTION}`);
+  }
+  if (!/<form[^>]*id="dlt-interest-form"[\s\S]*?data-turnstile[\s\S]*?<\/form>/.test(html)) {
+    fail(page, 'the interest form has no Turnstile widget inside it');
   }
   for (const [role, field] of Object.entries(INTEREST_FIELDS)) {
     if (!html.includes(`name="${field}"`)) fail(page, `interest form is missing ${role} (${field})`);
@@ -337,6 +344,9 @@ for (const page of pages) {
   }
   for (const googleId of ALL_GOOGLE_IDS.slice(1)) {
     if (html.includes(googleId)) fail(page, 'a staff Google Form address is on the page; it belongs in the Worker only');
+  }
+  if (html.includes(INTEREST_GOOGLE_FORM_ID)) {
+    fail(page, 'the interest Google Form URL is on the page; it belongs in the Worker only');
   }
   if (!html.includes('id="request-info-form"')) continue;
   checked += 1;

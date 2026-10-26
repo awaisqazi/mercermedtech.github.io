@@ -3,8 +3,9 @@
  * Cloudflare Turnstile token, and forwards the answers to the Google Form.
  *
  * Bindings (Settings → Variables and Secrets):
- *   FORM_ACTION       plain text: the Google Form's formResponse URL
- *   TURNSTILE_SECRET  secret: the Turnstile widget's secret key
+ *   FORM_ACTION           plain text: the sign-up Google Form's formResponse URL
+ *   FORM_ACTION_INTEREST  plain text: the interest form's formResponse URL
+ *   TURNSTILE_SECRET      secret: the Turnstile widget's secret key
  *
  * The browser sends: POST, application/x-www-form-urlencoded, the entry.*
  * fields plus cf-turnstile-response. It gets back JSON {ok:true} or
@@ -21,6 +22,9 @@
  *                        binding ORIENTATION_FORM_ACTION
  *   POST /attendance-submit   .../onboarding/attendance/ (and /es/...)
  *                        binding ATTENDANCE_FORM_ACTION
+ *   POST /interest-submit     the public Digital Literacy interest form on
+ *                        / and /digital-literacy/ (and /es/...)
+ *                        binding FORM_ACTION_INTEREST
  * Same body as the sign-up (form-encoded entry.* fields plus
  * cf-turnstile-response), plus Google's date parts (entry.N_year/_month/_day)
  * and "Other" text (entry.N.other_option_response). Differences from the
@@ -28,7 +32,8 @@
  * otherwise), the Turnstile token must have been solved on mercermedtech.com,
  * a filled-in honeypot field ("website") is accepted and dropped, and only a
  * 200 from Google counts as delivered (Google answers 400 when a required
- * question is missing).
+ * question is missing). /interest-submit follows the same rules, except that
+ * the local dev server (localhost:4321, 127.0.0.1:4321) may call it too.
  */
 
 const ALLOWED_ORIGINS = new Set([
@@ -45,12 +50,23 @@ const STAFF_FIELD = /^entry\.\d+(_year|_month|_day|\.other_option_response)?$/;
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_FIELDS = 120;
 
-/** Route -> the Worker variable that holds that form's formResponse URL. */
+/** The public interest form may also be tried from the local dev server. */
+const INTEREST_ORIGINS = new Set([...STAFF_ORIGINS, 'http://localhost:4321', 'http://127.0.0.1:4321']);
+const INTEREST_HOSTNAMES = new Set([...STAFF_HOSTNAMES, 'localhost', '127.0.0.1']);
+
+const staffRoute = (binding) => ({ binding, origins: STAFF_ORIGINS, hostnames: STAFF_HOSTNAMES });
+
+/** Route -> the Worker variable that holds that form's formResponse URL, and who may call it. */
 const STAFF_ROUTES = {
-  '/iep-submit': 'IEP_FORM_ACTION',
-  '/loaner-submit': 'LOANER_FORM_ACTION',
-  '/orientation-submit': 'ORIENTATION_FORM_ACTION',
-  '/attendance-submit': 'ATTENDANCE_FORM_ACTION',
+  '/iep-submit': staffRoute('IEP_FORM_ACTION'),
+  '/loaner-submit': staffRoute('LOANER_FORM_ACTION'),
+  '/orientation-submit': staffRoute('ORIENTATION_FORM_ACTION'),
+  '/attendance-submit': staffRoute('ATTENDANCE_FORM_ACTION'),
+  '/interest-submit': {
+    binding: 'FORM_ACTION_INTEREST',
+    origins: INTEREST_ORIGINS,
+    hostnames: INTEREST_HOSTNAMES,
+  },
 };
 
 const ALLOWED_FIELD = /^entry\.\d+$/;
@@ -74,7 +90,7 @@ function json(body, status, origin) {
   });
 }
 
-function staffHeaders(origin) {
+function staffHeaders(origin, origins = STAFF_ORIGINS) {
   const headers = {
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
@@ -82,24 +98,24 @@ function staffHeaders(origin) {
     'Cache-Control': 'no-store',
     Vary: 'Origin',
   };
-  if (STAFF_ORIGINS.has(origin)) headers['Access-Control-Allow-Origin'] = origin;
+  if (origins.has(origin)) headers['Access-Control-Allow-Origin'] = origin;
   return headers;
 }
 
-function staffJson(body, status, origin) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json; charset=utf-8', ...staffHeaders(origin) },
-  });
-}
+/** POST to a staff route or /interest-submit -> {ok:true} or {ok:false, error}. */
+async function handleStaffSubmit(request, env, origin, route) {
+  const { binding, origins, hostnames } = route;
+  const staffJson = (body, status, at) =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { 'Content-Type': 'application/json; charset=utf-8', ...staffHeaders(at, origins) },
+    });
 
-/** POST /iep-submit or /loaner-submit -> {ok:true} or {ok:false, error}. */
-async function handleStaffSubmit(request, env, origin, binding) {
-  if (!STAFF_ORIGINS.has(origin)) {
+  if (!origins.has(origin)) {
     return staffJson({ ok: false, error: 'origin' }, 403, origin);
   }
   if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: staffHeaders(origin) });
+    return new Response(null, { status: 204, headers: staffHeaders(origin, origins) });
   }
   if (request.method !== 'POST') {
     return staffJson({ ok: false, error: 'method' }, 405, origin);
@@ -142,7 +158,7 @@ async function handleStaffSubmit(request, env, origin, binding) {
   } catch {
     return staffJson({ ok: false, error: 'turnstile unavailable' }, 502, origin);
   }
-  if (!verdict.success || (verdict.hostname && !STAFF_HOSTNAMES.has(verdict.hostname))) {
+  if (!verdict.success || (verdict.hostname && !hostnames.has(verdict.hostname))) {
     return staffJson({ ok: false, error: 'turnstile failed' }, 403, origin);
   }
 
@@ -185,9 +201,9 @@ export default {
     // The staff-form routes have their own CORS rules; every other address
     // keeps the sign-up behaviour below exactly as before.
     const pathname = new URL(request.url).pathname;
-    const binding = STAFF_ROUTES[pathname];
-    if (binding) {
-      return handleStaffSubmit(request, env, origin, binding);
+    const route = STAFF_ROUTES[pathname];
+    if (route) {
+      return handleStaffSubmit(request, env, origin, route);
     }
     // Only the sign-up form posts to the root. Any other path is a mistake
     // (for example a form deployed before its Worker route) and must fail

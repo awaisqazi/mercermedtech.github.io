@@ -2,9 +2,10 @@
 # Deploy from this folder:  npx wrangler deploy
 # The Turnstile secret is NOT here; it is set once with:
 #   npx wrangler secret put TURNSTILE_SECRET
-# IEP_FORM_ACTION, LOANER_FORM_ACTION, ORIENTATION_FORM_ACTION and
-# ATTENDANCE_FORM_ACTION (the staff forms' formResponse URLs, used by
-# POST /iep-submit, /loaner-submit, /orientation-submit, /attendance-submit)
+# IEP_FORM_ACTION, LOANER_FORM_ACTION, ORIENTATION_FORM_ACTION,
+# ATTENDANCE_FORM_ACTION and FORM_ACTION_INTEREST (formResponse URLs, used by
+# POST /iep-submit, /loaner-submit, /orientation-submit, /attendance-submit,
+# /interest-submit)
 # are also NOT here, because this repository is public. They are plain-text
 # variables set in the Cloudflare dashboard. A plain `wrangler deploy` drops
 # dashboard variables that are not in this file, so deploy with:
