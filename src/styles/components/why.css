@@ -1,7 +1,8 @@
 /* ==========================================================================
    Why Mercer Med Tech + Admissions requirements block
-   Reasons on hairlines in a grid, no icon tiles, no cards. Admissions is one
-   plain bordered sheet with a ruled list.
+   A deep teal block (base.css .block-med): reasons on white rules in a
+   grid, no icon tiles, no cards. Admissions sits on one paper panel inside
+   the block, with a ruled list.
    ========================================================================== */
 
 .why-section {
@@ -21,9 +22,8 @@
 }
 
 .why-card h3 {
-    font-size: 1.1875rem;
-    font-weight: 800;
-    letter-spacing: -0.015em;
+    font-size: 1.375rem;
+    letter-spacing: -0.01em;
     margin-bottom: var(--space-2);
     color: var(--text-main);
 }
@@ -35,13 +35,10 @@
     margin: 0;
 }
 
-/* Admissions: one white sheet, hairline border. */
+/* Admissions: one paper panel inside the teal block. */
 .admissions-block {
     margin-top: var(--space-7);
-    padding: var(--space-7) var(--space-6);
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
+    padding: clamp(1.5rem, 4vw, 3rem);
 }
 
 .admissions-header {
@@ -50,9 +47,8 @@
 }
 
 .admissions-header h3 {
-    font-size: clamp(1.6rem, 3vw, 2.1rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
+    font-size: clamp(1.75rem, 3.2vw, 2.4rem);
+    letter-spacing: -0.015em;
     margin-bottom: var(--space-2);
 }
 
@@ -77,7 +73,9 @@
 
 .admissions-list strong {
     display: block;
-    font-size: 1.0625rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.25rem;
     font-weight: 800;
     color: var(--text-main);
     margin-bottom: 0.15rem;
@@ -102,7 +100,7 @@
 }
 
 .admissions-cta .meta a {
-    color: var(--tech-dark);
+    color: var(--tech-ink);
     font-weight: 700;
     text-decoration: underline;
     text-decoration-thickness: 1px;

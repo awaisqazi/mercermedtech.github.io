@@ -2,8 +2,9 @@
    Contact / Request Info section and the Google Forms-backed form
    ========================================================================== */
 
+/* The contact section is a deep teal block (base.css .block-med); the form
+   itself sits on a paper panel inside it. */
 .contact-section {
-    background: var(--surface-2);
     position: relative;
 }
 
@@ -15,25 +16,8 @@
     align-items: start;
 }
 
-/* Same eyebrow as everywhere else (base.css .eyebrow), school-level bar. */
-.contact-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.65rem;
-    margin-bottom: var(--space-4);
-    font-size: 0.8125rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-main);
-}
-
-.contact-eyebrow::before {
-    content: '';
-    flex-shrink: 0;
-    width: 28px;
-    height: 3px;
-    background: var(--mark-split);
+.contact-intro .section-title {
+    margin-bottom: var(--space-5);
 }
 
 .contact-intro p {
@@ -66,7 +50,7 @@
     width: 1.1rem;
     margin-top: 0.2rem;
     text-align: center;
-    color: var(--primary-dark);
+    color: var(--accent-text, var(--med-ink));
     font-size: 0.95rem;
 }
 
@@ -84,17 +68,21 @@
 }
 
 .contact-direct a:hover {
-    color: var(--primary-dark);
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    text-decoration-thickness: 2px;
 }
 
-/* The form sits on a plain white sheet: one hairline, no shadow, no blur. */
+/* The form sheet: paper, no border on a colour block, a hairline on paper.
+   No shadow, no blur. */
 .contact-card {
-    background: var(--surface-1);
+    background: var(--paper);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: var(--space-6);
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.block-med .contact-card,
+.block-tech .contact-card {
+    border-color: transparent;
 }
 
 /* minmax(0, 1fr): a select sizes itself to its longest option, and a plain
@@ -141,6 +129,40 @@
     width: 100%;
     max-width: 100%;
     min-width: 0;
+    min-height: 52px;
+    padding: 0.9rem 1rem;
+    background: var(--white);
+    border: 1px solid var(--ink);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    /* 16px: iOS Safari zooms the page into any field set smaller. */
+    font-size: 1rem;
+    color: var(--ink);
+    transition: border-color 0.15s ease, outline-color 0.15s ease;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+    color: var(--text-light);
+}
+
+/* Focus: a 2px outline in the track colour, outside the 1px ink border. */
+.contact-form input:focus-visible,
+.contact-form select:focus-visible,
+.contact-form textarea:focus-visible,
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+    outline: 2px solid var(--med-ink);
+    outline-offset: 1px;
+    border-color: var(--med-ink);
+    box-shadow: none;
+}
+
+.contact-form textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     padding: 0.85rem 1rem;
     background: var(--surface-1);
     border: 1px solid #b9bfc6;
@@ -176,10 +198,10 @@
 .contact-form select {
     appearance: none;
     -webkit-appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'><path d='M1 1.5L6 6.5L11 1.5' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'><path d='M1 1.5L6 6.5L11 1.5' stroke='%23161a21' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
     background-repeat: no-repeat;
     background-position: right 1rem center;
-    background-color: var(--surface-1);
+    background-color: var(--white);
     padding-right: 2.75rem;
 }
 

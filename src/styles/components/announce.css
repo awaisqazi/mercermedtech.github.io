@@ -8,7 +8,7 @@
 .announce-strip {
     /* Clears the fixed header, which is out of flow. */
     margin-top: var(--header-height);
-    background: var(--tech-dark);
+    background: var(--tech-deep);
     color: #fff;
 }
 

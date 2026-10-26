@@ -1,15 +1,14 @@
 /* ==========================================================================
-   Homepage: two-track enrollment section
-   Two open columns on paper, Med first / left, Tech second / right. Each
-   column is headed by a 3px rule in its track colour. Inside: a status
-   line, a title, facts on hairlines, plain lists, buttons. No cards inside
-   the column, no icons, no pills.
+   Homepage: two-track enrollment section, set like a course catalogue
+   Paper. Two columns, Med first / left, Tech second / right, each headed by
+   a 4px rule in its track colour. Inside: a bracketed status line, a
+   Fraunces title, facts as label/value rows on hairlines, plain ruled
+   lists, buttons. No cards, no icons, no pills.
    ========================================================================== */
 
 .enroll-section {
     position: relative;
-    padding: var(--space-9) 0 var(--space-8);
-    border-top: 1px solid var(--rule);
+    padding: var(--section-space) 0;
     scroll-margin-top: var(--header-height);
 }
 
@@ -23,8 +22,9 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     padding-top: var(--space-5);
-    border-top: 3px solid var(--primary-dark);
+    border-top: 4px solid var(--med);
 }
 
 .enroll-card--tech {
@@ -37,34 +37,20 @@
     margin-top: auto;
 }
 
-/* Status line ("Enrolling year-round"). Sentence case, track colour. */
-.enroll-badge {
-    display: block;
-    margin-bottom: var(--space-3);
-    font-size: 0.9375rem;
-    font-weight: 700;
-    line-height: 1.4;
-    color: var(--primary-dark);
-}
-
-.enroll-card--tech .enroll-badge {
-    color: var(--tech-dark);
+.enroll-card .enroll-badge {
+    align-self: flex-start;
+    margin-bottom: var(--space-4);
 }
 
 .enroll-title {
-    font-size: clamp(1.85rem, 3.2vw, 2.5rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.08;
+    font-size: clamp(2rem, 3.6vw, 3rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
     margin-bottom: var(--space-4);
 }
 
 .enroll-title .text-gradient {
-    color: var(--primary-dark);
-}
-
-.enroll-card--tech .enroll-title .text-gradient {
-    color: var(--tech);
+    color: var(--text-main);
 }
 
 .enroll-subtitle {
@@ -79,55 +65,57 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: var(--space-5);
-    margin-bottom: var(--space-6);
+    margin: 0 0 var(--space-6);
+    padding: 0;
+    list-style: none;
     border-bottom: 1px solid var(--rule);
 }
 
 .enroll-program {
     padding: 0.65rem 0;
     border-top: 1px solid var(--rule);
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1rem;
     line-height: 1.35;
     color: var(--text-main);
 }
 
-/* Facts: label over value, two to a row, each on a hairline. */
+/* Facts: label / value columns on hairlines, like a catalogue entry. */
 .enroll-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--space-5);
-    margin-bottom: var(--space-6);
+    grid-template-columns: minmax(0, 1fr);
+    margin: 0 0 var(--space-6);
+    border-top: 2px solid var(--rule-strong);
 }
 
 .enroll-chip {
-    padding: 0.75rem 0 0.85rem;
-    border-top: 1px solid var(--rule);
-}
-
-/* The address is long: it takes the full row. */
-.enroll-chip:has(a) {
-    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(7.5rem, 0.42fr) minmax(0, 1fr);
+    gap: 0.15rem var(--space-4);
+    align-items: baseline;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--rule);
 }
 
 .enroll-chip-label {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--text-light);
-    margin-bottom: 0.15rem;
 }
 
 .enroll-chip-value {
+    margin: 0;
     font-size: 1rem;
     font-weight: 700;
     color: var(--text-main);
     line-height: 1.4;
+    font-variant-numeric: tabular-nums;
 }
 
 .enroll-chip-value a {
     color: inherit;
     text-decoration: underline;
-    text-decoration-color: var(--rule);
+    text-decoration-color: var(--border);
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
 }
@@ -154,11 +142,13 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: var(--space-5);
-    margin-bottom: var(--space-6);
+    margin: 0 0 var(--space-6);
+    padding: 0;
+    list-style: none;
     border-bottom: 1px solid var(--rule);
 }
 
-.enroll-features span {
+.enroll-features li {
     padding: 0.6rem 0;
     border-top: 1px solid var(--rule);
     font-size: 1rem;
@@ -189,7 +179,7 @@
     color: var(--text-muted);
 }
 
-/* When the next groups start: a small heading and a ruled list. */
+/* When the next groups start: a small heading and a two-column ruled table. */
 .term-schedule {
     margin-top: var(--space-6);
     padding-top: var(--space-6);
@@ -197,8 +187,9 @@
 
 .term-schedule-header {
     margin-bottom: var(--space-3);
-    font-size: 1.0625rem;
-    font-weight: 800;
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 600;
     letter-spacing: -0.01em;
     color: var(--text-main);
 }
@@ -209,7 +200,7 @@
     padding: 0;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    border-bottom: 1px solid var(--rule);
+    border-top: 2px solid var(--rule-strong);
 }
 
 .term-list li {
@@ -217,7 +208,7 @@
     grid-template-columns: minmax(8rem, 0.8fr) minmax(0, 1.2fr);
     gap: 0.25rem var(--space-4);
     padding: 0.65rem 0;
-    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
 }
 
 .term-name {
@@ -248,16 +239,12 @@
    Phones
    -------------------------------------------------------------------------- */
 @media (max-width: 576px) {
-    .enroll-section {
-        padding: var(--space-8) 0 var(--space-7);
-    }
-
     .enroll-tracks {
         gap: var(--space-7);
     }
 
     .enroll-title {
-        font-size: 2rem;
+        font-size: 2.25rem;
     }
 
     .enroll-subtitle {
@@ -275,6 +262,10 @@
         grid-template-columns: minmax(0, 1fr);
     }
 
+    .enroll-chip {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
     /* The address link is a block, so the whole value is the tap target. */
     .enroll-chip-value a {
         display: block;
@@ -284,16 +275,11 @@
         font-size: 1rem;
     }
 
-    .enroll-features span {
-        font-size: 0.9375rem;
+    .enroll-features li {
+        font-size: 1rem;
     }
 
     .term-list li {
         grid-template-columns: minmax(0, 1fr);
     }
-}
-
-/* The Med column has two facts: one per row reads better than a half row. */
-.enroll-card:not(.enroll-card--tech) .enroll-grid {
-    grid-template-columns: minmax(0, 1fr);
 }

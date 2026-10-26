@@ -22,22 +22,38 @@
     padding: 0 1rem;
 }
 
+/* Same small indigo bracket as every Tech eyebrow (base.css .eyebrow). */
 .signup-eyebrow {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.65rem;
-    color: var(--tech-dark);
+    padding: 0.4em 0.85em;
+    color: var(--tech-ink);
     font-size: 0.8125rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 
-.signup-eyebrow::before {
+.signup-eyebrow::before,
+.signup-eyebrow::after {
     content: '';
-    width: 28px;
-    height: 3px;
-    background: var(--tech);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0.45em;
+    border: 2px solid var(--tech);
+    pointer-events: none;
+}
+
+.signup-eyebrow::before {
+    left: 0;
+    border-right: 0;
+}
+
+.signup-eyebrow::after {
+    right: 0;
+    border-left: 0;
 }
 
 .signup-column h1 {

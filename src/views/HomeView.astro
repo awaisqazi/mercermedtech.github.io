@@ -47,9 +47,27 @@ const jsonLd = [
   }),
 ];
 
+// Each path block: its pitch, its status line, one button. The Tech button
+// goes straight to the interest form (contact-routing rule: form first).
 const heroPanels = [
-  { track: 'med' as const, ...h.hero.medPanel, ctaHref: '#programs-med' },
-  { track: 'tech' as const, ...h.hero.techPanel, ctaHref: '#programs-tech' },
+  {
+    track: 'med' as const,
+    label: h.hero.medPanel.label,
+    heading: h.hero.medPanel.heading,
+    body: h.hero.medPanel.body,
+    status: h.enroll.med.badge,
+    ctaLabel: h.hero.medPanel.ctaLabel,
+    ctaHref: '#programs-med',
+  },
+  {
+    track: 'tech' as const,
+    label: h.hero.techPanel.label,
+    heading: h.hero.techPanel.heading,
+    body: h.hero.techPanel.body,
+    status: h.enroll.tech.badge,
+    ctaLabel: h.enroll.tech.interestCta,
+    ctaHref: '#dlt-interest',
+  },
 ];
 ---
 
@@ -164,9 +182,9 @@ const heroPanels = [
         { href: dltPath, label: h.programs.tech.readMoreCta, style: 'tech' },
       ]}
     >
-      <!-- Tech column, under the Digital Literacy card: Med stays first and left. -->
-      <div id="dlt-interest" class="tech-interest">
-        <h4>{d.dltInterest.home.heading}</h4>
+      <!-- Tech block, beside the Digital Literacy facts: the interest form on paper. -->
+      <div id="dlt-interest" class="tech-interest panel-paper">
+        <h4 class="bracketed tech-interest-title">{d.dltInterest.home.heading}</h4>
         <p>{d.dltInterest.home.intro}</p>
         <DltInterestForm locale={locale} placement="home" compact />
       </div>

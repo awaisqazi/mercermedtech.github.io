@@ -5,6 +5,8 @@ import type { Locale } from '../i18n';
 interface Props {
   program: Program;
   locale: Locale;
+  /** Catalogue number, starting at 1. */
+  index: number;
   /** Label of the button that opens the pop-up. */
   detailsLabel: string;
   /** Label of the button on a coming-soon card. */
@@ -13,33 +15,32 @@ interface Props {
   waitlistHref: string;
 }
 
-const { program, locale, detailsLabel, waitlistLabel, waitlistHref } = Astro.props;
+const { program, locale, index, detailsLabel, waitlistLabel, waitlistHref } = Astro.props;
 const comingSoon = program.status === 'coming-soon';
 const showStatusLine = program.status === 'announce-soon';
 const label = comingSoon ? (program.cta ? program.cta[locale] : waitlistLabel) : detailsLabel;
 ---
 
-<article class={`program-card-glass carousel-slide${comingSoon ? ' coming-soon' : ''}`}>
-  {
-    program.badge && (
-      <div class="program-stats-badge">
-        <span>{program.badge[locale]}</span>
-      </div>
-    )
-  }
-  <h3 set:html={program.name[locale]}></h3>
-  <p>{program.summary[locale]}</p>
-  {showStatusLine && program.statusLine && <p class="program-status-line">{program.statusLine[locale]}</p>}
-
-  {
-    comingSoon ? (
-      <a href={waitlistHref} class="btn btn-secondary full-width">
-        {label}
-      </a>
-    ) : (
-      <button type="button" class="btn btn-secondary full-width" data-modal-target={`${program.id}-modal`}>
-        {label}
-      </button>
-    )
-  }
-</article>
+<!-- One catalogue entry: number, name and summary, hours, one button. -->
+<li class={`catalogue-row${comingSoon ? ' coming-soon' : ''}`}>
+  <span class="catalogue-no" aria-hidden="true">{String(index).padStart(2, '0')}</span>
+  <div class="catalogue-main">
+    <h3 set:html={program.name[locale]}></h3>
+    <p class="catalogue-summary">{program.summary[locale]}</p>
+    {showStatusLine && program.statusLine && <p class="program-status-line">{program.statusLine[locale]}</p>}
+  </div>
+  {program.badge && <p class="catalogue-hours">{program.badge[locale]}</p>}
+  <div class="catalogue-action">
+    {
+      comingSoon ? (
+        <a href={waitlistHref} class="btn btn-secondary">
+          {label}
+        </a>
+      ) : (
+        <button type="button" class="btn btn-secondary" data-modal-target={`${program.id}-modal`}>
+          {label}
+        </button>
+      )
+    }
+  </div>
+</li>

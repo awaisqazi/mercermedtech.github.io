@@ -21,7 +21,7 @@ interface Props {
 const { badge, heading, intro, cards, admissions } = Astro.props;
 ---
 
-<section id="why" class="why-section section-padding bg-surface-2">
+<section id="why" class="why-section section-padding block-med">
   <div class="container">
     <div class="section-header text-center">
       <span class="eyebrow">{badge}</span>
@@ -40,7 +40,7 @@ const { badge, heading, intro, cards, admissions } = Astro.props;
       }
     </div>
 
-    <div class="admissions-block">
+    <div class="admissions-block panel-paper">
       <div class="admissions-header">
         <h3>{admissions.heading}</h3>
         <p>{admissions.intro}</p>

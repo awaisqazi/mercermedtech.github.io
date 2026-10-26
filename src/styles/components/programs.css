@@ -1,34 +1,22 @@
 /* ==========================================================================
    PROGRAMS SECTION
-   Two track columns inside #programs:
-     below 1024px  -> one stacked column, Med on top, Med cards are a
-                      CSS scroll-snap carousel (no JS transforms)
-     1024px and up -> two columns, Med left / Tech right, the same Med card
-                      markup becomes a static 2-column CSS grid
-   The 1024px query is the single source of truth for the switch and is
-   mirrored by GRID_MODE_QUERY in the carousel script.
-
-   Visual language: paper background, hairline-bordered program cards with
-   no icon tile and no shadow, the Tech card as one flat indigo tint.
+   Two tracks inside #programs, stacked, Med first:
+     #programs-med   on paper: the health care programs as a printed course
+                     catalogue (numbered ruled rows, hours in their own
+                     column, one button per row)
+     #programs-tech  a full-bleed deep indigo block: the Digital Literacy
+                     facts on the left and, on the home page, the interest
+                     form on a paper panel on the right
    ========================================================================== */
 
 .programs-section {
     position: relative;
-    padding: var(--space-9) 0;
-    padding-left: var(--safe-area-left);
-    padding-right: var(--safe-area-right);
-    background: var(--surface-2);
+    padding-top: var(--section-space);
+    background: var(--paper);
 }
 
-.programs-section .section-header {
+.programs-section > .container > .section-header {
     margin-bottom: var(--space-7);
-}
-
-/* ----- Track columns ----- */
-.programs-tracks {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-8);
 }
 
 .programs-group {
@@ -37,21 +25,23 @@
     scroll-margin-top: var(--header-height);
 }
 
+.programs-group--med {
+    padding-bottom: var(--section-space);
+}
+
+.programs-group--tech {
+    padding: var(--section-space) 0;
+}
+
 .programs-group-header {
-    margin-bottom: var(--space-5);
-    padding-top: var(--space-4);
-    border-top: 3px solid var(--primary-dark);
+    max-width: 50rem;
+    margin-bottom: var(--space-6);
 }
 
-.programs-group--tech .programs-group-header {
-    border-top-color: var(--tech);
-}
-
-/* Equal-weight column headers. */
 .programs-group-header h3 {
-    font-size: clamp(1.6rem, 2.8vw, 2rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
     margin-bottom: var(--space-3);
 }
 
@@ -61,7 +51,7 @@
     font-size: 1.0625rem;
 }
 
-/* Track tag: small tracked capitals in the track colour, no pill. */
+/* Kept for older markup: a tracked label in the track colour. */
 .track-tag {
     display: block;
     margin-bottom: var(--space-2);
@@ -72,231 +62,127 @@
 }
 
 .track-tag--med {
-    color: var(--primary-dark);
+    color: var(--med-ink);
 }
 
 .track-tag--tech {
-    color: var(--tech-dark);
+    color: var(--tech-ink);
 }
 
-/* The carousel wrapper is a layout box only. No panel behind the cards. */
-.programs-carousel-glass {
-    position: relative;
-}
-
-/* ----- Carousel: CSS scroll-snap, no JS transforms -----
-   The track itself is the scroll container, so iOS Safari does the swiping
-   natively: vertical page scrolling is never trapped and nothing sets
-   touch-action: none. */
-.carousel-container {
-    position: relative;
-}
-
-.carousel-track {
-    display: flex;
-    gap: var(--space-4);
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-x: contain;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.carousel-track::-webkit-scrollbar {
-    display: none;
-}
-
-.carousel-slide {
-    flex: 0 0 calc((100% - 2rem) / 3);
-    min-width: 0;
-    scroll-snap-align: start;
-}
-
-/* Controls: square, hairline, ink. */
-.carousel-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
+/* ----- The Med catalogue ----- */
+.catalogue {
+    margin: 0;
     padding: 0;
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text-main);
-    font-size: 0.95rem;
-    cursor: pointer;
+    list-style: none;
+    border-top: 2px solid var(--rule-strong);
+    border-bottom: 2px solid var(--rule-strong);
 }
 
-.carousel-btn:hover {
-    border-color: var(--primary-dark);
-    color: var(--primary-dark);
+.catalogue-row {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr) 9rem 12.5rem;
+    column-gap: var(--space-5);
+    align-items: baseline;
+    padding: var(--space-5) 0;
 }
 
-.carousel-btn[disabled] {
-    opacity: 0.35;
-    cursor: default;
+.catalogue-row + .catalogue-row {
+    border-top: 1px solid var(--rule);
 }
 
-.carousel-btn[disabled]:hover {
-    border-color: var(--border);
-    color: var(--text-main);
+.catalogue-no {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--med-ink);
+    font-variant-numeric: lining-nums tabular-nums;
 }
 
-.carousel-dots {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.6rem;
+.catalogue-main h3 {
+    margin-bottom: var(--space-2);
+    font-size: clamp(1.4rem, 2.2vw, 1.75rem);
+    line-height: 1.1;
 }
 
-.carousel-dots:empty {
-    display: none;
-}
-
-/* Position marks: short bars, the current one longer and teal. */
-.dot {
-    position: relative;
-    width: 14px;
-    height: 3px;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: var(--border);
-    cursor: pointer;
-}
-
-.dot.active {
-    width: 28px;
-    background: var(--primary-dark);
-}
-
-/* The dots stay small to look at; the tap area around each is larger. */
-.dot::before {
-    content: '';
-    position: absolute;
-    inset: -20px -4px;
-}
-
-/* The dots already say where you are; the bar is not shown. */
-.programs-scroll-progress {
-    display: none;
-}
-
-.programs-scroll-progress-bar {
-    height: 100%;
-}
-
-.swipe-indicator {
-    display: none;
-    justify-content: center;
+.catalogue-summary {
+    max-width: 62ch;
     color: var(--text-muted);
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-
-/* ----- Program cards ----- */
-.program-card-glass {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding: var(--space-5);
-    background: var(--surface-1);
-    border: 1px solid var(--rule);
-    border-radius: var(--radius-md);
-    transition: border-color 0.15s var(--ease-out);
-}
-
-.program-card-glass:hover {
-    border-color: var(--primary-dark);
-}
-
-/* Hours line: small, tabular, teal. */
-.program-stats-badge {
-    margin-bottom: var(--space-3);
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--primary-dark);
-    font-variant-numeric: tabular-nums;
-}
-
-.program-card-glass h3 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-    margin-bottom: var(--space-3);
-}
-
-.program-card-glass p {
-    color: var(--text-muted);
-    font-size: 0.9375rem;
+    font-size: 1rem;
     line-height: 1.55;
-    margin-bottom: var(--space-5);
-    flex-grow: 1;
 }
 
 /* Programs that are on the site but not advertised with dates. */
-.program-card-glass .program-status-line {
-    flex-grow: 0;
-    margin-top: calc(-1 * var(--space-3));
-    margin-bottom: var(--space-4);
+.catalogue-main .program-status-line {
+    margin-top: var(--space-2);
     font-size: 0.9375rem;
     font-weight: 700;
     color: var(--text-main);
 }
 
-.program-card-glass .btn {
+.catalogue-hours {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.catalogue-action {
+    align-self: center;
+}
+
+.catalogue-action .btn {
     width: 100%;
-    min-height: 44px;
-    padding: 0.55rem 1rem;
-    font-size: 0.9375rem;
 }
 
 /* The details button is a <button>, so it needs the anchor's text defaults */
-.program-card-glass button.btn {
+.catalogue-action button.btn {
     font-family: inherit;
     cursor: pointer;
 }
 
-/* Coming-soon cards: same card, the hours line goes neutral. */
-.program-card-glass.coming-soon .program-stats-badge {
+/* Coming-soon rows: same row, the number and hours go neutral. */
+.catalogue-row.coming-soon .catalogue-no,
+.catalogue-row.coming-soon .catalogue-hours {
     color: var(--text-light);
 }
 
-/* ----- Tech feature card: one flat indigo tint ----- */
+/* ----- Tech block ----- */
+.programs-tech-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-8);
+    align-items: start;
+}
+
+/* The Digital Literacy facts sit straight on the indigo: no card. */
 .tech-card {
     display: flex;
     flex-direction: column;
-    padding: var(--space-6);
-    background: var(--tech-light);
-    border-radius: var(--radius-md);
+    padding-top: var(--space-5);
+    border-top: 2px solid var(--rule-strong);
 }
 
 .tech-card-badge {
-    display: block;
     margin-bottom: var(--space-3);
     font-size: 0.9375rem;
     font-weight: 700;
-    color: var(--tech-dark);
+    color: var(--accent-text, var(--tech-ink));
 }
 
 .tech-card h4 {
-    font-size: 1.5rem;
-    font-weight: 800;
-    letter-spacing: -0.025em;
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.08;
     margin-bottom: var(--space-3);
 }
 
 .tech-card p {
     color: var(--text-main);
-    font-size: 1rem;
+    font-size: 1.0625rem;
     line-height: 1.6;
     margin-bottom: var(--space-5);
 }
@@ -306,10 +192,10 @@
     margin: 0 0 var(--space-5);
     padding: 0;
     list-style: none;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-weight: 700;
     line-height: 1.6;
-    color: var(--tech-dark);
+    color: var(--accent-text, var(--tech-ink));
 }
 
 .tech-card-list li {
@@ -319,11 +205,10 @@
 .tech-card-list li + li::before {
     content: '\00B7';
     margin: 0 0.5em;
-    color: var(--tech);
     font-weight: 800;
 }
 
-/* "What you learn": a heading and a two-column ruled list. */
+/* "What you learn": a heading and a numbered two-column ruled list. */
 .tech-card .tech-card-subhead {
     margin: 0 0 var(--space-2);
     font-size: 1rem;
@@ -332,27 +217,39 @@
 }
 
 .tech-card-modules {
+    counter-reset: module;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--space-4);
+    column-gap: var(--space-5);
     margin: 0 0 var(--space-5);
     padding: 0;
     list-style: none;
-    border-bottom: 1px solid rgba(43, 68, 168, 0.22);
+    border-bottom: 1px solid var(--rule);
 }
 
 .tech-card-modules li {
-    padding: 0.55rem 0;
-    border-top: 1px solid rgba(43, 68, 168, 0.22);
-    font-size: 0.9375rem;
+    counter-increment: module;
+    display: grid;
+    grid-template-columns: 1.75rem minmax(0, 1fr);
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--rule);
+    font-size: 1rem;
     font-weight: 600;
     line-height: 1.35;
     color: var(--text-main);
 }
 
+.tech-card-modules li::before {
+    content: counter(module);
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--accent-text, var(--tech));
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
 .tech-card .tech-card-sessions {
     margin: 0 0 var(--space-5);
-    font-size: 0.9375rem;
+    font-size: 1rem;
     color: var(--text-muted);
 }
 
@@ -360,14 +257,13 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
-    margin-top: auto;
 }
 
 .tech-card .tech-card-funding {
     margin: var(--space-5) 0 0;
     padding-top: var(--space-4);
-    border-top: 1px solid rgba(43, 68, 168, 0.22);
-    font-size: 0.875rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.9375rem;
     color: var(--text-muted);
     line-height: 1.5;
 }
@@ -375,8 +271,6 @@
 /* Data source notes: plain text under a hairline. */
 .data-source-notes {
     margin-top: var(--space-6);
-    padding-top: var(--space-5);
-    border-top: 1px solid var(--rule);
     max-width: 70ch;
 }
 
@@ -387,7 +281,7 @@
 }
 
 .data-source-notes p {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     color: var(--text-muted);
     line-height: 1.6;
 }
@@ -404,154 +298,73 @@
 /* ==========================================================================
    Responsive
    ========================================================================== */
-
-/* Below the grid layout: carousel controls in one row under the cards
-   (prev, position marks, next). */
-@media (max-width: 1023px) {
-    .carousel-slide {
-        flex: 0 0 calc((100% - 1rem) / 2);
+@media (max-width: 1080px) {
+    .catalogue-row {
+        grid-template-columns: 3.5rem minmax(0, 1fr) 11rem;
+        row-gap: var(--space-3);
     }
 
-    .carousel-container {
-        display: grid;
-        grid-template-columns: 44px minmax(0, 1fr) 44px;
-        align-items: center;
-        gap: var(--space-4) var(--space-2);
-    }
-
-    .carousel-wrapper {
-        grid-column: 1 / -1;
+    .catalogue-hours {
+        grid-column: 3;
         grid-row: 1;
+        text-align: right;
     }
 
-    .carousel-prev {
-        grid-column: 1;
-        grid-row: 2;
-    }
-
-    .carousel-dots {
+    .catalogue-action {
         grid-column: 2;
         grid-row: 2;
-        flex-wrap: wrap;
+        justify-self: start;
+        width: min(100%, 16rem);
     }
 
-    .carousel-next {
-        grid-column: 3;
-        grid-row: 2;
-    }
-
-    .swipe-indicator {
-        display: flex;
-        grid-column: 1 / -1;
-        grid-row: 3;
+    .programs-tech-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--space-7);
     }
 }
 
 @media (max-width: 640px) {
-    .programs-section {
-        padding-top: var(--space-8);
-        padding-bottom: var(--space-8);
+    /* Phones: number in its own narrow column, everything else stacked
+       beside it. Hours sit under the name, the button under the summary. */
+    .catalogue-row {
+        grid-template-columns: 2.5rem minmax(0, 1fr);
+        column-gap: var(--space-3);
+        row-gap: var(--space-3);
+        padding: var(--space-5) 0;
     }
 
-    .programs-tracks {
-        gap: var(--space-7);
+    .catalogue-no {
+        grid-row: 1 / span 3;
+        font-size: 1.375rem;
     }
 
-    .carousel-slide {
-        flex: 0 0 88%;
-        scroll-snap-align: start;
+    .catalogue-main {
+        grid-column: 2;
+        grid-row: 1;
     }
 
-    .carousel-track {
-        gap: var(--space-3);
+    .catalogue-hours {
+        grid-column: 2;
+        grid-row: 2;
+        text-align: left;
+        font-size: 0.9375rem;
     }
 
-    .program-card-glass p {
+    .catalogue-action {
+        grid-column: 2;
+        grid-row: 3;
+        width: 100%;
+    }
+
+    .catalogue-main h3 {
+        font-size: 1.5rem;
+    }
+
+    .tech-card-modules {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .tech-card p {
         font-size: 1rem;
-    }
-
-    .tech-card {
-        padding: var(--space-5) 1.25rem;
-    }
-
-    .data-source-notes p {
-        font-size: 0.9375rem;
-    }
-
-    .tech-card-modules li {
-        font-size: 0.9375rem;
-    }
-}
-
-/* --------------------------------------------------------------------------
-   Programs: two columns at 1024px and up
-   Med (left) keeps the SAME card markup but is laid out by CSS grid here.
-   The carousel script watches the identical (min-width: 1024px) query and
-   does nothing in this mode, so nothing fights the grid.
-   -------------------------------------------------------------------------- */
-@media (min-width: 1024px) {
-    .programs-tracks {
-        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-        gap: var(--space-7);
-        align-items: start;
-    }
-
-    #programs-med .carousel-track {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: var(--space-3);
-        overflow: visible;
-        scroll-snap-type: none;
-    }
-
-    #programs-med .carousel-slide {
-        flex: none;
-        min-width: 0;
-        scroll-snap-align: none;
-    }
-
-    /* Swipe affordances have no meaning in grid mode. */
-    #programs-med .carousel-btn,
-    #programs-med .carousel-dots,
-    #programs-med .programs-scroll-progress,
-    #programs-med .swipe-indicator {
-        display: none;
-    }
-
-    #programs-med .program-card-glass {
-        padding: 1.25rem;
-    }
-
-    #programs-med .program-card-glass h3 {
-        font-size: 1.125rem;
-    }
-
-    #programs-med .program-card-glass p {
-        font-size: 0.9rem;
-        margin-bottom: var(--space-4);
-    }
-}
-
-@media (min-width: 1280px) {
-    .programs-tracks {
-        gap: var(--space-8);
-    }
-
-    #programs-med .carousel-track {
-        gap: var(--space-4);
-    }
-
-    #programs-med .program-card-glass {
-        padding: var(--space-5);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .carousel-track {
-        scroll-behavior: auto;
-    }
-
-    .program-card-glass {
-        transition: none;
     }
 }

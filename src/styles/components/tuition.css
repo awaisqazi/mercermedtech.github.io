@@ -5,9 +5,7 @@
    Collapses to stacked entries on hairlines under 720px.
    ========================================================================== */
 
-.tuition-section {
-    border-top: 1px solid var(--rule);
-}
+/* Follows a colour block, so no rule above it. */
 
 .tuition-table-wrap {
     margin-top: var(--space-7);

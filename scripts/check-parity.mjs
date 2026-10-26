@@ -60,6 +60,10 @@ const EXPECTED_MISSES = [
     why: 'owner, 2026-10-27 (mobile clean-up): the pill above each enrollment card already says "Enrolling year-round" / "Enrolling soon", so the card heading no longer repeats it after a comma that wrapped onto its own line on phones',
   },
   {
+    match: /^(Career services|See the Tech track)$/,
+    why: 'owner direction, 2026-10-27 ("Two paths" redesign): each hero path block carries only its pitch, its status line and one button, so the hero program lists are gone and the Tech button is now "Tell us you are interested" (to the interest form). Help finding work is still named in the trust line, the Tech facts and Why Mercer Med Tech',
+  },
+  {
     match: /^(swipe to see more|see the details|put me on the list)$/i,
     why: 'button label, still present in the build in the same words',
   },

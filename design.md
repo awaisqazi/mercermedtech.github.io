@@ -173,24 +173,18 @@ homepage announcement strip, which is about Digital Literacy on its own.
 
 ### Color ownership
 
-Med keeps the brand teal (`--primary` family). Tech owns the indigo family,
-declared in `assets/css/digital-literacy.css` next to the existing tokens:
-
-| Token          | Hex       | Use                                             |
-| -------------- | --------- | ----------------------------------------------- |
-| `--tech`       | `#3B5BDB` | Tech buttons, chips, icons, card accents.       |
-| `--tech-dark`  | `#2B44A8` | Tech hover, text on light indigo, emphasis.     |
-| `--tech-light` | `#E7ECFD` | Tech tints, chip and card backgrounds.          |
-
-Contrast checked: `--tech` on white 5.6:1, `--tech-dark` on white 8.4:1,
-`--tech-dark` on `--tech-light` 7.1:1, white on `--tech` 5.6:1. All pass AA for
-body text. A Tech-track element never uses teal, and a Med-track element never
-uses indigo.
+Med keeps the brand teal family (`--med`, `--med-ink`, `--med-deep`). Tech
+owns the indigo family (`--tech`, `--tech-ink`, `--tech-deep`,
+`--tech-tint`). All tokens and their contrast ratios are in
+`src/styles/tokens.css` and section 1b. A Tech-track element never uses
+teal, and a Med-track element never uses indigo.
 
 ### Lockup and the split mark
 
 The old 135deg teal-to-indigo `--lockup-gradient` is retired; the variable
-now points at `--mark-split` (see section 1b). There is no gradient text.
+now points at `--mark-split`, the split hairline used only at the top of the
+header and footer (section 1b). There is no gradient text. As an eyebrow the
+lockup sits inside the small bracket, teal left arm, indigo right arm.
 
 The wordmark is CSS text, never an image: `.medtech-lockup` renders "Med" in
 teal, a thin divider, and "Tech" in indigo, in Plus Jakarta Sans 800. It
@@ -244,146 +238,196 @@ NJDOL is affiliated with Digital Literacy Training only. Therefore:
 
 ---
 
-## 1b. Visual language
+## 1b. Visual language: "Two paths"
 
-The site should look like a real school that knows its trade, not like a
-software template. Quiet, editorial, typographic. These rules outrank any
-older component note further down; when the two disagree, this section wins.
+The site is a poster system with a course-catalogue backbone. There are no
+photos to lean on, so type and colour carry the identity: the two brand
+colours as full-bleed blocks, a display serif for headlines, the bracket from
+the logo as the one signature motif, and programs, schedules and prices set
+like a printed catalogue. These rules outrank any older component note
+further down; when the two disagree, this section wins.
+
+### Colour as structure
+
+- **Paper and ink.** Neutral sections are warm paper (`--paper` #F6F3EE)
+  with near-black ink (`--ink` #161A21, 15.8:1). The page is never pure
+  white; white (`--white`) is only the inside of form fields.
+- **Med blocks** are deep teal (`--med-deep` #0B5F5A) with white type
+  (7.5:1). Accent on the block (numerals, brackets, status):
+  `--med-on-deep` #8FE3DA (5.1:1). Supporting text: `--med-muted-on-deep`
+  #CFE7E4 (5.8:1). The brand teal `--med` #00A69C is only 2.7:1 on paper, so
+  on light backgrounds it is for rules and large brackets only; teal text on
+  paper is `--med-ink` #006B64 (5.7:1).
+- **Tech blocks** are deep indigo (`--tech-deep` #243B9E) with white type
+  (9.6:1). Accent: `--tech-on-deep` #B4C3FF (5.6:1); supporting text
+  `--tech-muted-on-deep` #D5DCF7 (7.0:1). On paper the indigo accent is
+  `--tech` #3B5BDB (5.1:1) and indigo text `--tech-ink` #2B44A8 (7.6:1).
+  `--tech-tint` #E6E9F5 is the indigo-tinted panel on Tech pages.
+- **How a block works.** `.block-med` / `.block-tech` set the background and
+  redefine the semantic tokens (`--text-main`, `--text-muted`, `--rule`,
+  `--rule-strong`, `--border`, `--bracket`, `--accent-text`), so any
+  component inside turns light by itself. `.panel-paper` inside a block puts
+  paper and ink back, for forms and dense reading. Inside a block the solid
+  button is paper with the block colour as text; the outline button is white.
+- **Rhythm.** Paper, colour block, paper, down the page, so the structure is
+  visible while scrolling on a phone. Home: hero headline on paper, the Med
+  and Tech path blocks, enrollment and About on paper, the Med catalogue on
+  paper, the Tech track block (indigo, interest form on paper inside), tuition
+  on paper, Why Mercer Med Tech (teal, admissions on paper inside), grants on
+  paper with an indigo grant panel, people and organizations on paper, the
+  contact section (teal, form on paper inside), footer on ink. Digital
+  Literacy page (Tech only, so no teal): hero indigo, information sessions on
+  paper, interest form indigo, who qualifies on paper, what you learn on the
+  indigo tint, outcomes on paper, support indigo, how to enroll on paper,
+  partners on the tint, FAQ on paper, contact indigo, footer on ink.
+- **Order rule still holds.** Med always first / left, Tech second / right.
+  School-level blocks that are not about one track (contact, Why) use the
+  school's brand teal; a Tech-only surface never uses teal.
+- **No gradients, no glass, no shadows.** Section spacing is one fluid value,
+  `--section-space` = `clamp(3rem, 8vw, 6rem)`.
+
+### Typography
+
+- **Fraunces** (Google Fonts, variable: optical size 9 to 144, weight 500 to
+  700, SOFT, WONK) for H1 to H3, catalogue entries, numerals and the hero
+  facts on the Digital Literacy page. `font-optical-sizing: auto`, weight
+  600, `SOFT 30`. The H1 adds a little softness and the leaning "wonky"
+  letters (`SOFT 60, WONK 1`).
+- **Plus Jakarta Sans** (400 to 800) for body, UI, labels, H4 to H6, buttons
+  and tables.
+- One stylesheet request for both families, `display=swap`, preloaded in
+  `BaseLayout.astro`.
+- Scale: H1 `clamp(2.6rem, 9vw, 6rem)`, line-height 0.98, -0.025em. Section
+  H2 `clamp(2.1rem, 5.2vw, 3.6rem)`, 1.02. Body 1rem / 1.6, lead 1.125 to
+  1.1875rem. Headlines are left-aligned with `text-wrap: balance`.
+
+### The bracket: the signature motif
+
+The logo mark is a bracket, so the bracket is the one motif. It is drawn in
+CSS (two three-sided boxes), never typed as a character, in the accent of the
+section it sits in.
+
+- **Framed statement** (`.bracketed`): at most one per section. Used on the
+  key headline or promise: "[Two paths]" in the home H1 (`.bracket-pair`:
+  teal left arm, indigo right arm), "[No cost if you qualify.]" in the
+  Digital Literacy hero, the interest-form headings, "Who qualifies", "What
+  you learn", the grant-funded panel, the contact heading. A short script in
+  `BaseLayout.astro` shrinks a wrapped frame to its longest line.
+- **Small bracket marker** (`.eyebrow`, `.dl-eyebrow`, `.signup-eyebrow`,
+  the lockup eyebrow): the section label in tracked capitals, and status
+  lines in sentence case (`.eyebrow--status`). School-level markers split the
+  bracket (teal left, indigo right); `.eyebrow--med` is teal only,
+  `.eyebrow--tech` indigo only; on a block the marker takes the block accent.
+- **The split hairline** (teal then indigo, hard stop) appears only at the
+  very top of the page (header) and the top of the footer.
+
+### Catalogue backbone
+
+- **Programs** are a ruled, numbered list, not cards: number (Fraunces, teal),
+  name and summary, hours in their own column, one outline button. Phones
+  stack it beside the number. No carousel.
+- **Facts** are label / value rows on hairlines under a 2px ink rule
+  (enrollment facts, term schedule, information sessions).
+- **Tuition** is a real table: 2px ink rules top and bottom, hairlines
+  between rows, Med then Tech group rows, tabular numbers right-aligned.
+- **Steps** ("How to enroll") are numbered 1 to 4 with large Fraunces
+  numerals in the accent colour on a heavy rule. No circles, no cards.
+- **Who qualifies and the module list** are plain typographic blocks (a
+  Fraunces title over a short paragraph, on a heavy rule) on paper or the
+  indigo tint, under a bracketed headline.
+
+### Buttons and forms
+
+- Buttons: solid, 4px radius, sentence case, weight 700, 48px tall. Med
+  `.btn-primary` teal (`--med-ink`), Tech `.btn-tech` indigo
+  (`--tech-deep-2`); secondary buttons are 2px outlines. Hover darkens. No
+  shadow, no lift.
+- Fields: white, 1px ink border, 4px radius, 16px text, 0.9rem by 1rem
+  padding, at least 52px tall; focus is a 2px outline in the track colour.
+  Forms sit on paper: inside a colour block on a `.panel-paper` sheet with a
+  bracketed heading (the home and Digital Literacy interest forms, the
+  contact form). Behaviour, field names and Turnstile wiring are unchanged.
 
 ### Never use
 
-- **Callouts with a coloured side bar** (a left border in a track colour),
-  with or without a check or info icon. Use a plain paragraph with a bold
-  lead-in ("**Who qualifies:** You live in New Jersey..."), or a bordered note:
-  1px `--border`, 8px radius, white, a small heading if it needs one.
-- **Icon-in-pill chip lists.** Use a two-column list on hairlines (each item
-  has a 1px `--rule` top border) or an inline run separated by a middle dot.
-- **Glass and gradient surfaces:** translucent panels, `backdrop-filter`,
-  radial "blob" backgrounds, animated meshes, sheen sweeps, glow rings.
-- **Cards nested in cards**, and drop shadows on content. A surface is one
-  level deep.
-- **Uppercase, letter-spaced, pill-shaped buttons.** Buttons are sentence
-  case.
-- **Gradient badges and gradient text.** Status lines are text in the track
-  colour.
-- **Decorative icons before list items, card titles or headings.** Keep an
-  icon only where it says what something is: phone, email and map pin in the
-  contact section and footer, social logos, the carousel chevrons, the
-  external-link mark, the form's success and error state.
-- **Centred section headers.** Text is left-aligned. Centred text is for the
-  404 page only.
-- Stock photos and new illustrations. The two campus photos and the flat
-  Tech line drawing on the Digital Literacy hero are the only images.
-
-### Always use
-
-- **Surfaces.** White (`--surface-1`) is the page. Paper (`--surface-2`,
-  #F6F5F1) is the one neutral alternate band. A solid tint is used for at
-  most one or two blocks per page: `--primary-light` for a Med block (the Med
-  hero panel, the program page funding note) and `--tech-light` for a Tech
-  block (the Tech hero panel, the Digital Literacy card, the #interest
-  section). Tints are flat colour, never a gradient.
-- **Rules.** Hairline = 1px `--rule`. Heavy rule = 2px `--rule-strong`
-  (ink), used over tables, FAQ lists, criteria and steps. A track column is
-  headed by a 3px rule in its track colour (enroll columns, program
-  columns).
-- **Type.** Plus Jakarta Sans only (400 to 800). Display headings 800,
-  tight tracking (-0.03em to -0.04em): hero H1 `clamp(2.5rem, 6.4vw,
-  4.75rem)`, section H2 `clamp(2rem, 4.4vw, 3rem)`. Body 1rem/1.6, lead
-  1.125 to 1.1875rem, muted text `--text-muted` (7:1 on white).
-- **Spacing.** Use the `--space-1` to `--space-9` scale in `tokens.css`
-  (4px base: 4, 8, 12, 16, 24, 32, 48, 64, 96px). Sections are `--space-9`
-  tall on desktop, `--space-8` on phones.
-- **Eyebrow.** At most one per section: 0.8125rem capitals, 0.12em tracking,
-  after a 28px by 3px bar. Classes: `.eyebrow` (school level, split bar),
-  `.eyebrow--med`, `.eyebrow--tech`, `.dl-eyebrow` (Tech page).
-- **Numerals, not circles.** Ordered things are numbered with large numerals
-  in the track colour (`01`, `02`), weight 800, on a heavy rule: the Digital
-  Literacy steps, and the Med 01 / Tech 02 hero panels (the numerals also
-  carry the order rule).
-- **Buttons.** Sentence case, weight 700, 1rem, 6px radius, 48px tall, solid
-  fill (`--primary-dark` for Med, `--tech` for Tech) or a 2px outline. Hover
-  darkens the fill. No shadow, no lift, no sheen.
-- **Facts and lists.** Label over value on hairlines (enroll facts, program
-  facts), two to a row where they fit.
-
-### The signature mark
-
-One detail is ours: the **split mark**, Med teal then Tech indigo with a hard
-stop (`--mark-split`, never a blend). It appears as:
-
-- the 3px top edge of the header and the footer;
-- the 28px bar in front of a school-level eyebrow and the Med + Tech lockup;
-- the underline under the hero accent words ("Two paths").
-
-Colour ownership still applies: on a Tech-only surface (the Digital Literacy
-page) the same shapes are indigo only, and on a Med-only surface teal only.
-Do not invent a second motif.
+- Callouts with a coloured side bar; icon-in-pill chip lists; decorative
+  icons before items or headings (icons stay only where they say what a thing
+  is: phone, email, map pin, social logos, external link, form status).
+- Glass, translucent panels, `backdrop-filter`, gradient blobs, sheens, glow
+  rings, gradient text or badges, drop shadows on content, nested cards.
+- Uppercase, letter-spaced or pill-shaped buttons.
+- Centred section headers (the 404 page excepted).
+- Stock photos and illustrations. The two campus photos are the only images;
+  the old Digital Literacy line drawing is gone (its place is a ruled list of
+  the hero facts in Fraunces).
+- A second motif. The bracket is the only one.
 
 ### Mobile first
 
 Design and check at 375 and 390px first. 1rem gutters, 16px form text,
-44px tap targets, no horizontal scroll, button pairs stack full width.
+44px tap targets, no horizontal scroll, buttons full width on phones, the two
+path blocks stacked Med then Tech.
 
 ---
 
 ## 2. Color System
 
-The brand is built on a single hero color (medical teal) with neutral surfaces
-and a complementary accent for gradients and highlights.
+The palette, its contrast ratios and how colour blocks work are in section
+1b. Token names in `src/styles/tokens.css`:
 
-| Token              | Hex       | Use                                          |
-| ------------------ | --------- | -------------------------------------------- |
-| `--primary`        | `#00A69C` | Brand teal. Buttons, links, focus, accents.  |
-| `--primary-dark`   | `#007D75` | Hover states, gradient endpoint, emphasis.   |
-| `--primary-light`  | `#E0F7F6` | Soft tints, card backgrounds, secondary btn. |
-| `--accent`         | `#20C997` | Gradient companion, success states.          |
-| `--accent-hover`   | `#008C82` | Darker accent variant.                       |
-| `--surface-1`      | `#FFFFFF` | Default page background.                     |
-| `--surface-2`      | `#F0F4F8` | Section dividers, inputs, subtle bands.      |
-| `--surface-3`      | `#E2E8F0` | Tertiary surfaces, chip backgrounds.         |
-| `--text-main`      | `#1E293B` | Body text, headlines.                        |
-| `--text-muted`     | `#64748B` | Supporting copy.                             |
-| `--text-light`     | `#94A3B8` | Hint text, eyebrow labels.                   |
-| `--border`         | `#CBD5E1` | Default 1px border.                          |
+| Token                  | Hex       | Use                                              |
+| ---------------------- | --------- | ------------------------------------------------ |
+| `--paper`              | `#F6F3EE` | The page and neutral sections (`--surface-1`).   |
+| `--paper-deep`         | `#EDE8DF` | Occasional alternate band (`--surface-2`).        |
+| `--ink`                | `#161A21` | Text, heavy rules, footer (`--text-main`).        |
+| `--text-muted`         | `#4D5A67` | Supporting copy, 6.4:1 on paper.                  |
+| `--text-light`         | `#5D6874` | Labels and meta, 5.1:1 on paper.                  |
+| `--med`                | `#00A69C` | Brand teal: rules and brackets on paper only.     |
+| `--med-ink`            | `#006B64` | Teal text and Med buttons (`--primary-dark`).     |
+| `--med-deep`           | `#0B5F5A` | Med block background.                             |
+| `--med-on-deep`        | `#8FE3DA` | Accent on the Med block.                          |
+| `--tech`               | `#3B5BDB` | Indigo accent on paper.                           |
+| `--tech-ink`           | `#2B44A8` | Indigo text on paper (`--tech-dark`).             |
+| `--tech-deep`          | `#243B9E` | Tech block background.                            |
+| `--tech-deep-2`        | `#2B46B8` | Tech buttons.                                     |
+| `--tech-on-deep`       | `#B4C3FF` | Accent on the Tech block.                         |
+| `--tech-tint`          | `#E6E9F5` | Indigo-tinted panel (`--tech-light`).             |
 
 ### No gradients
 
-There is no signature gradient any more. Colour is flat: see section 1b for
-surfaces, tints and the split mark. `--accent` is kept for legacy rules only.
+Colour is flat. The only two-colour element is the split hairline at the top
+of the header and footer, a hard stop, never a blend.
 
 ### Accessibility
 
-- Body text on white: AA+ contrast (`#1E293B` on `#FFFFFF`).
-- Primary teal on white: AA for large/UI; pair with text size ≥ 16px or weight
-  ≥ 600 for body. For long-form text, prefer `--text-main`.
-- Never use `--text-light` for anything below 14px or for actionable elements.
+- White on `--med-deep` 7.5:1, white on `--tech-deep` 9.6:1; every accent and
+  supporting colour on a block is at least 5:1 (section 1b).
+- `--med` (#00A69C) never carries text on paper (2.7:1). Use `--med-ink`.
 
 ---
 
 ## 3. Typography
 
-| Use                | Family              | Weight    |
-| ------------------ | ------------------- | --------- |
-| Headings (H1–H4)   | Plus Jakarta Sans   | 700–800   |
-| Body / UI          | Plus Jakarta Sans   | 400–700   |
-| Numbers / labels   | Plus Jakarta Sans   | 600       |
-| Tabular numbers    | (any) `font-variant-numeric: tabular-nums` |
+| Use                          | Family              | Weight    |
+| ---------------------------- | ------------------- | --------- |
+| H1 to H3, catalogue entries, numerals | Fraunces   | 500 to 600 |
+| Body / UI, H4 to H6, buttons | Plus Jakarta Sans   | 400 to 800 |
+| Tabular numbers              | Plus Jakarta Sans, `font-variant-numeric: tabular-nums` | 600 to 800 |
 
 ### Scale
 
-- **H1:** `clamp(2.25rem, 5vw, 3.5rem)`, line-height 1.15, letter-spacing -0.02em
-- **H2 (section title):** 2.5rem, line-height 1.2
-- **H3:** 1.25rem
+- **H1:** `clamp(2.6rem, 9vw, 6rem)`, line-height 0.98, letter-spacing -0.025em
+- **H2 (section title):** `clamp(2.1rem, 5.2vw, 3.6rem)`, line-height 1.02
+- **H3:** 1.375 to 3rem depending on the component (catalogue names 1.75rem)
 - **Body:** 1rem / 1.6 line-height
-- **Lead body:** 1.125rem (hero copy, intros)
+- **Lead body:** 1.125 to 1.1875rem (hero copy, intros)
 - **Small / meta:** 0.875rem
-- **Eyebrow / label:** 0.8125rem, uppercase, letter-spacing 0.12em, weight 700, after the 3px bar
+- **Eyebrow / label:** 0.8125rem, uppercase, letter-spacing 0.12em, weight 700, inside the small bracket
 
 ### Rules
 
 - One H1 per page, used in the hero.
-- No gradient text. `.text-gradient` is now a solid track colour.
+- No gradient text.
 - Avoid uppercase except eyebrows, track tags and table group rows. Buttons
   are sentence case.
 - Line length for body copy: target 50–75 characters (`max-width: 56ch`–`64ch`).
@@ -394,14 +438,14 @@ surfaces, tints and the split mark. `--accent` is kept for legacy rules only.
 ## 4. Layout & Spacing
 
 - **Container:** max 1280px, padding `0 2rem` (1rem on small mobile).
-- **Section padding:** 8rem desktop / 4.5rem mobile.
+- **Section padding:** `--section-space`, `clamp(3rem, 8vw, 6rem)`.
 - **Vertical rhythm:** prefer multiples of `0.25rem` (4px). Common gaps:
   `0.5 / 0.75 / 1 / 1.5 / 2 / 2.5 / 3 / 4rem`.
 - **Grid:** prefer `auto-fit, minmax(220–300px, 1fr)` for card grids so they
   reflow naturally on mid-sized viewports without bespoke breakpoints.
-- **Radius:** `--radius-sm` 6px (buttons, inputs), `--radius-md` and
-  `--radius-lg` 8px (notes, cards, tints, modals). `--radius-full` is not
-  used for buttons, badges or chips.
+- **Radius:** 4px everywhere (`--radius-sm`, `--radius-md`, `--radius-lg`):
+  buttons, inputs, paper panels, modals. `--radius-full` is not used for
+  buttons, badges or chips.
 - **Shadow:** none on content. The only shadow is the small one under the
   floating call button, which sits over the page.
 
@@ -413,31 +457,38 @@ The home page is one long scroll, in this order. Anchor IDs are nav targets.
 
 0. `.announce-strip`: one slim, non-sticky Digital Literacy line under the
    fixed header
-1. `#hero`: Lockup eyebrow, H1, trust chips, and two equal track panels
-   (Med first), plus a quiet "Request information" link
-2. `#enroll`: Two enrollment columns under track-colour rules, Med first, with the
-   **Term Schedule** panel inside the Med card
+1. `#hero`: Lockup eyebrow, H1 with "[Two paths]" bracketed, lead and the
+   school facts on paper; then the two path blocks, full bleed, Med (teal,
+   "01 Med") left and Tech (indigo, "02 Tech") right, each with its pitch,
+   status line and one button (Med: See the Med programs; Tech: Tell us you
+   are interested, to the interest form); then the quiet "Ask us" line
+2. `#enroll`: Two catalogue columns under track-colour rules, Med first, with
+   the **Term Schedule** table at the foot of the Med column
 3. `#about`: The Med + Tech story and state-approval credentials
-4. `#programs`: Wrapper holding `.programs-tracks`, a two-column layout with
-   `#programs-med` (left, the card carousel) and `#programs-tech` (right, the
-   Digital Literacy feature card). Below 1024px they stack, Med first.
-   `#programs` stays on the wrapper so older links keep working.
+4. `#programs`: Wrapper holding, stacked, `#programs-med` (the numbered
+   catalogue on paper) and then `#programs-tech` (a full-bleed indigo block:
+   the Digital Literacy facts beside the interest form, `#dlt-interest`, on a
+   paper panel). Med first at every width. `#programs` stays on the wrapper
+   so older links keep working.
 5. `#tuition`: Tuition at a Glance table, grouped into Med and Tech
-6. `#why`: 8-card "Why Mercer Med Tech" + Admissions Requirements block
+6. `#why`: teal block, eight reasons on rules + the admissions panel on paper
 7. `#grants`: Financial aid and loan information
 8. `#faculty`: Meet Our Team (Director, Bursar)
-9. `#organizations`: Affiliated organizations marquee
-10. `#contact`: Request Info form (wired to Google Forms)
+9. `#organizations`: Affiliated organizations, a static ruled list
+10. `#contact`: teal block, Request Info form on a paper panel (Google Forms)
 11. `#footer`: Site footer (NAP, social)
 
-Plus a fixed floating "Call Now" CTA on mobile.
+The floating "Call us" button is off on the home and Digital Literacy pages:
+the forms come first, and the phone number lives in the footer and the
+contact section.
 
 **Second page: `digital-literacy.html`.** The Tech track landing page, built for
 county caseworkers and participants. Same design system, Tech color family,
 page CSS in `assets/css/digital-literacy.css` (which also holds the shared
 Med + Tech components the home page uses). Its order is: hero, information
-sessions strip, `#qualify`, `#learn`, what you leave with, support while you
-train, `#enroll`, `#partners`, En español, FAQ, contact, footer. It follows the
+sessions strip, `#interest`, `#qualify`, `#learn`, what you leave with,
+support while you train, `#enroll`, `#partners`, FAQ, contact, footer (see
+section 1b for which are indigo blocks). It follows the
 NJDOL rule in section 1a: no cross-sell, funding line in the footer.
 
 ---
@@ -446,30 +497,31 @@ NJDOL rule in section 1a: no cross-sell, funding line in the footer.
 
 ### Buttons
 
-- **Primary (Med):** solid `--primary-dark`, white text, 6px radius, sentence
-  case, weight 700, 48px tall. Hover `#00655F`.
-- **Secondary (Med):** transparent, 2px `--primary-dark` outline and text.
-  Hover fills `--primary-light`.
-- **Tech:** `.btn-tech` solid `--tech`, hover `--tech-dark`;
+- **Primary (Med):** solid `--med-ink`, white text, 4px radius, sentence
+  case, weight 700, 48px tall. Hover `--med-deep`.
+- **Secondary (Med):** transparent, 2px `--med-ink` outline and text.
+- **Tech:** `.btn-tech` solid `--tech-deep-2`, hover `--tech-deep`;
   `.btn-tech-outline` 2px indigo outline.
+- **On a colour block:** the solid button turns paper with the block colour
+  as text; the outline button turns white. A `.panel-paper` restores them.
 - No gradient, no shadow, no lift. **Min target:** 48px (44px for `.btn-sm`
   on phones).
 - **Icons:** none in buttons, except the external-link mark on a link that
   leaves the site.
 
-### Cards and notes
+### Panels and notes
 
-Program cards: white, 1px `--rule` border, 8px radius, no icon tile, no
-shadow; the border turns teal on hover. Notes (`.dl-callout`, `.dl-panel`,
-`.dl-enrolled`, the admissions block, the loans note): white, 1px
-`--border`, 8px radius. Reasons, criteria and modules are not cards: they
-are items on a rule (section 1b).
+There are no program cards: programs are catalogue rows (section 1b). A
+`.panel-paper` (paper, 4px radius, no border) holds forms and the side notes
+inside colour blocks (`.dl-panel`, the admissions block, the interest form).
+Notes on paper (`.dl-callout`, the loans note) are white or paper with a 1px
+`--border`. Reasons, criteria and modules are items on a rule.
 
 ### Term Schedule
 
 "When the next groups start" sits at the foot of the Med enroll column as a
-small heading and a ruled list: program name, then its status line. No inner
-panel.
+Fraunces subhead and a two-column ruled table (program, status line) under a
+2px ink rule. No inner panel.
 
 ### Tuition table
 
@@ -482,12 +534,14 @@ Always include a `<caption class="visually-hidden">` for screen readers.
 
 ### Forms
 
-- Inputs: 0.85rem 1rem padding, 1px neutral border, 8px radius.
-- Focus: 1px primary border + 4px `rgba(0,166,156,0.15)` ring. Never strip
-  `:focus-visible` outlines.
+- Inputs: white, 0.9rem 1rem padding, 1px ink border, 4px radius, 16px
+  text, at least 52px tall.
+- Focus: a 2px outline in the track colour (teal for the contact form,
+  indigo for the interest and sign-up forms). Never strip `:focus-visible`
+  outlines.
 - Labels live above inputs (never placeholder-only). Required fields marked
   with `*` in primary color.
-- Selects use a custom inline SVG chevron (slate gray) and matching padding.
+- Selects use a custom inline SVG chevron (ink) and matching padding.
 - Show a friendly inline success state (`.form-success`) rather than redirects.
 - **Google Forms wiring:** action URL points to a Google Form's `formResponse`
   endpoint, `target="hidden_form_iframe"` keeps the visitor on the page,
@@ -497,15 +551,16 @@ Always include a `<caption class="visually-hidden">` for screen readers.
 
 ### Status lines (formerly badges)
 
-- **Enrollment status:** bold sentence-case text in the track colour above
-  the title ("Enrolling year-round", "Enrolling soon · No cost if you
-  qualify"). Static. No fill, no pill, no pulse.
-- Hours on a program card: small bold teal text.
+- **Enrollment status:** bold sentence-case text in the track colour inside
+  the small bracket (`.eyebrow--status`) above the title ("Enrolling
+  year-round", "Enrolling soon · No cost if you qualify"). Static. No fill,
+  no pill, no pulse.
+- Hours in the catalogue: their own column, bold, tabular numbers.
 
 ### Floating Mobile Call CTA
 
 - Fixed bottom-right, mobile only (≤768px).
-- Solid fill, 6px radius, 48px+ tall, calls `tel:+16097125499` directly.
+- Solid fill, 4px radius, 48px+ tall, calls `tel:+16097125499` directly.
 - Always visible. Respects safe-area insets.
 
 ---
@@ -527,8 +582,7 @@ Always include a `<caption class="visually-hidden">` for screen readers.
 ## 8. Iconography & Imagery
 
 - **Icons:** Font Awesome free, solid style, only where they carry meaning
-  (section 1b): contact rows, footer, social, carousel chevrons, external
-  link, form status. Small plain glyphs in the track colour, never in a
+  (section 1b): contact rows, footer, social, external link, form status. Small plain glyphs in the track colour, never in a
   tinted tile. Always `aria-hidden="true"` when paired with text.
 - **Imagery:** only real photos of the school. No stock photography and no
   new illustrations.

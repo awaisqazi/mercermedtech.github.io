@@ -44,12 +44,12 @@ const bestTimeChoices = BEST_TIME_VALUES.map((value, index) => ({
 }));
 ---
 
-<section id="contact" class="contact-section section-padding" aria-labelledby="contact-title">
+<section id="contact" class="contact-section section-padding block-med" aria-labelledby="contact-title">
   <div class="container">
     <div class="contact-grid">
       <div class="contact-intro">
-        <span class="contact-eyebrow">{c.eyebrow}</span>
-        <h2 id="contact-title" class="section-title">{c.heading}</h2>
+        <span class="eyebrow contact-eyebrow">{c.eyebrow}</span>
+        <h2 id="contact-title" class="section-title bracketed">{c.heading}</h2>
         <p>{c.intro}</p>
 
         <ul class="contact-direct">
@@ -79,7 +79,7 @@ const bestTimeChoices = BEST_TIME_VALUES.map((value, index) => ({
         </ul>
       </div>
 
-      <div class="contact-card">
+      <div class="contact-card panel-paper">
         <form id="request-info-form" class="contact-form" action={FORM_ACTION} method="POST" target="hidden_form_iframe">
           <div class="form-row">
             <label class="form-field">

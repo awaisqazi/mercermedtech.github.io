@@ -3,8 +3,13 @@
    No marquee: a list that moves cannot be read.
    ========================================================================== */
 
-#organizations {
-    border-top: 1px solid var(--rule);
+#organizations > .container {
+    padding-top: var(--section-space);
+    border-top: 2px solid var(--rule-strong);
+}
+
+#organizations.section-padding {
+    padding-top: 0;
 }
 
 .org-list {

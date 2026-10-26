@@ -11,9 +11,10 @@ export interface TrackPanel {
   track: 'med' | 'tech';
   label: string;
   heading: string;
+  /** The one-line pitch. */
   body: string;
-  chips: string[];
-  chipsLabel: string;
+  /** The track's status line ("Enrolling year-round"). */
+  status: string;
   ctaHref: string;
   ctaLabel: string;
 }
@@ -49,36 +50,41 @@ const {
 ---
 
 <section id="hero" class="hero">
-  <div class="container">
-    <div class="hero-content hero-lead">
-      <Lockup variant="eyebrow" />
-      <h1>{headingBefore}<span class="text-gradient-lockup">{headingAccent}</span>{headingAfter}</h1>
-      <p>{lead}</p>
+  <div class="container hero-head">
+    <Lockup variant="eyebrow" />
+    <h1>{headingBefore}<span class="bracket-pair">{headingAccent}</span>{headingAfter}</h1>
+    <div class="hero-intro">
+      <p class="hero-lead">{lead}</p>
       <ul class="hero-trust" aria-label={trustLabel}>
-        {trust.map((item) => (
-          <li>{item.label}</li>
-        ))}
+        {trust.map((item) => <li>{item.label}</li>)}
       </ul>
     </div>
+  </div>
 
-    <div class="track-panels">
-      {
-        panels.map((panel) => (
-          <article class={`track-panel track-panel--${panel.track}`}>
-            <span class="track-label">{panel.label}</span>
-            <h2>{panel.heading}</h2>
-            <p>{panel.body}</p>
-            <ul class="track-chips" aria-label={panel.chipsLabel}>
-              {panel.chips.map((chip) => <li>{chip}</li>)}
-            </ul>
+  <!-- The two paths as full-bleed colour blocks: Med (teal) left, Tech
+       (indigo) right. Stacked on phones, Med first. Never reordered. -->
+  <div class="paths">
+    {
+      panels.map((panel, index) => (
+        <article class={`path path--${panel.track} block-${panel.track}`} aria-labelledby={`path-${panel.track}-title`}>
+          <div class="path-inner">
+            <p class="path-label">
+              <span class="path-num" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <span class="path-track">{panel.label}</span>
+            </p>
+            <h2 id={`path-${panel.track}-title`}>{panel.heading}</h2>
+            <p class="path-pitch">{panel.body}</p>
+            <p class="eyebrow eyebrow--status path-status">{panel.status}</p>
             <a href={panel.ctaHref} class={`btn ${panel.track === 'tech' ? 'btn-tech' : 'btn-primary'}`}>
               {panel.ctaLabel}
             </a>
-          </article>
-        ))
-      }
-    </div>
+          </div>
+        </article>
+      ))
+    }
+  </div>
 
+  <div class="container">
     <p class="hero-quiet">{quietBefore}<a href={quietLinkHref}>{quietLinkLabel}</a>{quietAfter}</p>
   </div>
 </section>

@@ -1,41 +1,87 @@
 /* ==========================================================================
    Design tokens
    Every colour, radius, timing curve and layout constant the site uses.
-   Med keeps the brand teal (--primary family); Tech owns the indigo family.
+   The "Two paths" system (design.md, section 1b): warm paper and ink for
+   neutral sections, the two brand colours as full-bleed blocks. Med owns the
+   teal family, Tech owns the indigo family. Contrast ratios are WCAG 2.x.
    ========================================================================== */
 
 :root {
-    /* Core Palette - Premium Medical Tech */
-    --primary: #00a69c;
-    /* Brand Teal */
-    --primary-dark: #007d75;
-    /* Darker for contrast */
-    --primary-light: #e0f7f6;
-    --accent: #20c997;
-    /* Brighter teal/green for gradients */
-    --accent-hover: #008c82;
+    /* ---- Paper and ink: the neutral sections ---- */
+    --ink: #161a21;
+    /* The page. A warm off-white, never pure white. Ink on paper 15.8:1. */
+    --paper: #f6f3ee;
+    /* A deeper paper for the odd alternate band. */
+    --paper-deep: #ede8df;
+    /* Inputs and the inside of forms: the only pure white on the site. */
+    --white: #ffffff;
 
-    /* Neutrals. Flat paper and ink: no translucent surfaces anywhere
-       (design.md, "Visual language"). */
-    --surface-1: #ffffff;
-    /* Paper: the one neutral band colour, a warm off-white. */
-    --surface-2: #f6f5f1;
-    --surface-3: #ebeae4;
-    --text-main: #18222d;
-    /* 7:1 on white. */
+    /* ---- Med: teal ----
+       --med is the brand teal. On paper it is 2.7:1, so it is for rules and
+       the large brackets only, never for text. Teal text on paper uses
+       --med-ink (5.7:1). --med-deep is the block colour: white on it 7.5:1. */
+    --med: #00a69c;
+    --med-ink: #006b64;
+    --med-deep: #0b5f5a;
+    --med-deep-2: #0d6e68;
+    /* Accent on the deep teal block (brackets, numerals, status): 5.1:1. */
+    --med-on-deep: #8fe3da;
+    /* Supporting text on the deep teal block: 5.8:1. */
+    --med-muted-on-deep: #cfe7e4;
+
+    /* ---- Tech: indigo ----
+       --tech is the accent on paper (5.1:1). --tech-ink is indigo text on
+       paper (7.6:1). --tech-deep is the block colour: white on it 9.6:1. */
+    --tech: #3b5bdb;
+    --tech-ink: #2b44a8;
+    --tech-deep: #243b9e;
+    --tech-deep-2: #2b46b8;
+    /* Accent on the deep indigo block: 5.6:1. */
+    --tech-on-deep: #b4c3ff;
+    /* Supporting text on the deep indigo block: 7.0:1. */
+    --tech-muted-on-deep: #d5dcf7;
+    /* An indigo-tinted panel on a Tech page. Ink on it 14.4:1. */
+    --tech-tint: #e6e9f5;
+
+    /* ---- Semantic aliases. Components read these; colour blocks redefine
+       them locally (base.css), so the same component works on paper and on
+       a block. ---- */
+    --surface-1: var(--paper);
+    --surface-2: var(--paper-deep);
+    --surface-3: #e2dcd1;
+    --text-main: var(--ink);
+    /* 6.4:1 on paper. */
     --text-muted: #4d5a67;
-    /* Labels and meta. 4.9:1 on white, so it can carry real text. */
-    --text-light: #66727e;
-    --border: #d7dade;
+    /* Labels and meta. 5.1:1 on paper. */
+    --text-light: #5d6874;
+    --border: #c9c2b6;
 
     /* Rules. A hairline is 1px of --rule; a heavy rule is 2px of ink. */
-    --rule: #dcdfe2;
-    --rule-strong: #18222d;
+    --rule: #d6cfc3;
+    --rule-strong: var(--ink);
 
-    /* The signature mark: Med teal then Tech indigo, hard stop, never a
-       blend. Used as a short 3px bar before eyebrows and as the 3px top edge
-       of the header and footer. */
-    --mark-split: linear-gradient(90deg, var(--primary-dark) 0 50%, var(--tech) 50% 100%);
+    /* The bracket colour of the section the bracket sits in. */
+    --bracket: var(--ink);
+
+    /* Legacy names, kept so older rules (program pages, onboarding, partner
+       kit, staff forms) still resolve to the new palette. */
+    --primary: var(--med);
+    --primary-dark: var(--med-ink);
+    --primary-light: #dcefec;
+    --accent: var(--med);
+    --accent-hover: var(--med-deep);
+    --tech-dark: var(--tech-ink);
+    --tech-light: var(--tech-tint);
+
+    /* The split hairline: Med teal then Tech indigo, hard stop, never a
+       blend. Only at the very top of the page (header) and the top of the
+       footer. */
+    --mark-split: linear-gradient(90deg, var(--med) 0 50%, var(--tech) 50% 100%);
+    --lockup-gradient: var(--mark-split);
+
+    /* ---- Type ---- */
+    --font-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
 
     /* Spacing scale (4px base). Use these, not ad-hoc values. */
     --space-1: 0.25rem;
@@ -47,10 +93,13 @@
     --space-7: 3rem;
     --space-8: 4rem;
     --space-9: 6rem;
+    /* Section rhythm: one value, fluid from phone to desktop. */
+    --section-space: clamp(3rem, 8vw, 6rem);
+    --gutter: 2rem;
 
     /* Legacy aliases kept so older rules still resolve. Nothing new should
        use them: there is no glass in the visual language. */
-    --glass-bg: #ffffff;
+    --glass-bg: var(--paper);
     --glass-border: var(--rule);
     --glass-shadow: none;
     --backdrop-blur: none;
@@ -58,10 +107,10 @@
     /* Layout */
     --container-width: 1280px;
     --header-height: 80px;
-    /* Modest radii. Buttons, inputs and notes all sit at 6 to 8px. */
-    --radius-sm: 6px;
-    --radius-md: 8px;
-    --radius-lg: 8px;
+    /* Square-ish corners: 4px on buttons, inputs and panels. */
+    --radius-sm: 4px;
+    --radius-md: 4px;
+    --radius-lg: 4px;
     --radius-full: 9999px;
 
     /* Animation */
@@ -78,16 +127,10 @@
     --safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --safe-area-left: env(safe-area-inset-left, 0px);
     --safe-area-right: env(safe-area-inset-right, 0px);
+}
 
-
-    /* Tech track design tokens
-       Med  = allied health, keeps the brand teal (--primary family).
-       Tech = digital skills, uses the indigo family below.
-       Contrast checked: --tech on white 5.6:1, --tech-dark on white 8.4:1,
-       --tech-dark on --tech-light 7.1:1, white on --tech 5.6:1. */
-    --tech: #3B5BDB;
-    --tech-dark: #2B44A8;
-    --tech-light: #E7ECFD;
-    /* Kept for older rules; the split mark above replaces it. */
-    --lockup-gradient: var(--mark-split);
+@media (max-width: 576px) {
+    :root {
+        --gutter: 1rem;
+    }
 }

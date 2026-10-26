@@ -20,45 +20,53 @@ const { locale, tag, heading, intro, chips, modulesLabel, modules, sessionsLine,
 const program = programById('digital-literacy-training')!;
 ---
 
-<div id="programs-tech" class="programs-group programs-group--tech">
-  <div class="programs-group-header">
-    <span class="track-tag track-tag--tech">{tag}</span>
-    <h3>{heading}</h3>
-    <p>{intro}</p>
-  </div>
+<!-- The Tech track: a full-bleed indigo block. The Digital Literacy facts
+     on the left; the interest form (the slot) on paper on the right. -->
+<div id="programs-tech" class="programs-group programs-group--tech block-tech">
+  <div class="container">
+    <div class="programs-tech-grid">
+      <div class="programs-tech-info">
+        <div class="programs-group-header">
+          <span class="eyebrow eyebrow--tech">{tag}</span>
+          <h3>{heading}</h3>
+          <p>{intro}</p>
+        </div>
 
-  <article class="tech-card tech-card--feature">
-    <span class="tech-card-badge">{program.badge?.[locale]}</span>
-    <h4>{program.name[locale]}</h4>
-    <p>{program.summary[locale]}</p>
-    <ul class="tech-card-list">
-      {chips.map((chip) => <li>{chip}</li>)}
-    </ul>
+        <article class="tech-card tech-card--feature">
+          <p class="tech-card-badge">{program.badge?.[locale]}</p>
+          <h4>{program.name[locale]}</h4>
+          <p>{program.summary[locale]}</p>
+          <ul class="tech-card-list">
+            {chips.map((chip) => <li>{chip}</li>)}
+          </ul>
 
-    <p class="tech-card-subhead">{modulesLabel}</p>
-    <ul class="tech-card-modules">
-      {
-        modules.map((module) => (
-          <li>{module.label}</li>
-        ))
-      }
-    </ul>
+          <p class="tech-card-subhead">{modulesLabel}</p>
+          <ol class="tech-card-modules">
+            {
+              modules.map((module) => (
+                <li>{module.label}</li>
+              ))
+            }
+          </ol>
 
-    <p class="tech-card-sessions">{sessionsLine}</p>
+          <p class="tech-card-sessions">{sessionsLine}</p>
 
-    <div class="tech-card-actions">
-      {
-        actions.map((action) => (
-          <a href={action.href} class={`btn btn-${action.style}`}>
-            {action.label}
-          </a>
-        ))
-      }
+          <div class="tech-card-actions">
+            {
+              actions.map((action) => (
+                <a href={action.href} class={`btn btn-${action.style}`}>
+                  {action.label}
+                </a>
+              ))
+            }
+          </div>
+
+          <FundingLine locale={locale} class="tech-card-funding" />
+        </article>
+      </div>
+
+      <!-- Tech-side extras (the home page puts the interest form here). -->
+      <slot />
     </div>
-
-    <FundingLine locale={locale} class="tech-card-funding" />
-  </article>
-
-  <!-- Optional Tech-side extras below the card (the home page puts the interest form here). -->
-  <slot />
+  </div>
 </div>

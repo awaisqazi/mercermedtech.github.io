@@ -1,6 +1,7 @@
 /* ==========================================================================
-   Base: reset, document defaults, layout utilities, shared editorial pieces
-   See design.md, "Visual language", for the rules these implement.
+   Base: reset, document defaults, layout utilities, and the shared pieces of
+   the "Two paths" system: colour blocks, the paper panel, and the bracket.
+   See design.md, section 1b "Visual language", for the rules these implement.
    ========================================================================== */
 
 /* Reset */
@@ -19,35 +20,56 @@ html {
     font-size: 16px;
 }
 
-/* Flat paper. No gradient wash, no fixed background. */
+/* Warm paper and ink. No gradient wash, no fixed background. */
 body {
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    background-color: var(--surface-1);
+    font-family: var(--font-body);
+    background-color: var(--paper);
     color: var(--text-main);
     line-height: 1.6;
     overflow-x: hidden;
 }
 
-/* One family, set tight and heavy for display. */
+/*
+   Headlines: Fraunces, a display serif, with the optical-size axis left on
+   auto so small headings get the sturdier text cut and large ones the fine
+   display cut. Tight, left-aligned, balanced line breaks.
+*/
 h1,
 h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
+h3 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-variation-settings: 'SOFT' 30, 'WONK' 0;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
     color: var(--text-main);
-    /* Even line lengths, so a heading never ends on one short word. */
     text-wrap: balance;
 }
 
-h3,
-h4 {
-    font-weight: 700;
+h1 {
+    font-size: clamp(2.6rem, 9vw, 6rem);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    /* A little softness and the "wonky" leaning letters, at display size only. */
+    font-variation-settings: 'SOFT' 60, 'WONK' 1;
+}
+
+h3 {
+    line-height: 1.15;
     letter-spacing: -0.01em;
+}
+
+/* Small headings are UI, not display: Plus Jakarta Sans. */
+h4,
+h5,
+h6 {
+    font-family: var(--font-body);
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--text-main);
+    text-wrap: balance;
 }
 
 p,
@@ -87,39 +109,34 @@ img {
 .container {
     max-width: var(--container-width);
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 var(--gutter);
 }
 
 .section-padding {
-    padding: var(--space-9) 0;
+    padding: var(--section-space) 0;
 }
 
-/* Accent text is a solid colour. The class name is historical: there are no
-   gradient fills on text. */
+/* Accent text is a solid colour. The class name is historical. */
 .text-gradient {
     color: var(--primary-dark);
 }
 
-.section-title {
+.section-title,
+.section-header h2 {
     margin-bottom: var(--space-5);
-    font-size: clamp(2rem, 4.4vw, 3rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.08;
+    font-size: clamp(2.1rem, 5.2vw, 3.6rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
 }
 
 /* Section headers are left-aligned, whatever the markup says. */
 .section-header,
 .section-header.text-center {
     text-align: left;
-    max-width: 46rem;
+    max-width: 50rem;
 }
 
 .section-header h2 {
-    font-size: clamp(2rem, 4.4vw, 3rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.08;
     margin-bottom: var(--space-4);
 }
 
@@ -183,16 +200,179 @@ img {
 }
 
 /* --------------------------------------------------------------------------
-   The eyebrow: small tracked capitals after a short 3px bar, one per section
-   at most. The bar is the signature mark. School-level eyebrows get the split
-   Med|Tech bar; .eyebrow--med is teal only, .eyebrow--tech indigo only, so a
-   track surface never borrows the other track's colour.
+   Colour blocks
+   A Med section sits on deep teal, a Tech section on deep indigo, full bleed,
+   white type. The block redefines the semantic colour tokens, so every
+   component inside it (rules, muted text, headings, lists) turns light
+   without a second set of rules. A .panel-paper inside a block puts them
+   back, for forms and other dense reading.
    -------------------------------------------------------------------------- */
+.block-med,
+.block-tech {
+    --text-main: #ffffff;
+    --rule: rgba(255, 255, 255, 0.28);
+    --rule-strong: #ffffff;
+    --border: rgba(255, 255, 255, 0.55);
+    color: var(--text-main);
+}
+
+.block-med {
+    --text-muted: var(--med-muted-on-deep);
+    --text-light: var(--med-muted-on-deep);
+    --bracket: var(--med-on-deep);
+    --accent-text: var(--med-on-deep);
+    background-color: var(--med-deep);
+}
+
+.block-tech {
+    --text-muted: var(--tech-muted-on-deep);
+    --text-light: var(--tech-muted-on-deep);
+    --bracket: var(--tech-on-deep);
+    --accent-text: var(--tech-on-deep);
+    background-color: var(--tech-deep);
+}
+
+.block-med :focus-visible,
+.block-tech :focus-visible {
+    outline-color: #ffffff;
+}
+
+/* Plain links inside a block: white, underlined. */
+.block-med a:not(.btn),
+.block-tech a:not(.btn) {
+    color: #ffffff;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+
+.block-med a:not(.btn):hover,
+.block-tech a:not(.btn):hover {
+    text-decoration-thickness: 2px;
+}
+
+/* Paper inside a block: ink type again, for forms and long reading. */
+.panel-paper {
+    --text-main: var(--ink);
+    --text-muted: #4d5a67;
+    --text-light: #5d6874;
+    --rule: #d6cfc3;
+    --rule-strong: var(--ink);
+    --border: #c9c2b6;
+    --bracket: var(--ink);
+    --accent-text: var(--ink);
+    background-color: var(--paper);
+    color: var(--text-main);
+    border-radius: var(--radius-md);
+}
+
+.panel-paper :focus-visible {
+    outline-color: var(--ink);
+}
+
+.panel-paper a:not(.btn) {
+    color: inherit;
+}
+
+/* A neutral alternate band. */
+.band-deep {
+    background-color: var(--paper-deep);
+}
+
+/* --------------------------------------------------------------------------
+   The bracket: the logo mark, used as the signature motif.
+   Drawn in CSS (two three-sided boxes), in the section's accent colour.
+
+   .bracketed     a framed statement or headline, at most one per section
+   .bracket-pair  inline: frames a few words inside a headline; the left arm
+                  is Med teal and the right arm Tech indigo
+   .eyebrow       the small bracketed section marker
+   -------------------------------------------------------------------------- */
+.bracketed {
+    --b-stroke: max(2px, 0.06em);
+    --b-arm: 0.3em;
+    position: relative;
+    display: block;
+    width: fit-content;
+    /* A box with wrapped text is as wide as the space it is given, which
+       would leave a gap before the right arm. A small script in
+       BaseLayout.astro shrinks the box to its longest line once the fonts
+       are in; the cap in ch keeps the lines a headline length. */
+    max-width: min(100%, var(--b-max, 24ch));
+    padding: 0.08em 0.5em 0.12em;
+}
+
+.bracketed::before,
+.bracketed::after,
+.bracket-pair::before,
+.bracket-pair::after,
+.eyebrow::before,
+.eyebrow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.bracketed::before,
+.bracketed::after {
+    width: var(--b-arm);
+    border: var(--b-stroke) solid var(--bracket-left, var(--bracket));
+}
+
+.bracketed::after {
+    border-color: var(--bracket-right, var(--bracket));
+}
+
+.bracketed::before,
+.bracket-pair::before,
+.eyebrow::before {
+    left: 0;
+    border-right: 0 !important;
+}
+
+.bracketed::after,
+.bracket-pair::after,
+.eyebrow::after {
+    right: 0;
+    border-left: 0 !important;
+}
+
+/* Inline: the words stay on one line so the frame reads whole. */
+.bracket-pair {
+    --b-stroke: max(2px, 0.055em);
+    position: relative;
+    display: inline-block;
+    padding: 0 0.3em;
+    white-space: nowrap;
+}
+
+.bracket-pair::before,
+.bracket-pair::after {
+    top: 0.1em;
+    bottom: 0.02em;
+    width: 0.22em;
+    border: var(--b-stroke) solid var(--med);
+}
+
+.bracket-pair::after {
+    border-color: var(--tech);
+}
+
+/*
+   The eyebrow: small tracked capitals inside a small bracket, one per section
+   at most. School-level eyebrows split the bracket (teal left arm, indigo
+   right arm); .eyebrow--med is teal only, .eyebrow--tech indigo only, so a
+   track surface never borrows the other track's colour.
+*/
 .eyebrow {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.65rem;
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-5);
+    padding: 0.4em 0.85em;
+    font-family: var(--font-body);
     font-size: 0.8125rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -201,33 +381,46 @@ img {
     color: var(--text-main);
 }
 
-.eyebrow::before {
-    content: '';
-    flex-shrink: 0;
-    width: 28px;
-    height: 3px;
-    background: var(--mark-split);
+.eyebrow::before,
+.eyebrow::after {
+    width: 0.45em;
+    border: 2px solid var(--bracket-left, var(--med));
+}
+
+.eyebrow::after {
+    border-color: var(--bracket-right, var(--tech));
 }
 
 .eyebrow--med {
-    color: var(--primary-dark);
-}
-
-.eyebrow--med::before {
-    background: var(--primary-dark);
+    --bracket-left: var(--med);
+    --bracket-right: var(--med);
+    color: var(--med-ink);
 }
 
 .eyebrow--tech {
-    color: var(--tech-dark);
+    --bracket-left: var(--tech);
+    --bracket-right: var(--tech);
+    color: var(--tech-ink);
 }
 
-.eyebrow--tech::before {
-    background: var(--tech);
+/* On a colour block the eyebrow takes the block's accent. */
+.block-med .eyebrow,
+.block-tech .eyebrow {
+    --bracket-left: var(--bracket);
+    --bracket-right: var(--bracket);
+    color: var(--accent-text);
+}
+
+/* Sentence-case status line in a bracket ("Enrolling year-round"). */
+.eyebrow--status {
+    font-size: 0.9375rem;
+    letter-spacing: 0;
+    text-transform: none;
 }
 
 /* ===== Global Polish ===== */
 :focus-visible {
-    outline: 2px solid var(--primary-dark);
+    outline: 2px solid var(--ink);
     outline-offset: 3px;
     border-radius: 2px;
 }
@@ -236,18 +429,7 @@ img {
     outline-offset: 3px;
 }
 
-@media (max-width: 768px) {
-    .section-padding {
-        padding: var(--space-8) 0;
-    }
-}
-
 @media (max-width: 576px) {
-    /* design.md section 4: the container gutter is 1rem on small phones. */
-    .container {
-        padding: 0 1rem;
-    }
-
     .section-header .text-muted {
         font-size: 1.0625rem;
     }

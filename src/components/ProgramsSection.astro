@@ -17,12 +17,10 @@ const { heading, intro } = Astro.props;
       <h2>{heading}</h2>
       <p class="text-muted">{intro}</p>
     </div>
-
-    <!-- Two track columns. At 1024px and up: Med on the left, Tech on the
-         right, mirroring the name. Below 1024px they stack, Med first. -->
-    <div class="programs-tracks">
-      <slot />
-    </div>
   </div>
-</section>
 
+  <!-- Two tracks, stacked: the Med catalogue on paper first, then the Tech
+       track as a full-bleed indigo block. Each child brings its own
+       container so the Tech block can run edge to edge. -->
+  <slot />
+</section>

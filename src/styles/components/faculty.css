@@ -2,8 +2,13 @@
    Faculty: people on hairlines, left-aligned. No avatar icons.
    ========================================================================== */
 
-#faculty {
-    border-top: 1px solid var(--rule);
+#faculty > .container {
+    padding-top: var(--section-space);
+    border-top: 2px solid var(--rule-strong);
+}
+
+#faculty.section-padding {
+    padding-top: 0;
 }
 
 .faculty-wrapper {
@@ -20,9 +25,8 @@
 }
 
 .faculty-card h3 {
-    font-size: 1.375rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-size: 1.75rem;
+    letter-spacing: -0.015em;
     margin-bottom: var(--space-1);
 }
 

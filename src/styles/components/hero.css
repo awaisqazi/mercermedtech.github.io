@@ -1,17 +1,161 @@
 /* ==========================================================================
-   Homepage: hero, shared image grid, and the two hero track panels
-   Two equal panels. Med first in the DOM, so Med is on top when they stack.
-   Flat: the panels are the page's two solid tints (teal for Med, indigo for
-   Tech), numbered 01 and 02 in the track colour. No shadow, no lift.
+   Homepage hero: the headline on paper, then the two paths as full-bleed
+   colour blocks (Med teal left, Tech indigo right; stacked on phones, Med
+   first). Also the shared text/image grid that About and Grants use.
    ========================================================================== */
 
 .hero {
-    padding-top: calc(var(--header-height) + var(--space-8));
-    padding-bottom: var(--space-9);
     position: relative;
+    padding-top: calc(var(--header-height) + var(--space-7));
 }
 
-/* Shared two-column text/image grid, used by About and Grants. */
+.hero-head {
+    padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.hero-head h1 {
+    max-width: 15ch;
+    margin-bottom: clamp(1.75rem, 4vw, 3rem);
+}
+
+/* Lead on the left, the school facts on the right as a small ruled table. */
+.hero-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: var(--space-6) var(--space-8);
+    align-items: start;
+}
+
+.hero-lead {
+    max-width: 58ch;
+    font-size: 1.1875rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+.hero-trust {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 2px solid var(--rule-strong);
+}
+
+.hero-trust li {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--text-main);
+}
+
+/* ----- The two paths ----- */
+.paths {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.path {
+    display: flex;
+}
+
+/*
+   Each block is half the page wide, but its text lines up with the
+   container. A grid item's padding percentage is a share of its own grid
+   area (half the page), so "100% - 640px" is the distance from the page edge
+   to the 1280px container edge.
+*/
+.path-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding-top: clamp(2.5rem, 6vw, 4.5rem);
+    padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.path--med .path-inner {
+    padding-left: max(var(--gutter), calc(100% - (var(--container-width) / 2) + var(--gutter)));
+    padding-right: clamp(var(--gutter), 4vw, 4rem);
+}
+
+.path--tech .path-inner {
+    padding-left: clamp(var(--gutter), 4vw, 4rem);
+    padding-right: max(var(--gutter), calc(100% - (var(--container-width) / 2) + var(--gutter)));
+}
+
+/* "01  MED" / "02  TECH": a big Fraunces numeral carries the order rule. */
+.path-label {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    margin-bottom: var(--space-5);
+    color: var(--accent-text);
+}
+
+.path-num {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 7vw, 5.5rem);
+    font-weight: 500;
+    font-variation-settings: 'SOFT' 100, 'WONK' 0;
+    line-height: 0.8;
+    letter-spacing: -0.03em;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.path-track {
+    font-size: 0.875rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.path h2 {
+    max-width: 16ch;
+    margin-bottom: var(--space-4);
+    font-size: clamp(2rem, 3.6vw, 3rem);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+}
+
+.path-pitch {
+    max-width: 44ch;
+    margin-bottom: var(--space-6);
+    font-size: 1.125rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+}
+
+.path-status {
+    margin-bottom: var(--space-5);
+}
+
+.path .btn {
+    margin-top: auto;
+}
+
+.hero-quiet {
+    padding: var(--space-5) 0;
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+.hero-quiet a {
+    color: var(--text-main);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+
+.hero-quiet a:hover {
+    text-decoration-thickness: 2px;
+}
+
+/* ----- Shared two-column text/image grid, used by About and Grants ----- */
 .hero-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -19,60 +163,12 @@
     align-items: center;
 }
 
-.hero-content h1 {
-    font-size: clamp(2.6rem, 6.4vw, 4.75rem);
-    font-weight: 800;
-    line-height: 1.02;
-    margin-bottom: var(--space-5);
-    letter-spacing: -0.04em;
-}
-
-.hero-content h1 .text-gradient {
-    color: var(--primary-dark);
-}
-
 .hero-content p {
-    font-size: 1.1875rem;
-    line-height: 1.55;
+    font-size: 1.125rem;
+    line-height: 1.6;
     color: var(--text-muted);
-    margin-bottom: var(--space-6);
-    max-width: 540px;
-}
-
-/*
-   Trust line: a run of facts between two hairlines, separated by thin
-   vertical rules. No icons.
-*/
-.hero-trust {
-    display: grid;
-    grid-template-columns: repeat(4, auto);
-    justify-content: start;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
-}
-
-.hero-trust li {
-    padding: 0.8rem 1.25rem;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    line-height: 1.35;
-    color: var(--text-main);
-}
-
-.hero-trust li:first-child {
-    padding-left: 0;
-}
-
-.hero-trust li + li {
-    border-left: 1px solid var(--rule);
-}
-
-/* Keep the underlined accent in one piece so the split mark reads whole. */
-.hero-content h1 .text-gradient-lockup {
-    white-space: nowrap;
+    margin-bottom: var(--space-5);
+    max-width: 60ch;
 }
 
 .hero-image-wrapper {
@@ -96,128 +192,18 @@
     margin-top: var(--space-6);
 }
 
-/* Hero lead column */
-.hero-lead {
-    max-width: 960px;
-}
-
-.hero-lead p {
-    max-width: 60ch;
-}
-
-/* Track panels */
-.track-panels {
-    counter-reset: track;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-4);
-    margin-top: var(--space-7);
-}
-
-.track-panel {
-    counter-increment: track;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    padding: var(--space-6) var(--space-6) var(--space-6);
-    border-radius: var(--radius-md);
-}
-
-.track-panel--med {
-    background: var(--primary-light);
-}
-
-.track-panel--tech {
-    background: var(--tech-light);
-}
-
-/* "01  MED" / "02  TECH": the numeral carries the order rule. */
-.track-label {
-    display: flex;
-    align-items: baseline;
-    gap: 0.75rem;
-    font-size: 0.8125rem;
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-}
-
-.track-label::before {
-    content: counter(track, decimal-leading-zero);
-    font-size: 2.75rem;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 0.9;
-    font-variant-numeric: tabular-nums;
-}
-
-.track-panel--med .track-label {
-    color: var(--primary-dark);
-}
-
-.track-panel--tech .track-label {
-    color: var(--tech-dark);
-}
-
-.track-panel h2 {
-    font-size: clamp(1.4rem, 2.4vw, 1.75rem);
-    letter-spacing: -0.025em;
-    margin: 0;
-}
-
-.track-panel > p {
-    margin: 0;
-    color: var(--text-main);
-    font-size: 1.0625rem;
-    max-width: 52ch;
-}
-
-/* What each track covers: a two-column list on hairlines, no pills. */
-.track-chips {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    column-gap: var(--space-5);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.track-chips li {
-    padding: 0.55rem 0;
-    border-top: 1px solid rgba(24, 34, 45, 0.14);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    line-height: 1.35;
-    color: var(--text-main);
-}
-
-.track-panel .btn {
-    align-self: flex-start;
-    margin-top: auto;
-}
-
-.hero-quiet {
-    margin-top: var(--space-5);
-    font-size: 1rem;
-    color: var(--text-muted);
-}
-
-.hero-quiet a {
-    color: var(--primary-dark);
-    font-weight: 700;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-}
-
-.hero-quiet a:hover {
-    text-decoration-thickness: 2px;
-}
-
-/* About section shares the hero grid */
+/* About: paper, under a heavy ink rule. */
 .about-section {
-    background: var(--surface-1);
-    border-top: 1px solid var(--rule);
+    background: var(--paper);
+}
+
+.about-section > .container {
+    padding-top: var(--section-space);
+    border-top: 2px solid var(--rule-strong);
+}
+
+.about-section.section-padding {
+    padding-top: 0;
 }
 
 @media (max-width: 968px) {
@@ -226,14 +212,20 @@
         gap: var(--space-6);
     }
 
-    .hero-content p {
-        margin: 0 0 var(--space-6);
+    .hero-intro {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
 @media (max-width: 860px) {
-    .track-panels {
-        grid-template-columns: 1fr;
+    .paths {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .path--med .path-inner,
+    .path--tech .path-inner {
+        padding-left: var(--gutter);
+        padding-right: var(--gutter);
     }
 }
 
@@ -243,56 +235,33 @@
 @media (max-width: 640px) {
     .hero {
         padding-top: calc(var(--header-height) + var(--space-6));
-        padding-bottom: var(--space-8);
     }
 
-    .hero-content p {
+    .hero-lead {
         font-size: 1.0625rem;
     }
 
-    /* Two facts to a row, each on its own hairline. */
-    .hero-lead .hero-trust {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        column-gap: var(--space-4);
-        border-bottom: 0;
+    .path-inner {
+        padding-top: var(--space-7);
+        padding-bottom: var(--space-7);
     }
 
-    .hero-trust li,
-    .hero-trust li:first-child {
-        padding: 0.7rem 0;
-        border-bottom: 1px solid var(--rule);
+    .path-label {
+        margin-bottom: var(--space-4);
     }
 
-    .hero-trust li + li {
-        border-left: 0;
-    }
-
-    .track-panels {
-        margin-top: var(--space-6);
-        gap: var(--space-3);
-    }
-
-    .track-panel {
-        padding: var(--space-5) 1.25rem;
-    }
-
-    .track-label::before {
-        font-size: 2.25rem;
-    }
-
-    .track-panel > p {
-        font-size: 1rem;
+    .path-pitch {
+        font-size: 1.0625rem;
+        margin-bottom: var(--space-5);
     }
 
     .about-section .hero-content p {
-        margin: 0 0 1.25rem;
         font-size: 1.0625rem;
     }
 }
 
 @media (max-width: 400px) {
-    .hero-content h1 {
-        font-size: 2.5rem;
+    .hero-trust {
+        grid-template-columns: minmax(0, 1fr);
     }
 }

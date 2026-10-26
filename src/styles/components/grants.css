@@ -4,9 +4,7 @@
    The Tech block is a flat indigo tint.
    ========================================================================== */
 
-#grants {
-    border-top: 1px solid var(--rule);
-}
+/* Follows a colour block, so no rule above it. */
 
 .grants-list {
     margin: var(--space-5) 0 0;
@@ -52,8 +50,7 @@
 }
 
 .financial-aid-footer h3 {
-    font-size: 1.25rem;
-    font-weight: 800;
+    font-size: 1.5rem;
     margin-bottom: var(--space-3);
 }
 
@@ -70,18 +67,17 @@
     margin: var(--space-4) 0;
 }
 
-/* Tech block: Digital Literacy Training is grant funded. */
+/* Tech block: Digital Literacy Training is grant funded. A deep indigo
+   panel the width of the container, with its headline in brackets. */
 .grants-block {
-    padding: var(--space-6);
+    padding: clamp(1.75rem, 5vw, 4rem);
     border-radius: var(--radius-md);
-    background: var(--tech-light);
 }
 
 .grants-block h3 {
-    font-size: clamp(1.5rem, 2.6vw, 1.875rem);
-    font-weight: 800;
-    letter-spacing: -0.025em;
-    margin-bottom: var(--space-3);
+    font-size: clamp(1.75rem, 3.6vw, 2.75rem);
+    letter-spacing: -0.015em;
+    margin-bottom: var(--space-5);
 }
 
 .grants-block p {
@@ -94,8 +90,8 @@
 }
 
 .grants-block .funding-line {
+    max-width: 64ch;
     color: var(--text-muted);
-    border-top-color: rgba(43, 68, 168, 0.22);
 }
 
 .grants-block .btn {

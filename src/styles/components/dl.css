@@ -2,10 +2,12 @@
    Digital Literacy Training landing page (Tech track)
    Page shell, header treatment, hero, sections, components, footer.
 
-   Visual language (design.md): flat paper, hairline rules, left-aligned
-   type, indigo only. One tinted section (#interest, the form) and one solid
-   band (the information sessions strip). Steps are numbered with large
-   indigo numerals, never circles. No icon tiles, no pills, no side bars.
+   Visual language (design.md, "Two paths"): a Tech-only page, so indigo
+   only. Deep indigo blocks (hero, interest form, support, contact) alternate
+   with paper and the indigo-tinted panel (what you learn, partners).
+   Headlines in Fraunces; key headlines framed by the bracket. Steps are
+   numbered with large Fraunces numerals, never circles. No icon tiles, no
+   pills, no side bars.
    ========================================================================== */
 
 .dl-page {
@@ -13,7 +15,7 @@
 }
 
 .dl-page :focus-visible {
-    outline: 2px solid var(--tech);
+    outline: 2px solid var(--tech-ink);
     outline-offset: 3px;
     border-radius: 2px;
 }
@@ -23,7 +25,12 @@
 }
 
 .dl-page .site-header .nav-link:hover {
-    color: var(--tech-dark);
+    color: var(--tech-ink);
+}
+
+/* Tech-only page: brackets are indigo. */
+.dl-page {
+    --bracket: var(--tech);
 }
 
 .dl-skip-link {
@@ -49,26 +56,36 @@
     min-height: 44px;
 }
 
-/* ----- Hero ----- */
+/* ----- Hero: a deep indigo block ----- */
 .dl-hero {
-    padding-top: calc(var(--header-height) + var(--space-8));
-    padding-bottom: var(--space-8);
     position: relative;
+    padding-top: calc(var(--header-height) + var(--space-8));
+    padding-bottom: var(--section-space);
 }
 
 .dl-hero-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
     gap: var(--space-8);
-    align-items: center;
+    align-items: end;
 }
 
 .dl-hero h1 {
-    font-size: clamp(2.4rem, 5.4vw, 4.25rem);
-    font-weight: 800;
-    line-height: 1.03;
-    letter-spacing: -0.04em;
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-6);
+    font-size: clamp(2.6rem, 7vw, 5.25rem);
+}
+
+/* The promise, framed: on its own line under the first sentence. */
+.dl-hero-accent {
+    --b-max: 100%;
+    margin-top: 0.12em;
+    color: var(--tech-on-deep);
+}
+
+@media (max-width: 640px) {
+    .dl-hero-accent {
+        --b-max: 100%;
+    }
 }
 
 .dl-lead {
@@ -79,32 +96,26 @@
     margin-bottom: var(--space-6);
 }
 
-/* Hero facts: a run between hairlines, thin vertical rules between items. */
+/* Where the drawing used to be: the four facts as a ruled list in the
+   display face, under a heavy white rule. */
 .dl-chips {
     display: grid;
-    grid-template-columns: repeat(4, auto);
-    justify-content: start;
+    grid-template-columns: minmax(0, 1fr);
     list-style: none;
     padding: 0;
     margin: 0 0 var(--space-6);
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
+    border-top: 2px solid var(--rule-strong);
 }
 
 .dl-chips li {
-    padding: 0.8rem 1.25rem;
-    font-size: 0.9375rem;
-    font-weight: 700;
-    line-height: 1.35;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
     color: var(--text-main);
-}
-
-.dl-chips li:first-child {
-    padding-left: 0;
-}
-
-.dl-chips li + li {
-    border-left: 1px solid var(--rule);
 }
 
 .dl-actions {
@@ -117,26 +128,25 @@
     margin-top: var(--space-6);
 }
 
-/* "Already enrolled?": a plain bordered note with a small heading. */
+/* "Already enrolled?": a plain outlined note with a small heading. */
 .dl-enrolled {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-3) var(--space-5);
-    margin-top: var(--space-6);
     padding: var(--space-4) var(--space-5);
-    background: var(--surface-1);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
 }
 
 .dl-enrolled > div {
-    flex: 1 1 18rem;
+    flex: 1 1 14rem;
 }
 
 .dl-enrolled .dl-enrolled-heading {
     margin: 0 0 0.25rem;
+    font-family: var(--font-body);
     font-size: 1.0625rem;
     font-weight: 800;
     letter-spacing: -0.01em;
@@ -153,16 +163,12 @@
 
 .dl-enrolled .dl-enrolled-help {
     margin-top: 0.35rem;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     color: var(--text-muted);
 }
 
 .dl-enrolled-help a {
-    color: var(--tech-dark);
     font-weight: 700;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
     overflow-wrap: anywhere;
 }
 
@@ -171,42 +177,25 @@
     flex-shrink: 0;
 }
 
-.dl-hero-art {
-    width: 100%;
-    height: auto;
-}
-
 @media (max-width: 900px) {
     .dl-hero-grid {
         grid-template-columns: minmax(0, 1fr);
-        gap: var(--space-6);
-    }
-
-    .dl-hero-art {
-        max-width: 420px;
+        gap: var(--space-7);
     }
 }
 
 /* ----- Sections ----- */
 .dl-section {
-    padding: var(--space-9) 0;
+    padding: var(--section-space) 0;
     scroll-margin-top: var(--header-height);
 }
 
-/* Paper band: the neutral alternate. Not a colour tint. */
+/* The indigo-tinted panel band (what you learn, partners). */
 .dl-section--tint {
-    background: var(--surface-2);
+    background: var(--tech-tint);
 }
 
-/* Two white sections in a row are divided by a hairline. */
-.dl-section:not(.dl-section--tint) + .dl-section:not(.dl-section--tint) {
-    border-top: 1px solid var(--rule);
-}
 
-/* The interest form: the page's one solid indigo tint. */
-#interest.dl-section {
-    background: var(--tech-light);
-}
 
 .dl-section-head {
     max-width: 46rem;
@@ -218,11 +207,10 @@
 }
 
 .dl-section-head h2 {
-    font-size: clamp(2rem, 4.4vw, 3rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.08;
-    margin-bottom: var(--space-4);
+    font-size: clamp(2.1rem, 5.2vw, 3.6rem);
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    margin-bottom: var(--space-5);
 }
 
 .dl-section-head p {
@@ -231,13 +219,15 @@
     max-width: 60ch;
 }
 
-/* Eyebrow: tracked capitals after the short indigo bar (base.css .eyebrow). */
+/* Eyebrow: tracked capitals inside the small indigo bracket (base.css
+   .eyebrow), taking the block accent on an indigo block. */
 .dl-eyebrow {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 0.65rem;
-    margin-bottom: var(--space-4);
-    color: var(--tech-dark);
+    margin-bottom: var(--space-5);
+    padding: 0.4em 0.85em;
+    color: var(--accent-text, var(--tech-ink));
     font-size: 0.8125rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -245,25 +235,35 @@
     text-transform: uppercase;
 }
 
-.dl-eyebrow::before {
+.dl-eyebrow::before,
+.dl-eyebrow::after {
     content: '';
-    flex-shrink: 0;
-    width: 28px;
-    height: 3px;
-    background: var(--tech);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0.45em;
+    border: 2px solid var(--bracket);
+    pointer-events: none;
 }
 
-/* ----- Information sessions: one solid indigo band ----- */
+.dl-eyebrow::before {
+    left: 0;
+    border-right: 0;
+}
+
+.dl-eyebrow::after {
+    right: 0;
+    border-left: 0;
+}
+
+/* ----- Information sessions: a catalogue row on paper ----- */
 .dl-strip {
-    background: var(--tech-dark);
-    color: #fff;
     padding: var(--space-6) 0;
+    border-bottom: 1px solid var(--rule);
 }
 
 .dl-strip h2 {
-    color: #fff;
-    font-size: 1.5rem;
-    letter-spacing: -0.02em;
+    font-size: 1.625rem;
     margin-bottom: var(--space-2);
 }
 
@@ -272,36 +272,34 @@
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--space-6);
     align-items: start;
+    padding-top: var(--space-4);
+    border-top: 2px solid var(--rule-strong);
 }
 
 .dl-strip-grid > div + div {
     padding-left: var(--space-6);
-    border-left: 1px solid rgba(255, 255, 255, 0.22);
+    border-left: 1px solid var(--rule);
 }
 
 .dl-strip p {
     margin: 0;
-    color: rgba(255, 255, 255, 0.92);
+    color: var(--text-muted);
     line-height: 1.6;
 }
 
 .dl-strip a {
-    color: #fff;
+    color: var(--text-main);
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
     font-weight: 700;
 }
 
-.dl-strip :focus-visible {
-    outline-color: #fff;
-}
-
 .dl-strip-label {
     display: block;
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.78);
+    color: var(--text-light);
     margin-bottom: 0.25rem;
 }
 
@@ -317,16 +315,17 @@
 
 .dl-checks li {
     padding: var(--space-4) 0 var(--space-5);
-    border-top: 2px solid var(--text-main);
+    border-top: 2px solid var(--rule-strong);
 }
 
 .dl-checks strong {
     display: block;
-    line-height: 1.3;
-    font-size: 1.125rem;
-    font-weight: 800;
+    font-family: var(--font-display);
+    line-height: 1.15;
+    font-size: 1.5rem;
+    font-weight: 600;
     letter-spacing: -0.01em;
-    margin-bottom: 0.3rem;
+    margin-bottom: var(--space-2);
 }
 
 .dl-checks span {
@@ -337,9 +336,8 @@
 
 .dl-subhead {
     margin-bottom: var(--space-3);
-    font-size: 1.1875rem;
-    font-weight: 800;
-    letter-spacing: -0.015em;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
 }
 
 .dl-counties-heading {
@@ -368,7 +366,7 @@
 /* A plain bordered note. No icon, no tint, no side bar. */
 .dl-callout {
     padding: var(--space-5);
-    background: var(--surface-1);
+    background: var(--white);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     color: var(--text-main);
@@ -392,7 +390,7 @@
 .dl-note a,
 .dl-steps span a,
 .dl-list a {
-    color: var(--tech-dark);
+    color: var(--accent-text, var(--tech-ink));
     font-weight: 700;
     text-decoration: underline;
     text-decoration-thickness: 1px;
@@ -419,10 +417,31 @@
 }
 
 .dl-card h3 {
-    font-size: 1.1875rem;
-    font-weight: 800;
-    letter-spacing: -0.015em;
+    font-size: 1.5rem;
+    letter-spacing: -0.01em;
     margin-bottom: var(--space-2);
+}
+
+/* The module list: numbered in the display face, under a heavy rule. */
+.dl-cards--numbered {
+    counter-reset: dl-module;
+}
+
+.dl-cards--numbered .dl-card {
+    counter-increment: dl-module;
+    border-top: 2px solid var(--rule-strong);
+}
+
+.dl-cards--numbered .dl-card::before {
+    content: counter(dl-module);
+    display: block;
+    margin-bottom: var(--space-2);
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--tech);
+    font-variant-numeric: lining-nums tabular-nums;
 }
 
 .dl-card p {
@@ -473,27 +492,31 @@
     counter-increment: dl-step;
     position: relative;
     padding-top: var(--space-4);
-    border-top: 2px solid var(--text-main);
+    border-top: 2px solid var(--rule-strong);
 }
 
+/* Big Fraunces numerals, 1 to 4, in the accent colour. No circles. */
 .dl-steps li::before {
-    content: counter(dl-step, decimal-leading-zero);
+    content: counter(dl-step);
     display: block;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
     color: var(--tech);
-    font-size: 3rem;
-    font-weight: 800;
-    letter-spacing: -0.05em;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
+    font-family: var(--font-display);
+    font-size: clamp(4.5rem, 9vw, 7rem);
+    font-weight: 500;
+    font-variation-settings: 'SOFT' 100, 'WONK' 0;
+    letter-spacing: -0.03em;
+    line-height: 0.8;
+    font-variant-numeric: lining-nums;
 }
 
 .dl-steps strong {
     display: block;
-    font-size: 1.1875rem;
-    font-weight: 800;
-    letter-spacing: -0.015em;
-    line-height: 1.3;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
     margin-bottom: var(--space-2);
 }
 
@@ -526,18 +549,16 @@
     color: var(--text-muted);
 }
 
-/* Side panel: a plain bordered note, one level only. */
+/* Side panel: paper, one level only. */
 .dl-panel {
-    padding: var(--space-6);
-    background: var(--surface-1);
-    border: 1px solid var(--border);
+    padding: clamp(1.25rem, 3vw, 2.5rem);
+    background: var(--paper);
     border-radius: var(--radius-md);
 }
 
 .dl-panel h3 {
-    font-size: 1.25rem;
-    font-weight: 800;
-    letter-spacing: -0.015em;
+    font-size: 1.625rem;
+    letter-spacing: -0.01em;
     margin-bottom: var(--space-3);
 }
 
@@ -549,7 +570,7 @@
 .dl-faq {
     display: grid;
     max-width: 52rem;
-    border-top: 2px solid var(--text-main);
+    border-top: 2px solid var(--rule-strong);
 }
 
 .dl-faq details {
@@ -622,7 +643,7 @@
     width: 1.1rem;
     margin-top: 0.2rem;
     text-align: center;
-    color: var(--tech);
+    color: var(--accent-text, var(--tech));
     font-size: 0.95rem;
 }
 
@@ -646,7 +667,6 @@
 }
 
 .dl-contact-item a:hover {
-    color: var(--tech-dark);
     text-decoration: underline;
     text-underline-offset: 3px;
 }
@@ -737,7 +757,7 @@
         padding-left: 0;
         padding-top: var(--space-4);
         border-left: 0;
-        border-top: 1px solid rgba(255, 255, 255, 0.22);
+        border-top: 1px solid var(--rule);
     }
 }
 
@@ -764,28 +784,6 @@
         font-size: 1.0625rem;
     }
 
-    /* Hero facts: two to a row, each on its own hairline. */
-    .dl-chips {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        column-gap: var(--space-4);
-        border-bottom: 0;
-    }
-
-    .dl-chips li,
-    .dl-chips li:first-child {
-        padding: 0.7rem 0;
-        border-bottom: 1px solid var(--rule);
-    }
-
-    .dl-chips li + li {
-        border-left: 0;
-    }
-
-    .dl-hero-art {
-        max-width: 260px;
-    }
-
     .dl-enrolled {
         padding: var(--space-4);
     }
@@ -810,6 +808,7 @@
     .dl-strip-grid > div:not(:first-child) a,
     .dl-contact-item a {
         display: inline-block;
+        min-height: 44px;
         padding: 0.6rem 0;
         margin: -0.6rem 0;
     }
@@ -833,21 +832,21 @@
 
     /* How to enroll: the numeral sits in its own column beside the step. */
     .dl-steps {
-        row-gap: var(--space-5);
+        row-gap: var(--space-6);
     }
 
     .dl-steps li {
         display: grid;
-        grid-template-columns: 3.25rem minmax(0, 1fr);
+        grid-template-columns: 3.5rem minmax(0, 1fr);
         column-gap: var(--space-3);
         align-items: start;
-        padding-top: var(--space-3);
+        padding-top: var(--space-4);
     }
 
     .dl-steps li::before {
         grid-row: 1 / span 3;
         margin: 0;
-        font-size: 2.25rem;
+        font-size: 4rem;
     }
 
     .dl-steps li > strong,
@@ -885,12 +884,8 @@
 }
 
 @media (max-width: 400px) {
-    .dl-hero h1 {
-        font-size: 2.3rem;
-    }
-
     .dl-section-head h2 {
-        font-size: 1.85rem;
+        font-size: 2rem;
     }
 }
 

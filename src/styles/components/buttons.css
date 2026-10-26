@@ -2,8 +2,8 @@
    Buttons
    .btn-primary / .btn-secondary belong to the Med track (teal).
    .btn-tech / .btn-tech-outline belong to the Tech track (indigo).
-   Same geometry in both families: sentence case, 6px radius, solid fill,
-   no gradient, no shadow, no lift. Hover darkens; that is all.
+   Same geometry in both families: sentence case, 4px radius, 48px tall,
+   solid fill, no gradient, no shadow, no lift. Hover darkens; that is all.
    ========================================================================== */
 
 .btn {
@@ -34,26 +34,26 @@
 }
 
 .btn-primary {
-    background: var(--primary-dark);
-    border-color: var(--primary-dark);
+    background: var(--med-ink);
+    border-color: var(--med-ink);
     color: #fff;
 }
 
 .btn-primary:hover {
-    background: #00655f;
-    border-color: #00655f;
+    background: var(--med-deep);
+    border-color: var(--med-deep);
     color: #fff;
 }
 
 .btn-secondary {
     background: transparent;
-    border-color: var(--primary-dark);
-    color: var(--primary-dark);
+    border-color: var(--med-ink);
+    color: var(--med-ink);
 }
 
 .btn-secondary:hover {
     background: var(--primary-light);
-    color: #00655f;
+    color: var(--med-deep);
 }
 
 .btn-sm {
@@ -64,26 +64,97 @@
 
 /* Tech-track button. Same geometry as .btn-primary, indigo fill. */
 .btn-tech {
-    background: var(--tech);
-    border-color: var(--tech);
+    background: var(--tech-deep-2);
+    border-color: var(--tech-deep-2);
     color: #fff;
 }
 
 .btn-tech:hover {
-    background: var(--tech-dark);
-    border-color: var(--tech-dark);
+    background: var(--tech-deep);
+    border-color: var(--tech-deep);
     color: #fff;
 }
 
 .btn-tech-outline {
     background: transparent;
-    border-color: var(--tech);
-    color: var(--tech-dark);
+    border-color: var(--tech-deep-2);
+    color: var(--tech-ink);
 }
 
 .btn-tech-outline:hover {
-    background: var(--tech-light);
-    color: var(--tech-dark);
+    background: var(--tech-tint);
+    color: var(--tech-deep);
+}
+
+/*
+   On a colour block a teal button on teal (or indigo on indigo) would vanish.
+   There the solid button is paper with the block colour as its text, and the
+   outline button is white. A .panel-paper inside the block restores the
+   normal buttons.
+*/
+.block-med .btn-primary,
+.block-med .btn-tech,
+.block-tech .btn-primary,
+.block-tech .btn-tech {
+    background: var(--paper);
+    border-color: var(--paper);
+}
+
+.block-med .btn-primary,
+.block-med .btn-tech {
+    color: var(--med-deep);
+}
+
+.block-tech .btn-primary,
+.block-tech .btn-tech {
+    color: var(--tech-deep);
+}
+
+.block-med .btn-primary:hover,
+.block-med .btn-tech:hover,
+.block-tech .btn-primary:hover,
+.block-tech .btn-tech:hover {
+    background: #ffffff;
+    border-color: #ffffff;
+}
+
+.block-med .btn-secondary,
+.block-med .btn-tech-outline,
+.block-tech .btn-secondary,
+.block-tech .btn-tech-outline {
+    background: transparent;
+    border-color: #ffffff;
+    color: #ffffff;
+}
+
+.block-med .btn-secondary:hover,
+.block-med .btn-tech-outline:hover,
+.block-tech .btn-secondary:hover,
+.block-tech .btn-tech-outline:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+.block-med .panel-paper .btn-primary {
+    background: var(--med-ink);
+    border-color: var(--med-ink);
+    color: #fff;
+}
+
+.block-tech .panel-paper .btn-tech {
+    background: var(--tech-deep-2);
+    border-color: var(--tech-deep-2);
+    color: #fff;
+}
+
+.block-med .panel-paper .btn-primary:hover {
+    background: var(--med-deep);
+    border-color: var(--med-deep);
+}
+
+.block-tech .panel-paper .btn-tech:hover {
+    background: var(--tech-deep);
+    border-color: var(--tech-deep);
 }
 
 .btn:active {
@@ -121,7 +192,8 @@
     .admissions-cta .btn,
     .tech-card-actions .btn,
     .dl-actions .btn,
-    .track-panel .btn,
+    .path .btn,
+    .catalogue-action .btn,
     .grants-block .btn,
     .financial-aid-footer .btn,
     .dl-enrolled .btn,

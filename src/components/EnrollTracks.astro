@@ -49,45 +49,41 @@ const addressLines = [site.address.streetDisplay, `${site.address.city}, ${site.
 
     <div class="enroll-tracks">
       <!-- Track 1: Med / health care programs -->
-      <div class="enroll-card">
-        <span class="enroll-badge enroll-badge--static">{med.badge}</span>
+      <div class="enroll-card enroll-card--med">
+        <p class="eyebrow eyebrow--med eyebrow--status enroll-badge">{med.badge}</p>
         <h3 class="enroll-title">
           <span class="text-gradient">{med.titleAccent}</span>
         </h3>
         <p class="enroll-subtitle">{med.subtitle}</p>
 
-        <div class="enroll-programs" aria-label={med.programsLabel}>
+        <ul class="enroll-programs" aria-label={med.programsLabel}>
           {
             medEnrolling.map((program) => (
-              <div class="enroll-program">
-                <span>{(program.listName ?? program.name)[locale]}</span>
-              </div>
+              <li class="enroll-program">{(program.listName ?? program.name)[locale]}</li>
             ))
           }
-        </div>
+        </ul>
 
-        <div class="enroll-grid">
+        <dl class="enroll-grid">
           {
             med.chips.map((chip) => (
               <div class="enroll-chip">
-                <div>
-                  <div class="enroll-chip-label">{chip.label}</div>
-                  <div class="enroll-chip-value">
-                    {chip.address ? (
-                      <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
-                        {addressLines[0]}
-                        <br />
-                        {addressLines[1]}
-                      </a>
-                    ) : (
-                      chip.value
-                    )}
-                  </div>
-                </div>
+                <dt class="enroll-chip-label">{chip.label}</dt>
+                <dd class="enroll-chip-value">
+                  {chip.address ? (
+                    <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
+                      {addressLines[0]}
+                      <br />
+                      {addressLines[1]}
+                    </a>
+                  ) : (
+                    chip.value
+                  )}
+                </dd>
               </div>
             ))
           }
-        </div>
+        </dl>
 
         <div class="enroll-actions">
           {
@@ -118,46 +114,44 @@ const addressLines = [site.address.streetDisplay, `${site.address.city}, ${site.
 
       <!-- Track 2: Tech / Digital Literacy Training -->
       <div class="enroll-card enroll-card--tech">
-        <span class="enroll-badge enroll-badge--static">{tech.badge}</span>
+        <p class="eyebrow eyebrow--tech eyebrow--status enroll-badge">{tech.badge}</p>
         <h3 class="enroll-title">
           <span class="text-gradient">{tech.titleAccent}</span>
         </h3>
         <p class="enroll-subtitle">{tech.subtitle}</p>
 
-        <div class="enroll-grid">
+        <dl class="enroll-grid">
           {
             tech.chips.map((chip) => (
               <div class="enroll-chip">
-                <div>
-                  <div class="enroll-chip-label">{chip.label}</div>
-                  <div class="enroll-chip-value">
-                    {chip.address ? (
-                      <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
-                        {addressLines[0]}
-                        <br />
-                        {addressLines[1]}
-                      </a>
-                    ) : (
-                      chip.value
-                    )}
-                  </div>
-                </div>
+                <dt class="enroll-chip-label">{chip.label}</dt>
+                <dd class="enroll-chip-value">
+                  {chip.address ? (
+                    <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
+                      {addressLines[0]}
+                      <br />
+                      {addressLines[1]}
+                    </a>
+                  ) : (
+                    chip.value
+                  )}
+                </dd>
               </div>
             ))
           }
-        </div>
+        </dl>
 
         <p class="enroll-qualify">
           <strong>{tech.qualifyLabel}</strong> {tech.qualifyText}
         </p>
 
-        <div class="enroll-features" aria-label={tech.featuresLabel}>
+        <ul class="enroll-features" aria-label={tech.featuresLabel}>
           {
             tech.features.map((feature) => (
-              <span>{feature.label}</span>
+              <li>{feature.label}</li>
             ))
           }
-        </div>
+        </ul>
 
         <div class="enroll-actions">
           {

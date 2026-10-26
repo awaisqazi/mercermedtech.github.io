@@ -6,7 +6,6 @@
 import '../styles/components/dl.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Lockup from '../components/Lockup.astro';
-import DltHeroArt from '../components/DltHeroArt.astro';
 import DltInterestForm from '../components/DltInterestForm.astro';
 import { site, dlt } from '../data/site';
 import { programById } from '../data/programs';
@@ -46,21 +45,28 @@ const jsonLd = [
   floatingCall={false}
 >
   <main id="main">
-    <!-- ===== 1. Hero ===== -->
-    <section class="dl-hero">
+    <!-- ===== 1. Hero: a deep indigo block. The promise is the framed
+         statement; the facts are set as a ruled list where the drawing used
+         to be. ===== -->
+    <section class="dl-hero block-tech">
       <div class="container">
         <div class="dl-hero-grid">
-          <div>
+          <div class="dl-hero-main">
             <Lockup variant="brand" divider="·" trailing={page.hero.eyebrowTrailing} />
-            <h1>{page.hero.headingBefore}<span class="text-gradient-tech">{page.hero.headingAccent}</span></h1>
+            <h1>
+              {page.hero.headingBefore}<span class="bracketed dl-hero-accent">{page.hero.headingAccent}</span>
+            </h1>
             <p class="dl-lead">{page.hero.lead}</p>
-            <ul class="dl-chips">
-              {page.hero.chips.map((chip) => <li>{chip.label}</li>)}
-            </ul>
             <div class="dl-actions">
               <a href="#interest" class="btn btn-tech">{page.hero.interestCta}</a>
               <a href={`mailto:${site.email}`} class="btn btn-tech-outline">{page.hero.emailCta}</a>
             </div>
+          </div>
+
+          <div class="dl-hero-side">
+            <ul class="dl-chips">
+              {page.hero.chips.map((chip) => <li>{chip.label}</li>)}
+            </ul>
 
             <aside class="dl-enrolled" aria-labelledby="dl-enrolled-title">
               <div>
@@ -80,10 +86,6 @@ const jsonLd = [
                 {page.enrolled.cta} <i class="fas fa-external-link-alt" aria-hidden="true"></i>
               </a>
             </aside>
-          </div>
-
-          <div>
-            <DltHeroArt label={page.hero.artLabel} />
           </div>
         </div>
       </div>
@@ -117,12 +119,12 @@ const jsonLd = [
     </section>
 
     <!-- ===== 2b. Interest list (posts to its own Google Form) ===== -->
-    <section id="interest" class="dl-section dl-section--tint" aria-labelledby="dl-interest-title">
+    <section id="interest" class="dl-section block-tech" aria-labelledby="dl-interest-title">
       <div class="container">
         <div class="dl-interest-grid">
           <div class="dl-section-head dl-section-head--tight">
             <span class="dl-eyebrow">{d.dltInterest.dlt.eyebrow}</span>
-            <h2 id="dl-interest-title">{d.dltInterest.dlt.heading}</h2>
+            <h2 id="dl-interest-title" class="bracketed">{d.dltInterest.dlt.heading}</h2>
             <p>{d.dltInterest.dlt.intro}</p>
           </div>
           <DltInterestForm locale={locale} placement="dlt" />
@@ -135,7 +137,7 @@ const jsonLd = [
       <div class="container">
         <div class="dl-section-head">
           <span class="dl-eyebrow">{page.qualify.eyebrow}</span>
-          <h2>{page.qualify.heading}</h2>
+          <h2 class="bracketed">{page.qualify.heading}</h2>
           <p>{page.qualify.intro}</p>
         </div>
 
@@ -173,11 +175,11 @@ const jsonLd = [
       <div class="container">
         <div class="dl-section-head">
           <span class="dl-eyebrow">{page.learn.eyebrow}</span>
-          <h2>{page.learn.heading}</h2>
+          <h2 class="bracketed">{page.learn.heading}</h2>
           <p>{page.learn.intro}</p>
         </div>
 
-        <div class="dl-cards">
+        <div class="dl-cards dl-cards--numbered">
           {
             page.learn.cards.map((card) => (
               <article class="dl-card">
@@ -212,7 +214,7 @@ const jsonLd = [
     </section>
 
     <!-- ===== 6. Support while you train ===== -->
-    <section class="dl-section dl-section--tint">
+    <section class="dl-section block-tech">
       <div class="container">
         <div class="dl-split">
           <div>
@@ -231,7 +233,7 @@ const jsonLd = [
             </ul>
           </div>
 
-          <div class="dl-panel">
+          <div class="dl-panel panel-paper">
             <h3>{page.support.panelHeading}</h3>
             <p class="dl-muted">{page.support.panelIntro}</p>
             <ul class="dl-list dl-list--spaced">
@@ -300,7 +302,7 @@ const jsonLd = [
             </ul>
           </div>
 
-          <div class="dl-panel">
+          <div class="dl-panel panel-paper">
             <h3>{page.partners.reportHeading}</h3>
             <p class="dl-muted">{page.partners.reportBody}</p>
             <h3 class="dl-subhead--spaced">{page.partners.contactHeading}</h3>
@@ -326,7 +328,7 @@ const jsonLd = [
     </section>
 
     <!-- ===== 9. FAQ ===== -->
-    <section class="dl-section dl-section--tint" aria-labelledby="dl-faq-title">
+    <section class="dl-section" aria-labelledby="dl-faq-title">
       <div class="container">
         <div class="dl-section-head">
           <span class="dl-eyebrow">{page.faq.eyebrow}</span>
@@ -347,7 +349,7 @@ const jsonLd = [
     </section>
 
     <!-- ===== 10. Contact ===== -->
-    <section class="dl-section" aria-labelledby="dl-contact-title">
+    <section class="dl-section block-tech" aria-labelledby="dl-contact-title">
       <div class="container">
         <div class="dl-section-head">
           <span class="dl-eyebrow">{page.contact.eyebrow}</span>

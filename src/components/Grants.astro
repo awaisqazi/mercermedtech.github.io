@@ -60,8 +60,8 @@ const { locale, med, tech } = Astro.props;
     </div>
 
     <!-- (b) Digital Literacy Training is grant funded -->
-    <div class="grants-block grants-divider">
-      <h3>{tech.heading}</h3>
+    <div class="grants-block grants-divider block-tech">
+      <h3 class="bracketed">{tech.heading}</h3>
       <p>{tech.body}</p>
       <FundingLine locale={locale} />
       <a href={tech.ctaHref} class="btn btn-tech">{tech.ctaLabel}</a>
