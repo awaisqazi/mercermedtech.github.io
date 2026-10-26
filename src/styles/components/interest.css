@@ -1,0 +1,132 @@
+/* ==========================================================================
+   Digital Literacy interest form (DltInterestForm.astro)
+   Reuses the contact form layout in contact.css and recolours it for the
+   Tech track: indigo, never teal (design.md section 1a, color ownership).
+   ========================================================================== */
+
+.contact-card.interest-card {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.94) 0%,
+            rgba(231, 236, 253, 0.8) 100%);
+    border-color: rgba(59, 91, 219, 0.2);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+        0 25px 60px -15px rgba(59, 91, 219, 0.2);
+}
+
+.interest-card .form-label .req,
+.interest-card .interest-contact-note .req {
+    color: var(--tech);
+    margin-left: 0.15rem;
+}
+
+.interest-card .contact-form input:focus,
+.interest-card .contact-form select:focus,
+.interest-card .contact-form textarea:focus {
+    border-color: var(--tech);
+    box-shadow: 0 0 0 4px rgba(59, 91, 219, 0.15);
+}
+
+.interest-card :focus-visible {
+    outline-color: var(--tech);
+}
+
+/* Phone and email: one of the two is required. */
+.interest-contact {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+}
+
+.interest-contact-note {
+    padding: 0;
+    margin: 0 0 0.6rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--tech-dark);
+}
+
+.interest-card .form-hint {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.interest-privacy {
+    margin-top: 0.25rem;
+}
+
+.interest-card .form-success {
+    background: var(--tech-light);
+    border-color: rgba(59, 91, 219, 0.28);
+}
+
+.interest-card .form-success i,
+.interest-card .form-success strong {
+    color: var(--tech-dark);
+}
+
+.interest-card .form-success.is-error {
+    background: rgba(220, 53, 69, 0.08);
+    border-color: rgba(220, 53, 69, 0.28);
+}
+
+.interest-card .form-success.is-error i {
+    color: #b42335;
+}
+
+/* Narrow Tech column on the home page: tighter padding and spacing so the
+   column does not run far past the Med column beside it. */
+.contact-card.interest-card--compact {
+    padding: 1.5rem 1.25rem;
+}
+
+.interest-card--compact .contact-form {
+    gap: 1rem;
+}
+
+.interest-card--compact .form-row {
+    gap: 0.75rem;
+}
+
+/* ---------- Home page: the block under the Digital Literacy card ---------- */
+.tech-interest {
+    margin-top: 2rem;
+    scroll-margin-top: var(--header-height);
+}
+
+.tech-interest h4 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--tech-dark);
+    margin: 0 0 0.4rem;
+}
+
+.tech-interest > p {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+    margin: 0 0 1.25rem;
+}
+
+/* ---------- Digital Literacy page: the #interest section ---------- */
+.dl-interest-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+    gap: 3rem;
+    align-items: start;
+}
+
+@media (max-width: 968px) {
+    .dl-interest-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .contact-card.interest-card--compact {
+        padding: 1.5rem 1.15rem;
+    }
+}

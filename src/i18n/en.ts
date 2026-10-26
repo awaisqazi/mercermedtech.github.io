@@ -815,6 +815,71 @@ export const en = {
     },
   },
 
+  /* ---------- Digital Literacy Training interest form (home page and /digital-literacy/) ---------- */
+  /**
+   * A lighter public form than the hidden sign-up: only the name and one way
+   * to reach the person are required. It mirrors the sign-up questions, plus
+   * an optional AOSOS number. NJDOL rule: no health care programs here.
+   * Wiring and entry ids: src/components/DltInterestForm.astro.
+   */
+  dltInterest: {
+    /** The section on the Digital Literacy page. */
+    dlt: {
+      eyebrow: 'Interest list',
+      heading: 'Tell us you are interested',
+      intro:
+        'Leave your name and a phone number or email, and we will get back to you about the next group. Caseworkers can send this in for someone they work with. Asking costs nothing and does not sign you up for anything.',
+    },
+    /** The compact block in the Tech column of the home page. */
+    home: {
+      heading: 'Interested in Digital Literacy Training?',
+      intro: 'Leave your name and a phone number or email, and we will get back to you about the next group.',
+    },
+    form: {
+      nameLabel: 'Your name',
+      namePlaceholder: 'First and last name',
+      contactNote: 'Phone or email: we need at least one.',
+      contactMissing: 'Please give us a phone number or an email address so we can reach you.',
+      phoneLabel: 'Phone number',
+      phonePlaceholder: '(609) 555 1234',
+      emailLabel: 'Email address',
+      emailPlaceholder: 'you@example.com',
+      countyLabel: 'What county do you live in?',
+      countyOther: 'Another county',
+      benefitsLabel: 'Do you receive TANF or SNAP?',
+      benefitsTanf: 'TANF',
+      benefitsSnap: 'SNAP',
+      benefitsBoth: 'Both',
+      benefitsNeither: 'Neither, or not sure',
+      languageLabel: 'What language do you want the class in?',
+      languageEnglish: 'English',
+      languageSpanish: 'Spanish',
+      heardLabel: 'How did you hear about us?',
+      heardCaseworker: 'A caseworker or county agency',
+      heardOneStop: 'One-Stop Career Center',
+      heardFriend: 'Friend or family',
+      heardSocial: 'Facebook or Instagram',
+      heardFlyer: 'A flyer',
+      heardOther: 'Somewhere else',
+      referralLabel: 'Agency or caseworker who referred you',
+      referralPlaceholder: 'Name of the agency or the person',
+      aososLabel: 'AOSOS number (if you know it)',
+      aososHint: 'The case number the One-Stop Career Center uses. Leave it blank if you do not have it.',
+      messageLabel: 'Anything you want us to know',
+      messagePlaceholder: 'For example: what you want to learn, or a good time to reach you.',
+      pickOne: 'Pick one',
+      optional: 'optional',
+      privacy: 'We use this only to contact you about Digital Literacy Training. We do not share your information with anyone.',
+      submit: 'Put me on the list',
+      sending: 'Sending',
+      successTitle: 'Got it. You are on the interest list.',
+      successBody: `Someone from the school will get back to you, usually within two business days. If you would rather not wait, call us at ${site.phone.display}.`,
+      errorTitle: 'We could not send that.',
+      errorBody: `It looks like you are offline. Please try again, or call us at ${site.phone.display}.`,
+      iframeTitle: 'Form submission target',
+    },
+  },
+
   /* ---------- Shared wording for the unlisted staff forms (/iep/, /loaner/) ---------- */
   staffForm: {
     requiredNote: 'Questions marked * are required.',

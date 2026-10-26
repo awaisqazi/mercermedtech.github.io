@@ -1,0 +1,298 @@
+---
+import '../styles/components/contact.css';
+import '../styles/components/interest.css';
+import { dlt } from '../data/site';
+import { t, type Locale } from '../i18n';
+
+/**
+ * DIGITAL LITERACY INTEREST FORM CONTRACT (external, do not improvise)
+ * --------------------------------------------------------------------
+ * A light public interest list for Digital Literacy Training, shown on the
+ * home page (Tech column) and on /digital-literacy/, in both languages. Only
+ * the name and one way to reach the person (phone or email) are required.
+ *
+ * It posts straight to its own Google Form, "Digital Literacy Training:
+ * interest form", owned by mercermedtech@gmail.com, the same way the contact
+ * form does: a plain POST into a hidden iframe so the reader stays on the
+ * page. It is NOT the hidden sign-up form (DltSignupForm.astro, Worker and
+ * Turnstile) and it is NOT the contact form: never copy an entry id between
+ * the three.
+ *
+ * The choice questions are Google Forms dropdown / multiple choice questions,
+ * which drop any value they do not know. So every option VALUE below is the
+ * exact English choice in the Google Form, in both languages; only the LABEL
+ * is translated. To add a choice: add it in the Google Form first, then here,
+ * then in scripts/check-form-contract.mjs (npm run check:form).
+ * Notes and the full entry id map: docs/dlt-interest-form.md.
+ */
+const FORM_ACTION =
+  'https://docs.google.com/forms/d/e/1FAIpQLSdt6Zl1Ecv49ALSWxAAtiOkWBLQJ2vV81lgyuCt6CSUGb4xnA/formResponse';
+const FIELD = {
+  name: 'entry.330196929',
+  phone: 'entry.1208529879',
+  email: 'entry.2122843499',
+  county: 'entry.23947013',
+  benefits: 'entry.210728030',
+  language: 'entry.575477385',
+  heard: 'entry.137405449',
+  referral: 'entry.703509959',
+  aosos: 'entry.704622938',
+  message: 'entry.1944461321',
+  source: 'entry.943507853',
+};
+
+interface Props {
+  locale: Locale;
+  /** Which page carries the form; sent to Google so staff know where it came from. */
+  placement: 'home' | 'dlt';
+  /** Single-column layout for the narrow Tech column on the home page. */
+  compact?: boolean;
+}
+
+const { locale, placement, compact = false } = Astro.props;
+const f = t(locale).dltInterest.form;
+
+const counties = [
+  ...dlt.counties.map((county) => ({ value: county, label: county })),
+  { value: 'Other', label: f.countyOther },
+];
+const benefits = [
+  { value: 'TANF', label: f.benefitsTanf },
+  { value: 'SNAP', label: f.benefitsSnap },
+  { value: 'Both', label: f.benefitsBoth },
+  { value: 'Neither / not sure', label: f.benefitsNeither },
+];
+const languages = [
+  { value: 'English', label: f.languageEnglish },
+  { value: 'Spanish', label: f.languageSpanish },
+];
+const heard = [
+  { value: 'Caseworker or county agency', label: f.heardCaseworker },
+  { value: 'One-Stop Career Center', label: f.heardOneStop },
+  { value: 'Friend or family', label: f.heardFriend },
+  { value: 'Facebook or Instagram', label: f.heardSocial },
+  { value: 'Flyer', label: f.heardFlyer },
+  { value: 'Other', label: f.heardOther },
+];
+
+// Plain English for the staff reading the responses sheet.
+const source = `${placement === 'home' ? 'Home page' : 'Digital Literacy page'} (${locale === 'es' ? 'Spanish' : 'English'})`;
+---
+
+<div class:list={['contact-card', 'interest-card', { 'interest-card--compact': compact }]}>
+  <form
+    id="dlt-interest-form"
+    class="contact-form"
+    action={FORM_ACTION}
+    method="POST"
+    target="dlt_interest_iframe"
+    data-contact-missing={f.contactMissing}
+  >
+    <input type="hidden" name={FIELD.source} value={source} />
+
+    <label class="form-field">
+      <span class="form-label">{f.nameLabel} <span class="req" aria-hidden="true">*</span></span>
+      <input type="text" name={FIELD.name} required autocomplete="name" placeholder={f.namePlaceholder} />
+    </label>
+
+    <fieldset class="interest-contact">
+      <legend class="interest-contact-note">{f.contactNote} <span class="req" aria-hidden="true">*</span></legend>
+      <div class="form-row">
+        <label class="form-field">
+          <span class="form-label">{f.phoneLabel}</span>
+          <input
+            type="tel"
+            name={FIELD.phone}
+            autocomplete="tel"
+            placeholder={f.phonePlaceholder}
+            pattern="[0-9\(\)\-\s\+]{7,}"
+          />
+        </label>
+        <label class="form-field">
+          <span class="form-label">{f.emailLabel}</span>
+          <input type="email" name={FIELD.email} autocomplete="email" placeholder={f.emailPlaceholder} />
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="form-row">
+      <label class="form-field">
+        <span class="form-label">{f.countyLabel} <span class="optional">({f.optional})</span></span>
+        <select name={FIELD.county}>
+          <option value="" selected>{f.pickOne}</option>
+          {counties.map((choice) => <option value={choice.value}>{choice.label}</option>)}
+        </select>
+      </label>
+      <label class="form-field">
+        <span class="form-label">{f.benefitsLabel} <span class="optional">({f.optional})</span></span>
+        <select name={FIELD.benefits}>
+          <option value="" selected>{f.pickOne}</option>
+          {benefits.map((choice) => <option value={choice.value}>{choice.label}</option>)}
+        </select>
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label class="form-field">
+        <span class="form-label">{f.languageLabel} <span class="optional">({f.optional})</span></span>
+        <select name={FIELD.language}>
+          <option value="" selected>{f.pickOne}</option>
+          {languages.map((choice) => <option value={choice.value}>{choice.label}</option>)}
+        </select>
+      </label>
+      <label class="form-field">
+        <span class="form-label">{f.heardLabel} <span class="optional">({f.optional})</span></span>
+        <select name={FIELD.heard}>
+          <option value="" selected>{f.pickOne}</option>
+          {heard.map((choice) => <option value={choice.value}>{choice.label}</option>)}
+        </select>
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label class="form-field">
+        <span class="form-label">{f.referralLabel} <span class="optional">({f.optional})</span></span>
+        <input type="text" name={FIELD.referral} placeholder={f.referralPlaceholder} />
+      </label>
+      <label class="form-field">
+        <span class="form-label">{f.aososLabel} <span class="optional">({f.optional})</span></span>
+        <input
+          type="text"
+          name={FIELD.aosos}
+          autocomplete="off"
+          inputmode="numeric"
+          aria-describedby="dlt-interest-aosos-hint"
+        />
+        <span class="form-hint" id="dlt-interest-aosos-hint">{f.aososHint}</span>
+      </label>
+    </div>
+
+    <label class="form-field">
+      <span class="form-label">{f.messageLabel} <span class="optional">({f.optional})</span></span>
+      <textarea name={FIELD.message} rows="3" placeholder={f.messagePlaceholder}></textarea>
+    </label>
+
+    <p class="form-hint interest-privacy">{f.privacy}</p>
+
+    <button type="submit" class="btn btn-tech form-submit">
+      <span class="form-submit-label">{f.submit}</span>
+      <i class="fas fa-paper-plane" aria-hidden="true"></i>
+    </button>
+
+    <div
+      class="form-success"
+      role="status"
+      aria-live="polite"
+      hidden
+      data-success-title={f.successTitle}
+      data-success-body={f.successBody}
+      data-error-title={f.errorTitle}
+      data-error-body={f.errorBody}
+      data-submit-label={f.submit}
+      data-sending-label={f.sending}
+    >
+      <i class="fas fa-check-circle" aria-hidden="true"></i>
+      <div>
+        <strong>{f.successTitle}</strong>
+        <span>{f.successBody}</span>
+      </div>
+    </div>
+  </form>
+
+  <iframe
+    name="dlt_interest_iframe"
+    id="dlt_interest_iframe"
+    class="contact-iframe"
+    tabindex="-1"
+    aria-hidden="true"
+    title={f.iframeTitle}></iframe>
+</div>
+
+<script>
+  /*
+   * Same technique as ContactForm.astro: the browser posts the form into the
+   * hidden iframe, and we show the confirmation when the iframe loads, or
+   * after 4 seconds, because a cross-origin load event is not reliable.
+   * The one addition: phone and email are each optional, but one of the two
+   * is required, which HTML cannot say on its own.
+   */
+  const form = document.getElementById('dlt-interest-form') as HTMLFormElement | null;
+  const iframe = document.getElementById('dlt_interest_iframe');
+
+  if (form && iframe) {
+    const phone = form.querySelector<HTMLInputElement>('input[type="tel"]');
+    const email = form.querySelector<HTMLInputElement>('input[type="email"]');
+    const submitBtn = form.querySelector<HTMLButtonElement>('.form-submit');
+    const message = form.querySelector<HTMLElement>('.form-success');
+    const labelEl = form.querySelector<HTMLElement>('.form-submit-label');
+
+    const syncContactRule = () => {
+      if (!phone || !email) return;
+      const neither = !phone.value.trim() && !email.value.trim();
+      phone.setCustomValidity(neither ? form.dataset.contactMissing || '' : '');
+    };
+    syncContactRule();
+    phone?.addEventListener('input', syncContactRule);
+    email?.addEventListener('input', syncContactRule);
+
+    if (submitBtn && message) {
+      const icon = message.querySelector('i');
+      const strong = message.querySelector('strong');
+      const span = message.querySelector('span');
+      const data = message.dataset;
+      let isSubmitting = false;
+      let safetyTimer: number | null = null;
+
+      const show = (title: string, body: string, isError: boolean) => {
+        if (strong) strong.textContent = title;
+        if (span) span.textContent = body;
+        if (icon) {
+          icon.classList.toggle('fa-check-circle', !isError);
+          icon.classList.toggle('fa-circle-exclamation', isError);
+        }
+        message.classList.toggle('is-error', isError);
+        message.hidden = false;
+        message.classList.add('is-visible');
+        message.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+
+      const finish = () => {
+        if (!isSubmitting) return;
+        isSubmitting = false;
+        if (safetyTimer) {
+          window.clearTimeout(safetyTimer);
+          safetyTimer = null;
+        }
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('is-loading');
+        if (labelEl && data.submitLabel) labelEl.textContent = data.submitLabel;
+        form.reset();
+        syncContactRule();
+        show(data.successTitle || '', data.successBody || '', false);
+      };
+
+      form.addEventListener('submit', (event) => {
+        syncContactRule();
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          form.reportValidity();
+          return;
+        }
+        if (!navigator.onLine) {
+          event.preventDefault();
+          show(data.errorTitle || '', data.errorBody || '', true);
+          return;
+        }
+        isSubmitting = true;
+        submitBtn.disabled = true;
+        submitBtn.classList.add('is-loading');
+        if (labelEl && data.sendingLabel) labelEl.textContent = data.sendingLabel;
+        safetyTimer = window.setTimeout(finish, 4000);
+      });
+
+      iframe.addEventListener('load', () => {
+        if (isSubmitting) finish();
+      });
+    }
+  }
+</script>

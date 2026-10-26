@@ -17,6 +17,7 @@ import Grants from '../components/Grants.astro';
 import Faculty from '../components/Faculty.astro';
 import Organizations from '../components/Organizations.astro';
 import ContactForm from '../components/ContactForm.astro';
+import DltInterestForm from '../components/DltInterestForm.astro';
 import ProgramModals from '../components/ProgramModals.astro';
 import ScrollReveal from '../components/ScrollReveal.astro';
 
@@ -164,7 +165,14 @@ const heroPanels = [
         { href: dltPath, label: h.programs.tech.readMoreCta, style: 'tech' },
         { href: site.phone.href, label: h.programs.tech.callCta, style: 'tech-outline', icon: 'fas fa-phone-alt' },
       ]}
-    />
+    >
+      <!-- Tech column, under the Digital Literacy card: Med stays first and left. -->
+      <div id="dlt-interest" class="tech-interest">
+        <h4>{d.dltInterest.home.heading}</h4>
+        <p>{d.dltInterest.home.intro}</p>
+        <DltInterestForm locale={locale} placement="home" compact />
+      </div>
+    </ProgramsTech>
   </ProgramsSection>
 
   <TuitionTable

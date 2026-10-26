@@ -7,9 +7,10 @@ import '../styles/components/dl.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Lockup from '../components/Lockup.astro';
 import DltHeroArt from '../components/DltHeroArt.astro';
+import DltInterestForm from '../components/DltInterestForm.astro';
 import { site, dlt } from '../data/site';
 import { programById } from '../data/programs';
-import { localePath, t, type Locale } from '../i18n';
+import { t, type Locale } from '../i18n';
 import { dltCourseJsonLd, faqJsonLd } from '../data/schema';
 
 interface Props {
@@ -21,7 +22,6 @@ const d = t(locale);
 const page = d.dlt;
 const addressLine2 = `${site.address.city}, ${site.address.region} ${site.address.postalCode}`;
 const dltProgram = programById('digital-literacy-training')!;
-const contactHref = `${localePath(locale, '/')}?program=digital-literacy#contact`;
 const jsonLd = [
   dltCourseJsonLd(page.seo.schemaDescription, locale, dltProgram.name[locale]),
   faqJsonLd(page.faq.items, locale),
@@ -97,7 +97,7 @@ const jsonLd = [
             <h2 id="dl-sessions-title">{page.strip.heading}</h2>
             <p>
               {page.strip.note}
-              <a href={contactHref}>{page.strip.ctaLabel}</a>.
+              <a href="#interest">{page.strip.ctaLabel}</a>.
             </p>
           </div>
           <div>
@@ -112,6 +112,20 @@ const jsonLd = [
               </a>
             </p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 2b. Interest list (posts to its own Google Form) ===== -->
+    <section id="interest" class="dl-section dl-section--tint" aria-labelledby="dl-interest-title">
+      <div class="container">
+        <div class="dl-interest-grid">
+          <div class="dl-section-head dl-section-head--tight">
+            <span class="dl-eyebrow">{d.dltInterest.dlt.eyebrow}</span>
+            <h2 id="dl-interest-title">{d.dltInterest.dlt.heading}</h2>
+            <p>{d.dltInterest.dlt.intro}</p>
+          </div>
+          <DltInterestForm locale={locale} placement="dlt" />
         </div>
       </div>
     </section>

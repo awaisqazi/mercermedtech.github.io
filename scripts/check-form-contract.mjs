@@ -17,6 +17,12 @@
 //      /orientation-submit and /attendance-submit routes; their Google Form
 //      addresses must not appear on the page either.
 //
+//   4. the Digital Literacy interest form (src/components/DltInterestForm.astro),
+//      id="dlt-interest-form", on the home page and on /digital-literacy/ in
+//      both languages. A light public interest list: it posts straight to its
+//      own Google Form through a hidden iframe, like the contact form. Only
+//      the name is required by HTML; the page script asks for phone or email.
+//
 // The forms are separate Google Forms with separate action URLs and
 // separate entry.* names. Nothing is shared: do not reuse an id between them.
 //
@@ -168,6 +174,46 @@ const STAFF_FORMS = {
     required: ['entry.1011028555', 'entry.1654515592'],
   },
 };
+/* ---------------- 4. the Digital Literacy interest form ---------------- */
+
+const INTEREST_ACTION =
+  'https://docs.google.com/forms/d/e/1FAIpQLSdt6Zl1Ecv49ALSWxAAtiOkWBLQJ2vV81lgyuCt6CSUGb4xnA/formResponse';
+
+/** Every entry.* name the interest form sends, in question order. */
+const INTEREST_FIELDS = {
+  name: 'entry.330196929',
+  phone: 'entry.1208529879',
+  email: 'entry.2122843499',
+  county: 'entry.23947013',
+  benefits: 'entry.210728030',
+  language: 'entry.575477385',
+  heard: 'entry.137405449',
+  referral: 'entry.703509959',
+  aosos: 'entry.704622938',
+  message: 'entry.1944461321',
+  source: 'entry.943507853',
+};
+
+/** The choice questions and the exact choices the Google Form knows. */
+const INTEREST_CHOICES = {
+  [INTEREST_FIELDS.county]: [
+    'Hunterdon', 'Middlesex', 'Monmouth', 'Mercer', 'Ocean', 'Somerset', 'Union', 'Other',
+  ],
+  [INTEREST_FIELDS.benefits]: ['TANF', 'SNAP', 'Both', 'Neither / not sure'],
+  [INTEREST_FIELDS.language]: ['English', 'Spanish'],
+  [INTEREST_FIELDS.heard]: [
+    'Caseworker or county agency',
+    'One-Stop Career Center',
+    'Friend or family',
+    'Facebook or Instagram',
+    'Flyer',
+    'Other',
+  ],
+};
+
+/** The interest form must be on these built pages (owner's request, 2026-10-27). */
+const INTEREST_PAGES = ['index.html', 'es/index.html', 'digital-literacy/index.html', 'es/digital-literacy/index.html'];
+
 const ALL_GOOGLE_IDS = [SIGNUP_GOOGLE_FORM_ID, ...Object.values(STAFF_FORMS).map((f) => f.googleId)];
 
 const pages = [];
@@ -252,9 +298,40 @@ function checkStaffForm(page, html, id, spec) {
   }
 }
 
+/** The interest form: Google action, every entry present, only known choices. */
+let interestChecked = 0;
+function checkInterestForm(page, html) {
+  interestChecked += 1;
+  const form = html.match(/<form[^>]*id="dlt-interest-form"[^>]*>/);
+  if (!form || !form[0].includes(`action="${INTEREST_ACTION}"`)) {
+    fail(page, 'the interest form does not post to its Google Form');
+  }
+  for (const [role, field] of Object.entries(INTEREST_FIELDS)) {
+    if (!html.includes(`name="${field}"`)) fail(page, `interest form is missing ${role} (${field})`);
+  }
+  const name = html.match(new RegExp(`<input[^>]*name="${INTEREST_FIELDS.name.replace('.', '\\.')}"[^>]*>`));
+  if (!name || !/\srequired[\s>=]/.test(name[0])) fail(page, 'interest form: the name must be required');
+  for (const [field, allowed] of Object.entries(INTEREST_CHOICES)) {
+    const values = optionValues(html, field);
+    if (!values) {
+      fail(page, `interest form has no dropdown for ${field}`);
+      continue;
+    }
+    for (const value of values) {
+      if (value === '') continue; // the "pick one" placeholder
+      if (!allowed.includes(value)) fail(page, `interest value "${value}" is not one the Google Form accepts`);
+    }
+    for (const expected of allowed) {
+      if (!values.includes(expected)) fail(page, `interest value "${expected}" is missing from ${field}`);
+    }
+  }
+}
+
 for (const page of pages) {
   const html = readFileSync(page, 'utf8');
   if (html.includes('id="dlt-signup-form"')) checkSignupForm(page, html);
+  if (html.includes('id="dlt-interest-form"')) checkInterestForm(page, html);
+  else if (INTEREST_PAGES.includes(relative(DIST, page))) fail(page, 'the Digital Literacy interest form is missing');
   for (const [id, spec] of Object.entries(STAFF_FORMS)) {
     if (html.includes(`id="${id}"`)) checkStaffForm(page, html, id, spec);
   }
@@ -300,6 +377,7 @@ for (const page of pages) {
 
 console.log(
   `form contract: ${checked} page(s) with the contact form, ` +
-    `${signupChecked} with the sign-up form, ${staffChecked} with a staff form, ${problems} problem(s).`
+    `${signupChecked} with the sign-up form, ${interestChecked} with the interest form, ` +
+    `${staffChecked} with a staff form, ${problems} problem(s).`
 );
 process.exit(problems ? 1 : 0);
