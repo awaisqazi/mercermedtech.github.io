@@ -42,6 +42,8 @@ const jsonLd = [
   bodyClass="dl-page"
   jsonLd={jsonLd}
   skipLink
+  phoneButton={false}
+  floatingCall={false}
 >
   <main id="main">
     <!-- ===== 1. Hero ===== -->
@@ -56,9 +58,9 @@ const jsonLd = [
               {page.hero.chips.map((chip) => <li><i class={chip.icon} aria-hidden="true"></i> {chip.label}</li>)}
             </ul>
             <div class="dl-actions">
-              <a href="#qualify" class="btn btn-tech">{page.hero.qualifyCta}</a>
-              <a href={site.phone.href} class="btn btn-tech-outline">
-                <i class="fas fa-phone-alt" aria-hidden="true"></i> {page.hero.callCta}
+              <a href="#interest" class="btn btn-tech">{page.hero.interestCta}</a>
+              <a href={`mailto:${site.email}`} class="btn btn-tech-outline">
+                <i class="fas fa-envelope" aria-hidden="true"></i> {page.hero.emailCta}
               </a>
             </div>
 
@@ -101,8 +103,8 @@ const jsonLd = [
             </p>
           </div>
           <div>
-            <span class="dl-strip-label">{page.strip.callLabel}</span>
-            <p><a href={site.phone.href}>{site.phone.display}</a></p>
+            <span class="dl-strip-label">{page.strip.emailLabel}</span>
+            <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
           </div>
           <div>
             <span class="dl-strip-label">{page.strip.whereLabel}</span>
@@ -164,7 +166,7 @@ const jsonLd = [
           <i class="fas fa-question-circle" aria-hidden="true"></i>
           <p>
             <strong>{page.qualify.calloutStrong}</strong>{page.qualify.calloutBefore}
-            <a href={site.phone.href}>{site.phone.display}</a>{page.qualify.calloutAfter}
+            <a href="#interest">{page.qualify.calloutLinkLabel}</a>{page.qualify.calloutAfter}
           </p>
         </div>
       </div>
@@ -270,6 +272,9 @@ const jsonLd = [
               <li>
                 <strong>{step.title}</strong>
                 <span set:html={step.body} />
+                {'cta' in step && step.cta && (
+                  <a href={step.cta.href} class="btn btn-tech btn-sm dl-step-cta">{step.cta.label}</a>
+                )}
               </li>
             ))
           }
@@ -309,10 +314,10 @@ const jsonLd = [
             <p class="dl-muted">{page.partners.reportBody}</p>
             <h3 class="dl-subhead--spaced">{page.partners.contactHeading}</h3>
             <div class="dl-contact-item dl-contact-item--spaced">
-              <i class="fas fa-phone-alt" aria-hidden="true"></i>
+              <i class="fas fa-envelope" aria-hidden="true"></i>
               <div>
-                <div class="dl-contact-label">{page.partners.phoneLabel}</div>
-                <a href={site.phone.href}>{site.phone.display}</a>
+                <div class="dl-contact-label">{page.partners.emailLabel}</div>
+                <a href={`mailto:${site.email}`}>{site.email}</a>
               </div>
             </div>
             <div class="dl-contact-item">
@@ -393,7 +398,7 @@ const jsonLd = [
         </div>
 
         <div class="dl-actions dl-actions--spaced">
-          <a href={site.phone.href} class="btn btn-tech">{page.contact.callCta}</a>
+          <a href="#interest" class="btn btn-tech">{page.contact.interestCta}</a>
           <a href={`mailto:${site.email}`} class="btn btn-tech-outline">{page.contact.emailCta}</a>
         </div>
       </div>

@@ -56,6 +56,7 @@ export const es: Dictionary = {
     learn: 'Qué aprende',
     enroll: 'Cómo inscribirse',
     partners: 'Para agencias',
+    interest: 'Formulario de interés',
   },
 
   footer: {
@@ -195,8 +196,8 @@ export const es: Dictionary = {
           { icon: 'fas fa-comments', label: 'Orientación laboral' },
           { icon: 'fas fa-briefcase', label: 'Ayuda para encontrar trabajo' },
         ],
+        interestCta: 'Díganos que le interesa',
         qualifyCta: 'Vea si califica',
-        callCta: `Llame al ${site.phone.display}`,
       },
     },
 
@@ -257,7 +258,6 @@ export const es: Dictionary = {
         sessionsLine:
           'Inscripciones próximamente. Pronto compartiremos los detalles de las próximas sesiones informativas.',
         readMoreCta: 'Leer sobre las Habilidades Digitales',
-        callCta: `Llame al ${site.phone.display}`,
       },
     },
 
@@ -308,7 +308,7 @@ export const es: Dictionary = {
         {
           icon: 'fas fa-clock',
           heading: 'Horarios de clase',
-          body: 'El horario depende del programa. Llámenos y le decimos los días y las horas del que le interesa.',
+          body: 'El horario depende del programa. Pregúntenos y le decimos los días y las horas del que le interesa.',
         },
         {
           icon: 'fas fa-users',
@@ -348,9 +348,7 @@ export const es: Dictionary = {
           },
         ],
         ctaLabel: 'Pida que le llamemos',
-        metaBefore: 'O llame al ',
-        metaAfter:
-          ' y pregunte por admisiones. La Capacitación en Habilidades Digitales tiene otros requisitos.',
+        meta: 'La Capacitación en Habilidades Digitales tiene otros requisitos.',
         metaLinkLabel: 'Vea si califica',
       },
     },
@@ -371,7 +369,7 @@ export const es: Dictionary = {
         loanBody:
           'Si saca un préstamo con ayuda de la escuela, usted tiene que pagarlo completo. Eso vale termine o no el programa. Si se retira, avise usted a la institución que le dio el préstamo. Nosotros enviamos a esa institución el reembolso que le corresponda, según nuestra política, pero lo que quede debiendo en el pagaré le toca pagarlo a usted.',
         loanInvite:
-          '¿Le preocupa el costo? Llámenos. Lo revisamos con usted antes de que firme nada.',
+          '¿Le preocupa el costo? Pregúntenos. Lo revisamos con usted antes de que firme nada.',
         ctaLabel: 'Preguntar cómo pagarlo',
       },
       tech: {
@@ -444,9 +442,9 @@ export const es: Dictionary = {
       submit: 'Pedir una llamada',
       sending: 'Enviando',
       successTitle: 'Listo. Ya tenemos su mensaje.',
-      successBody: `Alguien de la escuela le va a llamar. Si prefiere no esperar, llámenos al ${site.phone.display}.`,
+      successBody: 'Alguien de la escuela le va a llamar.',
       errorTitle: 'No pudimos enviarlo.',
-      errorBody: `Disculpe, algo falló de nuestro lado. Llámenos al ${site.phone.display} o escriba a ${site.email} y seguimos desde ahí.`,
+      errorBody: `Disculpe, algo falló de nuestro lado. Inténtelo otra vez o escriba a ${site.email} y seguimos desde ahí.`,
       iframeTitle: 'Destino del envío del formulario',
     },
 
@@ -464,7 +462,7 @@ export const es: Dictionary = {
     seo: {
       title: 'Capacitación en Habilidades Digitales | Mercer Med Tech',
       description:
-        'Clases de computación, inteligencia artificial y búsqueda de trabajo en Lawrenceville, NJ, sin costo para adultos con TANF o SNAP. (609) 712-5499.',
+        'Clases de computación, IA y búsqueda de trabajo en Lawrenceville, NJ, sin costo para adultos de Nueva Jersey con TANF o SNAP. Inscripciones próximamente.',
       keywords:
         'habilidades digitales nueva jersey, alfabetizacion digital nueva jersey, clases de computacion sin costo, inteligencia artificial, capacitacion tanf snap nj, workfirst new jersey, lawrenceville nj, preparacion para el trabajo, mercer med tech',
       ogTitle: 'Computación e inteligencia artificial sin costo si califica',
@@ -488,8 +486,8 @@ export const es: Dictionary = {
         { icon: 'fas fa-map-marker-alt', label: `${site.address.city}, ${site.address.region}` },
         { icon: 'fas fa-language', label: 'Inglés y español' },
       ],
-      qualifyCta: 'Vea si califica',
-      callCta: `Llame al ${site.phone.display}`,
+      interestCta: 'Díganos que le interesa',
+      emailCta: 'Escríbanos',
       artLabel: 'Una computadora portátil, un certificado y una gráfica que sube',
     },
 
@@ -505,7 +503,7 @@ export const es: Dictionary = {
       heading: 'Sesiones informativas',
       note: 'Pronto compartiremos los detalles de las próximas sesiones informativas.',
       ctaLabel: 'Pida que le avisemos cuando abran las inscripciones',
-      callLabel: 'Teléfono',
+      emailLabel: 'Correo',
       whereLabel: 'Dónde',
     },
 
@@ -527,8 +525,9 @@ export const es: Dictionary = {
       ],
       countiesHeading: 'Condados que atendemos',
       note: 'Confirmamos su elegibilidad con la agencia de servicios sociales de su condado. Usted no tiene que hacer ese trámite.',
-      calloutStrong: '¿Tiene dudas? Llámenos.',
-      calloutBefore: ' Le ayudamos a revisarlo. Llame al ',
+      calloutStrong: '¿Tiene dudas? Pregúntenos.',
+      calloutBefore: ' Llene el ',
+      calloutLinkLabel: 'formulario de interés',
       calloutAfter: ' y lo vemos con usted.',
     },
 
@@ -642,11 +641,12 @@ export const es: Dictionary = {
       eyebrow: 'Cómo inscribirse',
       heading: 'Cuatro pasos, en orden',
       intro:
-        'La Capacitación en Habilidades Digitales abre inscripciones próximamente. Llámenos y le decimos cuándo empieza el próximo grupo.',
+        'La Capacitación en Habilidades Digitales abre inscripciones próximamente. Díganos que le interesa y nos comunicamos con usted cuando empiece el próximo grupo.',
       steps: [
         {
-          title: 'Llámenos o escríbanos',
-          body: `Llame al <a href="${site.phone.href}">${site.phone.display}</a> o escriba a <a href="mailto:${site.email}">${site.email}</a>. Pronto compartiremos los detalles de las próximas sesiones informativas.`,
+          title: 'Díganos que le interesa',
+          body: 'Llene el <a href="#interest">formulario de interés</a> de esta página (toma dos minutos). Le respondemos por correo electrónico o por mensaje de texto, por lo general dentro de dos días hábiles. Un trabajador de caso (caseworker) también puede enviarlo por alguien con quien trabaja.',
+          cta: { href: '#interest', label: 'Ir al formulario' },
         },
         {
           title: 'Confirmamos su elegibilidad',
@@ -672,7 +672,10 @@ export const es: Dictionary = {
         'Residentes de Nueva Jersey de 18 años o más que reciben TANF o SNAP y viven en el condado de Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset o Union. A cada participante le hacemos una revisión de lo que ya sabe y empieza en el nivel que le corresponde, así que puede referir a alguien desde cualquier punto de partida. Mercer Med Tech está en la Lista de Proveedores de Capacitación Elegibles de Nueva Jersey (ETPL).',
       howHeading: 'Cómo referir',
       howItems: [
-        { icon: 'fas fa-phone-alt', body: `Llame al <a href="${site.phone.href}">${site.phone.display}</a>.` },
+        {
+          icon: 'fas fa-clipboard-list',
+          body: 'Llene el <a href="#interest">formulario de interés</a> por la persona que refiere, con el nombre de su agencia y su número de AOSOS si lo tiene.',
+        },
         { icon: 'fas fa-envelope', body: `Escriba a <a href="mailto:${site.email}">${site.email}</a>.` },
         {
           icon: 'fas fa-calendar-check',
@@ -683,7 +686,7 @@ export const es: Dictionary = {
       reportBody:
         'Con el consentimiento del participante, enviamos a su agencia reportes periódicos: si se inscribió, si está asistiendo, si obtuvo el certificado y si encontró trabajo.',
       contactHeading: 'Contacto',
-      phoneLabel: 'Teléfono',
+      emailLabel: 'Correo',
       campusLabel: 'Campus',
     },
 
@@ -699,7 +702,7 @@ export const es: Dictionary = {
         {
           question: '¿Cuándo puedo empezar?',
           answer:
-            'La Capacitación en Habilidades Digitales abre inscripciones próximamente. Llámenos al (609) 712-5499 y le decimos cuándo empieza el próximo grupo, o pida que le avisemos cuando abran las inscripciones.',
+            'La Capacitación en Habilidades Digitales abre inscripciones próximamente. Llene el formulario de interés de esta página y le decimos cuándo empieza el próximo grupo.',
         },
         {
           question: '¿Quién califica?',
@@ -709,12 +712,12 @@ export const es: Dictionary = {
         {
           question: '¿Necesito que alguien me refiera?',
           answer:
-            'No. La oficina de WorkFirst NJ de su condado o un One-Stop Career Center le puede referir, pero también puede inscribirse directamente. Llámenos al (609) 712-5499 y nosotros coordinamos con su condado.',
+            'No. La oficina de WorkFirst NJ de su condado o un One-Stop Career Center le puede referir, pero también puede inscribirse directamente. Llene el formulario de interés de esta página y nosotros coordinamos con su condado.',
         },
         {
           question: '¿Cuándo son las sesiones informativas?',
           answer:
-            'Pronto compartiremos los detalles de las próximas sesiones informativas. Llámenos y le avisamos en cuanto se fije la siguiente.',
+            'Pronto compartiremos los detalles de las próximas sesiones informativas. Llene el formulario de interés de esta página y le avisamos en cuanto se fije la siguiente.',
         },
         {
           question: '¿Necesito mi propia computadora?',
@@ -724,7 +727,7 @@ export const es: Dictionary = {
         {
           question: '¿Cuánto dura y cuál es el horario?',
           answer:
-            '7 semanas, 20 horas a la semana: 5 semanas del curso principal de Mercer Med Tech y luego 2 semanas de la microcredencial de IA de NJIT (NJIT AI Literacy Microcredential). Si necesita más tiempo para terminar NJIT, hay una octava semana opcional. En las primeras 5 semanas las lecciones son grabadas, así que las ve los días que le convienen. Llámenos y le decimos cuándo empieza el próximo grupo.',
+            '7 semanas, 20 horas a la semana: 5 semanas del curso principal de Mercer Med Tech y luego 2 semanas de la microcredencial de IA de NJIT (NJIT AI Literacy Microcredential). Si necesita más tiempo para terminar NJIT, hay una octava semana opcional. En las primeras 5 semanas las lecciones son grabadas, así que las ve los días que le convienen.',
         },
         {
           question: '¿Es presencial o en línea?',
@@ -744,12 +747,12 @@ export const es: Dictionary = {
         {
           question: '¿Tienen a alguien que hable español?',
           answer:
-            'Sí. Tenemos personal que habla inglés y español. Llame al (609) 712-5499 y pregunte por alguien que hable español.',
+            'Sí. Tenemos personal que habla inglés y español. El formulario de interés también está en español: elija español como idioma de la clase y le respondemos en español.',
         },
         {
           question: '¿Y si recibo beneficios pero no sé de qué tipo?',
           answer:
-            'Llámenos al (609) 712-5499 y lo averiguamos con usted. Revisamos con la agencia de servicios sociales de su condado, para que usted no tenga que hacerlo.',
+            'Llene el formulario de interés y elija "Ninguno, o no lo sé". Lo averiguamos con usted. Revisamos con la agencia de servicios sociales de su condado, para que usted no tenga que hacerlo.',
         },
       ],
     },
@@ -758,13 +761,13 @@ export const es: Dictionary = {
       eyebrow: 'Para empezar',
       heading: 'Hable con nosotros',
       intro:
-        'Llámenos o escríbanos. Le ayudamos a ver si califica, y preguntar no cuesta nada.',
+        'Llene el formulario de interés o escríbanos por correo. Le ayudamos a ver si califica, y preguntar no cuesta nada.',
       callLabel: 'Teléfono',
       emailLabel: 'Correo',
       visitLabel: 'Dirección',
       sessionsLabel: 'Sesiones informativas',
       sessionsValue: 'Pronto compartiremos los detalles',
-      callCta: `Llame al ${site.phone.display}`,
+      interestCta: 'Díganos que le interesa',
       emailCta: 'Escríbanos',
     },
   },
@@ -887,11 +890,11 @@ export const es: Dictionary = {
       submit: 'Anóteme en la lista',
       sending: 'Enviando',
       successTitle: 'Listo. Ya está en la lista de interés.',
-      successBody: `Alguien de la escuela se comunicará con usted, por lo general dentro de dos días hábiles. Si prefiere no esperar, llámenos al ${site.phone.display}.`,
+      successBody: 'Alguien de la escuela se comunicará con usted, por lo general dentro de dos días hábiles.',
       errorTitle: 'No pudimos enviarlo.',
-      errorBody: `Disculpe, algo falló de nuestro lado. Inténtelo otra vez o llámenos al ${site.phone.display}.`,
+      errorBody: `Disculpe, algo falló de nuestro lado. Inténtelo otra vez o escríbanos a ${site.email}.`,
       securityIncomplete: 'Espere a que termine la verificación de seguridad de arriba y envíe otra vez.',
-      securityUnavailable: `La verificación de seguridad no cargó. Actualice la página o llámenos al ${site.phone.display}.`,
+      securityUnavailable: `La verificación de seguridad no cargó. Actualice la página o escríbanos a ${site.email}.`,
     },
   },
 

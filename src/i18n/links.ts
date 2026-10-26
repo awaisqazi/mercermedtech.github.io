@@ -38,6 +38,7 @@ export function dltNav(locale: Locale): NavLink[] {
     { href: '#learn', label: d.learn },
     { href: '#enroll', label: d.enroll },
     { href: '#partners', label: d.partners },
+    { href: '#interest', label: d.interest, button: 'tech' },
   ];
 }
 

@@ -63,6 +63,7 @@ const heroPanels = [
   ogDescription={h.seo.ogDescription}
   twitterDescription={h.seo.twitterDescription}
   jsonLd={jsonLd}
+  floatingCall={false}
 >
   <AnnounceStrip
     label={h.announce.label}
@@ -120,8 +121,8 @@ const heroPanels = [
       featuresLabel: h.enroll.tech.featuresLabel,
       features: h.enroll.tech.features,
       actions: [
-        { href: `${dltPath}#qualify`, label: h.enroll.tech.qualifyCta, style: 'tech' },
-        { href: site.phone.href, label: h.enroll.tech.callCta, style: 'tech-outline', icon: 'fas fa-phone-alt' },
+        { href: '#dlt-interest', label: h.enroll.tech.interestCta, style: 'tech' },
+        { href: `${dltPath}#qualify`, label: h.enroll.tech.qualifyCta, style: 'tech-outline' },
       ],
     }}
   />
@@ -163,7 +164,6 @@ const heroPanels = [
       sessionsLine={h.programs.tech.sessionsLine}
       actions={[
         { href: dltPath, label: h.programs.tech.readMoreCta, style: 'tech' },
-        { href: site.phone.href, label: h.programs.tech.callCta, style: 'tech-outline', icon: 'fas fa-phone-alt' },
       ]}
     >
       <!-- Tech column, under the Digital Literacy card: Med stays first and left. -->

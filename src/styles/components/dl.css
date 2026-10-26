@@ -478,6 +478,13 @@
     line-height: 1.55;
 }
 
+.dl-steps .dl-step-cta {
+    display: inline-flex;
+    margin-top: 1rem;
+    /* keeps the 44px tap target that .btn-sm would otherwise drop below */
+    min-height: 44px;
+}
+
 /* Two-column text block */
 .dl-split {
     display: grid;

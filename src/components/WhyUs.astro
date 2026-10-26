@@ -1,6 +1,5 @@
 ---
 import '../styles/components/why.css';
-import { site } from '../data/site';
 
 interface Props {
   badge: string;
@@ -13,8 +12,7 @@ interface Props {
     items: { icon: string; title: string; body: string }[];
     ctaHref: string;
     ctaLabel: string;
-    metaBefore: string;
-    metaAfter: string;
+    meta: string;
     metaLinkLabel: string;
     metaLinkHref: string;
   };
@@ -67,7 +65,7 @@ const { badge, heading, intro, cards, admissions } = Astro.props;
       <div class="admissions-cta">
         <a href={admissions.ctaHref} class="btn btn-primary">{admissions.ctaLabel}</a>
         <span class="meta">
-          {admissions.metaBefore}<a href={site.phone.href}>{site.phone.display}</a>{admissions.metaAfter}{' '}
+          {admissions.meta}{' '}
           <a href={admissions.metaLinkHref}>{admissions.metaLinkLabel}</a>.
         </span>
       </div>

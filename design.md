@@ -37,7 +37,7 @@ academic advisor: knowledgeable but never stiff, encouraging but never hype-y.
    funded student will look: "Mercer Med Tech is on New Jersey's Eligible
    Training Provider List (ETPL)." Never claim a specific program is
    ETPL-listed, and never claim evening classes. Class times depend on the
-   program, and the honest line is "Call and we will tell you the days and
+   program, and the honest line is "Ask us and we will tell you the days and
    hours for the one you are looking at."
 
 ### Voice & tone
@@ -123,6 +123,14 @@ Never use these shapes:
 - Name the source inside the sentence for every number: "The Bureau of Labor
   Statistics expects...".
 - The NJDOL funding sentence is verbatim, everywhere it appears.
+- **Contact routing: forms first, the phone number as an option.** On the
+  homepage and the Digital Literacy Training page the phone number appears
+  in the footer and once in the main contact section, nowhere else: no phone
+  buttons, no floating call button, no "call us" in steps, FAQ answers, or
+  form confirmations. Point people to the Digital Literacy interest form
+  (`#interest`, or `#dlt-interest` on the homepage) or the contact form, and
+  offer email as the alternative. Med program pages may still say "Call for
+  the next start date".
 
 ### Source-of-truth hierarchy
 

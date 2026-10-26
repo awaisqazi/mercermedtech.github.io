@@ -51,6 +51,11 @@ const EXPECTED_MISSES = [
     why: 'the footer address is still there; it now sits in its own span beside the phone and email, without the trailing full stop that used to glue the three together',
   },
   {
+    match:
+      /^(\(609\) 712-5499|Call \(609\) 712-5499|Not sure\? Call us\.|We will help you check\. Call|Call us or send a message|Digital Literacy Training is enrolling soon\. Call|No\. Your county WorkFirst NJ office|Details on upcoming information sessions will be shared soon\. Call us|7 weeks, 20 hours a week: 5 weeks|Yes\. We have staff who speak English and Spanish\. Call|Call us at \(609\) 712-5499 and we will help|Call or email us\.|Class times depend on the program\. Call|Worried about the cost\? Call us|Someone from the school will call you back\. If|us at \(609\) 712-5499\.|and ask for admissions\.|\. Details on upcoming|See if you qualify$)/,
+    why: 'owner, 2026-10-27: the homepage and the Digital Literacy page point to the interest form and email instead of "call us"; the number stays in the footer and once in the contact section. The Digital Literacy hero button is now "Tell us you are interested" (the nav keeps "Who qualifies")',
+  },
+  {
     match: /^(swipe to see more|see the details|put me on the list)$/i,
     why: 'button label, still present in the build in the same words',
   },

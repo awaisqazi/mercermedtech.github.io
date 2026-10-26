@@ -54,6 +54,7 @@ export const en = {
     learn: 'What you learn',
     enroll: 'How to enroll',
     partners: 'For caseworkers',
+    interest: 'Interest form',
   },
 
   footer: {
@@ -185,8 +186,8 @@ export const en = {
           { icon: 'fas fa-comments', label: 'Career coaching' },
           { icon: 'fas fa-briefcase', label: 'Help finding work' },
         ],
+        interestCta: 'Tell us you are interested',
         qualifyCta: 'See if you qualify',
-        callCta: `Call ${site.phone.display}`,
       },
     },
 
@@ -245,7 +246,6 @@ export const en = {
         ],
         sessionsLine: `Enrolling soon. ${site.infoSessionsNote}`,
         readMoreCta: 'Read about Digital Literacy Training',
-        callCta: `Call ${site.phone.display}`,
       },
     },
 
@@ -296,7 +296,7 @@ export const en = {
         {
           icon: 'fas fa-clock',
           heading: 'Class times',
-          body: 'Class times depend on the program. Call and we will tell you the days and hours for the one you are looking at.',
+          body: 'Class times depend on the program. Ask us and we will tell you the days and hours for the one you are looking at.',
         },
         {
           icon: 'fas fa-users',
@@ -336,8 +336,7 @@ export const en = {
           },
         ],
         ctaLabel: 'Ask us to call you',
-        metaBefore: 'Or call ',
-        metaAfter: ' and ask for admissions. Digital Literacy Training has different requirements.',
+        meta: 'Digital Literacy Training has different requirements.',
         metaLinkLabel: 'See if you qualify',
       },
     },
@@ -354,7 +353,7 @@ export const en = {
         loanHeading: 'If you take out a loan',
         loanBody:
           'If you take out a school-assisted loan, you have to pay it back in full. That is true whether or not you finish the program. If you withdraw, tell your lender yourself. We will send any refund you are owed to the lender, following our refund policy, but anything still owed on the note is yours to pay.',
-        loanInvite: 'Worried about the cost? Call us. We will go through it with you before you sign anything.',
+        loanInvite: 'Worried about the cost? Ask us. We will go through it with you before you sign anything.',
         ctaLabel: 'Ask about paying for it',
       },
       tech: {
@@ -398,7 +397,7 @@ export const en = {
       heading: 'Have us call you back',
       intro:
         'Fill this in and we will call you back with dates, what it costs, and what you need to sign up. It costs nothing to ask, and you are not signing up for anything.',
-      callLabel: 'Call',
+      callLabel: 'Phone',
       emailLabel: 'Email',
       visitLabel: 'Visit',
       nameLabel: 'Your name',
@@ -425,9 +424,9 @@ export const en = {
       submit: 'Request a call',
       sending: 'Sending',
       successTitle: 'Got it. We have your message.',
-      successBody: `Someone from the school will call you back. If you would rather not wait, call us at ${site.phone.display}.`,
+      successBody: 'Someone from the school will call you back.',
       errorTitle: 'We could not send that.',
-      errorBody: `Sorry, something went wrong on our end. Please call us at ${site.phone.display} or email ${site.email} and we will pick it up from there.`,
+      errorBody: `Sorry, something went wrong on our end. Please try again, or email ${site.email} and we will pick it up from there.`,
       iframeTitle: 'Form submission target',
     },
 
@@ -445,12 +444,12 @@ export const en = {
     seo: {
       title: 'Digital Literacy Training | Mercer Med Tech',
       description:
-        'Free computer, AI, and job search classes in Lawrenceville, NJ, for New Jersey adults on TANF or SNAP. 7 weeks. Call (609) 712-5499.',
+        'Free computer, AI, and job search classes in Lawrenceville, NJ, for New Jersey adults on TANF or SNAP. 7 weeks. Enrolling soon.',
       keywords:
         'digital literacy training New Jersey, no cost computer training, AI literacy, TANF SNAP training NJ, WorkFirst New Jersey, Lawrenceville NJ, career readiness, Mercer Med Tech',
       ogTitle: 'Free computer and AI classes, no cost if you qualify',
       ogDescription:
-        'Learn computers, AI, and money skills in 7 weeks, with recorded lessons and office hours in Lawrenceville, NJ, or online. Call (609) 712-5499.',
+        'Learn computers, AI, and money skills in 7 weeks, with recorded lessons and office hours in Lawrenceville, NJ, or online. Enrolling soon.',
       twitterDescription:
         'Computer and job search classes in Lawrenceville, NJ, at no cost for New Jersey adults on TANF or SNAP. Enrolling soon.',
       schemaDescription:
@@ -469,8 +468,8 @@ export const en = {
         { icon: 'fas fa-map-marker-alt', label: `${site.address.city}, ${site.address.region}` },
         { icon: 'fas fa-language', label: 'English and Spanish' },
       ],
-      qualifyCta: 'See if you qualify',
-      callCta: `Call ${site.phone.display}`,
+      interestCta: 'Tell us you are interested',
+      emailCta: 'Email us',
       artLabel: 'A laptop, a certificate, and a rising chart',
     },
 
@@ -487,7 +486,7 @@ export const en = {
       heading: 'Information sessions',
       note: site.infoSessionsNote,
       ctaLabel: 'Ask us to contact you when enrollment opens',
-      callLabel: 'Call',
+      emailLabel: 'Email',
       whereLabel: 'Where',
     },
 
@@ -509,8 +508,9 @@ export const en = {
       ],
       countiesHeading: 'Counties served',
       note: 'We confirm your eligibility with your county social services agency. You do not have to do that part yourself.',
-      calloutStrong: 'Not sure? Call us.',
-      calloutBefore: ' We will help you check. Call ',
+      calloutStrong: 'Not sure? Ask us.',
+      calloutBefore: ' Fill in the ',
+      calloutLinkLabel: 'interest form',
       calloutAfter: ' and we will go through it with you.',
     },
 
@@ -623,11 +623,13 @@ export const en = {
     enroll: {
       eyebrow: 'How to enroll',
       heading: 'Four steps, in order',
-      intro: 'Digital Literacy Training is enrolling soon. Call and we will tell you when the next group begins.',
+      intro:
+        'Digital Literacy Training is enrolling soon. Tell us you are interested and we will contact you when the next group begins.',
       steps: [
         {
-          title: 'Call us or send a message',
-          body: `Call <a href="${site.phone.href}">${site.phone.display}</a> or email <a href="mailto:${site.email}">${site.email}</a>. ${site.infoSessionsNote}`,
+          title: 'Tell us you are interested',
+          body: 'Fill in the short <a href="#interest">interest form</a> on this page (two minutes). We reply by email or text, usually within two business days. Caseworkers can send it for someone they work with.',
+          cta: { href: '#interest', label: 'Go to the interest form' },
         },
         {
           title: 'We confirm your eligibility',
@@ -652,7 +654,10 @@ export const en = {
       whoBody: `New Jersey residents 18 or older who currently receive TANF or SNAP and live in ${dlt.countiesSentence}. We give every participant a skills check and place them at the right level, so you can refer someone at any starting point. ${site.etplLine}`,
       howHeading: 'How to refer',
       howItems: [
-        { icon: 'fas fa-phone-alt', body: `Call <a href="${site.phone.href}">${site.phone.display}</a>.` },
+        {
+          icon: 'fas fa-clipboard-list',
+          body: 'Fill in the <a href="#interest">interest form</a> for the person you are referring, with your agency name and their AOSOS number if you have it.',
+        },
         { icon: 'fas fa-envelope', body: `Email <a href="mailto:${site.email}">${site.email}</a>.` },
         {
           icon: 'fas fa-calendar-check',
@@ -663,7 +668,7 @@ export const en = {
       reportBody:
         "With the participant's consent, we send your agency regular updates: whether they enrolled, whether they are attending, whether they earned the credential, and whether they found work.",
       contactHeading: 'Contact',
-      phoneLabel: 'Phone',
+      emailLabel: 'Email',
       campusLabel: 'Campus',
     },
 
@@ -679,7 +684,7 @@ export const en = {
         {
           question: 'When can I start?',
           answer:
-            'Digital Literacy Training is enrolling soon. Call us at (609) 712-5499 and we will tell you when the next group starts, or ask us to contact you when enrollment opens.',
+            'Digital Literacy Training is enrolling soon. Fill in the interest form on this page and we will tell you when the next group starts.',
         },
         {
           question: 'Who is eligible?',
@@ -689,12 +694,12 @@ export const en = {
         {
           question: 'Do I need a referral?',
           answer:
-            'No. Your county WorkFirst NJ office or One-Stop Career Center can refer you, but you can also apply directly. Call us at (609) 712-5499 and we will coordinate with your county.',
+            'No. Your county WorkFirst NJ office or One-Stop Career Center can refer you, but you can also apply directly. Fill in the interest form on this page and we will coordinate with your county.',
         },
         {
           question: 'When are the information sessions?',
           answer:
-            'Details on upcoming information sessions will be shared soon. Call us and we will tell you as soon as the next one is set.',
+            'Details on upcoming information sessions will be shared soon. Fill in the interest form on this page and we will tell you as soon as the next one is set.',
         },
         {
           question: 'Do I need my own computer?',
@@ -704,7 +709,7 @@ export const en = {
         {
           question: 'How long is it, and what are the hours?',
           answer:
-            '7 weeks, 20 hours a week: 5 weeks of the Mercer Med Tech core course, then 2 weeks of the NJIT AI Literacy Microcredential. If you need more time to finish NJIT, there is an optional eighth week. In the first 5 weeks, lessons are recorded, so you watch them on the days that fit your week. Call us and we will tell you when the next group starts.',
+            '7 weeks, 20 hours a week: 5 weeks of the Mercer Med Tech core course, then 2 weeks of the NJIT AI Literacy Microcredential. If you need more time to finish NJIT, there is an optional eighth week. In the first 5 weeks, lessons are recorded, so you watch them on the days that fit your week.',
         },
         {
           question: 'Is it in person or online?',
@@ -724,12 +729,12 @@ export const en = {
         {
           question: 'Do you have anyone who speaks Spanish?',
           answer:
-            'Yes. We have staff who speak English and Spanish. Call (609) 712-5499 and ask for someone who speaks Spanish.',
+            'Yes. We have staff who speak English and Spanish. The interest form is in Spanish too: choose Spanish as your class language and we will reply in Spanish.',
         },
         {
           question: 'What if I receive benefits but I am not sure which kind?',
           answer:
-            'Call us at (609) 712-5499 and we will help you work it out. We check with your county social services agency, so you do not have to.',
+            'Fill in the interest form and choose "Neither, or not sure". We will help you work it out. We check with your county social services agency, so you do not have to.',
         },
       ],
     },
@@ -737,13 +742,13 @@ export const en = {
     contact: {
       eyebrow: 'Get started',
       heading: 'Talk to us',
-      intro: 'Call or email us. We will help you check whether you qualify, and it costs nothing to ask.',
-      callLabel: 'Call',
+      intro: 'Fill in the interest form or send us an email. We will help you check whether you qualify, and it costs nothing to ask.',
+      callLabel: 'Phone',
       emailLabel: 'Email',
       visitLabel: 'Visit',
       sessionsLabel: 'Information sessions',
       sessionsValue: 'Details will be shared soon',
-      callCta: `Call ${site.phone.display}`,
+      interestCta: 'Tell us you are interested',
       emailCta: 'Email us',
     },
   },
@@ -873,11 +878,11 @@ export const en = {
       submit: 'Put me on the list',
       sending: 'Sending',
       successTitle: 'Got it. You are on the interest list.',
-      successBody: `Someone from the school will get back to you, usually within two business days. If you would rather not wait, call us at ${site.phone.display}.`,
+      successBody: 'Someone from the school will get back to you, usually within two business days.',
       errorTitle: 'We could not send that.',
-      errorBody: `Sorry, something went wrong on our end. Please try again, or call us at ${site.phone.display}.`,
+      errorBody: `Sorry, something went wrong on our end. Please try again, or email us at ${site.email}.`,
       securityIncomplete: 'Please wait for the security check above to finish, then send again.',
-      securityUnavailable: `The security check did not load. Please refresh the page, or call us at ${site.phone.display}.`,
+      securityUnavailable: `The security check did not load. Please refresh the page, or email us at ${site.email}.`,
     },
   },
 

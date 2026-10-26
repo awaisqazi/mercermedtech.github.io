@@ -48,6 +48,19 @@ interface Props {
   standalone?: boolean;
   /** Where the language switch should send the reader (default: this page). */
   switchPath?: string;
+  /**
+   * The phone number button at the end of the Tech-track header. Defaults to
+   * on for the "dlt" variant. The landing page turns it off: its contact path
+   * is the interest form, and the number stays in the footer and the contact
+   * section.
+   */
+  phoneButton?: boolean;
+  /**
+   * The floating "Call us" button on small screens. The homepage and the
+   * Tech-track landing page turn it off (owner, 2026-10-27): the forms are the
+   * main way in, and the number stays in the footer and the contact section.
+   */
+  floatingCall?: boolean;
 }
 
 const {
@@ -68,6 +81,8 @@ const {
   navLinks,
   standalone = false,
   switchPath,
+  phoneButton,
+  floatingCall = true,
 } = Astro.props;
 
 const d = t(locale);
@@ -151,18 +166,22 @@ const links = navLinks ?? (variant === 'dlt' ? dltNav(locale) : homeNav(locale))
       links={links}
       path={switchPath ?? path}
       variant={variant}
-      phoneButton={variant === 'dlt'}
+      phoneButton={phoneButton ?? variant === 'dlt'}
     />
 
     <slot />
 
     {footer === 'dlt' ? <DltFooter locale={locale} /> : <Footer locale={locale} />}
 
-    <FloatingCall
-      variant={variant === 'dlt' ? 'tech' : 'med'}
-      label={d.ui.floatingCallLabel}
-      ariaLabel={d.ui.callAria}
-    />
+    {
+      floatingCall && (
+        <FloatingCall
+          variant={variant === 'dlt' ? 'tech' : 'med'}
+          label={d.ui.floatingCallLabel}
+          ariaLabel={d.ui.callAria}
+        />
+      )
+    }
 
     <slot name="end" />
   </body>
