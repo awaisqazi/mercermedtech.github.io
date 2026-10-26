@@ -11,7 +11,10 @@ import preact from '@astrojs/preact';
 export default defineConfig({
   site: 'https://www.mercermedtech.com',
   trailingSlash: 'always',
-  build: { format: 'directory' },
+  // The page CSS (about 11 KB gzipped on the home page) is inlined into each
+  // page, so a phone renders the first screen without waiting on a separate
+  // render-blocking stylesheet request.
+  build: { format: 'directory', inlineStylesheets: 'always' },
   i18n: {
     locales: ['en', 'es'],
     defaultLocale: 'en',

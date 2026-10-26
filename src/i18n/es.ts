@@ -25,6 +25,9 @@ export const es: Dictionary = {
     otherLanguage: 'English',
     switchAria: 'View this page in English',
     menuLabel: 'Menú',
+    closeLabel: 'Cerrar',
+    thisLanguageCode: 'ES',
+    otherLanguageCode: 'EN',
     primaryNavLabel: 'Principal',
     logoAlt: site.name,
     homeAria: `Inicio de ${site.name}`,
@@ -35,19 +38,16 @@ export const es: Dictionary = {
       'Los fondos para esta iniciativa provienen del Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey.',
     studentLogin: 'Acceso para estudiantes',
     studentLoginShort: 'Acceso estudiantes',
-    studentLoginTiny: 'Acceso',
     studentLoginSubtitle: 'Sitio de clase de Capacitación en Habilidades Digitales',
     studentLoginAria:
       'Acceso para estudiantes: sitio de clase de Capacitación en Habilidades Digitales (se abre en una pestaña nueva)',
   },
 
   nav: {
-    home: 'Inicio',
     about: 'La escuela',
     med: 'Med',
     tech: 'Tech',
     enroll: 'Inscripción',
-    faculty: 'Personal',
     requestInfo: 'Pedir información',
   },
 
@@ -56,7 +56,7 @@ export const es: Dictionary = {
     learn: 'Qué aprende',
     enroll: 'Cómo inscribirse',
     partners: 'Para agencias',
-    interest: 'Formulario de interés',
+    interest: 'Díganos que le interesa',
   },
 
   footer: {

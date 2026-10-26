@@ -1,35 +1,47 @@
 ---
+/**
+ * The masthead (design.md, section 1b "Header"). Paper, the split hairline on
+ * top, an ink rule underneath once the page has scrolled. Logo (the way home),
+ * at most five links led by the two tracks, then one quiet "Student login"
+ * link, the bracketed language switch and ONE button in the page's track
+ * colour. No phone number here: the number lives in the footer and the
+ * contact section.
+ *
+ * Below 1081px the links move into a full-screen drawer on ink, opened by a
+ * "[ Menu ]" text button. The drawer is one <nav> with the desktop row, so
+ * there is a single copy of every link.
+ */
 import { Image } from 'astro:assets';
 import logo from '../assets/images/logo-modern.png';
 import { site } from '../data/site';
 import { localePath, t, type Locale } from '../i18n';
 import type { NavLink } from '../i18n/links';
 import LanguageToggle from './LanguageToggle.astro';
+import Icon from './Icon.astro';
 
 interface Props {
   locale: Locale;
   links: NavLink[];
   /** Language-free path of this page, for the language switch. */
   path: string;
-  /** "home" links the logo to the homepage of this language. */
+  /** "dlt" is the Tech-track masthead (indigo accents). */
   variant?: 'home' | 'dlt';
-  /** Shown as a button at the end of the Tech-track nav. */
-  phoneButton?: boolean;
+  /** The track this page belongs to: that track's link keeps its underline. */
+  currentTrack?: 'med' | 'tech';
 }
 
-const { locale, links, path, variant = 'home', phoneButton = false } = Astro.props;
+const { locale, links, path, variant = 'home', currentTrack } = Astro.props;
 const d = t(locale);
 const navId = variant === 'dlt' ? 'dl-nav' : 'site-nav';
 const homeHref = localePath(locale, '/');
-// The class-site button sits after the plain nav links and before any filled
-// button, so the primary call to action keeps the last, strongest slot.
 const textLinks = links.filter((link) => !link.button);
-const buttonLinks = links.filter((link) => link.button);
-const classLogin = Symbol('classLogin');
+// One button only: the page's track decides which (Request info in teal on
+// the home and Med pages, the interest form in indigo on the Tech page).
+const button = links.find((link) => link.button);
 ---
 
-<header class="site-header">
-  <div class="container">
+<header class:list={['site-header', `site-header--${variant}`]}>
+  <div class="container site-header-bar">
     <a href={homeHref} class="logo" aria-label={d.ui.homeAria}>
       {/*
         The logo is drawn 40px tall (1830x600 source, so 122px wide). Giving
@@ -47,90 +59,129 @@ const classLogin = Symbol('classLogin');
       />
     </a>
 
-    <button class="mobile-menu-toggle" aria-label={d.ui.menuLabel} aria-expanded="false" aria-controls={navId}>
-      <i class="fas fa-bars" aria-hidden="true"></i>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls={navId}>
+      <span class="menu-toggle-label">{d.ui.menuLabel}</span>
     </button>
 
     <nav class="nav-menu" id={navId} aria-label={d.ui.primaryNavLabel}>
+      <div class="nav-drawer-head">
+        <button class="menu-close" type="button">
+          <span class="menu-toggle-label">{d.ui.closeLabel}</span>
+        </button>
+      </div>
+
       {
-        [...textLinks, classLogin, ...buttonLinks].map((link) =>
-          link === classLogin ? (
-            /*
-              Student login to the Digital Literacy Training class site.
-              A compact indigo-outlined control (Tech track), lighter than the
-              filled call to action after it. Desktop shows a short label (just
-              "Login" / "Acceso" below 1200px) with the full wording as the
-              tooltip; the mobile menu shows a full-width row with the full
-              label and the subtitle.
-            */
-            <a
-              href={site.classSite.url}
-              class="nav-class-login"
-              target="_blank"
-              rel="noopener"
-              title={d.ui.studentLoginSubtitle}
-              aria-label={d.ui.studentLoginAria}
-            >
-              <i class="fas fa-user-graduate" aria-hidden="true" />
-              <span class="nav-class-login-text">
-                {/* Only one label shows at a time, picked by width in header.css. */}
-                <span class="nav-class-login-label nav-class-login-label--short">{d.ui.studentLoginShort}</span>
-                <span class="nav-class-login-label nav-class-login-label--tiny">{d.ui.studentLoginTiny}</span>
-                <span class="nav-class-login-label nav-class-login-label--full">{d.ui.studentLogin}</span>
-                <span class="nav-class-login-sub">{d.ui.studentLoginSubtitle}</span>
-              </span>
-            </a>
-          ) :
-          link.button ? (
-            <a href={link.href} class={`btn ${link.button === 'tech' ? 'btn-tech' : 'btn-primary'} btn-sm`}>
-              {link.icon && <i class={link.icon} aria-hidden="true" />}
-              {link.label}
-            </a>
-          ) : (
-            <a href={link.href} class="nav-link">
-              {link.label}
+        textLinks.length > 0 && (
+          <ul class="nav-list">
+            {textLinks.map((link, index) => (
+              <li style={`--i: ${index}`}>
+                <a
+                  href={link.href}
+                  class:list={[
+                    'nav-link',
+                    link.track && `nav-link--${link.track}`,
+                    { 'is-current': link.track && link.track === currentTrack },
+                  ]}
+                  aria-current={link.track && link.track === currentTrack ? 'page' : undefined}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      <div class="nav-actions" style={`--i: ${textLinks.length}`}>
+        {/* Student login to the Digital Literacy Training class site: a quiet
+            text link with the external mark; the drawer adds the subtitle. */}
+        <a
+          href={site.classSite.url}
+          class="nav-class-login"
+          target="_blank"
+          rel="noopener"
+          aria-label={d.ui.studentLoginAria}
+        >
+          <span class="nav-class-login-text">
+            <span class="nav-class-login-label nav-class-login-label--short">{d.ui.studentLoginShort}</span>
+            <span class="nav-class-login-label nav-class-login-label--full">{d.ui.studentLogin}</span>
+            <span class="nav-class-login-sub">{d.ui.studentLoginSubtitle}</span>
+          </span>
+          <Icon name="external-link" class="nav-class-login-icon" />
+        </a>
+
+        <LanguageToggle locale={locale} path={path} variant={variant} />
+
+        {
+          button && (
+            <a href={button.href} class={`btn ${button.button === 'tech' ? 'btn-tech' : 'btn-primary'} btn-sm nav-cta`}>
+              {button.label}
             </a>
           )
-        )
-      }
-      {
-        phoneButton && (
-          <a href={site.phone.href} class="btn btn-tech btn-sm dl-header-phone">
-            <i class="fas fa-phone-alt" aria-hidden="true" /> {site.phone.display}
-          </a>
-        )
-      }
-      <LanguageToggle locale={locale} path={path} variant={variant} />
+        }
+      </div>
     </nav>
   </div>
 </header>
 
 <script>
-  // Mobile navigation toggle. Shared by both header variants.
-  const toggle = document.querySelector<HTMLButtonElement>('.mobile-menu-toggle');
+  // The drawer below 1081px: open and close, Escape, a focus trap, and the
+  // page behind it held still. Shared by both masthead variants.
+  const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
   const menu = document.querySelector<HTMLElement>('.nav-menu');
+  const closeButton = document.querySelector<HTMLButtonElement>('.menu-close');
+  const desktop = window.matchMedia('(min-width: 1081px)');
 
   if (toggle && menu) {
-    const setIcon = (open: boolean) => {
-      const icon = toggle.querySelector('i');
-      if (!icon) return;
-      icon.classList.toggle('fa-bars', !open);
-      icon.classList.toggle('fa-times', open);
+    const focusables = () =>
+      Array.from(menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')).filter(
+        (el) => el.offsetParent !== null
+      );
+
+    const open = () => {
+      menu.classList.add('active');
+      document.documentElement.classList.add('nav-open');
+      toggle.setAttribute('aria-expanded', 'true');
+      // After the drawer is visible, so the browser can move focus into it.
+      requestAnimationFrame(() => closeButton?.focus());
     };
 
-    const close = () => {
+    const close = (returnFocus = true) => {
       if (!menu.classList.contains('active')) return;
       menu.classList.remove('active');
+      document.documentElement.classList.remove('nav-open');
       toggle.setAttribute('aria-expanded', 'false');
-      setIcon(false);
+      if (returnFocus) toggle.focus();
     };
 
-    toggle.addEventListener('click', () => {
-      const open = menu.classList.toggle('active');
-      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-      setIcon(open);
+    toggle.addEventListener('click', open);
+    closeButton?.addEventListener('click', () => close());
+    menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => close(false)));
+
+    document.addEventListener('keydown', (event) => {
+      if (!menu.classList.contains('active')) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        close();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const items = focusables();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     });
 
-    menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', close));
+    // Rotating or widening a tablet past the breakpoint closes the drawer.
+    desktop.addEventListener('change', (event) => {
+      if (event.matches) close(false);
+    });
   }
 </script>

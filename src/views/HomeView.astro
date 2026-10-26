@@ -19,7 +19,6 @@ import Organizations from '../components/Organizations.astro';
 import ContactForm from '../components/ContactForm.astro';
 import DltInterestForm from '../components/DltInterestForm.astro';
 import ProgramModals from '../components/ProgramModals.astro';
-import ScrollReveal from '../components/ScrollReveal.astro';
 
 import { site } from '../data/site';
 import { localePath, t, type Locale } from '../i18n';
@@ -263,8 +262,6 @@ const heroPanels = [
   />
 
   <ContactForm locale={locale} />
-
-  <ScrollReveal />
 
   <ProgramModals
     slot="end"

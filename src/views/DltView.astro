@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 /**
  * Digital Literacy Training landing page, in one language.
  * NJDOL rule: this page never advertises the health care programs.
@@ -55,7 +56,7 @@ const jsonLd = [
           <div class="dl-hero-main">
             <Lockup variant="brand" divider="·" trailing={page.hero.eyebrowTrailing} />
             <h1>
-              {page.hero.headingBefore}<span class="bracketed dl-hero-accent">{page.hero.headingAccent}</span>
+              {page.hero.headingBefore}<span class="bracketed dl-hero-accent bracket-draw">{page.hero.headingAccent}</span>
             </h1>
             <p class="dl-lead">{page.hero.lead}</p>
             <div class="dl-actions">
@@ -105,7 +106,7 @@ const jsonLd = [
               rel="noopener"
               aria-label={page.enrolled.ctaAria}
             >
-              {page.enrolled.cta} <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+              {page.enrolled.cta} <Icon name="external-link" />
             </a>
           </aside>
         </div>
@@ -358,14 +359,14 @@ const jsonLd = [
             <p class="dl-muted">{page.partners.reportBody}</p>
             <h3 class="dl-subhead--spaced">{page.partners.contactHeading}</h3>
             <div class="dl-contact-item dl-contact-item--spaced">
-              <i class="fas fa-envelope" aria-hidden="true"></i>
+              <Icon name="mail" />
               <div>
                 <div class="dl-contact-label">{page.partners.emailLabel}</div>
                 <a href={`mailto:${site.email}`}>{site.email}</a>
               </div>
             </div>
             <div class="dl-contact-item">
-              <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+              <Icon name="map-pin" />
               <div>
                 <div class="dl-contact-label">{page.partners.campusLabel}</div>
                 <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
@@ -410,21 +411,21 @@ const jsonLd = [
 
         <div class="dl-contact-grid">
           <div class="dl-contact-item">
-            <i class="fas fa-phone-alt" aria-hidden="true"></i>
+            <Icon name="phone" />
             <div>
               <div class="dl-contact-label">{page.contact.callLabel}</div>
               <a href={site.phone.href}>{site.phone.display}</a>
             </div>
           </div>
           <div class="dl-contact-item">
-            <i class="fas fa-envelope" aria-hidden="true"></i>
+            <Icon name="mail" />
             <div>
               <div class="dl-contact-label">{page.contact.emailLabel}</div>
               <a href={`mailto:${site.email}`}>{site.email}</a>
             </div>
           </div>
           <div class="dl-contact-item">
-            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+            <Icon name="map-pin" />
             <div>
               <div class="dl-contact-label">{page.contact.visitLabel}</div>
               <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
@@ -433,7 +434,7 @@ const jsonLd = [
             </div>
           </div>
           <div class="dl-contact-item">
-            <i class="fas fa-calendar-check" aria-hidden="true"></i>
+            <Icon name="calendar-check" />
             <div>
               <div class="dl-contact-label">{page.contact.sessionsLabel}</div>
               <span>{page.contact.sessionsValue}</span>

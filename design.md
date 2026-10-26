@@ -369,6 +369,58 @@ section it sits in.
   per program card.
 - A second motif. The bracket is the only one.
 
+### Header
+
+- **Masthead on paper**, 72px tall on desktop and 60px under 1081px, fixed.
+  The split teal/indigo hairline runs along the top (indigo only on the
+  Digital Literacy page); a 1px ink rule appears under it only once the page
+  has scrolled, and fades in. No shadow, ever.
+- **Logo left**, linked to the homepage of the language. It is the way home,
+  so there is no "Home" link.
+- **At most five links**, Plus Jakarta Sans 600. The home and program pages
+  lead with the two tracks: Med, Tech, then Enroll and About (About covers
+  the people; the footer still links to Faculty). Med and Tech carry a 3px
+  underline in their track colour (deep teal, indigo) on hover and for the
+  section in view; a program page keeps the Med underline on. The Digital
+  Literacy page has its own four links (Who qualifies, What you learn, How to
+  enroll, For caseworkers), all with the indigo underline, and never a Med
+  link (NJDOL rule).
+- **Right cluster:** "Student login" as a quiet text link with the external
+  mark (it opens the class site), the language switch, then ONE button in
+  the page's track: "Request info" in teal to the contact form on the home
+  and Med pages, "Tell us you are interested" in indigo to `#interest` on the
+  Digital Literacy page.
+- **Language switch:** `[ EN ] ES`. The current language is filled in ink
+  inside the small bracket; the other is a plain link. Each is a 44px
+  target. No pill.
+- **No phone number in the header** on any page: it lives in the footer and
+  the contact section.
+- **Under 1081px:** a "[ Menu ]" text button (48px) opens a full-screen
+  drawer on ink (100dvh, scrolls on its own, no scroll chaining). The links
+  are set large in Fraunces on 56px rows (Med in the teal tint, Tech in the
+  indigo tint, the rest in paper), then the track button, Student login with
+  its subtitle, and the language switch at the bottom. "[ Close ]" sits top
+  right. Focus moves into the drawer and is trapped there, Escape closes it
+  and returns focus to "[ Menu ]", and the page behind does not scroll.
+  Closed, the drawer is hidden (`visibility: hidden`), so nothing of it shows
+  or takes focus.
+
+### Motion
+
+- One easing (`--ease-out`, `cubic-bezier(0.2, 0.7, 0.2, 1)`) and three
+  durations: `--dur-fast` 160ms for hover and focus, `--dur-reveal` 280ms for
+  reveals, `--dur-drawer` 320ms for the drawer opening (it closes in 200ms).
+- Only opacity and transform animate; nothing animates width, height or
+  layout. `will-change` only on the open drawer.
+- Hover is colour and underline only: no lift, no scale, no shadow.
+- Headings and blocks fade up 12px the first time they enter the viewport,
+  once each (`ScrollReveal.astro`, one IntersectionObserver for the page).
+  The framed headline in each hero draws its bracket in once (arms from 60%
+  to full height). With JavaScript off everything is simply visible.
+- The drawer fades in and its rows rise into place 40ms apart.
+- `prefers-reduced-motion: reduce` turns all of it off: state changes are
+  instant and nothing moves.
+
 ### Photos
 
 - **Small, beside type.** A 4:5 inset next to a headline or pitch, one 3:2
@@ -613,9 +665,12 @@ Always include a `<caption class="visually-hidden">` for screen readers.
 
 ## 8. Iconography & Imagery
 
-- **Icons:** Font Awesome free, solid style, only where they carry meaning
-  (section 1b): contact rows, footer, social, external link, form status. Small plain glyphs in the track colour, never in a
-  tinted tile. Always `aria-hidden="true"` when paired with text.
+- **Icons:** inline SVG line icons from `src/components/Icon.astro`, only
+  where they carry meaning (section 1b): contact rows, footer, social,
+  external link, form status. Small plain glyphs in the track colour, never in
+  a tinted tile. Always `aria-hidden="true"` when paired with text. The Font
+  Awesome stylesheet is loaded only on the staff, onboarding and partner kit
+  pages that still use it (`iconFont` on `BaseLayout`).
 - **Imagery:** real photos of the school and screenshots of the class site,
   plus the licensed stock photos listed in `docs/image-credits.md`. No
   new illustrations. Placement and framing rules: section 1b, "Photos".

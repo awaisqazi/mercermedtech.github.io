@@ -15,6 +15,7 @@ import Footer from '../components/Footer.astro';
 import DltFooter from '../components/DltFooter.astro';
 import FloatingCall from '../components/FloatingCall.astro';
 import JsonLd from '../components/JsonLd.astro';
+import ScrollReveal from '../components/ScrollReveal.astro';
 
 interface Props {
   locale: Locale;
@@ -50,12 +51,19 @@ interface Props {
   /** Where the language switch should send the reader (default: this page). */
   switchPath?: string;
   /**
-   * The phone number button at the end of the Tech-track header. Defaults to
-   * on for the "dlt" variant. The landing page turns it off: its contact path
-   * is the interest form, and the number stays in the footer and the contact
-   * section.
+   * Kept so existing pages still type-check. The header no longer shows a
+   * phone number on any page (contact rule, 2026-10-27): the number lives in
+   * the footer and the contact section only.
    */
   phoneButton?: boolean;
+  /** The track this page belongs to; that track's header link stays underlined. */
+  track?: 'med' | 'tech';
+  /**
+   * The Font Awesome stylesheet and fonts. The public pages draw their few
+   * icons as inline SVG (Icon.astro); only the staff, onboarding and partner
+   * kit pages still use the icon font, and they turn this on.
+   */
+  iconFont?: boolean;
   /**
    * The floating "Call us" button on small screens. The homepage and the
    * Tech-track landing page turn it off (owner, 2026-10-27): the forms are the
@@ -82,7 +90,8 @@ const {
   navLinks,
   standalone = false,
   switchPath,
-  phoneButton,
+  track,
+  iconFont = false,
   floatingCall = true,
 } = Astro.props;
 
@@ -159,8 +168,8 @@ const fontsHref =
     <link rel="preload" as="style" href={fontsHref} />
     <link href={fontsHref} rel="stylesheet" />
 
-    <!-- Icons -->
-    <link rel="stylesheet" href="/assets/css/fontawesome-all.min.css" />
+    <!-- Icon font: only on the pages that still use it (iconFont). -->
+    {iconFont && <link rel="stylesheet" href="/assets/css/fontawesome-all.min.css" />}
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
   </head>
 
@@ -172,7 +181,7 @@ const fontsHref =
       links={links}
       path={switchPath ?? path}
       variant={variant}
-      phoneButton={phoneButton ?? variant === 'dlt'}
+      currentTrack={track}
     />
 
     <slot />
@@ -190,6 +199,8 @@ const fontsHref =
     }
 
     <slot name="end" />
+
+    <ScrollReveal />
   </body>
 </html>
 
@@ -228,7 +239,8 @@ const fontsHref =
       });
 
       pairs.forEach((pair, index) => {
-        const active = bandTop === null ? index === 0 : Math.abs(tops[index] - bandTop) <= BAND_TOLERANCE;
+        // Above the first section (the hero), no link is lit: the logo is home.
+        const active = bandTop !== null && Math.abs(tops[index] - bandTop) <= BAND_TOLERANCE;
         pair.link.classList.toggle('active', active);
       });
     };

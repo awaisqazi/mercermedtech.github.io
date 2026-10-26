@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import { site } from '../data/site';
 
 interface Props {
@@ -15,6 +16,6 @@ const { variant = 'med', label, ariaLabel } = Astro.props;
   class={`floating-call${variant === 'tech' ? ' floating-call--tech' : ''}`}
   aria-label={ariaLabel}
 >
-  <i class="fas fa-phone-alt" aria-hidden="true"></i>
+  <Icon name="phone" />
   <span>{label}</span>
 </a>

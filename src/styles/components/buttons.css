@@ -22,8 +22,8 @@
     letter-spacing: 0;
     text-transform: none;
     cursor: pointer;
-    transition: background-color 0.15s var(--ease-out), border-color 0.15s var(--ease-out),
-        color 0.15s var(--ease-out);
+    transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out),
+        color var(--dur-fast) var(--ease-out);
     /*
        Spanish labels run 20 to 25 percent longer than the English ones. The
        button grows taller instead of overflowing at 375px, and a wrapped
@@ -157,17 +157,9 @@
     border-color: var(--tech-deep);
 }
 
-.btn:active {
-    transform: translateY(1px);
-}
-
 @media (prefers-reduced-motion: reduce) {
     .btn {
         transition: none;
-    }
-
-    .btn:active {
-        transform: none;
     }
 }
 

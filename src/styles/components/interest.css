@@ -60,7 +60,7 @@
     border-color: rgba(59, 91, 219, 0.28);
 }
 
-.interest-card .form-success i,
+.interest-card .form-success .icon,
 .interest-card .form-success strong {
     color: var(--tech-dark);
 }
@@ -70,7 +70,7 @@
     border-color: rgba(220, 53, 69, 0.28);
 }
 
-.interest-card .form-success.is-error i {
+.interest-card .form-success.is-error .icon {
     color: #b42335;
 }
 

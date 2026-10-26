@@ -29,8 +29,9 @@
     color: #fff;
 }
 
-.floating-call i {
-    font-size: 1rem;
+.floating-call .icon {
+    width: 1rem;
+    height: 1rem;
 }
 
 /* Tech-track variant */

@@ -1,11 +1,16 @@
 ---
 /**
- * Sections fade and slide in as they come into view.
+ * Motion on scroll (design.md, section 1b "Motion"), one small script for
+ * every page, loaded by BaseLayout.
  *
- * The attributes are added by JavaScript, so the markup stays clean and the
- * page is fully readable with JavaScript switched off: the hidden state only
- * turns on once an IntersectionObserver is confirmed. Readers who ask for
- * reduced motion see everything immediately.
+ * - Headings and blocks fade up 12px over 280ms the first time they enter
+ *   the viewport, once each.
+ * - The framed headline in each hero draws its bracket in once (the arms
+ *   grow from 60% to full height).
+ *
+ * The hidden state is added by this script, so with JavaScript switched off
+ * everything is simply there. Readers who ask for reduced motion get no
+ * movement at all.
  */
 import '../styles/components/reveal.css';
 ---
@@ -13,13 +18,14 @@ import '../styles/components/reveal.css';
 <script>
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Blocks that fade in as a whole
+  // Blocks that fade in as a whole.
   const revealSelectors = [
     '.section-header',
+    '.section-title',
+    '.programs-group-header',
+    '.programs-med-photo',
     '.about-section .hero-content',
-    '.about-section .hero-image-wrapper',
-    '#grants .hero-content',
-    '#grants .hero-image-wrapper',
+    '.about-photos',
     '.tuition-table-wrap',
     '.tuition-note',
     '.tuition-cta',
@@ -30,38 +36,42 @@ import '../styles/components/reveal.css';
     '.faculty-wrapper',
     '.contact-intro',
     '.contact-card',
+    '.dl-overview-grid',
+    '.dl-section-head',
+    '.dl-panel',
+    '.dl-faq',
   ];
-  // Containers whose children come in one after another
-  const staggerSelectors = ['.why-grid', '.enroll-programs', '.enroll-grid'];
+  // Containers whose children come in one after another.
+  const staggerSelectors = ['.why-grid', '.enroll-programs', '.enroll-grid', '.dl-checks', '.dl-cards', '.dl-steps'];
 
-  revealSelectors.forEach((selector) => {
-    document.querySelectorAll(selector).forEach((el) => el.setAttribute('data-reveal', ''));
-  });
-  staggerSelectors.forEach((selector) => {
-    document.querySelectorAll(selector).forEach((el) => el.setAttribute('data-reveal-stagger', ''));
-  });
+  const mark = (selector: string, attribute: string) =>
+    document.querySelectorAll(selector).forEach((el) => {
+      // A block inside a block that already reveals does not reveal twice.
+      if (!el.parentElement?.closest('[data-reveal], [data-reveal-stagger]')) el.setAttribute(attribute, '');
+    });
+  revealSelectors.forEach((selector) => mark(selector, 'data-reveal'));
+  staggerSelectors.forEach((selector) => mark(selector, 'data-reveal-stagger'));
 
   const targets = document.querySelectorAll('[data-reveal], [data-reveal-stagger]');
+  const brackets = document.querySelectorAll('.bracket-draw');
 
-  if (targets.length) {
-    if (prefersReduced || !('IntersectionObserver' in window)) {
-      targets.forEach((el) => el.classList.add('is-revealed'));
-    } else {
-      // Only now is it safe to hide anything.
-      document.documentElement.classList.add('reveal-ready');
+  if (!prefersReduced && 'IntersectionObserver' in window) {
+    // Only now is it safe to hide anything.
+    document.documentElement.classList.add('reveal-ready');
 
-      const observer = new IntersectionObserver(
-        (entries, obs) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            entry.target.classList.add('is-revealed');
-            obs.unobserve(entry.target);
-          });
-        },
-        { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
-      );
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-revealed');
+          obs.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -6% 0px' }
+    );
+    targets.forEach((el) => observer.observe(el));
 
-      targets.forEach((el) => observer.observe(el));
-    }
+    // The hero bracket is on screen at load: draw it on the next frame.
+    requestAnimationFrame(() => requestAnimationFrame(() => brackets.forEach((el) => el.classList.add('is-drawn'))));
   }
 </script>

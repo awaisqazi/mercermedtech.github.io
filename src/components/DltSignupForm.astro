@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import '../styles/components/contact.css';
 import { BEST_TIME_VALUES } from '../data/programs';
 import { dlt } from '../data/site';
@@ -198,7 +199,8 @@ const bestTimes = BEST_TIME_VALUES.map((value, index) => ({
       data-submit-label={f.submit}
       data-sending-label={f.sending}
     >
-      <i class="fas fa-check-circle" aria-hidden="true"></i>
+      <Icon name="check-circle" class="status-ok" />
+      <Icon name="alert-circle" class="status-err" hidden />
       <div>
         <strong>{f.successTitle}</strong>
         <span>{f.successBody}</span>
@@ -230,7 +232,8 @@ const bestTimes = BEST_TIME_VALUES.map((value, index) => ({
 
     if (submitBtn && message) {
       const labelEl = form.querySelector<HTMLElement>('.form-submit-label');
-      const icon = message.querySelector('i');
+      const okIcon = message.querySelector('.status-ok');
+      const errorIcon = message.querySelector('.status-err');
       const strong = message.querySelector('strong');
       const span = message.querySelector('span');
       const data = message.dataset;
@@ -256,10 +259,8 @@ const bestTimes = BEST_TIME_VALUES.map((value, index) => ({
       const show = (title: string, body: string, isError: boolean) => {
         if (strong) strong.textContent = title;
         if (span) span.textContent = body;
-        if (icon) {
-          icon.classList.toggle('fa-check-circle', !isError);
-          icon.classList.toggle('fa-circle-exclamation', isError);
-        }
+        okIcon?.toggleAttribute('hidden', isError);
+        errorIcon?.toggleAttribute('hidden', !isError);
         message.classList.toggle('is-error', isError);
         message.hidden = false;
         message.classList.add('is-visible');

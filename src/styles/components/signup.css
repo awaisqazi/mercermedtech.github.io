@@ -141,7 +141,7 @@
     border-color: rgba(220, 53, 69, 0.28);
 }
 
-.signup-card .form-success.is-error i,
+.signup-card .form-success.is-error .icon,
 .signup-card .form-success.is-error strong {
     color: #b02a37;
 }

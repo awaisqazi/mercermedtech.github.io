@@ -1,46 +1,49 @@
 /* ==========================================================================
-   SCROLL REVEAL - IntersectionObserver-driven fade/slide-in
-   The hidden state only applies once JS has confirmed observer support,
-   so there is no flash of missing content and no no-JS gap.
+   Scroll reveal and the hero bracket draw-in (ScrollReveal.astro).
+   The hidden states only apply once the script has added .reveal-ready, so
+   there is no flash of missing content and nothing is lost without JS.
+   Opacity and transform only.
    ========================================================================== */
 
-.reveal-ready [data-reveal] {
-    opacity: 0;
-    transform: translateY(28px);
-    transition:
-        opacity 0.7s var(--spring-gentle),
-        transform 0.7s var(--spring-gentle);
-    will-change: opacity, transform;
-}
-
-.reveal-ready [data-reveal].is-revealed {
-    opacity: 1;
-    transform: none;
-}
-
-/* Staggered children (cards, chips, list items) */
+.reveal-ready [data-reveal],
 .reveal-ready [data-reveal-stagger] > * {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(12px);
     transition:
-        opacity 0.6s var(--spring-gentle),
-        transform 0.6s var(--spring-gentle);
+        opacity var(--dur-reveal) var(--ease-out),
+        transform var(--dur-reveal) var(--ease-out);
 }
 
+.reveal-ready [data-reveal].is-revealed,
 .reveal-ready [data-reveal-stagger].is-revealed > * {
     opacity: 1;
     transform: none;
 }
 
-.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(2) { transition-delay: 0.07s; }
-.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(3) { transition-delay: 0.14s; }
-.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(4) { transition-delay: 0.21s; }
-.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(5) { transition-delay: 0.28s; }
-.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(6) { transition-delay: 0.35s; }
+/* Children 40ms apart, up to the sixth. */
+.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(2) { transition-delay: 40ms; }
+.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(3) { transition-delay: 80ms; }
+.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(4) { transition-delay: 120ms; }
+.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(5) { transition-delay: 160ms; }
+.reveal-ready [data-reveal-stagger].is-revealed > *:nth-child(n + 6) { transition-delay: 200ms; }
+
+/* The hero's framed headline: the arms grow from 60% to full height, once. */
+.reveal-ready .bracket-draw::before,
+.reveal-ready .bracket-draw::after {
+    transform: scaleY(0.6);
+    transition: transform var(--dur-reveal) var(--ease-out) 120ms;
+}
+
+.reveal-ready .bracket-draw.is-drawn::before,
+.reveal-ready .bracket-draw.is-drawn::after {
+    transform: none;
+}
 
 @media (prefers-reduced-motion: reduce) {
     .reveal-ready [data-reveal],
-    .reveal-ready [data-reveal-stagger] > * {
+    .reveal-ready [data-reveal-stagger] > *,
+    .reveal-ready .bracket-draw::before,
+    .reveal-ready .bracket-draw::after {
         opacity: 1 !important;
         transform: none !important;
         transition: none !important;

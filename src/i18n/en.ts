@@ -18,6 +18,10 @@ export const en = {
     otherLanguage: 'Español',
     switchAria: 'Ver esta página en español',
     menuLabel: 'Menu',
+    closeLabel: 'Close',
+    /** The compact language switch in the header: [ EN ] ES */
+    thisLanguageCode: 'EN',
+    otherLanguageCode: 'ES',
     primaryNavLabel: 'Primary',
     logoAlt: site.name,
     homeAria: `${site.name} home`,
@@ -33,19 +37,16 @@ export const en = {
     /** Header button to the Digital Literacy Training class site (Moodle). */
     studentLogin: 'Student login',
     studentLoginShort: 'Student login',
-    studentLoginTiny: 'Login',
     studentLoginSubtitle: 'Digital Literacy Training class site',
     studentLoginAria: 'Student login: Digital Literacy Training class site (opens in a new tab)',
   },
 
   /* ---------- Header and footer ---------- */
   nav: {
-    home: 'Home',
     about: 'About',
     med: 'Med',
     tech: 'Tech',
     enroll: 'Enroll',
-    faculty: 'Faculty',
     requestInfo: 'Request info',
   },
 
@@ -54,7 +55,7 @@ export const en = {
     learn: 'What you learn',
     enroll: 'How to enroll',
     partners: 'For caseworkers',
-    interest: 'Interest form',
+    interest: 'Tell us you are interested',
   },
 
   footer: {

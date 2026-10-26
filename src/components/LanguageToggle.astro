@@ -1,8 +1,10 @@
 ---
 /**
- * English | Espanol. Two plain links to the same page in the other language,
- * so it works with JavaScript switched off. The small script below only adds
- * the #section you are looking at, so the switch keeps your place.
+ * The language switch: "[ EN ] ES". The current language sits in the small
+ * bracket, filled in ink; the other is a plain link to the same page in that
+ * language, so it works with JavaScript switched off. The small script below
+ * only carries the query and the #section across, so the switch keeps your
+ * place. Each option is a 44px target.
  */
 import { alternatePaths, localeMeta, t, type Locale } from '../i18n';
 
@@ -23,10 +25,9 @@ const options = alternatePaths(path);
   {
     options.map(({ locale: optionLocale, path: optionPath }) => {
       const current = optionLocale === locale;
-      const label = optionLocale === locale ? d.ui.thisLanguage : d.ui.otherLanguage;
       return current ? (
-        <span class="lang-switch-option" aria-current="true" lang={localeMeta[optionLocale].htmlLang}>
-          {label}
+        <span class="lang-switch-option lang-switch-option--current" aria-current="true" lang={localeMeta[optionLocale].htmlLang}>
+          <abbr title={d.ui.thisLanguage}>{d.ui.thisLanguageCode}</abbr>
         </span>
       ) : (
         <a
@@ -37,7 +38,7 @@ const options = alternatePaths(path);
           aria-label={d.ui.switchAria}
           data-lang-link
         >
-          {label}
+          {d.ui.otherLanguageCode}
         </a>
       );
     })

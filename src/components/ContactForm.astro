@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import '../styles/components/contact.css';
 import { site, tracks } from '../data/site';
 import { formPrograms, NOT_SURE_OPTION, BEST_TIME_VALUES } from '../data/programs';
@@ -54,21 +55,21 @@ const bestTimeChoices = BEST_TIME_VALUES.map((value, index) => ({
 
         <ul class="contact-direct">
           <li>
-            <i class="fas fa-phone-alt" aria-hidden="true"></i>
+            <Icon name="phone" />
             <div>
               <div class="contact-direct-label">{c.callLabel}</div>
               <a href={site.phone.href}>{site.phone.display}</a>
             </div>
           </li>
           <li>
-            <i class="fas fa-envelope" aria-hidden="true"></i>
+            <Icon name="mail" />
             <div>
               <div class="contact-direct-label">{c.emailLabel}</div>
               <a href={`mailto:${site.email}`}>{site.email}</a>
             </div>
           </li>
           <li>
-            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+            <Icon name="map-pin" />
             <div>
               <div class="contact-direct-label">{c.visitLabel}</div>
               <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
@@ -160,7 +161,7 @@ const bestTimeChoices = BEST_TIME_VALUES.map((value, index) => ({
             data-submit-label={c.submit}
             data-sending-label={c.sending}
           >
-            <i class="fas fa-check-circle" aria-hidden="true"></i>
+            <Icon name="check-circle" />
             <div>
               <strong>{c.successTitle}</strong>
               <span>{c.successBody}</span>
