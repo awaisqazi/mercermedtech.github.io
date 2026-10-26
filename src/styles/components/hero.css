@@ -61,14 +61,19 @@
 
 .hero-trust li {
     display: inline-flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.5rem;
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-muted);
 }
 
+/* Fixed icon column, so wrapped labels start at the same edge. */
 .hero-trust li i {
+    flex-shrink: 0;
+    width: 1rem;
+    margin-top: 0.3em;
+    text-align: center;
     color: var(--primary);
     font-size: 0.85rem;
 }
@@ -273,5 +278,61 @@
 
     .track-panel:hover {
         transform: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Phones
+   -------------------------------------------------------------------------- */
+@media (max-width: 968px) {
+    /* The hero lead is left-aligned, so its trust list is too. */
+    .hero-lead .hero-trust {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .hero {
+        padding-top: calc(var(--header-height) + 2.25rem);
+        padding-bottom: 3.5rem;
+    }
+
+    .hero-lead .hero-trust {
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    .hero-trust li {
+        font-size: 0.95rem;
+    }
+
+    .track-panels {
+        margin-top: 2rem;
+        gap: 1.25rem;
+    }
+
+    .track-panel {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .hero-quiet {
+        font-size: 1rem;
+    }
+
+    /* About: eight lines of centred body copy are hard to read. Left-align the
+       text block on phones; the image above it stays as it is. */
+    .about-section .hero-content {
+        text-align: left;
+    }
+
+    .about-section .hero-content p {
+        margin: 0 0 1.25rem;
+        font-size: 1.05rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .hero-content h1 {
+        font-size: 2.35rem;
     }
 }

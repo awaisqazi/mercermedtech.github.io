@@ -194,8 +194,14 @@
    clears the home indicator.
    ========================================================================== */
 @media (max-width: 1080px) {
+    /* 44 by 44 tap target around the 24px glyph. */
     .mobile-menu-toggle {
-        display: block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        margin-right: -0.6rem;
         z-index: 1001;
     }
 
@@ -220,9 +226,13 @@
         overflow-y: auto;
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
-        transition: right 0.3s var(--ease-out);
+        /* Closed, the drawer is parked off the right edge: hidden, with no
+           shadow, so nothing of it shows at the edge of the page and its links
+           are out of the tab order. */
+        visibility: hidden;
+        box-shadow: none;
+        transition: right 0.3s var(--ease-out), visibility 0s linear 0.3s;
         z-index: 999;
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
     }
 
     /* Nothing in the column is squeezed out of shape when the list is long. */
@@ -232,6 +242,9 @@
 
     .nav-menu.active {
         right: 0;
+        visibility: visible;
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+        transition: right 0.3s var(--ease-out), visibility 0s;
     }
 
     .nav-link {

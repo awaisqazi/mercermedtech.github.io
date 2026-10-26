@@ -105,14 +105,17 @@
         0 25px 60px -15px rgba(0, 166, 156, 0.18);
 }
 
+/* minmax(0, 1fr): a select sizes itself to its longest option, and a plain
+   1fr column would grow to fit it and push every field past the card edge. */
 .contact-form {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
 }
 
 .form-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 1rem;
 }
 
@@ -120,6 +123,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.45rem;
+    min-width: 0;
 }
 
 .form-label {
@@ -143,12 +147,15 @@
 .contact-form select,
 .contact-form textarea {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     padding: 0.85rem 1rem;
     background: rgba(255, 255, 255, 0.85);
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: var(--radius-sm);
     font-family: inherit;
-    font-size: 0.98rem;
+    /* 16px: iOS Safari zooms the page into any field set smaller. */
+    font-size: 1rem;
     color: var(--text-main);
     transition: border-color 0.2s ease,
         box-shadow 0.2s ease,
@@ -295,11 +302,43 @@
 
 @media (max-width: 640px) {
     .contact-card {
-        padding: 1.75rem 1.25rem;
+        padding: 1.5rem 1.25rem;
     }
 
     .form-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .form-label {
+        font-size: 0.9375rem;
+    }
+
+    .form-consent label {
+        font-size: 0.9375rem;
+    }
+
+    .contact-intro p {
+        margin-bottom: 2rem;
+    }
+
+    /* Phone, email and address rows: the link fills the row beside its 44px
+       icon, so the tap target is the row, not the line of text. */
+    .contact-direct li > div {
+        min-width: 0;
+    }
+
+    .contact-direct a {
+        display: inline-block;
+        padding: 0.35rem 0;
+        overflow-wrap: anywhere;
+    }
+
+    .contact-direct a[href^='tel:'],
+    .contact-direct a[href^='mailto:'] {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0;
     }
 }
 

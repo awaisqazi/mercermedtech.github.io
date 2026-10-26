@@ -6,7 +6,6 @@ import type { Locale } from '../i18n';
 
 interface Props {
   locale: Locale;
-  badge: string;
   heading: string;
   intro: string;
   caption: string;
@@ -15,7 +14,7 @@ interface Props {
   actions: { href: string; label: string; style: 'primary' | 'secondary' }[];
 }
 
-const { locale, badge, heading, intro, caption, columns, note, actions } = Astro.props;
+const { locale, heading, intro, caption, columns, note, actions } = Astro.props;
 
 // Med rows first, then Tech, each behind its own group row.
 const groups = (['med', 'tech'] as const).map((track) => ({
@@ -28,10 +27,6 @@ const groups = (['med', 'tech'] as const).map((track) => ({
 <section id="tuition" class="tuition-section section-padding bg-surface-1" aria-labelledby="tuition-title">
   <div class="container">
     <div class="section-header text-center">
-      <div class="programs-pill-badge">
-        <i class="fas fa-coins" aria-hidden="true"></i>
-        <span>{badge}</span>
-      </div>
       <h2 id="tuition-title">{heading}</h2>
       <p class="text-muted">{intro}</p>
     </div>

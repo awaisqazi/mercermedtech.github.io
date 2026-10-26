@@ -60,7 +60,8 @@
 @media (max-width: 640px) {
     .announce-strip p {
         padding: 0.35rem 0;
-        font-size: 0.88rem;
+        font-size: 0.9375rem;
+        text-wrap: balance;
     }
 
     .announce-strip + .hero {

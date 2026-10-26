@@ -107,10 +107,46 @@
     font-size: 0.875rem;
 }
 
-@media (max-width: 640px) {
+/* Four columns only fit from about 970px. Between there and a phone, two. */
+@media (max-width: 968px) {
     .footer-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 2.5rem 2rem;
+    }
+
+    .footer-brand {
+        grid-column: 1 / -1;
+    }
+
+    .footer-brand p {
+        max-width: 48ch;
+    }
+}
+
+/* Phones: every footer link is a 44px row. */
+@media (max-width: 768px) {
+    .footer-links li {
+        margin-bottom: 0.15rem;
+    }
+
+    .footer-links a,
+    .footer-links .footer-link-icon {
+        min-height: 44px;
+    }
+
+    .footer-links .footer-link-address {
+        padding: 0.6rem 0;
+    }
+
+    .footer-links .footer-link-icon i,
+    .footer-links .footer-link-address i {
+        width: 1.1rem;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    .footer-links a span {
+        overflow-wrap: anywhere;
     }
 }
 

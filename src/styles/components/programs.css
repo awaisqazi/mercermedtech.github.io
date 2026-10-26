@@ -1031,8 +1031,6 @@
 @media (max-width: 640px) {
     .programs-section {
         padding: 4rem 0;
-        /* iOS Dynamic Viewport Height */
-        min-height: 100dvh;
     }
 
     .programs-section .section-header h2 {
@@ -1327,4 +1325,144 @@
 .program-card-glass button.btn {
     font-family: inherit;
     cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Phones: the Med carousel and the Tech card
+   The arrows move out from over the card edges into one row with the dots
+   (prev, dots, next). The progress bar repeated what the dots already say,
+   so it goes on phones. Program cards size to their content.
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+    .programs-section .section-header {
+        margin-bottom: 2.25rem;
+    }
+
+    .programs-tracks {
+        gap: 3.5rem;
+    }
+
+    .programs-group-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .programs-section .carousel-container {
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr) 44px;
+        align-items: center;
+        gap: 1rem 0.5rem;
+        margin-top: 0;
+        padding: 0;
+    }
+
+    .programs-section .carousel-wrapper {
+        grid-column: 1 / -1;
+        grid-row: 1;
+    }
+
+    .programs-section .carousel-btn,
+    .programs-section .carousel-btn:hover,
+    .programs-section .carousel-btn:active,
+    .programs-section .carousel-btn[disabled]:hover {
+        position: static;
+        transform: none;
+    }
+
+    .programs-section .carousel-prev {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .programs-section .carousel-dots {
+        grid-column: 2;
+        grid-row: 2;
+        flex-wrap: wrap;
+        margin-top: 0;
+    }
+
+    .programs-section .carousel-next {
+        grid-column: 3;
+        grid-row: 2;
+    }
+
+    .programs-section .programs-scroll-progress {
+        display: none;
+    }
+
+    .programs-section .swipe-indicator {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        margin-top: 0;
+    }
+
+    /* The dots stay small to look at; the tap area around each is larger. */
+    .programs-section .dot {
+        position: relative;
+    }
+
+    .programs-section .dot::before {
+        content: '';
+        position: absolute;
+        inset: -9px -5px;
+    }
+
+    .program-card-glass {
+        min-height: 0;
+    }
+
+    .program-card-glass p {
+        font-size: 1rem;
+    }
+
+    .data-source-notes {
+        padding: 1.5rem 1.25rem;
+        margin-top: 2rem;
+    }
+
+    .data-source-notes p {
+        font-size: 0.95rem;
+    }
+
+    .tech-card {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .tech-card-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .tech-card-badge {
+        font-size: 0.8125rem;
+    }
+
+    .tech-card p {
+        font-size: 1rem;
+    }
+
+    .tech-card-modules li {
+        font-size: 1rem;
+    }
+
+    .tech-card-sessions {
+        font-size: 0.95rem;
+    }
+
+    .tech-card-funding {
+        font-size: 0.875rem;
+    }
+}
+
+/* Below the widest layout the Med cards are narrow: the details button spans
+   the card, so "See the details" / "Ver los detalles" stays on one line. */
+@media (max-width: 1279px) {
+    .program-card-glass .btn,
+    #programs-med .program-card-glass .btn {
+        width: 100%;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+        white-space: nowrap;
+    }
 }

@@ -425,10 +425,19 @@
     line-height: 1.55;
 }
 
+/* Fixed icon column, so every item's text starts at the same edge. */
 .dl-list i {
+    flex-shrink: 0;
+    width: 1.1rem;
+    text-align: center;
     color: var(--tech);
     margin-top: 0.3rem;
     font-size: 0.85rem;
+}
+
+.dl-list li > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 /* Numbered steps */
@@ -637,11 +646,16 @@
     margin-bottom: 0.15rem;
 }
 
+.dl-contact-item > div {
+    min-width: 0;
+}
+
 .dl-contact-item a,
 .dl-contact-item span {
     color: var(--text-main);
     font-weight: 600;
     line-height: 1.45;
+    overflow-wrap: anywhere;
 }
 
 .dl-contact-item a:hover {
@@ -711,8 +725,10 @@
 }
 
 @media (max-width: 860px) {
+    /* minmax(0, 1fr): the email address in this block must not widen the
+       column past the container gutter. */
     .dl-split {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 2rem;
     }
 }
@@ -735,5 +751,172 @@
 
     .dl-card:hover {
         transform: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Phones
+   -------------------------------------------------------------------------- */
+@media (max-width: 576px) {
+    .dl-hero {
+        padding-top: calc(var(--header-height) + 2.25rem);
+        padding-bottom: 2.5rem;
+    }
+
+    .dl-lead {
+        font-size: 1.05rem;
+    }
+
+    /* Smaller chips, so they sit two to a row instead of one per line. */
+    .dl-chips {
+        gap: 0.45rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .dl-chips li {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .dl-hero-art {
+        max-width: 240px;
+    }
+
+    .dl-enrolled {
+        padding: 1.1rem 1.1rem 1.2rem;
+    }
+
+    .dl-enrolled p {
+        font-size: 1rem;
+    }
+
+    .dl-enrolled .dl-enrolled-help {
+        font-size: 0.9375rem;
+    }
+
+    .dl-eyebrow,
+    .dl-strip-label,
+    .dl-contact-label {
+        font-size: 0.8125rem;
+    }
+
+    .dl-section-head {
+        margin-bottom: 2rem;
+    }
+
+    /* Standalone links in the strip and the contact blocks: 44px rows. */
+    .dl-strip-grid > div:not(:first-child) a,
+    .dl-contact-item a {
+        display: inline-block;
+        padding: 0.6rem 0;
+        margin: -0.6rem 0;
+    }
+
+    .dl-strip-grid > div:not(:first-child) a {
+        overflow-wrap: anywhere;
+    }
+
+    .dl-checks li {
+        padding: 1rem;
+    }
+
+    .dl-checks span {
+        font-size: 1rem;
+    }
+
+    .dl-note {
+        font-size: 0.95rem;
+    }
+
+    /* Module cards: the icon sits beside the title. */
+    .dl-card {
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr);
+        align-items: center;
+        gap: 0.75rem 0.9rem;
+        padding: 1.25rem;
+    }
+
+    .dl-card-icon {
+        width: 40px;
+        height: 40px;
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .dl-card h3 {
+        margin: 0;
+    }
+
+    .dl-card p {
+        grid-column: 1 / -1;
+        font-size: 1rem;
+    }
+
+    /* How to enroll: the step number sits beside the step title. */
+    .dl-steps li {
+        display: grid;
+        grid-template-columns: 36px minmax(0, 1fr);
+        align-items: center;
+        gap: 0.6rem 0.85rem;
+        padding: 1.25rem;
+    }
+
+    .dl-steps li::before {
+        margin: 0;
+    }
+
+    .dl-steps strong {
+        margin: 0;
+    }
+
+    .dl-steps li > span,
+    .dl-steps li > a {
+        grid-column: 1 / -1;
+    }
+
+    .dl-steps span {
+        font-size: 1rem;
+    }
+
+    .dl-steps .dl-step-cta {
+        margin-top: 0.4rem;
+    }
+
+    .dl-faq .dl-faq-body {
+        font-size: 1rem;
+    }
+
+    .dl-footer-links a,
+    .dl-footer-contact a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        overflow-wrap: anywhere;
+    }
+
+    /* The two footer links stack; the dot between them would dangle. */
+    .dl-footer-links {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dl-footer-links > span[aria-hidden='true'] {
+        display: none;
+    }
+
+    .dl-steps strong {
+        line-height: 1.3;
+    }
+}
+
+@media (max-width: 400px) {
+    .dl-hero h1 {
+        font-size: 1.95rem;
+    }
+
+    .dl-section-head h2 {
+        font-size: 1.6rem;
     }
 }

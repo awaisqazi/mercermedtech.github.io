@@ -247,3 +247,10 @@
         padding: 0.55rem 0.9rem;
     }
 }
+
+@media (max-width: 576px) {
+    .tuition-note {
+        font-size: 0.95rem;
+        text-align: left;
+    }
+}

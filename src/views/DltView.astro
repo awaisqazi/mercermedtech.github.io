@@ -98,7 +98,7 @@ const jsonLd = [
           <div>
             <h2 id="dl-sessions-title">{page.strip.heading}</h2>
             <p>
-              {page.strip.note}
+              {page.strip.note}{' '}
               <a href="#interest">{page.strip.ctaLabel}</a>.
             </p>
           </div>
@@ -110,7 +110,7 @@ const jsonLd = [
             <span class="dl-strip-label">{page.strip.whereLabel}</span>
             <p>
               <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
-                {site.address.street}, {addressLine2}
+                {site.address.streetDisplay}, {addressLine2}
               </a>
             </p>
           </div>
@@ -325,7 +325,7 @@ const jsonLd = [
               <div>
                 <div class="dl-contact-label">{page.partners.campusLabel}</div>
                 <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
-                  {site.address.street}<br />{addressLine2}
+                  {site.address.streetDisplay}<br />{addressLine2}
                 </a>
               </div>
             </div>
@@ -384,7 +384,7 @@ const jsonLd = [
             <div>
               <div class="dl-contact-label">{page.contact.visitLabel}</div>
               <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
-                {site.address.street}<br />{addressLine2}
+                {site.address.streetDisplay}<br />{addressLine2}
               </a>
             </div>
           </div>

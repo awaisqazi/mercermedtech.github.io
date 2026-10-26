@@ -56,6 +56,10 @@ const EXPECTED_MISSES = [
     why: 'owner, 2026-10-27: the homepage and the Digital Literacy page point to the interest form and email instead of "call us"; the number stays in the footer and once in the contact section. The Digital Literacy hero button is now "Tell us you are interested" (the nav keeps "Who qualifies")',
   },
   {
+    match: /^, enrolling (year-round|soon)$/,
+    why: 'owner, 2026-10-27 (mobile clean-up): the pill above each enrollment card already says "Enrolling year-round" / "Enrolling soon", so the card heading no longer repeats it after a comma that wrapped onto its own line on phones',
+  },
+  {
     match: /^(swipe to see more|see the details|put me on the list)$/i,
     why: 'button label, still present in the build in the same words',
   },
@@ -76,7 +80,10 @@ const visibleSentences = (html) => {
     .replace(/&middot;/g, '·')
     .replace(/&times;/g, '×')
     .replace(/&copy;/g, '©')
-    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)));
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    // Invisible line-break controls added for phones (the word joiner that
+    // keeps "One-Stop" on one line in a heading) are not wording changes.
+    .replace(/\u2060/g, '');
 
   return text
     .split('\n')

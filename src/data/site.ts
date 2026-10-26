@@ -20,6 +20,8 @@ export const site = {
   },
   address: {
     street: '168 Franklin Corner Rd, Bldg 2, Suite #140',
+    /** The same street line for reading: "Bldg 2" and "Suite #140" never split across lines. */
+    streetDisplay: '168 Franklin Corner Rd, Bldg\u00a02, Suite\u00a0#140',
     city: 'Lawrenceville',
     region: 'NJ',
     postalCode: '08648',
@@ -46,8 +48,6 @@ export const site = {
   etplLine: "Mercer Med Tech is on New Jersey's Eligible Training Provider List (ETPL).",
   /** No days or times anywhere. This exact sentence replaces every schedule. */
   infoSessionsNote: 'Details on upcoming information sessions will be shared soon.',
-  /** Shown as the copyright line in both footers. */
-  copyright: '© 2026 Mercer Med Tech. All rights reserved.',
   /**
    * Images with an address that never changes, for everything outside the site
    * that keeps a copy of it: the social card, the JSON-LD, and the

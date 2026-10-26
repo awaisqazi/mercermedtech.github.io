@@ -61,6 +61,7 @@ export const en = {
     explore: 'Explore',
     contact: 'Contact',
     follow: 'Find us online',
+    copyright: '© 2026 Mercer Med Tech. All rights reserved.',
     credentialFinder: 'See our listing on Credential Finder',
     brandLine:
       'Health care and computer skills training in Lawrenceville, NJ. Med and Tech. Two paths to a better job.',
@@ -150,7 +151,6 @@ export const en = {
       med: {
         badge: 'Enrolling year-round',
         titleAccent: 'Health care programs',
-        titleRest: ', enrolling year-round',
         subtitle:
           'Get certified at our Lawrenceville campus. Small classes, instructors who have done the job, and hands-on practice, with an externship in the programs that include one.',
         programsLabel: 'Health care programs offered',
@@ -164,7 +164,6 @@ export const en = {
       tech: {
         badge: 'Enrolling soon · No cost if you qualify',
         titleAccent: 'Digital Literacy Training',
-        titleRest: ', enrolling soon',
         subtitle:
           'We start with a short skills check so your training fits what you already know. From there you cover Microsoft Office and Google Workspace, online safety, AI, and money management, and you work toward an industry-recognized credential. Lessons are recorded, with live sessions on Tuesday and Thursday (on campus in Lawrenceville or on Microsoft Teams) and Friday (on Teams), you receive a laptop, and someone here helps you look for work.',
         costLabel: 'Cost',
@@ -250,7 +249,6 @@ export const en = {
     },
 
     tuition: {
-      badge: 'What it costs',
       heading: 'What each program costs',
       intro:
         'Here is the price of every program, up front. Digital Literacy Training is grant funded, so if you qualify it costs you nothing. We do not give out financial aid ourselves, but we do take outside grants, including One-Stop Career Center and NJ Department of Labor funding.',
@@ -463,7 +461,6 @@ export const en = {
       lead: 'Digital Literacy Training at Mercer Med Tech prepares you for work that uses a computer every day. We start with a short skills check so your training fits what you already know. From there you cover Microsoft Office and Google Workspace, staying safe online, AI, and money management. You leave with a credential you can show an employer, and with someone here helping you look for work. It is grant funded, so if you qualify it costs you nothing.',
       chips: [
         { icon: 'fas fa-bullhorn', label: 'Enrolling soon' },
-        { icon: 'fas fa-tag', label: 'No cost if you qualify' },
         { icon: 'fas fa-hourglass-half', label: dlt.length },
         { icon: 'fas fa-map-marker-alt', label: `${site.address.city}, ${site.address.region}` },
         { icon: 'fas fa-language', label: 'English and Spanish' },
@@ -648,7 +645,7 @@ export const en = {
 
     partners: {
       eyebrow: 'For referral partners',
-      heading: 'County agencies, One-Stop Career Centers, and community organizations',
+      heading: 'County agencies, One-\u2060Stop Career Centers, and community organizations',
       intro: 'We work with the people who already know your clients.',
       whoHeading: 'Who to refer',
       whoBody: `New Jersey residents 18 or older who currently receive TANF or SNAP and live in ${dlt.countiesSentence}. We give every participant a skills check and place them at the right level, so you can refer someone at any starting point. ${site.etplLine}`,

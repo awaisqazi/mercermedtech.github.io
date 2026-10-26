@@ -161,3 +161,57 @@
         transform: none;
     }
 }
+
+/* --------------------------------------------------------------------------
+   Phones: the icon sits beside the card title instead of on its own row.
+   -------------------------------------------------------------------------- */
+@media (max-width: 576px) {
+    .why-grid {
+        margin-top: 2rem;
+        gap: 1rem;
+    }
+
+    .why-card {
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr);
+        align-items: center;
+        gap: 0.75rem 0.9rem;
+        padding: 1.25rem;
+    }
+
+    .why-icon {
+        width: 40px;
+        height: 40px;
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .why-card h3 {
+        margin: 0;
+    }
+
+    .why-card p {
+        grid-column: 1 / -1;
+        font-size: 1rem;
+    }
+
+    .admissions-block {
+        margin-top: 3rem;
+    }
+
+    .admissions-header h3 {
+        font-size: 1.5rem;
+    }
+
+    .admissions-list {
+        gap: 0.75rem;
+    }
+
+    .admissions-list span {
+        font-size: 0.95rem;
+    }
+
+    .admissions-cta .meta {
+        font-size: 0.95rem;
+    }
+}

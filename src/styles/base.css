@@ -38,6 +38,14 @@ h6 {
     font-weight: 700;
     line-height: 1.2;
     color: var(--text-main);
+    /* Even line lengths, so a heading never ends on one short word. */
+    text-wrap: balance;
+}
+
+p,
+li {
+    /* Browsers that support it avoid a lone last word on a line. */
+    text-wrap: pretty;
 }
 
 a {
@@ -182,4 +190,16 @@ img {
     h1 {
         font-size: 2.5rem;
     }
+
+    /* design.md section 4: the container gutter is 1rem on small phones. */
+    .container {
+        padding: 0 1rem;
+    }
+}
+
+/* The English NJDOL sentence that follows the Spanish rendering of it
+   (FundingLine.astro) starts on its own line. */
+.funding-line-en {
+    display: block;
+    margin-top: 0.35em;
 }

@@ -114,3 +114,37 @@
         transition: none;
     }
 }
+
+/* --------------------------------------------------------------------------
+   Phones: button pairs stack, full width, instead of two pills of different
+   widths sitting awkwardly side by side or one of them wrapping to two lines.
+   -------------------------------------------------------------------------- */
+@media (max-width: 576px) {
+    .hero-actions,
+    .enroll-actions,
+    .tuition-cta,
+    .admissions-cta,
+    .tech-card-actions,
+    .dl-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hero-actions .btn,
+    .enroll-actions .btn,
+    .tuition-cta .btn,
+    .admissions-cta .btn,
+    .tech-card-actions .btn,
+    .dl-actions .btn,
+    .track-panel .btn,
+    .grants-block .btn,
+    .financial-aid-footer .btn,
+    .dl-enrolled .btn,
+    .dl-steps .dl-step-cta {
+        display: flex;
+        width: 100%;
+        align-self: stretch;
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+}

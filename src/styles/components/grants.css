@@ -106,3 +106,26 @@
         padding: 1.75rem 1.25rem;
     }
 }
+
+@media (max-width: 576px) {
+    .grants-med-layout {
+        padding: 1.25rem;
+        gap: 1.5rem;
+    }
+
+    .financial-aid-footer {
+        padding: 1.25rem 1.1rem;
+    }
+
+    .financial-aid-footer .loan-note {
+        font-size: 0.95rem;
+    }
+
+    .grants-block {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .grants-block .funding-line {
+        font-size: 0.875rem;
+    }
+}

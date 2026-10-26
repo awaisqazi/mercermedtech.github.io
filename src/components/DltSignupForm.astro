@@ -87,11 +87,11 @@ const bestTimes = BEST_TIME_VALUES.map((value, index) => ({
   <form id="dlt-signup-form" class="contact-form" action={WORKER_ENDPOINT} method="post">
     <div class="form-row">
       <label class="form-field">
-        <span class="form-label">{f.nameLabel} <span class="req" aria-hidden="true">*</span></span>
+        <span class="form-label">{f.nameLabel}&nbsp;<span class="req" aria-hidden="true">*</span></span>
         <input type="text" name={FIELD.name} required autocomplete="name" placeholder={f.namePlaceholder} />
       </label>
       <label class="form-field">
-        <span class="form-label">{f.phoneLabel} <span class="req" aria-hidden="true">*</span></span>
+        <span class="form-label">{f.phoneLabel}&nbsp;<span class="req" aria-hidden="true">*</span></span>
         <input
           type="tel"
           name={FIELD.phone}
@@ -110,14 +110,14 @@ const bestTimes = BEST_TIME_VALUES.map((value, index) => ({
 
     <div class="form-row">
       <label class="form-field">
-        <span class="form-label">{f.countyLabel} <span class="req" aria-hidden="true">*</span></span>
+        <span class="form-label">{f.countyLabel}&nbsp;<span class="req" aria-hidden="true">*</span></span>
         <select name={FIELD.county} required>
           <option value="" disabled selected>{f.pickOne}</option>
           {counties.map((county) => <option value={county.value}>{county.label}</option>)}
         </select>
       </label>
       <label class="form-field">
-        <span class="form-label">{f.benefitsLabel} <span class="req" aria-hidden="true">*</span></span>
+        <span class="form-label">{f.benefitsLabel}&nbsp;<span class="req" aria-hidden="true">*</span></span>
         <select name={FIELD.benefits} required>
           <option value="" disabled selected>{f.pickOne}</option>
           {benefits.map((choice) => <option value={choice.value}>{choice.label}</option>)}
@@ -127,14 +127,14 @@ const bestTimes = BEST_TIME_VALUES.map((value, index) => ({
 
     <div class="form-row">
       <label class="form-field">
-        <span class="form-label">{f.languageLabel} <span class="req" aria-hidden="true">*</span></span>
+        <span class="form-label">{f.languageLabel}&nbsp;<span class="req" aria-hidden="true">*</span></span>
         <select name={FIELD.language} required>
           <option value="" disabled selected>{f.pickOne}</option>
           {languages.map((choice) => <option value={choice.value}>{choice.label}</option>)}
         </select>
       </label>
       <label class="form-field">
-        <span class="form-label">{f.attendLabel} <span class="req" aria-hidden="true">*</span></span>
+        <span class="form-label">{f.attendLabel}&nbsp;<span class="req" aria-hidden="true">*</span></span>
         <select name={FIELD.attend} required>
           <option value="" disabled selected>{f.pickOne}</option>
           {attendance.map((choice) => <option value={choice.value}>{choice.label}</option>)}
@@ -280,6 +280,9 @@ const bestTimes = BEST_TIME_VALUES.map((value, index) => ({
           sitekey: host.dataset.sitekey,
           theme: 'light',
           language: host.dataset.language === 'es' ? 'es' : 'en',
+          // The standard widget is 300px wide and would run past a narrow
+          // phone card; below that it switches to the compact one (150px).
+          size: host.clientWidth < 300 ? 'compact' : 'flexible',
           'response-field': true,
           callback: (value: string) => {
             token = value;

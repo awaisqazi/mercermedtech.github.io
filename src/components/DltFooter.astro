@@ -23,18 +23,18 @@ const d = t(locale);
 
     <p>{d.footer.licensingLine}</p>
     <p class="dl-footer-contact">
-      <span>{site.address.street}, {site.address.city}, {site.address.region} {site.address.postalCode}</span>
+      <span>{site.address.streetDisplay}, {site.address.city}, {site.address.region} {site.address.postalCode}</span>
       <a href={site.phone.href}>{site.phone.display}</a>
       <a href={`mailto:${site.email}`}>{site.email}</a>
     </p>
     <p class="dl-footer-links">
-      <a href={localePath(locale, '/')}>{d.footer.homeLink}</a>
-      <span aria-hidden="true">·</span>
+      <a href={localePath(locale, '/')}>{d.footer.homeLink}</a>{' '}
+      <span aria-hidden="true">·</span>{' '}
       <a href={site.classSite.url} target="_blank" rel="noopener">{d.footer.studentLogin}</a>
     </p>
 
     <div class="dl-footer-bottom">
-      <p>{site.copyright}</p>
+      <p>{d.footer.copyright}</p>
     </div>
   </div>
 </footer>

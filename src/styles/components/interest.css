@@ -127,6 +127,18 @@
 
 @media (max-width: 640px) {
     .contact-card.interest-card--compact {
-        padding: 1.5rem 1.15rem;
+        padding: 1.5rem 1.25rem;
+    }
+
+    .interest-contact-note {
+        font-size: 0.9375rem;
+    }
+
+    .interest-card .form-hint {
+        font-size: 0.875rem;
+    }
+
+    .tech-interest > p {
+        font-size: 1rem;
     }
 }

@@ -72,7 +72,7 @@ const bestTimeChoices = BEST_TIME_VALUES.map((value, index) => ({
             <div>
               <div class="contact-direct-label">{c.visitLabel}</div>
               <a href={site.address.mapsUrl} target="_blank" rel="noopener noreferrer">
-                {site.address.street}<br />{addressLine2}
+                {site.address.streetDisplay}<br />{addressLine2}
               </a>
             </div>
           </li>
@@ -83,11 +83,11 @@ const bestTimeChoices = BEST_TIME_VALUES.map((value, index) => ({
         <form id="request-info-form" class="contact-form" action={FORM_ACTION} method="POST" target="hidden_form_iframe">
           <div class="form-row">
             <label class="form-field">
-              <span class="form-label">{c.nameLabel} <span class="req" aria-hidden="true">*</span></span>
+              <span class="form-label">{c.nameLabel}&nbsp;<span class="req" aria-hidden="true">*</span></span>
               <input type="text" name={FIELD.name} required autocomplete="name" placeholder={c.namePlaceholder} />
             </label>
             <label class="form-field">
-              <span class="form-label">{c.phoneLabel} <span class="req" aria-hidden="true">*</span></span>
+              <span class="form-label">{c.phoneLabel}&nbsp;<span class="req" aria-hidden="true">*</span></span>
               <input
                 type="tel"
                 name={FIELD.phone}
@@ -100,7 +100,7 @@ const bestTimeChoices = BEST_TIME_VALUES.map((value, index) => ({
           </div>
 
           <label class="form-field">
-            <span class="form-label">{c.emailFieldLabel} <span class="req" aria-hidden="true">*</span></span>
+            <span class="form-label">{c.emailFieldLabel}&nbsp;<span class="req" aria-hidden="true">*</span></span>
             <input type="email" name={FIELD.email} required autocomplete="email" placeholder={c.emailPlaceholder} />
           </label>
 

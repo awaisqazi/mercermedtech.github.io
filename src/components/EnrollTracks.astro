@@ -19,7 +19,6 @@ interface Props {
   med: {
     badge: string;
     titleAccent: string;
-    titleRest: string;
     subtitle: string;
     programsLabel: string;
     chips: EnrollChip[];
@@ -29,7 +28,6 @@ interface Props {
   tech: {
     badge: string;
     titleAccent: string;
-    titleRest: string;
     subtitle: string;
     chips: EnrollChip[];
     qualifyLabel: string;
@@ -42,7 +40,7 @@ interface Props {
 
 const { locale, sectionTitle, med, tech } = Astro.props;
 const medEnrolling = enrollingPrograms.filter((program) => program.track === 'med');
-const addressLines = [site.address.street, `${site.address.city}, ${site.address.region} ${site.address.postalCode}`];
+const addressLines = [site.address.streetDisplay, `${site.address.city}, ${site.address.region} ${site.address.postalCode}`];
 ---
 
 <section id="enroll" class="enroll-section" aria-labelledby="enroll-title">
@@ -54,7 +52,7 @@ const addressLines = [site.address.street, `${site.address.city}, ${site.address
       <div class="enroll-card">
         <span class="enroll-badge enroll-badge--static">{med.badge}</span>
         <h3 class="enroll-title">
-          <span class="text-gradient">{med.titleAccent}</span>{med.titleRest}
+          <span class="text-gradient">{med.titleAccent}</span>
         </h3>
         <p class="enroll-subtitle">{med.subtitle}</p>
 
@@ -125,7 +123,7 @@ const addressLines = [site.address.street, `${site.address.city}, ${site.address
       <div class="enroll-card enroll-card--tech">
         <span class="enroll-badge enroll-badge--static">{tech.badge}</span>
         <h3 class="enroll-title">
-          <span class="text-gradient">{tech.titleAccent}</span>{tech.titleRest}
+          <span class="text-gradient">{tech.titleAccent}</span>
         </h3>
         <p class="enroll-subtitle">{tech.subtitle}</p>
 

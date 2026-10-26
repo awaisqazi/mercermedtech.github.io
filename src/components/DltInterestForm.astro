@@ -99,12 +99,12 @@ const source = `${placement === 'home' ? 'Home page' : 'Digital Literacy page'} 
     <input type="hidden" name={FIELD.source} value={source} />
 
     <label class="form-field">
-      <span class="form-label">{f.nameLabel} <span class="req" aria-hidden="true">*</span></span>
+      <span class="form-label">{f.nameLabel}&nbsp;<span class="req" aria-hidden="true">*</span></span>
       <input type="text" name={FIELD.name} required autocomplete="name" placeholder={f.namePlaceholder} />
     </label>
 
     <fieldset class="interest-contact">
-      <legend class="interest-contact-note">{f.contactNote} <span class="req" aria-hidden="true">*</span></legend>
+      <legend class="interest-contact-note">{f.contactNote}&nbsp;<span class="req" aria-hidden="true">*</span></legend>
       <div class="form-row">
         <label class="form-field">
           <span class="form-label">{f.phoneLabel}</span>
@@ -301,6 +301,9 @@ const source = `${placement === 'home' ? 'Home page' : 'Digital Literacy page'} 
           sitekey: host.dataset.sitekey,
           theme: 'light',
           language: host.dataset.language === 'es' ? 'es' : 'en',
+          // The standard widget is 300px wide and would run past a narrow
+          // phone card; below that it switches to the compact one (150px).
+          size: host.clientWidth < 300 ? 'compact' : 'flexible',
           'response-field': true,
           callback: (value: string) => {
             token = value;

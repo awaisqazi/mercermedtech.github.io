@@ -63,6 +63,7 @@ export const es: Dictionary = {
     explore: 'Secciones',
     contact: 'Contacto',
     follow: 'Búsquenos en internet',
+    copyright: '© 2026 Mercer Med Tech. Todos los derechos reservados.',
     credentialFinder: 'Vea nuestra ficha en Credential Finder',
     brandLine:
       'Capacitación en salud y computación en Lawrenceville, NJ. Med y Tech. Dos caminos hacia un mejor trabajo.',
@@ -160,7 +161,6 @@ export const es: Dictionary = {
       med: {
         badge: 'Inscripciones todo el año',
         titleAccent: 'Programas de salud',
-        titleRest: ', con inscripciones todo el año',
         subtitle:
           'Certifíquese en nuestro campus de Lawrenceville. Grupos pequeños, instructores que han hecho el trabajo y mucha práctica con equipo real, con pasantía (externship) en los programas que la incluyen.',
         programsLabel: 'Programas de salud que ofrecemos',
@@ -174,7 +174,6 @@ export const es: Dictionary = {
       tech: {
         badge: 'Próximamente · Sin costo si califica',
         titleAccent: 'Capacitación en Habilidades Digitales',
-        titleRest: ', inscripciones próximamente',
         subtitle:
           'Empezamos con una revisión corta de lo que usted ya sabe, para que la clase vaya a su nivel. De ahí cubre Microsoft Office y Google Workspace, seguridad en línea, inteligencia artificial y manejo del dinero, y trabaja hacia un certificado reconocido por la industria. Las lecciones son grabadas, con sesiones en vivo los martes y jueves (en el campus de Lawrenceville o en Microsoft Teams) y los viernes (en Teams), usted recibe una computadora portátil, y alguien de aquí le ayuda a buscar trabajo.',
         costLabel: 'Costo',
@@ -262,7 +261,6 @@ export const es: Dictionary = {
     },
 
     tuition: {
-      badge: 'Cuánto cuesta',
       heading: 'Cuánto cuesta cada programa',
       intro:
         'Aquí está el precio de cada programa, claro y desde el principio. La Capacitación en Habilidades Digitales tiene fondos de una subvención, así que si califica no le cuesta nada. Nosotros no damos ayuda económica propia, pero sí aceptamos subvenciones de afuera, incluidas las del One-Stop Career Center y del Departamento de Trabajo de Nueva Jersey.',
@@ -481,7 +479,6 @@ export const es: Dictionary = {
       lead: 'La Capacitación en Habilidades Digitales (Digital Literacy Training) de Mercer Med Tech le prepara para trabajos que usan la computadora todos los días. Empezamos con una revisión corta de lo que usted ya sabe, para que la clase vaya a su nivel. De ahí cubre Microsoft Office y Google Workspace, cómo protegerse en línea, inteligencia artificial y manejo del dinero. Sale con un certificado que le puede mostrar a un empleador, y con alguien de aquí ayudándole a buscar trabajo. Tiene fondos de una subvención, así que si califica no le cuesta nada.',
       chips: [
         { icon: 'fas fa-bullhorn', label: 'Inscripciones próximamente' },
-        { icon: 'fas fa-tag', label: 'Sin costo si califica' },
         { icon: 'fas fa-hourglass-half', label: '7 semanas, 20 horas a la semana' },
         { icon: 'fas fa-map-marker-alt', label: `${site.address.city}, ${site.address.region}` },
         { icon: 'fas fa-language', label: 'Inglés y español' },
@@ -665,7 +662,7 @@ export const es: Dictionary = {
 
     partners: {
       eyebrow: 'Para quien refiere',
-      heading: 'Agencias del condado, One-Stop Career Centers y organizaciones comunitarias',
+      heading: 'Agencias del condado, One-\u2060Stop Career Centers y organizaciones comunitarias',
       intro: 'Trabajamos con la gente que ya conoce a sus clientes.',
       whoHeading: 'A quién referir',
       whoBody:
