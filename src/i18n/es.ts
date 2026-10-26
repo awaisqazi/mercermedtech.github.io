@@ -137,9 +137,11 @@ export const es: Dictionary = {
           'Electrocardiogramas (EKG)',
         ],
         ctaLabel: 'Ver los programas Med',
+        imageAlt: 'Un brazo de práctica de flebotomía y un carrito de materiales en el laboratorio de Mercer Med Tech',
       },
       techPanel: {
         label: 'Tech',
+        imageAlt: 'El sitio de clase de Capacitación en Habilidades Digitales en una computadora portátil, con las lecciones de la semana 1',
         heading: 'Computación y ayuda para encontrar trabajo',
         body: 'Aprenda la computación que los empleadores esperan, desde lo básico, y reciba ayuda para buscar trabajo cuando llegue el momento.',
         chipsLabel: 'Qué cubre la rama Tech',
@@ -203,6 +205,7 @@ export const es: Dictionary = {
     about: {
       heading: 'Sobre Mercer Med Tech',
       imageAlt: 'Un salón de clases en el campus de Mercer Med Tech en Lawrenceville',
+      doorsAlt: 'Las puertas del laboratorio y de la sala de descanso en el campus de Mercer Med Tech',
       paragraphs: [
         'Mercer Med Tech es una escuela vocacional privada y pequeña en Lawrenceville. El Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey nos da la licencia y aprueba lo que enseñamos. Empezamos capacitando a personas para trabajos de salud, y lo seguimos haciendo, en grupos pequeños, con equipo real y con instructores que han hecho ese trabajo.',
         'El nombre dice el resto. Med es el lado de la salud. Tech es el lado de la computación, que hoy es la Capacitación en Habilidades Digitales, que damos junto con el Departamento de Trabajo y Desarrollo de la Fuerza Laboral de Nueva Jersey, sin costo para quien califica. La zona central de Nueva Jersey contrata en las dos áreas, y las dos las enseñamos igual: practicando y cerca de lo que el trabajo de verdad pide.',
@@ -221,6 +224,7 @@ export const es: Dictionary = {
         intro:
           'Programas de certificación con grupos pequeños y mucha práctica. Algunos incluyen pasantía.',
         detailsLabel: 'Ver los detalles',
+        imageAlt: 'Un lavabo, gabinetes y taburetes en el laboratorio de Mercer Med Tech',
         prevLabel: 'Programa anterior',
         nextLabel: 'Programa siguiente',
         swipeLabel: 'Deslice para ver más',
@@ -476,7 +480,8 @@ export const es: Dictionary = {
       eyebrowTrailing: 'Rama Tech',
       headingBefore: 'Aprenda computación para el trabajo. ',
       headingAccent: 'Sin costo si califica.',
-      lead: 'La Capacitación en Habilidades Digitales (Digital Literacy Training) de Mercer Med Tech le prepara para trabajos que usan la computadora todos los días. Empezamos con una revisión corta de lo que usted ya sabe, para que la clase vaya a su nivel. De ahí cubre Microsoft Office y Google Workspace, cómo protegerse en línea, inteligencia artificial y manejo del dinero. Sale con un certificado que le puede mostrar a un empleador, y con alguien de aquí ayudándole a buscar trabajo. Tiene fondos de una subvención, así que si califica no le cuesta nada.',
+      lead: 'La Capacitación en Habilidades Digitales (Digital Literacy Training) de Mercer Med Tech le prepara para trabajos que usan la computadora todos los días. Empezamos con una revisión corta de lo que usted ya sabe, para que la clase vaya a su nivel.',
+      imageAlt: 'Una persona adulta trabajando en una computadora portátil en un salón de computación',
       chips: [
         { icon: 'fas fa-bullhorn', label: 'Inscripciones próximamente' },
         { icon: 'fas fa-hourglass-half', label: '7 semanas, 20 horas a la semana' },
@@ -494,6 +499,14 @@ export const es: Dictionary = {
       cta: 'Ir al sitio de clase',
       ctaAria: 'Ir al sitio de clase (se abre en una pestaña nueva)',
       helpBefore: '¿Necesita ayuda para entrar? Escriba a ',
+      imageAlt: 'La página para entrar al sitio de clase',
+    },
+
+    /** El resto del párrafo del encabezado, en papel debajo del encabezado, con el campus y el sitio de clase. */
+    overview: {
+      body: 'De ahí cubre Microsoft Office y Google Workspace, cómo protegerse en línea, inteligencia artificial y manejo del dinero. Sale con un certificado que le puede mostrar a un empleador, y con alguien de aquí ayudándole a buscar trabajo. Tiene fondos de una subvención, así que si califica no le cuesta nada.',
+      campusAlt: 'Un salón de clases en el campus de Mercer Med Tech en Lawrenceville, con sillas frente a una pantalla de proyección',
+      classSiteAlt: 'El sitio de clase en un teléfono, con las lecciones de la semana 1',
     },
 
     strip: {

@@ -1,0 +1,87 @@
+---
+/**
+ * One photo or screenshot from public/images/, as a <picture>: AVIF, then
+ * WebP, at the widths that were exported (never upscaled), with the blurred
+ * 24px "-lqip.jpg" as the placeholder behind it while it loads.
+ *
+ * Frames (design.md, section 1b, "Photos"): a square 4px frame with a 1px ink
+ * hairline; "mat" adds a paper mat for photos on a colour block; "laptop" and
+ * "phone" draw a plain ink device around a class-site screenshot. No shadows,
+ * no gradients, no rounded blobs.
+ *
+ * `name` is the file stem under public/images/, for example
+ * "campus/lab-arm-cart-4x5"; the files are `<name>-<width>.avif|webp` and
+ * `<name>-lqip.jpg`.
+ */
+interface Props {
+  name: string;
+  /** The exported widths, smallest first. */
+  widths: number[];
+  /** Intrinsic size of the largest file, for the width/height attributes. */
+  width: number;
+  height: number;
+  alt: string;
+  sizes: string;
+  /** The first image a reader sees on the page loads eagerly. */
+  eager?: boolean;
+  frame?: 'hairline' | 'mat' | 'laptop' | 'phone';
+  class?: string;
+  /**
+   * Optional art direction: a different crop of the same photo below a
+   * breakpoint (for example the 3:2 crop under the text on a phone, where a
+   * 4:5 inset would be too tall).
+   */
+  narrow?: { name: string; widths: number[]; width: number; height: number; media: string; sizes: string };
+}
+
+const { name, widths, width, height, alt, sizes, eager = false, frame = 'hairline', class: className, narrow } =
+  Astro.props;
+const base = `/images/${name}`;
+const setOf = (stem: string, list: number[], format: 'avif' | 'webp') =>
+  list.map((w) => `/images/${stem}-${w}.${format} ${w}w`).join(', ');
+const srcset = (format: 'avif' | 'webp') => setOf(name, widths, format);
+const fallback = `${base}-${widths[widths.length - 1]}.webp`;
+const placeholder = `background-image: url('${base}-lqip.jpg')`;
+const device = frame === 'laptop' || frame === 'phone';
+---
+
+<div class:list={['photo', `photo--${frame}`, className]}>
+  <div class={device ? 'photo-screen' : 'photo-frame'}>
+    <picture style={placeholder}>
+      {
+        narrow && (
+          <Fragment>
+            <source
+              type="image/avif"
+              media={narrow.media}
+              srcset={setOf(narrow.name, narrow.widths, 'avif')}
+              sizes={narrow.sizes}
+              width={narrow.width}
+              height={narrow.height}
+            />
+            <source
+              type="image/webp"
+              media={narrow.media}
+              srcset={setOf(narrow.name, narrow.widths, 'webp')}
+              sizes={narrow.sizes}
+              width={narrow.width}
+              height={narrow.height}
+            />
+          </Fragment>
+        )
+      }
+      <source type="image/avif" srcset={srcset('avif')} sizes={sizes} />
+      <source type="image/webp" srcset={srcset('webp')} sizes={sizes} />
+      <img
+        src={fallback}
+        width={width}
+        height={height}
+        alt={alt}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchpriority={eager ? 'high' : undefined}
+      />
+    </picture>
+  </div>
+  {frame === 'laptop' && <div class="photo-laptop-base" aria-hidden="true" />}
+</div>

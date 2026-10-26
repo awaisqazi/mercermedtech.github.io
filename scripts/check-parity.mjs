@@ -71,6 +71,10 @@ const EXPECTED_MISSES = [
     match: /^(Mercer Med Tech \| Health Care and Computer Skills Training in Lawrenceville, NJ|Digital Literacy Training \| Free Computer and AI Classes \| Mercer Med Tech)$/,
     why: 'the old <title> was 78 and 74 characters; titles are now capped at 60 by npm run check:seo',
   },
+  {
+    match: /^you already know\. From there you cover Microsoft Office and Google Workspace, staying$/,
+    why: 'the Digital Literacy hero paragraph is split in two (2026-10-27, mobile length): the first two sentences stay in the hero and the rest, in the same words, opens the paper section under it, so this line of the old file now spans the two paragraphs',
+  },
 ];
 
 const visibleSentences = (html) => {

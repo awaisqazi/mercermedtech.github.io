@@ -7,6 +7,7 @@ import '../styles/components/dl.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Lockup from '../components/Lockup.astro';
 import DltInterestForm from '../components/DltInterestForm.astro';
+import Photo from '../components/Photo.astro';
 import { site, dlt } from '../data/site';
 import { programById } from '../data/programs';
 import { t, type Locale } from '../i18n';
@@ -46,8 +47,8 @@ const jsonLd = [
 >
   <main id="main">
     <!-- ===== 1. Hero: a deep indigo block. The promise is the framed
-         statement; the facts are set as a ruled list where the drawing used
-         to be. ===== -->
+         statement, a photo on a paper mat beside it; under them, the facts
+         as a ruled list and the way in for enrolled learners. ===== -->
     <section class="dl-hero block-tech">
       <div class="container">
         <div class="dl-hero-grid">
@@ -63,33 +64,83 @@ const jsonLd = [
             </div>
           </div>
 
-          <div class="dl-hero-side">
-            <ul class="dl-chips">
-              {page.hero.chips.map((chip) => <li>{chip.label}</li>)}
-            </ul>
+          <Photo
+            class="dl-hero-photo"
+            frame="mat"
+            name="tech/tech-lab-woman-typing-4x5"
+            widths={[480, 960, 1440]}
+            width={1440}
+            height={1800}
+            alt={page.hero.imageAlt}
+            sizes="(min-width: 901px) 360px, 16rem"
+            eager
+          />
 
-            <aside class="dl-enrolled" aria-labelledby="dl-enrolled-title">
-              <div>
-                <h2 id="dl-enrolled-title" class="dl-enrolled-heading">{page.enrolled.heading}</h2>
-                <p>{page.enrolled.body}</p>
-                <p class="dl-enrolled-help">
-                  {page.enrolled.helpBefore}<a href={`mailto:${site.classSite.helpEmail}`}>{site.classSite.helpEmail}</a>.
-                </p>
-              </div>
-              <a
-                href={site.classSite.url}
-                class="btn btn-tech-outline btn-sm"
-                target="_blank"
-                rel="noopener"
-                aria-label={page.enrolled.ctaAria}
-              >
-                {page.enrolled.cta} <i class="fas fa-external-link-alt" aria-hidden="true"></i>
-              </a>
-            </aside>
-          </div>
+          <ul class="dl-chips">
+            {page.hero.chips.map((chip) => <li>{chip.label}</li>)}
+          </ul>
+
+          <aside class="dl-enrolled" aria-labelledby="dl-enrolled-title">
+            <Photo
+              class="dl-enrolled-photo"
+              frame="mat"
+              name="tech/class-site-login"
+              widths={[480, 960]}
+              width={960}
+              height={901}
+              alt={page.enrolled.imageAlt}
+              sizes="7rem"
+            />
+            <div class="dl-enrolled-text">
+              <h2 id="dl-enrolled-title" class="dl-enrolled-heading">{page.enrolled.heading}</h2>
+              <p>{page.enrolled.body}</p>
+            </div>
+            <p class="dl-enrolled-help">
+              {page.enrolled.helpBefore}<a href={`mailto:${site.classSite.helpEmail}`}>{site.classSite.helpEmail}</a>.
+            </p>
+            <a
+              href={site.classSite.url}
+              class="btn btn-tech-outline btn-sm"
+              target="_blank"
+              rel="noopener"
+              aria-label={page.enrolled.ctaAria}
+            >
+              {page.enrolled.cta} <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+            </a>
+          </aside>
         </div>
       </div>
     </section>
+
+    <!-- ===== 1b. The rest of the hero paragraph, on paper, with the two
+         places the training happens: the campus classroom and the class
+         site. ===== -->
+    <div class="dl-overview">
+      <div class="container">
+        <div class="dl-overview-grid">
+          <p class="dl-overview-text">{page.overview.body}</p>
+          <div class="dl-overview-media">
+            <Photo
+              name="campus/classroom-screen-4x5"
+              widths={[480, 960]}
+              width={960}
+              height={1200}
+              alt={page.overview.campusAlt}
+              sizes="(min-width: 901px) 240px, 55vw"
+            />
+            <Photo
+              frame="phone"
+              name="tech/class-site-course-phone"
+              widths={[375]}
+              width={375}
+              height={800}
+              alt={page.overview.classSiteAlt}
+              sizes="(min-width: 901px) 140px, 32vw"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- ===== 2. Information sessions ===== -->
     <section class="dl-strip" aria-labelledby="dl-sessions-title">

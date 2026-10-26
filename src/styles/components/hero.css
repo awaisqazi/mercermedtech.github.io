@@ -69,9 +69,10 @@
    to the 1280px container edge.
 */
 .path-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    align-items: start;
     width: 100%;
     padding-top: clamp(2.5rem, 6vw, 4.5rem);
     padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
@@ -137,6 +138,51 @@
     margin-top: auto;
 }
 
+/* Pitch, status and button. The button sits at the foot of the column, so
+   the two blocks' buttons line up side by side. */
+.path-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+}
+
+/* A small photo (Med) or the class site in a laptop (Tech). Below the text
+   until the block is wide enough to set it beside the pitch. */
+.path-media {
+    width: min(100%, 24rem);
+    margin-top: var(--space-6);
+}
+
+@media (min-width: 1180px) {
+    .path-inner--media {
+        grid-template-columns: minmax(0, 1fr) 40%;
+        grid-template-areas:
+            'label label'
+            'heading heading'
+            'body media';
+        column-gap: var(--space-6);
+    }
+
+    .path-inner--media .path-label {
+        grid-area: label;
+    }
+
+    .path-inner--media h2 {
+        grid-area: heading;
+    }
+
+    .path-inner--media .path-body {
+        grid-area: body;
+    }
+
+    .path-inner--media .path-media {
+        grid-area: media;
+        width: 100%;
+        margin-top: 0.35rem;
+    }
+}
+
 .hero-quiet {
     padding: var(--space-5) 0;
     font-size: 1rem;
@@ -173,6 +219,14 @@
 
 .hero-image-wrapper {
     position: relative;
+}
+
+/* About: two small 4:5 campus photos side by side. */
+.about-photos {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-4);
+    max-width: 35rem;
 }
 
 .hero-image {

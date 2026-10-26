@@ -2,6 +2,7 @@
 import '../styles/tokens.css';
 import '../styles/base.css';
 import '../styles/components/buttons.css';
+import '../styles/components/photo.css';
 import '../styles/components/lockup.css';
 import '../styles/components/header.css';
 import '../styles/components/floating-call.css';
@@ -247,32 +248,6 @@ const fontsHref =
     window.addEventListener('load', requestUpdate);
     update();
   }
-
-  // The bracket (design.md, "Visual language"): a framed headline that wraps
-  // is as wide as its column, leaving a gap before the right arm. Shrink each
-  // frame to its longest line. Without JavaScript the frame just stays wider.
-  const fitBrackets = () => {
-    document.querySelectorAll<HTMLElement>('.bracketed').forEach((frame) => {
-      frame.style.width = '';
-      const range = document.createRange();
-      range.selectNodeContents(frame);
-      const lines = Array.from(range.getClientRects());
-      if (lines.length < 2) return;
-      const box = frame.getBoundingClientRect();
-      const style = getComputedStyle(frame);
-      const right = Math.max(...lines.map((line) => line.right));
-      const width = right - box.left + parseFloat(style.paddingRight) + parseFloat(style.borderRightWidth) + 1;
-      if (width < box.width) frame.style.width = `${Math.ceil(width)}px`;
-    });
-  };
-  let fitTimer = 0;
-  const refitBrackets = () => {
-    window.clearTimeout(fitTimer);
-    fitTimer = window.setTimeout(fitBrackets, 100);
-  };
-  fitBrackets();
-  document.fonts?.ready.then(fitBrackets);
-  window.addEventListener('resize', refitBrackets);
 
   // Smooth scrolling for in-page anchors, offset by the fixed header.
   document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((anchor) => {

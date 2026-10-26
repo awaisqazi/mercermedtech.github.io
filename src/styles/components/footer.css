@@ -58,6 +58,8 @@
 .footer-links a {
     display: inline-flex;
     align-items: center;
+    /* A short label ("Enroll") still gets a 44px-wide target. */
+    min-width: 44px;
     color: #d5dbe0;
 }
 

@@ -38,6 +38,30 @@
     margin-bottom: var(--space-6);
 }
 
+/* Med header with the one lab photo at its side: text left, photo right,
+   the photo no wider than a third of the row. Under the text on phones. */
+.programs-med-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 25rem);
+    gap: var(--space-5) var(--space-8);
+    align-items: end;
+    margin-bottom: var(--space-6);
+}
+
+.programs-med-head .programs-group-header {
+    margin-bottom: 0;
+}
+
+@media (max-width: 899px) {
+    .programs-med-head {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .programs-med-photo {
+        max-width: 25rem;
+    }
+}
+
 .programs-group-header h3 {
     font-size: clamp(2rem, 4vw, 3rem);
     line-height: 1.02;

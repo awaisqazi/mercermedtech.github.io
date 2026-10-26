@@ -28,6 +28,12 @@
     color: var(--tech-ink);
 }
 
+@media (max-width: 1080px) {
+    .dl-page .site-header .nav-link.active {
+        text-decoration-color: var(--tech);
+    }
+}
+
 /* Tech-only page: brackets are indigo. */
 .dl-page {
     --bracket: var(--tech);
@@ -66,8 +72,30 @@
 .dl-hero-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
-    gap: var(--space-8);
-    align-items: end;
+    grid-template-areas:
+        'main photo'
+        'chips enrolled';
+    gap: var(--space-7) var(--space-8);
+    align-items: start;
+}
+
+.dl-hero-main {
+    grid-area: main;
+    align-self: end;
+}
+
+/* The photo on a paper mat, beside the headline. */
+.dl-hero-photo {
+    grid-area: photo;
+    width: 100%;
+}
+
+.dl-hero-grid > .dl-chips {
+    grid-area: chips;
+}
+
+.dl-hero-grid > .dl-enrolled {
+    grid-area: enrolled;
 }
 
 .dl-hero h1 {
@@ -100,10 +128,11 @@
    display face, under a heavy white rule. */
 .dl-chips {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-6);
     list-style: none;
     padding: 0;
-    margin: 0 0 var(--space-6);
+    margin: 0;
     border-top: 2px solid var(--rule-strong);
 }
 
@@ -128,21 +157,34 @@
     margin-top: var(--space-6);
 }
 
-/* "Already enrolled?": a plain outlined note with a small heading. */
+/* "Already enrolled?": a plain outlined note with a small heading, and a
+   small picture of the class site's sign-in page on a paper mat. */
 .dl-enrolled {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3) var(--space-5);
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-2) var(--space-4);
     padding: var(--space-4) var(--space-5);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
 }
 
-.dl-enrolled > div {
-    flex: 1 1 14rem;
+/* Thumbnail beside the heading and the first paragraph; the help line and
+   the button take the full width, so the address never breaks mid-word. */
+.dl-enrolled .dl-enrolled-help,
+.dl-enrolled .btn {
+    grid-column: 1 / -1;
 }
+
+.dl-enrolled-photo.photo--mat {
+    padding: 0.3rem;
+}
+
+.dl-enrolled .btn {
+    justify-self: start;
+    margin-top: var(--space-2);
+}
+
 
 .dl-enrolled .dl-enrolled-heading {
     margin: 0 0 0.25rem;
@@ -174,13 +216,93 @@
 
 .dl-enrolled .btn {
     min-height: 44px;
-    flex-shrink: 0;
 }
 
 @media (max-width: 900px) {
+    /* Phones and tablets: text and buttons, then the photo, the facts and the
+       class-site note. */
     .dl-hero-grid {
         grid-template-columns: minmax(0, 1fr);
-        gap: var(--space-7);
+        grid-template-areas:
+            'main'
+            'photo'
+            'chips'
+            'enrolled';
+        gap: var(--space-6);
+    }
+
+    .dl-hero-photo {
+        max-width: 16rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .dl-chips {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dl-enrolled {
+        grid-template-columns: 5rem minmax(0, 1fr);
+        gap: var(--space-2) var(--space-4);
+        padding: var(--space-4);
+    }
+
+    /* The button takes the full width of the note on a phone. */
+    .dl-enrolled .btn {
+        justify-self: stretch;
+    }
+}
+
+/* ----- 1b. The rest of the hero paragraph, with the campus and the class
+   site side by side ----- */
+.dl-overview {
+    padding: var(--space-8) 0 var(--space-7);
+}
+
+.dl-overview-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: var(--space-6) var(--space-8);
+    align-items: start;
+    padding-top: var(--space-5);
+    border-top: 2px solid var(--rule-strong);
+}
+
+.dl-overview-text {
+    max-width: 48ch;
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: var(--text-main);
+}
+
+.dl-overview-media {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.56fr);
+    gap: var(--space-5);
+    align-items: end;
+    max-width: 25rem;
+    justify-self: end;
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+    .dl-overview {
+        padding: var(--space-7) 0 var(--space-6);
+    }
+
+    .dl-overview-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dl-overview-media {
+        justify-self: start;
+        max-width: 22rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .dl-overview-text {
+        font-size: 1.0625rem;
     }
 }
 

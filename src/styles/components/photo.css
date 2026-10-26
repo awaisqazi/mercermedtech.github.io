@@ -1,0 +1,72 @@
+/* ==========================================================================
+   Photos and class-site screenshots (Photo.astro). design.md, section 1b,
+   "Photos": small, beside type, in a square 4px frame with a 1px ink
+   hairline. On a colour block the photo sits on a paper mat. Screenshots of
+   the class site sit in a plain ink laptop or phone. No shadows, no
+   gradients, no glass.
+   ========================================================================== */
+
+.photo {
+    min-width: 0;
+}
+
+.photo picture {
+    display: block;
+    /* The blurred 24px placeholder, stretched, until the photo is in. */
+    background-color: var(--paper-deep);
+    background-size: cover;
+    background-position: center;
+}
+
+.photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Square frame, 1px ink hairline. */
+.photo-frame {
+    overflow: hidden;
+    border: 1px solid var(--ink);
+    border-radius: var(--radius-md);
+}
+
+/* On a colour block: a paper mat around the framed photo. */
+.photo--mat {
+    padding: 0.5rem;
+    background: var(--paper);
+    border-radius: var(--radius-md);
+}
+
+/* ----- Devices: a plain ink bezel, nothing else ----- */
+.photo-screen {
+    overflow: hidden;
+    background: var(--ink);
+    border: 1px solid var(--ink);
+}
+
+.photo-screen picture {
+    border-radius: 1px;
+    overflow: hidden;
+}
+
+/* The screen is inset from the deck, so the whole laptop stays inside its
+   column. */
+.photo--laptop .photo-screen {
+    margin: 0 6%;
+    padding: 0.4rem 0.4rem 0.55rem;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+/* The deck: a flat paper bar, a little wider than the screen. */
+.photo-laptop-base {
+    height: 0.7rem;
+    background: var(--paper-deep);
+    border: 1px solid var(--ink);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.photo--phone .photo-screen {
+    padding: 0.55rem 0.35rem;
+    border-radius: 0.75rem;
+}

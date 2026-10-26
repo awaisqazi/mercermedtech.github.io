@@ -291,15 +291,16 @@ img {
 .bracketed {
     --b-stroke: max(2px, 0.06em);
     --b-arm: 0.3em;
+    /* One line of the headline plus the frame's top and bottom padding. */
+    --b-line: calc(1.1em + 0.2em);
+    --b-line: calc(1lh + 0.2em);
     position: relative;
     display: block;
     width: fit-content;
-    /* A box with wrapped text is as wide as the space it is given, which
-       would leave a gap before the right arm. A small script in
-       BaseLayout.astro shrinks the box to its longest line once the fonts
-       are in; the cap in ch keeps the lines a headline length. */
+    /* The cap in ch keeps the lines a headline length. */
     max-width: min(100%, var(--b-max, 24ch));
     padding: 0.08em 0.5em 0.12em;
+    text-wrap: balance;
 }
 
 .bracketed::before,
@@ -318,11 +319,8 @@ img {
 .bracketed::before,
 .bracketed::after {
     width: var(--b-arm);
+    height: var(--b-line);
     border: var(--b-stroke) solid var(--bracket-left, var(--bracket));
-}
-
-.bracketed::after {
-    border-color: var(--bracket-right, var(--bracket));
 }
 
 .bracketed::before,
@@ -337,6 +335,27 @@ img {
 .eyebrow::after {
     right: 0;
     border-left: 0 !important;
+}
+
+/*
+   The frame hugs the words without JavaScript. A box with wrapped text is as
+   wide as the space it is given, so an arm drawn on the box's right edge
+   would stand off from a shorter line. Instead the arms belong to the words:
+   the left arm opens the first line, and the right arm is an inline box that
+   closes the last line, right after the last word. Its margins add up to
+   zero width and zero height, so it never moves a word or a line. On one line
+   this is the whole frame; on two or more it reads like a quotation.
+*/
+.bracketed::before {
+    bottom: auto;
+}
+
+.bracketed::after {
+    position: static;
+    display: inline-block;
+    vertical-align: top;
+    margin: -0.08em calc(-1 * 0.5em) -0.12em calc(0.5em - var(--b-arm));
+    border-color: var(--bracket-right, var(--bracket));
 }
 
 /* Inline: the words stay on one line so the frame reads whole. */

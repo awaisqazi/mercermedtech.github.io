@@ -1,6 +1,7 @@
 ---
 import { medPrograms } from '../data/programs';
 import ProgramCard from './ProgramCard.astro';
+import Photo from './Photo.astro';
 import type { Locale } from '../i18n';
 
 interface Props {
@@ -20,17 +21,32 @@ interface Props {
   /** Accessible name of the catalogue list. */
   trackLabel: string;
   notes: { heading: string; paragraphs: string[] };
+  /** Alt text for the one lab photo beside the header. */
+  imageAlt: string;
 }
 
-const { locale, tag, heading, intro, detailsLabel, waitlistLabel, waitlistHref, trackLabel, notes } = Astro.props;
+const { locale, tag, heading, intro, detailsLabel, waitlistLabel, waitlistHref, trackLabel, notes, imageAlt } =
+  Astro.props;
 ---
 
 <div id="programs-med" class="programs-group programs-group--med">
   <div class="container">
-    <div class="programs-group-header">
-      <span class="eyebrow eyebrow--med">{tag}</span>
-      <h3>{heading}</h3>
-      <p>{intro}</p>
+    <!-- The header, with one photo of the lab beside it (not one per program). -->
+    <div class="programs-med-head">
+      <div class="programs-group-header">
+        <span class="eyebrow eyebrow--med">{tag}</span>
+        <h3>{heading}</h3>
+        <p>{intro}</p>
+      </div>
+      <Photo
+        class="programs-med-photo"
+        name="campus/lab-sink-3x2"
+        widths={[480, 960, 1440]}
+        width={1440}
+        height={960}
+        alt={imageAlt}
+        sizes="(min-width: 900px) 400px, 92vw"
+      />
     </div>
 
     <!-- The Med programs as a printed course catalogue: ruled rows, one

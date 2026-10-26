@@ -240,9 +240,10 @@ NJDOL is affiliated with Digital Literacy Training only. Therefore:
 
 ## 1b. Visual language: "Two paths"
 
-The site is a poster system with a course-catalogue backbone. There are no
-photos to lean on, so type and colour carry the identity: the two brand
-colours as full-bleed blocks, a display serif for headlines, the bracket from
+The site is a poster system with a course-catalogue backbone. Type and colour
+carry the identity, and a few small photos of the campus and the class site
+sit beside the type as proof of place: the two brand colours as full-bleed
+blocks, a display serif for headlines, the bracket from
 the logo as the one signature motif, and programs, schedules and prices set
 like a printed catalogue. These rules outrank any older component note
 further down; when the two disagree, this section wins.
@@ -311,8 +312,12 @@ section it sits in.
   key headline or promise: "[Two paths]" in the home H1 (`.bracket-pair`:
   teal left arm, indigo right arm), "[No cost if you qualify.]" in the
   Digital Literacy hero, the interest-form headings, "Who qualifies", "What
-  you learn", the grant-funded panel, the contact heading. A short script in
-  `BaseLayout.astro` shrinks a wrapped frame to its longest line.
+  you learn", the grant-funded panel, the contact heading. The frame hugs
+  the words in CSS alone, with no script: the left arm opens the first line
+  and the right arm is a zero-width inline box after the last word. On one
+  line that is the whole frame; when the headline wraps, the arms open the
+  first line and close the last, like a quotation, so there is never a gap
+  before the right arm.
 - **Small bracket marker** (`.eyebrow`, `.dl-eyebrow`, `.signup-eyebrow`,
   the lockup eyebrow): the section label in tracked capitals, and status
   lines in sentence case (`.eyebrow--status`). School-level markers split the
@@ -357,10 +362,37 @@ section it sits in.
   rings, gradient text or badges, drop shadows on content, nested cards.
 - Uppercase, letter-spaced or pill-shaped buttons.
 - Centred section headers (the 404 page excepted).
-- Stock photos and illustrations. The two campus photos are the only images;
-  the old Digital Literacy line drawing is gone (its place is a ruled list of
-  the hero facts in Fraunces).
+- Illustrations, and stock photos beyond the licensed ones listed in
+  `docs/image-credits.md`. The old Digital Literacy line drawing is gone (its
+  place is a ruled list of the hero facts in Fraunces).
+- Full-bleed photo heroes, photos as backgrounds behind text, and one photo
+  per program card.
 - A second motif. The bracket is the only one.
+
+### Photos
+
+- **Small, beside type.** A 4:5 inset next to a headline or pitch, one 3:2
+  image beside a section header, or a pair of small 4:5 photos. Never a
+  full-bleed hero, never behind text, never one per program. An inset is at
+  most 40% of its column on desktop and moves under the text on phones (the
+  home Med inset switches to the 3:2 crop of the same photo there).
+- **Frame.** Square corners at the 4px radius, a 1px ink hairline. On an
+  indigo or teal block the photo sits on a paper mat (`frame="mat"`). No
+  shadow, no gradient, no rounded blob, no tint over the photo.
+- **The class site** is shown as a real screenshot (test account, no
+  personal data) in a plain ink laptop (home Tech block) or phone (Digital
+  Literacy page), and the sign-in page small in the "Already enrolled?" note.
+- **Files.** `public/images/campus/` (our campus, graded warm and
+  desaturated) and `public/images/tech/` (class-site screenshots and the
+  licensed stock photo). Each is AVIF and WebP at the exported widths (480,
+  960, 1440, never upscaled) plus a 24px `-lqip.jpg` placeholder, served by
+  `src/components/Photo.astro` with `width`/`height`, `decoding="async"`,
+  and `loading="lazy"` on everything but the first photo of the page.
+- **People.** Stock models are never captioned or described as program
+  participants or benefit recipients; alt text stays neutral ("An adult
+  working on a laptop in a computer classroom"). Credits are in
+  `docs/image-credits.md`.
+- **Budget.** Images on a page stay under about 600 KB on a phone.
 
 ### Mobile first
 
@@ -584,8 +616,9 @@ Always include a `<caption class="visually-hidden">` for screen readers.
 - **Icons:** Font Awesome free, solid style, only where they carry meaning
   (section 1b): contact rows, footer, social, external link, form status. Small plain glyphs in the track colour, never in a
   tinted tile. Always `aria-hidden="true"` when paired with text.
-- **Imagery:** only real photos of the school. No stock photography and no
-  new illustrations.
+- **Imagery:** real photos of the school and screenshots of the class site,
+  plus the licensed stock photos listed in `docs/image-credits.md`. No
+  new illustrations. Placement and framing rules: section 1b, "Photos".
 - **Logo:** `images/logo-modern.png`. Inverts to white on dark surfaces via
   `filter: brightness(0) invert(1);`. Maintain ≥ 24px clearspace on all sides.
 

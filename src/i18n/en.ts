@@ -127,9 +127,11 @@ export const en = {
         chipsLabel: 'Med track programs',
         chips: ['Medical Assistant', 'Phlebotomy', 'Patient Care Technician', 'EKG'],
         ctaLabel: 'See the Med programs',
+        imageAlt: 'A phlebotomy practice arm and a supply cart in the Mercer Med Tech lab',
       },
       techPanel: {
         label: 'Tech',
+        imageAlt: 'The Digital Literacy Training class site on a laptop, showing the Week 1 lessons',
         heading: 'Computer skills, and help finding work',
         body: 'Learn the computer skills employers expect, from the basics up, and get help finding a job when you are ready.',
         chipsLabel: 'What the Tech track covers',
@@ -193,6 +195,7 @@ export const en = {
     about: {
       heading: 'About Mercer Med Tech',
       imageAlt: 'A classroom at the Mercer Med Tech campus in Lawrenceville',
+      doorsAlt: 'The doors to the lab and the break room at the Mercer Med Tech campus',
       paragraphs: [
         'Mercer Med Tech is a small private vocational school in Lawrenceville. The New Jersey Department of Labor and Workforce Development licenses us and approves what we teach. We started out training people for health care jobs, and we still do that, in small classes, on real equipment, with instructors who have done the work themselves.',
         'The name says the rest. Med is the health care side. Tech is the computer side, which now means Digital Literacy Training, run with the New Jersey Department of Labor and Workforce Development at no cost to people who qualify. Central New Jersey is hiring for both, so we teach both the same way: hands on, and close to what the job actually asks of you.',
@@ -210,6 +213,7 @@ export const en = {
         heading: 'Health care programs',
         intro: 'Certification programs with small classes and hands-on practice. Some include an externship.',
         detailsLabel: 'See the details',
+        imageAlt: 'A sink, cabinets and stools in the Mercer Med Tech lab',
         prevLabel: 'Previous program',
         nextLabel: 'Next program',
         swipeLabel: 'Swipe to see more',
@@ -458,7 +462,8 @@ export const en = {
       eyebrowTrailing: 'Tech track',
       headingBefore: 'Learn computer skills for work. ',
       headingAccent: 'No cost if you qualify.',
-      lead: 'Digital Literacy Training at Mercer Med Tech prepares you for work that uses a computer every day. We start with a short skills check so your training fits what you already know. From there you cover Microsoft Office and Google Workspace, staying safe online, AI, and money management. You leave with a credential you can show an employer, and with someone here helping you look for work. It is grant funded, so if you qualify it costs you nothing.',
+      lead: 'Digital Literacy Training at Mercer Med Tech prepares you for work that uses a computer every day. We start with a short skills check so your training fits what you already know.',
+      imageAlt: 'An adult working on a laptop in a computer classroom',
       chips: [
         { icon: 'fas fa-bullhorn', label: 'Enrolling soon' },
         { icon: 'fas fa-hourglass-half', label: dlt.length },
@@ -477,6 +482,14 @@ export const en = {
       cta: 'Go to the class site',
       ctaAria: 'Go to the class site (opens in a new tab)',
       helpBefore: 'Need help signing in? Email ',
+      imageAlt: 'The sign-in page of the class site',
+    },
+
+    /** The rest of the hero paragraph, on paper under the hero, with the campus and the class site. */
+    overview: {
+      body: 'From there you cover Microsoft Office and Google Workspace, staying safe online, AI, and money management. You leave with a credential you can show an employer, and with someone here helping you look for work. It is grant funded, so if you qualify it costs you nothing.',
+      campusAlt: 'A classroom at the Mercer Med Tech campus in Lawrenceville, with chairs facing a projector screen',
+      classSiteAlt: 'The class site on a phone, showing the Week 1 lessons',
     },
 
     strip: {

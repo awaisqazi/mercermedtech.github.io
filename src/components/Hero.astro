@@ -1,6 +1,7 @@
 ---
 import '../styles/components/hero.css';
 import Lockup from './Lockup.astro';
+import Photo from './Photo.astro';
 
 export interface TrustItem {
   icon: string;
@@ -17,6 +18,18 @@ export interface TrackPanel {
   status: string;
   ctaHref: string;
   ctaLabel: string;
+  /** A small photo or class-site screenshot beside the pitch (Photo.astro). */
+  media?: {
+    name: string;
+    widths: number[];
+    width: number;
+    height: number;
+    alt: string;
+    sizes: string;
+    frame: 'hairline' | 'laptop';
+    eager?: boolean;
+    narrow?: { name: string; widths: number[]; width: number; height: number; media: string; sizes: string };
+  };
 }
 
 interface Props {
@@ -67,17 +80,20 @@ const {
     {
       panels.map((panel, index) => (
         <article class={`path path--${panel.track} block-${panel.track}`} aria-labelledby={`path-${panel.track}-title`}>
-          <div class="path-inner">
+          <div class:list={['path-inner', { 'path-inner--media': panel.media }]}>
             <p class="path-label">
               <span class="path-num" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
               <span class="path-track">{panel.label}</span>
             </p>
             <h2 id={`path-${panel.track}-title`}>{panel.heading}</h2>
-            <p class="path-pitch">{panel.body}</p>
-            <p class="eyebrow eyebrow--status path-status">{panel.status}</p>
-            <a href={panel.ctaHref} class={`btn ${panel.track === 'tech' ? 'btn-tech' : 'btn-primary'}`}>
-              {panel.ctaLabel}
-            </a>
+            <div class="path-body">
+              <p class="path-pitch">{panel.body}</p>
+              <p class="eyebrow eyebrow--status path-status">{panel.status}</p>
+              <a href={panel.ctaHref} class={`btn ${panel.track === 'tech' ? 'btn-tech' : 'btn-primary'}`}>
+                {panel.ctaLabel}
+              </a>
+            </div>
+            {panel.media && <Photo class={`path-media path-media--${panel.media.frame}`} {...panel.media} />}
           </div>
         </article>
       ))

@@ -58,6 +58,26 @@ const heroPanels = [
     status: h.enroll.med.badge,
     ctaLabel: h.hero.medPanel.ctaLabel,
     ctaHref: '#programs-med',
+    // The first photo on the page, near the fold on a laptop: loads eagerly.
+    media: {
+      name: 'campus/lab-arm-cart-4x5',
+      widths: [480, 960],
+      width: 960,
+      height: 1200,
+      alt: h.hero.medPanel.imageAlt,
+      sizes: '220px',
+      frame: 'hairline' as const,
+      eager: true,
+      // Under the text (phones, tablets) the wide crop of the same photo.
+      narrow: {
+        name: 'campus/lab-arm-cart-3x2',
+        widths: [480, 960, 1440],
+        width: 1440,
+        height: 960,
+        media: '(max-width: 1179px)',
+        sizes: '(min-width: 861px) 384px, 92vw',
+      },
+    },
   },
   {
     track: 'tech' as const,
@@ -67,6 +87,16 @@ const heroPanels = [
     status: h.enroll.tech.badge,
     ctaLabel: h.enroll.tech.interestCta,
     ctaHref: '#dlt-interest',
+    // The class site itself, Week 1, in a plain laptop: the honest Tech image.
+    media: {
+      name: 'tech/class-site-course-desktop',
+      widths: [480, 880],
+      width: 880,
+      height: 640,
+      alt: h.hero.techPanel.imageAlt,
+      sizes: '(min-width: 1180px) 200px, (min-width: 861px) 260px, 80vw',
+      frame: 'laptop' as const,
+    },
   },
 ];
 ---
@@ -147,6 +177,7 @@ const heroPanels = [
     heading={h.about.heading}
     paragraphs={h.about.paragraphs}
     imageAlt={h.about.imageAlt}
+    doorsAlt={h.about.doorsAlt}
     actions={[
       { href: '#programs-med', label: h.about.medCta, style: 'primary' },
       { href: dltPath, label: h.about.dltCta, style: 'tech-outline' },
@@ -168,6 +199,7 @@ const heroPanels = [
       dotLabel={h.programs.med.dotLabel}
       trackLabel={h.programs.med.trackLabel}
       notes={{ heading: h.programs.med.notesHeading, paragraphs: h.programs.med.notes }}
+      imageAlt={h.programs.med.imageAlt}
     />
     <ProgramsTech
       locale={locale}
