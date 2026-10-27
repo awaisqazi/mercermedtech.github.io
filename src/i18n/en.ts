@@ -727,7 +727,7 @@ export const en = {
         {
           question: 'Is it in person or online?',
           answer:
-            'It is hybrid. Both. Most of the week is recorded lessons and tasks in Moodle, done at your own pace within the week. The live sessions, Eastern time, are Tuesday and Thursday, 10:00 am to 1:00 pm, on campus in Lawrenceville (Suite 140) or on Microsoft Teams, and Friday, 10:00 am to 1:00 pm, on Teams. The instructor may add extra sessions, announced in Moodle. You also check in with staff once a week. Groups are small.',
+            'It is hybrid. Most of the week is recorded lessons and tasks in Moodle, done at your own pace within the week. The live sessions, Eastern time, are Tuesday and Thursday, 10:00 am to 1:00 pm, on campus in Lawrenceville (Suite 140) or on Microsoft Teams, and Friday, 10:00 am to 1:00 pm, on Teams. The instructor may add extra sessions, announced in Moodle. You also check in with staff once a week. Groups are small.',
         },
         {
           question: 'Will you help me find a job?',
@@ -777,7 +777,7 @@ export const en = {
     seo: {
       title: 'Sign up for Digital Literacy Training | Mercer Med Tech',
       description:
-        'Sign up for Digital Literacy Training in Lawrenceville, NJ. No cost if you qualify. 7 weeks, recorded lessons and office hours, English and Spanish.',
+        'Sign up for Digital Literacy Training. No cost if you qualify. 7 weeks, recorded lessons and live sessions in Lawrenceville, NJ, or online.',
     },
     eyebrow: 'Tech track',
     heading: 'Sign up for Digital Literacy Training',
@@ -1212,7 +1212,7 @@ export const en = {
         stages: [
           {
             title: '5 weeks of the Mercer Med Tech core course',
-            body: '60 lesson hours: the laptop and Windows, files, Microsoft 365 and Google tools, internet, email and video meetings, money tools online, online safety and AI at work, then the resume, cover letter and job search. With office hours, career services and practice, every week is 20 hours. It opens with a Northstar skills check and closes with the same check.',
+            body: '60 lesson hours: the laptop and Windows, files, Microsoft 365 and Google tools, internet, email and video meetings, money tools online, online safety and AI at work, then the resume, cover letter and job search. With the live sessions, career services and practice, every week is 20 hours. It opens with a Northstar skills check and closes with the same check.',
           },
           {
             title: '2 weeks of the NJIT AI Literacy Microcredential',

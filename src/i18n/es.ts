@@ -744,7 +744,7 @@ export const es: Dictionary = {
         {
           question: '¿Es presencial o en línea?',
           answer:
-            'Es híbrido. Las dos cosas. La mayor parte de la semana son lecciones grabadas y tareas en Moodle, que usted hace a su ritmo dentro de la semana. Las sesiones en vivo, en hora del Este, son los martes y jueves, de 10:00 am a 1:00 pm, en el campus de Lawrenceville (Suite 140) o en Microsoft Teams, y los viernes, de 10:00 am a 1:00 pm, en Teams. La instructora puede agregar sesiones adicionales, que se anuncian en Moodle. También tiene una reunión de seguimiento con el personal cada semana. Los grupos son pequeños.',
+            'Es híbrido. La mayor parte de la semana son lecciones grabadas y tareas en Moodle, que usted hace a su ritmo dentro de la semana. Las sesiones en vivo, en hora del Este, son los martes y jueves, de 10:00 am a 1:00 pm, en el campus de Lawrenceville (Suite 140) o en Microsoft Teams, y los viernes, de 10:00 am a 1:00 pm, en Teams. La instructora puede agregar sesiones adicionales, que se anuncian en Moodle. También tiene una reunión de seguimiento con el personal cada semana. Los grupos son pequeños.',
         },
         {
           question: '¿Me ayudan a encontrar trabajo?',
@@ -794,7 +794,7 @@ export const es: Dictionary = {
     seo: {
       title: 'Inscríbase en Habilidades Digitales | Mercer Med Tech',
       description:
-        'Inscríbase en la Capacitación en Habilidades Digitales en Lawrenceville, NJ. Sin costo si califica. 7 semanas, con lecciones grabadas y horas de apoyo.',
+        'Inscríbase en la Capacitación en Habilidades Digitales. Sin costo si califica. 7 semanas, lecciones grabadas y sesiones en vivo, en el campus o en línea.',
     },
     eyebrow: 'Rama Tech',
     heading: 'Inscríbase en la Capacitación en Habilidades Digitales (Digital Literacy Training)',
@@ -1221,7 +1221,7 @@ export const es: Dictionary = {
         stages: [
           {
             title: '5 semanas del curso principal de Mercer Med Tech',
-            body: '60 horas de lecciones: la computadora portátil y Windows, archivos, Microsoft 365 y las herramientas de Google, internet, correo electrónico y videollamadas, herramientas de dinero en línea, seguridad en línea y la IA en el trabajo, y luego el currículum, la carta de presentación y la búsqueda de empleo. Con las horas de apoyo, los servicios de carrera y la práctica, cada semana tiene 20 horas. Empieza con una evaluación Northstar y termina con la misma evaluación.',
+            body: '60 horas de lecciones: la computadora portátil y Windows, archivos, Microsoft 365 y las herramientas de Google, internet, correo electrónico y videollamadas, herramientas de dinero en línea, seguridad en línea y la IA en el trabajo, y luego el currículum, la carta de presentación y la búsqueda de empleo. Con las sesiones en vivo, los servicios de carrera y la práctica, cada semana tiene 20 horas. Empieza con una evaluación Northstar y termina con la misma evaluación.',
           },
           {
             title: '2 semanas de la microcredencial de IA de NJIT',
