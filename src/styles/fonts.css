@@ -1,0 +1,70 @@
+/* ==========================================================================
+   Web fonts, served from this site (public/fonts, see the README there).
+   Latin subset only: it covers English and every Spanish letter and mark.
+   Both files are variable fonts and are preloaded in BaseLayout.astro.
+   ========================================================================== */
+
+/* Fraunces: display serif for H1 to H3, catalogue entries and numerals.
+   Axes: optical size 9 to 144, weight, SOFT 0 to 100, WONK 0 to 1. */
+@font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 500 700;
+    font-display: swap;
+    src: url('/fonts/fraunces-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+        U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Plus Jakarta Sans: body, UI, labels, H4 to H6, buttons and tables. */
+@font-face {
+    font-family: 'Plus Jakarta Sans';
+    font-style: normal;
+    font-weight: 400 800;
+    font-display: swap;
+    src: url('/fonts/plus-jakarta-sans-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+        U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/*
+   Metric-matched fallbacks. Until a web font arrives the text is set in a
+   local font scaled to the same average letter width and line metrics, so
+   lines do not re-wrap and the page does not jump when the swap happens.
+   size-adjust is the ratio of the average advance width over the site's own
+   headline text (Fraunces at weight 600, optical size of phone headlines,
+   about 28px) or body text (Plus Jakarta Sans 400), against Georgia and
+   Arial as shipped on macOS and Windows, checked against the rendered line
+   breaks. The overrides are the web font's hhea ascent, descent and line gap
+   over units per em, divided by size-adjust. A ch measure (max-width: 15ch)
+   follows whichever font is showing, so it cannot be matched this way.
+*/
+@font-face {
+    font-family: 'Fraunces Fallback';
+    src: local('Georgia');
+    size-adjust: 107.5%;
+    ascent-override: 90.98%;
+    descent-override: 23.72%;
+    line-gap-override: 0%;
+}
+
+@font-face {
+    font-family: 'Plus Jakarta Sans Fallback';
+    src: local('Arial');
+    size-adjust: 104.2%;
+    ascent-override: 99.62%;
+    descent-override: 21.31%;
+    line-gap-override: 0%;
+}
+
+/* The same fallback for headlines at 80px and up (--font-display-xl). There
+   Fraunces' optical size axis gives a narrower display cut, about 15 percent
+   narrower than at phone headline sizes. */
+@font-face {
+    font-family: 'Fraunces Display Fallback';
+    src: local('Georgia');
+    size-adjust: 92%;
+    ascent-override: 106.3%;
+    descent-override: 27.72%;
+    line-gap-override: 0%;
+}

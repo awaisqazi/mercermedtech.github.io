@@ -90,6 +90,14 @@
     font-size: clamp(2.6rem, 7vw, 5.25rem);
 }
 
+/* At full size (84px) Fraunces uses its narrower display cut, so the
+   fallback shown before it loads is the display fallback (fonts.css). */
+@media (min-width: 1240px) {
+    .dl-hero h1 {
+        font-family: var(--font-display-xl);
+    }
+}
+
 /* The promise, framed: on its own line under the first sentence. */
 .dl-hero-accent {
     --b-max: 100%;

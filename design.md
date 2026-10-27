@@ -289,15 +289,27 @@ further down; when the two disagree, this section wins.
 
 ### Typography
 
-- **Fraunces** (Google Fonts, variable: optical size 9 to 144, weight 500 to
-  700, SOFT, WONK) for H1 to H3, catalogue entries, numerals and the hero
+- **Fraunces** (variable: optical size 9 to 144, weight 500 to 700, SOFT,
+  WONK) for H1 to H3, catalogue entries, numerals and the hero
   facts on the Digital Literacy page. `font-optical-sizing: auto`, weight
   600, `SOFT 30`. The H1 adds a little softness and the leaning "wonky"
   letters (`SOFT 60, WONK 1`).
 - **Plus Jakarta Sans** (400 to 800) for body, UI, labels, H4 to H6, buttons
   and tables.
-- One stylesheet request for both families, `display=swap`, preloaded in
-  `BaseLayout.astro`.
+- **Self-hosted**, no third-party request: the latin variable files from
+  Google Fonts (Fraunces v38, Plus Jakarta Sans v12, SIL Open Font License)
+  live in `public/fonts/` (see the README there), `@font-face` is in
+  `src/styles/fonts.css` with `font-display: swap`, and both files are
+  preloaded in `BaseLayout.astro`.
+- **Metric-matched fallbacks** so the swap does not move the layout:
+  `Fraunces Fallback` (Georgia, `size-adjust` 107.5%) and `Plus Jakarta Sans
+  Fallback` (Arial, 104.2%), with ascent, descent and line-gap overrides
+  from the font files. Headlines at 80px and up use `--font-display-xl`,
+  whose `Fraunces Display Fallback` is Georgia at 92%, because Fraunces'
+  optical size gives a narrower cut there. Use `--font-display` and
+  `--font-body`, never a bare family name. A `ch` measure follows the
+  fallback while it shows, so a measure that must hold through the swap at
+  display size is set in `em` (the home H1 at 1024px and up).
 - Scale: H1 `clamp(2.6rem, 9vw, 6rem)`, line-height 0.98, -0.025em. Section
   H2 `clamp(2.1rem, 5.2vw, 3.6rem)`, 1.02. Body 1rem / 1.6, lead 1.125 to
   1.1875rem. Headlines are left-aligned with `text-wrap: balance`.

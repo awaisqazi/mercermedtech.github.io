@@ -18,6 +18,18 @@
     margin-bottom: clamp(1.75rem, 4vw, 3rem);
 }
 
+/* At full display size (92 to 96px) the measure is set in em, the same
+   width 15ch gives in Fraunces there. A ch measure follows whichever font
+   is showing, so it would narrow while the fallback is up and the headline
+   would jump a line when Fraunces arrives. The display fallback (fonts.css)
+   matches Fraunces' narrower cut at this optical size. */
+@media (min-width: 1024px) {
+    .hero-head h1 {
+        max-width: 9.27em;
+        font-family: var(--font-display-xl);
+    }
+}
+
 /* Lead on the left, the school facts on the right as a small ruled table. */
 .hero-intro {
     display: grid;

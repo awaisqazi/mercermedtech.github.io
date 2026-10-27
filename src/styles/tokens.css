@@ -80,8 +80,13 @@
     --lockup-gradient: var(--mark-split);
 
     /* ---- Type ---- */
-    --font-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-    --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+    /* Self-hosted (fonts.css). Each web font is followed by its
+       metric-matched fallback, then the plain system font. */
+    --font-display: 'Fraunces', 'Fraunces Fallback', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', Arial, sans-serif;
+    /* Headlines at 80px and up, where Fraunces' optical size gives a
+       narrower cut: same face, a fallback scaled to match that cut. */
+    --font-display-xl: 'Fraunces', 'Fraunces Display Fallback', Georgia, serif;
 
     /* Spacing scale (4px base). Use these, not ad-hoc values. */
     --space-1: 0.25rem;

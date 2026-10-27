@@ -1,4 +1,5 @@
 ---
+import '../styles/fonts.css';
 import '../styles/tokens.css';
 import '../styles/base.css';
 import '../styles/components/buttons.css';
@@ -107,8 +108,6 @@ const alternates = alternatePaths(path).map((alternate) => ({
 // public/ rather than at an /_astro/... address that changes with the source.
 const ogImageUrl = new URL(site.staticImages.ogCard, site.url).href;
 const links = navLinks ?? (variant === 'dlt' ? dltNav(locale) : homeNav(locale));
-const fontsHref =
-  'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,500..700,0..100,0..1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap';
 ---
 
 <!DOCTYPE html>
@@ -158,15 +157,16 @@ const fontsHref =
     {jsonLd.map((data) => <JsonLd data={data} />)}
 
     <!--
-      Fonts. Fraunces (display serif, variable: optical size, weight 500 to
-      700, softness and the "wonky" axis) for headlines; Plus Jakarta Sans for
-      body and UI. One request, font-display: swap, and the stylesheet is
-      preloaded so the font files are discovered as early as possible.
+      Fonts, served from this site (public/fonts, @font-face in
+      styles/fonts.css). Fraunces (display serif, variable: optical size,
+      weight 500 to 700, softness and the "wonky" axis) for headlines; Plus
+      Jakarta Sans (variable, 400 to 800) for body and UI. Latin subset only.
+      Both files are preloaded so they arrive with the HTML; until then text
+      is set in a metric-matched local fallback, so the swap does not move
+      the layout.
     -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href={fontsHref} />
-    <link href={fontsHref} rel="stylesheet" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/fraunces-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/plus-jakarta-sans-latin.woff2" crossorigin />
 
     <!-- Icon font: only on the pages that still use it (iconFont). -->
     {iconFont && <link rel="stylesheet" href="/assets/css/fontawesome-all.min.css" />}
