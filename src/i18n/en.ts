@@ -173,6 +173,8 @@ export const en = {
         costValue: 'No cost if you qualify',
         lengthLabel: 'Length',
         lengthValue: dlt.length,
+        formatLabel: 'Format',
+        formatValue: 'Hybrid: live sessions on campus in Lawrenceville or on Microsoft Teams',
         sessionsLabel: 'Information sessions',
         sessionsValue: 'Details will be shared soon',
         locationLabel: 'Location',
@@ -452,11 +454,11 @@ export const en = {
         'digital literacy training New Jersey, no cost computer training, AI literacy, TANF SNAP training NJ, WorkFirst New Jersey, Lawrenceville NJ, career readiness, Mercer Med Tech',
       ogTitle: 'Free computer and AI classes, no cost if you qualify',
       ogDescription:
-        'Learn computers, AI, and money skills in 7 weeks, with recorded lessons and office hours in Lawrenceville, NJ, or online. Enrolling soon.',
+        'Learn computers, AI, and money skills in 7 weeks, with recorded lessons and live sessions in Lawrenceville, NJ, or online. Enrolling soon.',
       twitterDescription:
         'Computer and job search classes in Lawrenceville, NJ, at no cost for New Jersey adults on TANF or SNAP. Enrolling soon.',
       schemaDescription:
-        'Computer skills and job search training for eligible New Jersey residents, at no cost. Every participant starts with a skills check, so the training fits what they already know. Covers computer basics, internet and email, Microsoft Office and Google Workspace, online safety and cybersecurity basics, AI literacy, money management, and getting ready for work. The program runs 7 weeks at 20 hours a week, with recorded lessons and office hours on campus or online, and every participant receives a laptop. Participants work toward the NJIT AI Literacy Microcredential, a college credential on New Jersey’s Eligible Training Provider List, and career services continue with check-ins at 30, 60, and 90 days after starting a job.',
+        'Computer skills and job search training for eligible New Jersey residents, at no cost. Every participant starts with a skills check, so the training fits what they already know. Covers computer basics, internet and email, Microsoft Office and Google Workspace, online safety and cybersecurity basics, AI literacy, money management, and getting ready for work. The program runs 7 weeks at 20 hours a week, with recorded lessons and live sessions on campus or online, and every participant receives a laptop. Participants work toward the NJIT AI Literacy Microcredential, a college credential on New Jersey’s Eligible Training Provider List, and career services continue with check-ins at 30, 60, and 90 days after starting a job.',
     },
 
     hero: {
@@ -468,7 +470,7 @@ export const en = {
       chips: [
         { icon: 'fas fa-bullhorn', label: 'Enrolling soon' },
         { icon: 'fas fa-hourglass-half', label: dlt.length },
-        { icon: 'fas fa-map-marker-alt', label: `${site.address.city}, ${site.address.region}` },
+        { icon: 'fas fa-map-marker-alt', label: 'Lawrenceville or online' },
         { icon: 'fas fa-language', label: 'English and Spanish' },
       ],
       interestCta: 'Tell us you are interested',
@@ -725,7 +727,7 @@ export const en = {
         {
           question: 'Is it in person or online?',
           answer:
-            'Both. Most of the week is recorded lessons and tasks in Moodle, done at your own pace within the week. The live sessions, Eastern time, are Tuesday and Thursday, 10:00 am to 1:00 pm, on campus in Lawrenceville (Suite 140) or on Microsoft Teams, and Friday, 10:00 am to 1:00 pm, on Teams. The instructor may add extra sessions, announced in Moodle. You also check in with staff once a week. Groups are small.',
+            'It is hybrid. Both. Most of the week is recorded lessons and tasks in Moodle, done at your own pace within the week. The live sessions, Eastern time, are Tuesday and Thursday, 10:00 am to 1:00 pm, on campus in Lawrenceville (Suite 140) or on Microsoft Teams, and Friday, 10:00 am to 1:00 pm, on Teams. The instructor may add extra sessions, announced in Moodle. You also check in with staff once a week. Groups are small.',
         },
         {
           question: 'Will you help me find a job?',
@@ -779,7 +781,7 @@ export const en = {
     },
     eyebrow: 'Tech track',
     heading: 'Sign up for Digital Literacy Training',
-    lead: 'If you qualify it costs you nothing. The training runs 7 weeks at 20 hours a week, with recorded lessons and office hours on campus in Lawrenceville or on Microsoft Teams, and it is taught in English and Spanish. Fill this in and we will call you back.',
+    lead: 'If you qualify it costs you nothing. The training runs 7 weeks at 20 hours a week, with recorded lessons and live sessions on campus in Lawrenceville or on Microsoft Teams, and it is taught in English and Spanish. Fill this in and we will get back to you.',
     qualifyHeading: 'Who qualifies',
     qualifyLine: `You live in New Jersey, you are 18 or older, you receive TANF or SNAP, and you live in ${dlt.countiesSentence}.`,
     note: 'We confirm your eligibility with your county social services agency. You do not need a referral from anyone to sign up.',
@@ -1199,7 +1201,7 @@ export const en = {
           },
           {
             title: 'Training with their group',
-            body: 'Every class is online. In-person support is available at our Lawrenceville campus during scheduled office hours, and students get that schedule at the start.',
+            body: 'The training is hybrid. Lessons are recorded on the class site, and the live sessions run on Tuesday, Thursday and Friday mornings. Each person can join on campus in Lawrenceville or on Microsoft Teams, and they get that schedule at the start.',
           },
         ],
         aosos:

@@ -182,6 +182,8 @@ export const es: Dictionary = {
         costValue: 'Sin costo si califica',
         lengthLabel: 'Duración',
         lengthValue: '7 semanas, 20 horas a la semana',
+        formatLabel: 'Modalidad',
+        formatValue: 'Híbrida: sesiones en vivo en el campus de Lawrenceville o en Microsoft Teams',
         sessionsLabel: 'Sesiones informativas',
         sessionsValue: 'Pronto compartiremos los detalles',
         locationLabel: 'Dirección',
@@ -469,11 +471,11 @@ export const es: Dictionary = {
         'habilidades digitales nueva jersey, alfabetizacion digital nueva jersey, clases de computacion sin costo, inteligencia artificial, capacitacion tanf snap nj, workfirst new jersey, lawrenceville nj, preparacion para el trabajo, mercer med tech',
       ogTitle: 'Computación e inteligencia artificial sin costo si califica',
       ogDescription:
-        'Aprenda computación, inteligencia artificial y manejo del dinero en 7 semanas, con lecciones grabadas y horas de apoyo en Lawrenceville, NJ, o en línea.',
+        'Aprenda computación, inteligencia artificial y manejo del dinero en 7 semanas, con lecciones grabadas y sesiones en vivo en Lawrenceville, NJ, o en línea.',
       twitterDescription:
         'Clases de computación y búsqueda de trabajo en Lawrenceville, NJ, sin costo para adultos de Nueva Jersey con TANF o SNAP. Inscripciones próximamente.',
       schemaDescription:
-        'Capacitación en computación y búsqueda de trabajo para residentes de Nueva Jersey que califican, sin costo. Cada persona empieza con una revisión de lo que ya sabe, para que la clase vaya a su nivel. Cubre lo básico de la computadora, internet y correo electrónico, Microsoft Office y Google Workspace, seguridad en línea y ciberseguridad básica, inteligencia artificial, manejo del dinero y preparación para el trabajo. El programa dura 7 semanas, 20 horas a la semana, con lecciones grabadas y horas de apoyo en el campus o en línea, y cada participante recibe una computadora portátil. Los participantes trabajan hacia la microcredencial de IA de NJIT (NJIT AI Literacy Microcredential), una credencial universitaria que está en la Lista de Proveedores de Capacitación Elegibles de Nueva Jersey (ETPL), y la ayuda para encontrar trabajo sigue con llamadas a los 30, 60 y 90 días después de empezar a trabajar.',
+        'Capacitación en computación y búsqueda de trabajo para residentes de Nueva Jersey que califican, sin costo. Cada persona empieza con una revisión de lo que ya sabe, para que la clase vaya a su nivel. Cubre lo básico de la computadora, internet y correo electrónico, Microsoft Office y Google Workspace, seguridad en línea y ciberseguridad básica, inteligencia artificial, manejo del dinero y preparación para el trabajo. El programa dura 7 semanas, 20 horas a la semana, con lecciones grabadas y sesiones en vivo en el campus o en línea, y cada participante recibe una computadora portátil. Los participantes trabajan hacia la microcredencial de IA de NJIT (NJIT AI Literacy Microcredential), una credencial universitaria que está en la Lista de Proveedores de Capacitación Elegibles de Nueva Jersey (ETPL), y la ayuda para encontrar trabajo sigue con llamadas a los 30, 60 y 90 días después de empezar a trabajar.',
     },
 
     hero: {
@@ -485,7 +487,7 @@ export const es: Dictionary = {
       chips: [
         { icon: 'fas fa-bullhorn', label: 'Inscripciones próximamente' },
         { icon: 'fas fa-hourglass-half', label: '7 semanas, 20 horas a la semana' },
-        { icon: 'fas fa-map-marker-alt', label: `${site.address.city}, ${site.address.region}` },
+        { icon: 'fas fa-map-marker-alt', label: 'Lawrenceville o en línea' },
         { icon: 'fas fa-language', label: 'Inglés y español' },
       ],
       interestCta: 'Díganos que le interesa',
@@ -742,7 +744,7 @@ export const es: Dictionary = {
         {
           question: '¿Es presencial o en línea?',
           answer:
-            'Las dos cosas. La mayor parte de la semana son lecciones grabadas y tareas en Moodle, que usted hace a su ritmo dentro de la semana. Las sesiones en vivo, en hora del Este, son los martes y jueves, de 10:00 am a 1:00 pm, en el campus de Lawrenceville (Suite 140) o en Microsoft Teams, y los viernes, de 10:00 am a 1:00 pm, en Teams. La instructora puede agregar sesiones adicionales, que se anuncian en Moodle. También tiene una reunión de seguimiento con el personal cada semana. Los grupos son pequeños.',
+            'Es híbrido. Las dos cosas. La mayor parte de la semana son lecciones grabadas y tareas en Moodle, que usted hace a su ritmo dentro de la semana. Las sesiones en vivo, en hora del Este, son los martes y jueves, de 10:00 am a 1:00 pm, en el campus de Lawrenceville (Suite 140) o en Microsoft Teams, y los viernes, de 10:00 am a 1:00 pm, en Teams. La instructora puede agregar sesiones adicionales, que se anuncian en Moodle. También tiene una reunión de seguimiento con el personal cada semana. Los grupos son pequeños.',
         },
         {
           question: '¿Me ayudan a encontrar trabajo?',
@@ -796,7 +798,7 @@ export const es: Dictionary = {
     },
     eyebrow: 'Rama Tech',
     heading: 'Inscríbase en la Capacitación en Habilidades Digitales (Digital Literacy Training)',
-    lead: 'Si califica, no le cuesta nada. La capacitación dura 7 semanas, 20 horas a la semana, con lecciones grabadas y horas de apoyo en el campus de Lawrenceville o en Microsoft Teams, y se da en inglés y en español. Llene este formulario y le llamamos.',
+    lead: 'Si califica, no le cuesta nada. La capacitación dura 7 semanas, 20 horas a la semana, con lecciones grabadas y sesiones en vivo en el campus de Lawrenceville o en Microsoft Teams, y se da en inglés y en español. Llene este formulario y le respondemos.',
     qualifyHeading: 'Quién califica',
     qualifyLine:
       'Usted vive en Nueva Jersey, tiene 18 años o más, recibe TANF o SNAP, y vive en el condado de Hunterdon, Middlesex, Monmouth, Mercer, Ocean, Somerset o Union.',
@@ -1208,7 +1210,7 @@ export const es: Dictionary = {
           },
           {
             title: 'Capacitación con su grupo',
-            body: 'Todas las clases son en línea. Hay apoyo en persona en el campus de Lawrenceville durante las horas de oficina programadas, y los estudiantes reciben ese horario al empezar.',
+            body: 'La capacitación es híbrida. Las lecciones están grabadas en el sitio de la clase, y las sesiones en vivo son los martes, jueves y viernes por la mañana. Cada persona puede participar en el campus de Lawrenceville o en Microsoft Teams, y recibe ese horario al empezar.',
           },
         ],
         aosos:
