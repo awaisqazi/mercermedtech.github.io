@@ -366,6 +366,9 @@ const source = `${placement === 'home' ? 'Home page' : 'Digital Literacy page'} 
             mode: 'cors',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body,
+            // The Worker reads the page path (and so the language) from the
+            // Referer; by default a cross-origin request sends only the origin.
+            referrerPolicy: 'no-referrer-when-downgrade',
             signal: controller.signal,
           });
           const result = await response.json().catch(() => null);
