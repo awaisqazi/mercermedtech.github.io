@@ -129,13 +129,27 @@ class Query implements PromiseLike<Result> {
     return this;
   }
 
+  /** Rows `from` to `to`, inclusive, after ordering: cut here, on the answer. */
+  private cut: [number, number] | null = null;
+
+  range(from: number, to: number): this {
+    this.cut = [from, to];
+    return this;
+  }
+
   then<A = Result, B = never>(
     onFulfilled?: ((value: Result) => A | PromiseLike<A>) | null,
     onRejected?: ((reason: unknown) => B | PromiseLike<B>) | null
   ): Promise<A | B> {
     const query = this.q;
+    const cut = this.cut;
     return demoDb()
       .then((db) => db.execute(query))
+      .then((answer: Result) => {
+        if (!cut || !Array.isArray(answer.data)) return answer;
+        const data = answer.data.slice(cut[0], cut[1] + 1);
+        return { ...answer, data, count: data.length };
+      })
       .then(onFulfilled, onRejected);
   }
 }

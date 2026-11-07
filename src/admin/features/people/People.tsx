@@ -21,12 +21,12 @@ import { IconPlus } from '../../components/Icons';
 import { PageHeader, PhoneAction } from '../../components/PageHeader';
 import { Select } from '../../components/Select';
 import { Skeleton } from '../../components/Skeleton';
-import { isOwner, useAuth } from '../../lib/auth';
+import { useAuth } from '../../lib/auth';
 import { joinLink } from '../../lib/config';
 import { relativeTime, fullTime } from '../../lib/format';
 import { href } from '../../lib/router';
 import { toast } from '../../lib/toasts';
-import { useCan } from '../../lib/perms';
+import { useCan, useMyRole } from '../../lib/perms';
 import { OWNER_ROLE_KEY, type Invitation, type Profile, type Role } from '../../lib/types';
 import {
   loadInvitations,
@@ -49,7 +49,8 @@ export function People() {
   const tasks = useTasks();
   const auth = useAuth();
   const canManage = useCan('people.manage');
-  const iAmOwner = isOwner(auth);
+  // From the live roles and profiles, so a promotion shows without a reload.
+  const iAmOwner = useMyRole()?.key === OWNER_ROLE_KEY;
   const [inviting, setInviting] = useState(false);
   const { confirm, element: confirmElement } = useConfirm();
 

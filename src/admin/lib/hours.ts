@@ -241,14 +241,15 @@ export function weekStrip<T extends EntryLike>(entries: readonly T[], from: stri
 /**
  * One RFC 4180 cell. Quoted when it holds a comma, a quote, a line break or
  * edge spaces; quotes inside are doubled. A cell that a spreadsheet would run
- * as a formula (=, +, @, a tab) gets a leading apostrophe, so an exported
- * summary can never execute when somebody opens the file.
+ * as a formula (=, +, -, @, a tab or a carriage return first) gets a leading
+ * apostrophe inside quotes, unless it is a plain number such as -1.5, so an
+ * exported summary can never execute when somebody opens the file.
  */
 export function csvCell(value: unknown): string {
   if (value === null || value === undefined) return '';
   if (typeof value === 'number') return Number.isFinite(value) ? String(value) : '';
-  let text = String(value);
-  if (/^[=+@\t\r]/.test(text) || /^-[^\s\d]/.test(text)) text = `'${text}`;
+  const text = String(value);
+  if (/^[=+\-@\t\r]/.test(text) && !/^-?\d+(\.\d+)?$/.test(text)) return `"'${text.replace(/"/g, '""')}"`;
   if (/[",\r\n]/.test(text) || /^\s|\s$/.test(text)) return `"${text.replace(/"/g, '""')}"`;
   return text;
 }

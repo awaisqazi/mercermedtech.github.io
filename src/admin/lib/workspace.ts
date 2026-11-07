@@ -136,7 +136,7 @@ import { supabase } from './supabase';
 import { ACTIVITY_PAGE, LOAD_DEADLINE_MS, SLOW_LOAD_MS } from './config';
 import { withDeadline } from './deadline';
 import { observable, sameArray, useObservable } from './observable';
-import { getAuth, resumeSession } from './auth';
+import { getAuth, refreshProfile, resumeSession } from './auth';
 import { logError, toAppError, type AppError } from './errors';
 import { timed } from './timing';
 import { toast } from './toasts';
@@ -389,10 +389,64 @@ function mergeIncoming(table: string, id: string, local: AnyRow | undefined, inc
   return merged;
 }
 
+/* ================================ rows touched while a read is in flight === */
+
+/*
+ * A window or thread read replaces the rows it covers with what the server
+ * sent. A change that lands while the read is on the wire (a realtime event,
+ * our own write) is newer than that snapshot, so the read must not undo it.
+ * Touches are only recorded while some read is open, and forgotten when the
+ * last one finishes, so the map never grows past one burst.
+ */
+let touchSeq = 0;
+let readsOpen = 0;
+const touched = new Map<string, number>();
+
+function touch(table: ListTable, key: string): void {
+  if (readsOpen > 0 && key) touched.set(`${table}:${key}`, ++touchSeq);
+}
+
+/** Starts a read; the number it returns is what `touchedSince` compares with. */
+function beginRead(): number {
+  readsOpen += 1;
+  return touchSeq;
+}
+
+function endRead(): void {
+  readsOpen = Math.max(0, readsOpen - 1);
+  if (readsOpen === 0) touched.clear();
+}
+
+function touchedSince(table: ListTable, key: string, since: number): boolean {
+  return (touched.get(`${table}:${key}`) ?? 0) > since;
+}
+
+/* PostgREST hands back at most 1,000 rows a request. Reads that can grow past
+   that go page by page, in a stable order, until a short page. */
+const PAGE_ROWS = 1000;
+
+async function readAll(
+  label: string,
+  page: (from: number, to: number) => PromiseLike<{ data: unknown; error: unknown }>
+): Promise<{ data: AnyRow[] | null; error: unknown }> {
+  const rows: AnyRow[] = [];
+  for (let from = 0; ; from += PAGE_ROWS) {
+    const { data, error } = await timed(label, page(from, from + PAGE_ROWS - 1));
+    if (error) return { data: null, error };
+    const chunk = (data ?? []) as AnyRow[];
+    rows.push(...chunk);
+    if (chunk.length < PAGE_ROWS) return { data: rows, error: null };
+  }
+}
+
 /* ============================================================ loading === */
 
 let loadToken = 0;
 let opened = false;
+/** Whose workspace this is: another person signing in from a second tab gets a fresh one. */
+let openedFor: string | null = null;
+/** When the last full read landed, so the first channel join can tell if it missed anything. */
+let loadedAt = 0;
 
 interface Loaded {
   roles: Role[];
@@ -418,7 +472,9 @@ async function fetchEverything(): Promise<Loaded> {
     // Two reads rather than one `or=`: open work, and work done recently.
     timed('ws.tasks.open', supabase.from('tasks').select('*').neq('status', 'done')),
     timed('ws.tasks.done', supabase.from('tasks').select('*').eq('status', 'done').gt('done_at', cutoff)),
-    timed('ws.items', supabase.from('task_items').select('*')),
+    readAll('ws.items', (from, to) =>
+      supabase.from('task_items').select('*').order('sort').order('id').range(from, to)
+    ),
     timed('ws.months', supabase.from('hours_months').select('*')),
     timed(
       'ws.activity',
@@ -530,11 +586,16 @@ function stopSlowTimer(): void {
   slowTimer = null;
 }
 
-/** Loads the workspace and joins its channel. A no-op once loading or ready. */
-export async function openWorkspace(): Promise<void> {
+/**
+ * Loads the workspace and joins its channel. A no-op once loading or ready
+ * for the same person; for a different one the old store is closed first.
+ */
+export async function openWorkspace(userId: string | null = getAuth().userId): Promise<void> {
+  if (opened && openedFor !== userId) closeWorkspace();
   const current = store.get();
   if (opened && (current.status === 'loading' || current.status === 'ready')) return;
   opened = true;
+  openedFor = userId;
   const token = ++loadToken;
   teardownChannel();
   store.set({ ...EMPTY, status: 'loading', connection: 'connecting' });
@@ -551,6 +612,7 @@ export async function openWorkspace(): Promise<void> {
       slow: false,
       activityDone: loaded.activity.length < ACTIVITY_PAGE,
     }));
+    loadedAt = Date.now();
     void refreshInquiries();
     subscribe();
   } catch (error) {
@@ -573,12 +635,25 @@ export async function retryWorkspace(): Promise<void> {
 
 /** Re-reads everything plus every open time window. Keeps the screen on failure. */
 export async function refetch(): Promise<void> {
-  if (!opened) return;
+  // Only a loaded workspace catches up; a first load still on the wire (an
+  // `online` event mid-load, say) is left to finish, or its token would be
+  // taken and the skeleton would never go.
+  if (!opened || store.get().status !== 'ready') return;
   const token = ++loadToken;
   try {
     const loaded = await withDeadline(fetchEverything(), LOAD_DEADLINE_MS);
     if (token !== loadToken) return;
-    store.update((state) => ({ ...state, ...loaded, status: 'ready', error: null }));
+    // The task list and the activity feed are cut back to their first page,
+    // so the "load older" and "load more" flags start over too.
+    store.update((state) => ({
+      ...state,
+      ...loaded,
+      status: 'ready',
+      error: null,
+      olderTasksLoaded: false,
+      activityDone: loaded.activity.length < ACTIVITY_PAGE,
+    }));
+    loadedAt = Date.now();
     void refreshInquiries();
     for (const [key, window] of openWindows) void fetchWindow(key, window.spec, true);
     const threads = Object.keys(store.get().commentThreads);
@@ -594,8 +669,11 @@ export async function refetch(): Promise<void> {
 export function closeWorkspace(): void {
   loadToken += 1;
   opened = false;
+  openedFor = null;
+  loadedAt = 0;
   stopSlowTimer();
   teardownChannel();
+  touched.clear();
   inFlight.clear();
   focusLocks.clear();
   hints.set({});
@@ -650,17 +728,29 @@ export async function loadComments(taskId: string, force = false): Promise<void>
   if (!taskId || taskId.startsWith('temp-')) return;
   if (!force && store.get().commentThreads[taskId]) return;
   store.update((state) => ({ ...state, commentThreads: { ...state.commentThreads, [taskId]: state.commentThreads[taskId] ?? 'loading' } }));
+  const since = beginRead();
   try {
     const { data, error } = await supabase.from('task_comments').select('*').eq('task_id', taskId);
     if (error) throw error;
     store.update((state) => {
-      let rows = listOf(state, 'task_comments').filter((row) => row.task_id !== taskId || text(row.id).startsWith('temp-'));
-      for (const row of (data ?? []) as AnyRow[]) rows = upsert('task_comments', rows, row);
+      // Keep what is mid-save, and what changed after the read went out.
+      let rows = listOf(state, 'task_comments').filter(
+        (row) =>
+          row.task_id !== taskId ||
+          text(row.id).startsWith('temp-') ||
+          touchedSince('task_comments', text(row.id), since)
+      );
+      for (const row of (data ?? []) as AnyRow[]) {
+        if (touchedSince('task_comments', text(row.id), since)) continue;
+        rows = upsert('task_comments', rows, row);
+      }
       return { ...withList(state, 'task_comments', rows), commentThreads: { ...state.commentThreads, [taskId]: 'ready' } };
     });
   } catch (error) {
     logError('loadComments', error);
     store.update((state) => ({ ...state, commentThreads: { ...state.commentThreads, [taskId]: 'ready' } }));
+  } finally {
+    endRead();
   }
 }
 
@@ -727,27 +817,39 @@ async function fetchWindow(key: string, spec: TimeWindow, force = false): Promis
   if (!force && (state.windows[key] === 'ready' || state.windows[key] === 'loading')) return;
   if (state.status !== 'ready' && !force) return;
   store.update((current) => ({ ...current, windows: { ...current.windows, [key]: current.windows[key] === 'ready' ? 'ready' : 'loading' } }));
+  const since = beginRead();
   try {
-    let query = supabase.from('time_entries').select('*');
-    if (spec.from) query = query.gte('work_date', spec.from);
-    if (spec.to) query = query.lte('work_date', spec.to);
-    if (spec.userId) query = query.eq('user_id', spec.userId);
-    if (spec.projectId) query = query.eq('project_id', spec.projectId);
-    if (spec.taskId) query = query.eq('task_id', spec.taskId);
-    const { data, error } = await timed('ws.time_entries', query);
+    const { data, error } = await readAll('ws.time_entries', (from, to) => {
+      let query = supabase.from('time_entries').select('*');
+      if (spec.from) query = query.gte('work_date', spec.from);
+      if (spec.to) query = query.lte('work_date', spec.to);
+      if (spec.userId) query = query.eq('user_id', spec.userId);
+      if (spec.projectId) query = query.eq('project_id', spec.projectId);
+      if (spec.taskId) query = query.eq('task_id', spec.taskId);
+      return query.order('work_date').order('id').range(from, to);
+    });
     if (error) throw error;
     store.update((current) => {
       // Drop what this window used to hold (it may have been deleted while we
-      // were away), keep what other windows or a pending write still need.
+      // were away), keep what other windows or a pending write still need,
+      // and anything that changed after the read went out.
       let rows = listOf(current, 'time_entries').filter((row) => {
         if (text(row.id).startsWith('temp-')) return true;
         if (!inWindow(row as unknown as TimeEntry, spec)) return true;
-        return false;
+        return touchedSince('time_entries', text(row.id), since);
       });
-      for (const row of (data ?? []) as AnyRow[]) rows = upsert('time_entries', rows, row);
+      for (const row of data ?? []) {
+        if (touchedSince('time_entries', text(row.id), since)) continue;
+        rows = upsert('time_entries', rows, row);
+      }
       const windowErrors = { ...current.windowErrors };
       delete windowErrors[key];
-      return { ...withList(current, 'time_entries', rows), windows: { ...current.windows, [key]: 'ready' }, windowErrors };
+      // A window closed while its read was out is not marked ready: nothing
+      // refreshes it after a reconnection, so reopening it must read again.
+      const windows = { ...current.windows };
+      if (openWindows.has(key)) windows[key] = 'ready';
+      else delete windows[key];
+      return { ...withList(current, 'time_entries', rows), windows, windowErrors };
     });
   } catch (error) {
     logError('fetchWindow', error);
@@ -757,7 +859,21 @@ async function fetchWindow(key: string, spec: TimeWindow, force = false): Promis
       windows: { ...current.windows, [key]: 'error' },
       windowErrors: { ...current.windowErrors, [key]: appError },
     }));
+  } finally {
+    endRead();
   }
+}
+
+/** Forgets a window nobody is showing, so the next look reads it afresh. */
+function forgetWindow(key: string): void {
+  store.update((current) => {
+    if (!(key in current.windows) && !(key in current.windowErrors)) return current;
+    const windows = { ...current.windows };
+    const windowErrors = { ...current.windowErrors };
+    delete windows[key];
+    delete windowErrors[key];
+    return { ...current, windows, windowErrors };
+  });
 }
 
 /* =========================================================== realtime === */
@@ -819,6 +935,7 @@ function applyChange(table: ListTable, payload: ChangePayload): void {
 
   const key = keyOf(table, event === 'DELETE' ? old : row);
   if (!key) return;
+  touch(table, key);
 
   // A thread nobody has opened is not worth holding.
   if (table === 'task_comments' && event === 'INSERT' && !store.get().commentThreads[text(row.task_id)]) return;
@@ -958,6 +1075,9 @@ function scheduleRejoin(): void {
   }, delay);
 }
 
+/** How long after the load a first join may come before it reads again. */
+const FIRST_JOIN_GRACE_MS = 2_000;
+
 function onChannelStatus(status: string, error?: unknown): void {
   if (status === 'SUBSCRIBED') {
     rejoinAttempts = 0;
@@ -965,12 +1085,17 @@ function onChannelStatus(status: string, error?: unknown): void {
     store.update((state) => ({ ...state, connection: 'live' }));
     void trackPresence();
     // Nothing missed while away is replayed, so a reconnection goes and looks.
-    if (hadConnection) void refetch();
+    // So does a first join that came a while after the load: a change made
+    // in between reached neither the read nor the channel.
+    if (hadConnection || Date.now() - loadedAt > FIRST_JOIN_GRACE_MS) void refetch();
     hadConnection = true;
     return;
   }
   if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
     if (error) logError(`realtime ${status}`, error);
+    // The channel policies refuse a person who has been switched off; read
+    // the profile again so that shows as a sign-out, not an endless retry.
+    if (status === 'CHANNEL_ERROR') void refreshProfile();
     store.update((state) => (state.connection === 'idle' ? state : { ...state, connection: 'reconnecting' }));
     scheduleRejoin();
   }
@@ -1047,9 +1172,22 @@ export type WritableTable = Exclude<ListTable, 'activity'> | 'invitations';
 
 function fail(error: unknown, options: MutationOptions, where: string): MutationResult<never> {
   logError(where, error);
-  const appError = toAppError(error);
+  const appError = error instanceof Refusal ? error.appError : toAppError(error);
   if (!options.quiet) toast.bad(appError.message);
   return { ok: false, error: appError };
+}
+
+/*
+ * Row level security does not refuse an update or delete of a row it hides:
+ * PostgREST answers 204 with nothing changed. Writes therefore ask for the
+ * keys they touched back, and an empty answer is thrown as one of these.
+ */
+class Refusal extends Error {
+  readonly appError: AppError;
+  constructor(message: string) {
+    super(message);
+    this.appError = { message, permission: true, missingSchema: false, offline: false };
+  }
 }
 
 const tempId = () => `temp-${Math.random().toString(36).slice(2, 10)}`;
@@ -1088,6 +1226,7 @@ export async function insertRow<T = AnyRow>(
     if (error) throw error;
     const row = data as AnyRow;
     if (listed) {
+      touch(table, keyOf(table, row));
       store.update((state) => {
         const rows = listOf(state, table).filter((item) => keyOf(table, item) !== tempKey);
         return withList(state, table, upsert(table, rows, row));
@@ -1146,18 +1285,21 @@ export async function updateRow(
   }
 
   noteInFlight(table, id, patch);
+  if (isListTable(table)) touch(table, id);
   replaceRow(table, id, optimistic);
   try {
     const keyColumn = isListTable(table) ? KEY_OF[table] : 'id';
-    const { error } = await supabase.from(table).update(patch).eq(keyColumn, id);
+    const { data, error } = await supabase.from(table).update(patch).eq(keyColumn, id).select(keyColumn);
     if (error) throw error;
-    return { ok: true };
-  } catch (error) {
-    replaceRow(table, id, rollback);
-    return fail(error, options, `update ${table}`);
-  } finally {
+    if (!Array.isArray(data) || data.length === 0) throw new Refusal('You cannot change this.');
     // Give the realtime echo a moment to arrive before releasing the fields.
     setTimeout(() => clearInFlight(table, id, patch), 1500);
+    return { ok: true };
+  } catch (error) {
+    // Released at once: a refused value must not come back with the next echo.
+    clearInFlight(table, id, patch);
+    replaceRow(table, id, rollback);
+    return fail(error, options, `update ${table}`);
   }
 }
 
@@ -1167,14 +1309,16 @@ export async function deleteRow(table: WritableTable, id: string, options: Mutat
   }
   const before = findRow(table, id);
   if (isListTable(table)) {
+    touch(table, id);
     store.update((state) => withList(state, table, listOf(state, table).filter((row) => keyOf(table, row) !== id)));
   } else {
     store.update((state) => ({ ...state, invitations: state.invitations.filter((row) => row.id !== id) }));
   }
   try {
     const keyColumn = isListTable(table) ? KEY_OF[table] : 'id';
-    const { error } = await supabase.from(table).delete().eq(keyColumn, id);
+    const { data, error } = await supabase.from(table).delete().eq(keyColumn, id).select(keyColumn);
     if (error) throw error;
+    if (!Array.isArray(data) || data.length === 0) throw new Refusal('You cannot delete this.');
     return { ok: true };
   } catch (error) {
     if (before) {
@@ -1557,12 +1701,15 @@ export interface TimeEntriesView {
   error: AppError | null;
 }
 
-export function useTimeEntries(spec: TimeWindow): TimeEntriesView {
+const NO_ENTRIES: TimeEntry[] = [];
+
+/** `enabled: false` holds no window and reads nothing (a task with no id yet). */
+export function useTimeEntries(spec: TimeWindow, enabled = true): TimeEntriesView {
   const key = windowKey(spec);
   const ready = useWorkspaceSlice((state) => state.status === 'ready', []);
 
   useEffect(() => {
-    if (!ready) return undefined;
+    if (!ready || !enabled) return undefined;
     const held = openWindows.get(key);
     if (held) held.users += 1;
     else openWindows.set(key, { spec: { ...spec }, users: 1 });
@@ -1571,24 +1718,29 @@ export function useTimeEntries(spec: TimeWindow): TimeEntriesView {
       const entry = openWindows.get(key);
       if (!entry) return;
       entry.users -= 1;
-      if (entry.users <= 0) openWindows.delete(key);
+      if (entry.users <= 0) {
+        openWindows.delete(key);
+        forgetWindow(key);
+      }
     };
     // The key is the spec, value for value.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key, ready]);
+  }, [key, ready, enabled]);
 
   const entries = useWorkspaceSlice(
-    (state) => state.time_entries.filter((entry) => inWindow(entry, spec)),
-    [key],
+    (state) => (enabled ? state.time_entries.filter((entry) => inWindow(entry, spec)) : NO_ENTRIES),
+    [key, enabled],
     sameArray
   );
   const status = useWorkspaceSlice((state) => state.windows[key], [key]);
   const error = useWorkspaceSlice((state) => state.windowErrors[key] ?? null, [key]);
+  if (!enabled) return { entries, loading: false, error: null };
   return { entries, loading: !status || status === 'loading', error };
 }
 
 export function useHoursOnTask(taskId: string | null | undefined): number {
-  const { entries } = useTimeEntries({ taskId: taskId ?? '__none__' });
+  const usable = Boolean(taskId && !taskId.startsWith('temp-'));
+  const { entries } = useTimeEntries({ taskId: usable ? taskId : null }, usable);
   return sumHours(entries);
 }
 

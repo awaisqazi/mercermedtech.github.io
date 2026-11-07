@@ -93,9 +93,10 @@ export default function AdminApp({ logoSrc = '', logoWidth = 366, logoHeight = 1
   }, [auth.ready, auth.userId, auth.recovery, route.path]);
 
   // One workspace per signed-in person, opened as soon as there is a session
-  // (it does not wait for the profile: both load side by side).
+  // (it does not wait for the profile: both load side by side). A different
+  // person signing in from another tab closes the old store and opens anew.
   useEffect(() => {
-    if (auth.userId && !auth.recovery) void openWorkspace();
+    if (auth.userId && !auth.recovery) void openWorkspace(auth.userId);
     else if (!auth.userId) closeWorkspace();
   }, [auth.userId, auth.recovery]);
 

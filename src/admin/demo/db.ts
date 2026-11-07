@@ -234,7 +234,7 @@ function run(query: DemoQuery) {
         emit(query.table, 'DELETE', {}, { ...row });
         if (query.table === 'task_items') syncProgress(String(row.task_id));
       }
-      return { data: null, error: null, status: 204 };
+      return query.returning ? result(query, gone) : { data: null, error: null, status: 204 };
     }
 
     default:
