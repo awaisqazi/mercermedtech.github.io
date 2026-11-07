@@ -449,7 +449,9 @@ export const es: Dictionary = {
       successBody: 'Alguien de la escuela le va a llamar.',
       errorTitle: 'No pudimos enviarlo.',
       errorBody: `Disculpe, algo falló de nuestro lado. Inténtelo otra vez o escriba a ${site.email} y seguimos desde ahí.`,
-      iframeTitle: 'Destino del envío del formulario',
+      securityIncomplete: 'Espere a que termine la verificación de seguridad de arriba y envíe otra vez.',
+      securityUnavailable: `La verificación de seguridad no cargó. Actualice la página o escríbanos a ${site.email}.`,
+      honeypotLabel: 'Deje esto en blanco',
     },
 
     modals: {

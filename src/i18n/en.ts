@@ -432,7 +432,9 @@ export const en = {
       successBody: 'Someone from the school will call you back.',
       errorTitle: 'We could not send that.',
       errorBody: `Sorry, something went wrong on our end. Please try again, or email ${site.email} and we will pick it up from there.`,
-      iframeTitle: 'Form submission target',
+      securityIncomplete: 'Please wait for the security check above to finish, then send again.',
+      securityUnavailable: `The security check did not load. Please refresh the page, or email us at ${site.email}.`,
+      honeypotLabel: 'Leave this empty',
     },
 
     modals: {

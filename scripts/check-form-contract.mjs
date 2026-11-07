@@ -1,7 +1,10 @@
-// THE SITE FEEDS TWO GOOGLE FORMS. Both are checked here.
+// THE SITE FEEDS SEVERAL GOOGLE FORMS. All are checked here.
 //
 //   1. the contact form   (src/components/ContactForm.astro), on every page
-//      that carries id="request-info-form". It still posts to Google itself.
+//      that carries id="request-info-form". It posts to the Worker's
+//      /inquiry-submit route (Turnstile checked there, then forwarded to the
+//      Worker's FORM_ACTION_INQUIRY); its Google Form address must not appear
+//      on any page. Notes: docs/inquiry-form.md.
 //   2. the Digital Literacy sign-up form (src/components/DltSignupForm.astro),
 //      on the hidden /digital-literacy/sign-up/ pages, id="dlt-signup-form".
 //      It posts to the mmt-signup Cloudflare Worker, which checks the
@@ -62,8 +65,11 @@ const BEST_TIME_VALUES = [
   'Anytime',
 ];
 
-const FORM_ACTION =
-  'https://docs.google.com/forms/d/e/1FAIpQLSdlbJCiaAE1h2VVLcF0mUPG_6SKAs34IR0Ipu_DHATetEX-lg/formResponse';
+/** The contact form posts here; the Worker forwards to Google. */
+const INQUIRY_ACTION = 'https://mmt-signup.mercermedtech.workers.dev/inquiry-submit';
+
+/** The inquiry Google Form's id. The Worker holds the real URL; it must never be on a page. */
+const INQUIRY_GOOGLE_FORM_ID = '1FAIpQLSdlbJCiaAE1h2VVLcF0mUPG_6SKAs34IR0Ipu_DHATetEX-lg';
 
 const REQUIRED_FIELDS = [
   'entry.500866520', // name
@@ -348,10 +354,25 @@ for (const page of pages) {
   if (html.includes(INTEREST_GOOGLE_FORM_ID)) {
     fail(page, 'the interest Google Form URL is on the page; it belongs in the Worker only');
   }
+  if (html.includes(INQUIRY_GOOGLE_FORM_ID)) {
+    fail(page, 'the contact inquiry Google Form URL is on the page; it belongs in the Worker only');
+  }
   if (!html.includes('id="request-info-form"')) continue;
   checked += 1;
 
-  if (!html.includes(FORM_ACTION)) fail(page, 'the form action is not the Google Form URL');
+  const contactForm = html.match(/<form[^>]*id="request-info-form"[^>]*>/);
+  if (!contactForm || !contactForm[0].includes(`action="${INQUIRY_ACTION}"`)) {
+    fail(page, `the contact form does not post to ${INQUIRY_ACTION}`);
+  }
+  if (!/<form[^>]*id="request-info-form"[\s\S]*?data-turnstile[\s\S]*?<\/form>/.test(html)) {
+    fail(page, 'the contact form has no Turnstile widget inside it');
+  }
+  if (!/<form[^>]*id="request-info-form"[\s\S]*?name="website"[\s\S]*?<\/form>/.test(html)) {
+    fail(page, 'the contact form has no "website" honeypot');
+  }
+  if (/<form[^>]*id="request-info-form"[^>]*\starget=/.test(html) || html.includes('hidden_form_iframe')) {
+    fail(page, 'the contact form still targets the old hidden iframe');
+  }
 
   for (const field of REQUIRED_FIELDS) {
     if (!html.includes(`name="${field}"`)) fail(page, `missing form field ${field}`);

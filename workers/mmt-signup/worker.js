@@ -5,7 +5,10 @@
  * Bindings (Settings → Variables and Secrets):
  *   FORM_ACTION           plain text: the sign-up Google Form's formResponse URL
  *   FORM_ACTION_INTEREST  plain text: the interest form's formResponse URL
+ *   FORM_ACTION_INQUIRY   plain text: the contact inquiry form's formResponse URL
  *   TURNSTILE_SECRET      secret: the Turnstile widget's secret key
+ *   INGEST_SECRET         secret: the shared secret for the staff portal copy
+ *                         (see "Copy to the portal" below); unset = no copy
  *
  * The browser sends: POST, application/x-www-form-urlencoded, the entry.*
  * fields plus cf-turnstile-response. It gets back JSON {ok:true} or
@@ -25,6 +28,9 @@
  *   POST /interest-submit     the public Digital Literacy interest form on
  *                        / and /digital-literacy/ (and /es/...)
  *                        binding FORM_ACTION_INTEREST
+ *   POST /inquiry-submit      the public contact form ("Have us call you
+ *                        back") on / (and /es/)
+ *                        binding FORM_ACTION_INQUIRY
  * Same body as the sign-up (form-encoded entry.* fields plus
  * cf-turnstile-response), plus Google's date parts (entry.N_year/_month/_day)
  * and "Other" text (entry.N.other_option_response). Differences from the
@@ -32,8 +38,20 @@
  * otherwise), the Turnstile token must have been solved on mercermedtech.com,
  * a filled-in honeypot field ("website") is accepted and dropped, and only a
  * 200 from Google counts as delivered (Google answers 400 when a required
- * question is missing). /interest-submit follows the same rules, except that
- * the local dev server (localhost:4321, 127.0.0.1:4321) may call it too.
+ * question is missing). /interest-submit and /inquiry-submit follow the same
+ * rules, except that the local dev server (localhost:4321, 127.0.0.1:4321)
+ * may call them too.
+ *
+ * Copy to the portal. The three public forms (the sign-up on /, the interest
+ * form on /interest-submit, the contact form on /inquiry-submit) are also
+ * copied into the staff portal's inbox (mercermedtech.com/admin). Google stays
+ * the record: the copy is made only after Google has accepted the post, runs
+ * in ctx.waitUntil after the reader already has their answer, and a failed
+ * copy is only logged (console.error). It calls the Supabase database
+ * function ingest_form_response with the publishable key (public by design,
+ * it is in the site bundle too) and INGEST_SECRET, which the function checks.
+ * With INGEST_SECRET unset the copy is skipped. The staff forms are never
+ * copied.
  */
 
 const ALLOWED_ORIGINS = new Set([
@@ -55,6 +73,8 @@ const INTEREST_ORIGINS = new Set([...STAFF_ORIGINS, 'http://localhost:4321', 'ht
 const INTEREST_HOSTNAMES = new Set([...STAFF_HOSTNAMES, 'localhost', '127.0.0.1']);
 
 const staffRoute = (binding) => ({ binding, origins: STAFF_ORIGINS, hostnames: STAFF_HOSTNAMES });
+/** The public forms: the dev server may call them too, and `copy` names their portal source. */
+const publicRoute = (binding, copy) => ({ binding, origins: INTEREST_ORIGINS, hostnames: INTEREST_HOSTNAMES, copy });
 
 /** Route -> the Worker variable that holds that form's formResponse URL, and who may call it. */
 const STAFF_ROUTES = {
@@ -62,15 +82,159 @@ const STAFF_ROUTES = {
   '/loaner-submit': staffRoute('LOANER_FORM_ACTION'),
   '/orientation-submit': staffRoute('ORIENTATION_FORM_ACTION'),
   '/attendance-submit': staffRoute('ATTENDANCE_FORM_ACTION'),
-  '/interest-submit': {
-    binding: 'FORM_ACTION_INTEREST',
-    origins: INTEREST_ORIGINS,
-    hostnames: INTEREST_HOSTNAMES,
-  },
+  '/interest-submit': publicRoute('FORM_ACTION_INTEREST', 'dlt_interest'),
+  '/inquiry-submit': publicRoute('FORM_ACTION_INQUIRY', 'inquiry'),
 };
 
 const ALLOWED_FIELD = /^entry\.\d+$/;
 const MAX_FIELD_LENGTH = 2000;
+
+/* ---------------- copy to the portal ---------------- */
+
+const INGEST_URL = 'https://olqhfdpaoqvwompkqtdz.supabase.co/rest/v1/rpc/ingest_form_response';
+/** The publishable (anon) key: public by design, it ships in the site bundle. */
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_N3L_0PXlx5urFzkObblWIA_7qrVgq8M';
+
+/**
+ * Per form: entry id -> the label staff read in the inbox, in question order,
+ * and which entries hold the name, phone and email. Keep in step with
+ * ContactForm.astro, scripts/check-form-contract.mjs (SIGNUP_FIELDS) and
+ * docs/dlt-interest-form.md. An entry not listed here is still copied, with
+ * its entry id as the label.
+ */
+const COPY_FORMS = {
+  inquiry: {
+    name: 'entry.500866520',
+    phone: 'entry.377183870',
+    email: 'entry.561406325',
+    labels: [
+      ['entry.500866520', 'Name'],
+      ['entry.377183870', 'Phone'],
+      ['entry.561406325', 'Email'],
+      ['entry.358026590', 'Program'],
+      ['entry.1429591353', 'Best time to call'],
+      ['entry.1375584749', 'Message'],
+    ],
+  },
+  dlt_signup: {
+    name: 'entry.610321898',
+    phone: 'entry.845307859',
+    email: 'entry.1745544463',
+    labels: [
+      ['entry.610321898', 'Name'],
+      ['entry.845307859', 'Phone'],
+      ['entry.1745544463', 'Email'],
+      ['entry.334657821', 'County'],
+      ['entry.1320551453', 'TANF or SNAP'],
+      ['entry.1571243070', 'Language'],
+      ['entry.648594530', 'Attend'],
+      ['entry.303849646', 'Best time to call'],
+      ['entry.1699212155', 'Referred by'],
+      ['entry.1074735478', 'Message'],
+    ],
+  },
+  dlt_interest: {
+    name: 'entry.330196929',
+    phone: 'entry.1208529879',
+    email: 'entry.2122843499',
+    // "Submitted from" reads like "Home page (Spanish)": the language
+    // fallback when the Referer carries no /es/ path.
+    submittedFrom: 'entry.943507853',
+    labels: [
+      ['entry.330196929', 'Name'],
+      ['entry.1208529879', 'Phone'],
+      ['entry.2122843499', 'Email'],
+      ['entry.23947013', 'County'],
+      ['entry.210728030', 'TANF or SNAP'],
+      ['entry.575477385', 'Language'],
+      ['entry.137405449', 'How did you hear about us'],
+      ['entry.703509959', 'Referred by'],
+      ['entry.704622938', 'AOSOS number'],
+      ['entry.1944461321', 'Anything else'],
+      ['entry.943507853', 'Submitted from'],
+    ],
+  },
+};
+
+/** The same caps ingest_form_response applies; cut here too so the request stays small. */
+const COPY_CAPS = { name: 200, contact: 300, page: 200, fields: 60, key: 100, value: 2000 };
+
+/**
+ * Turns the fields forwarded to Google into the portal's ingest body.
+ * Blank answers are left out; a question that repeats a name (checkboxes)
+ * becomes one item with its values joined by ", ".
+ */
+function buildCopy(env, source, outgoing, referer) {
+  const spec = COPY_FORMS[source];
+  const answers = new Map();
+  for (const [name, value] of outgoing.entries()) {
+    const text = String(value).trim();
+    if (!text) continue;
+    answers.set(name, answers.has(name) ? `${answers.get(name)}, ${text}` : text);
+  }
+
+  const known = new Set(spec.labels.map(([id]) => id));
+  const fields = [];
+  for (const [id, label] of spec.labels) {
+    if (answers.has(id)) fields.push({ k: label, v: answers.get(id) });
+  }
+  for (const [id, value] of answers) {
+    if (!known.has(id)) fields.push({ k: id, v: value });
+  }
+
+  // The page path and the language come from the Referer.
+  let page = '';
+  try {
+    if (referer) page = new URL(referer).pathname;
+  } catch {
+    page = '';
+  }
+  let lang = page === '/es' || page.startsWith('/es/') ? 'es' : 'en';
+  if (lang === 'en' && spec.submittedFrom && /\(Spanish\)/.test(answers.get(spec.submittedFrom) || '')) {
+    lang = 'es';
+  }
+
+  const contact = [answers.get(spec.phone), answers.get(spec.email)].filter(Boolean).join(' · ');
+  return {
+    p_secret: env.INGEST_SECRET,
+    p_source: source,
+    p_lang: lang,
+    p_page: page.slice(0, COPY_CAPS.page),
+    p_name: (answers.get(spec.name) || '').slice(0, COPY_CAPS.name),
+    p_contact: contact.slice(0, COPY_CAPS.contact),
+    p_fields: fields
+      .slice(0, COPY_CAPS.fields)
+      .map(({ k, v }) => ({ k: k.slice(0, COPY_CAPS.key), v: v.slice(0, COPY_CAPS.value) })),
+  };
+}
+
+/** Sends one copy to the portal. Never throws: Google already has the answers. */
+async function copyToPortal(env, source, outgoing, referer) {
+  try {
+    const response = await fetch(INGEST_URL, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(buildCopy(env, source, outgoing, referer)),
+    });
+    if (!response.ok) {
+      const detail = (await response.text().catch(() => '')).slice(0, 300);
+      console.error(`portal copy failed (${source}): ${response.status} ${detail}`);
+    }
+  } catch (error) {
+    console.error(`portal copy failed (${source}): ${error && error.message ? error.message : error}`);
+  }
+}
+
+/** Starts the copy after the reader's answer; ctx.waitUntil keeps the Worker alive until it settles. */
+function startCopy(ctx, env, source, outgoing, request) {
+  if (!env.INGEST_SECRET) return; // not set up: skip quietly
+  const copy = copyToPortal(env, source, outgoing, request.headers.get('Referer') || '');
+  if (ctx && typeof ctx.waitUntil === 'function') ctx.waitUntil(copy);
+}
 
 function corsHeaders(origin) {
   const allowed = ALLOWED_ORIGINS.has(origin) ? origin : 'https://www.mercermedtech.com';
@@ -102,8 +266,8 @@ function staffHeaders(origin, origins = STAFF_ORIGINS) {
   return headers;
 }
 
-/** POST to a staff route or /interest-submit -> {ok:true} or {ok:false, error}. */
-async function handleStaffSubmit(request, env, origin, route) {
+/** POST to a staff route, /interest-submit or /inquiry-submit -> {ok:true} or {ok:false, error}. */
+async function handleStaffSubmit(request, env, ctx, origin, route) {
   const { binding, origins, hostnames } = route;
   const staffJson = (body, status, at) =>
     new Response(JSON.stringify(body), {
@@ -189,13 +353,17 @@ async function handleStaffSubmit(request, env, origin, route) {
   } catch {
     status = 0;
   }
-  if (status === 200) return staffJson({ ok: true }, 200, origin);
+  if (status === 200) {
+    // The two public routes are also copied to the portal (never the staff forms).
+    if (route.copy) startCopy(ctx, env, route.copy, outgoing, request);
+    return staffJson({ ok: true }, 200, origin);
+  }
   if (status === 400) return staffJson({ ok: false, error: 'rejected' }, 422, origin);
   return staffJson({ ok: false, error: 'delivery failed' }, 502, origin);
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const origin = request.headers.get('Origin') || '';
 
     // The staff-form routes have their own CORS rules; every other address
@@ -203,7 +371,7 @@ export default {
     const pathname = new URL(request.url).pathname;
     const route = STAFF_ROUTES[pathname];
     if (route) {
-      return handleStaffSubmit(request, env, origin, route);
+      return handleStaffSubmit(request, env, ctx, origin, route);
     }
     // Only the sign-up form posts to the root. Any other path is a mistake
     // (for example a form deployed before its Worker route) and must fail
@@ -284,6 +452,8 @@ export default {
     }
     if (!delivered) return json({ ok: false, error: 'delivery failed' }, 502, origin);
 
+    // Google has it: copy it to the portal's inbox too.
+    startCopy(ctx, env, 'dlt_signup', outgoing, request);
     return json({ ok: true }, 200, origin);
   },
 };

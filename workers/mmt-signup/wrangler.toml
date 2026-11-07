@@ -1,11 +1,17 @@
-# Cloudflare Worker that fronts the Digital Literacy sign-up form.
-# Deploy from this folder:  npx wrangler deploy
-# The Turnstile secret is NOT here; it is set once with:
+# Cloudflare Worker that fronts the Digital Literacy sign-up form, the public
+# interest and contact forms, and the unlisted staff forms.
+# Deploy from this folder:  npx wrangler deploy --keep-vars
+# The secrets are NOT here; each is set once with:
 #   npx wrangler secret put TURNSTILE_SECRET
+#   npx wrangler secret put INGEST_SECRET
+# INGEST_SECRET is the shared secret for the copy to the staff portal (the
+# sign-up on /, /interest-submit and /inquiry-submit are copied to the
+# portal's inbox after Google accepts them). It is the same value stored in
+# the portal database with set_ingest_secret; unset, the copy is skipped.
 # IEP_FORM_ACTION, LOANER_FORM_ACTION, ORIENTATION_FORM_ACTION,
-# ATTENDANCE_FORM_ACTION and FORM_ACTION_INTEREST (formResponse URLs, used by
-# POST /iep-submit, /loaner-submit, /orientation-submit, /attendance-submit,
-# /interest-submit)
+# ATTENDANCE_FORM_ACTION, FORM_ACTION_INTEREST and FORM_ACTION_INQUIRY
+# (formResponse URLs, used by POST /iep-submit, /loaner-submit,
+# /orientation-submit, /attendance-submit, /interest-submit, /inquiry-submit)
 # are also NOT here, because this repository is public. They are plain-text
 # variables set in the Cloudflare dashboard. A plain `wrangler deploy` drops
 # dashboard variables that are not in this file, so deploy with:
@@ -16,6 +22,5 @@ compatibility_date = "2026-09-01"
 workers_dev = true
 
 [vars]
-# The Google Form the Worker forwards to (public by nature; it is also what the
-# contact form on the site posts to directly).
+# The sign-up Google Form the Worker forwards POST / to (public by nature).
 FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSdQmOE7rl6qXNkFtYa2cqpz2_i5gZZJ0qCKxEuD_KXFAZ77cA/formResponse"
