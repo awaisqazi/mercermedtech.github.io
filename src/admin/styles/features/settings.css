@@ -1,0 +1,6 @@
+/* ==========================================================================
+   Settings
+   Styles for features/settings: Projects, the project dialog, Roles, the role editor.
+   Owned by the Settings feature alone, scoped under `.wb`, and built only from
+   the tokens and pieces in ../workbench.css (read its header first).
+   ========================================================================== */

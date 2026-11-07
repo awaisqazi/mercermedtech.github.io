@@ -1,24 +1,28 @@
 /**
  * Your own settings: the name colleagues see, your title, the theme, your
- * password, and a way to sign out everywhere if a device goes missing.
+ * password, and a way to sign out everywhere if a device goes missing. Your
+ * role is shown but not editable here: nobody may change their own role, and
+ * the database refuses it even if the interface were to try.
  */
 import { useEffect, useState } from 'preact/hooks';
-import { changePassword, displayName, signOut, updateOwnProfile, useAuth } from '../lib/auth';
+import { changePassword, displayName, roleName, signOut, updateOwnProfile, useAuth } from '../lib/auth';
 import { MIN_PASSWORD } from '../lib/config';
 import { navigate } from '../lib/router';
 import { useTheme, type ThemeChoice } from '../lib/theme';
 import { relativeTime } from '../lib/format';
 import { toast } from '../lib/toasts';
-import { GLOBAL_ROLE_LABEL } from '../lib/types';
+import { useMyRole } from '../lib/perms';
+import { closeWorkspace } from '../lib/workspace';
+import { leave } from '../components/AppShell';
 import { Avatar } from '../components/Avatar';
 import { Button } from '../components/Button';
-import { Chip } from '../components/Chip';
 import { Field, Input } from '../components/Field';
+import { PageHeader } from '../components/PageHeader';
 import { Segmented } from '../components/Tabs';
 import { SkeletonLines } from '../components/Skeleton';
 
 const THEMES: Array<{ value: ThemeChoice; label: string }> = [
-  { value: 'system', label: 'System' },
+  { value: 'system', label: 'Same as this device' },
   { value: 'light', label: 'Light' },
   { value: 'dark', label: 'Dark' },
 ];
@@ -26,6 +30,7 @@ const THEMES: Array<{ value: ThemeChoice; label: string }> = [
 export function Account() {
   const auth = useAuth();
   const theme = useTheme();
+  const role = useMyRole();
   const [fullName, setFullName] = useState('');
   const [title, setTitle] = useState('');
   const [savingProfile, setSavingProfile] = useState(false);
@@ -41,6 +46,10 @@ export function Account() {
 
   const saveProfile = async (event: Event) => {
     event.preventDefault();
+    if (!fullName.trim()) {
+      toast.bad('Your name cannot be blank. Colleagues see it beside your work.');
+      return;
+    }
     setSavingProfile(true);
     const result = await updateOwnProfile({ full_name: fullName.trim(), title: title.trim() });
     setSavingProfile(false);
@@ -71,32 +80,49 @@ export function Account() {
     }
   };
 
+  const signOutEverywhere = async () => {
+    const result = await signOut('global');
+    if (!result.ok) {
+      toast.bad(result.error?.message ?? 'That did not work.');
+      return;
+    }
+    closeWorkspace();
+    navigate('/login', { replace: true });
+  };
+
   if (!auth.ready) return <SkeletonLines count={5} />;
+
+  const roleWord = role?.name ?? roleName(auth);
 
   return (
     <div class="wb-page wb-page-narrow">
-      <header class="wb-page-head">
-        <div class="wb-person wb-person-large">
-          <Avatar id={auth.userId} name={auth.profile?.full_name} email={auth.email} size={46} />
+      <PageHeader title="Account" />
+
+      <section class="wb-panel wb-account-card" aria-label="You">
+        <Avatar id={auth.userId} name={auth.profile?.full_name} email={auth.email} size={48} />
+        <dl class="wb-facts">
           <div>
-            <h1 class="wb-page-title">{displayName(auth)}</h1>
-            <p class="wb-page-sub wb-mono-soft">
-              {auth.email}
-              {auth.profile ? (
-                <>
-                  {' '}
-                  <Chip tone="quiet">{GLOBAL_ROLE_LABEL[auth.profile.role]}</Chip>
-                </>
-              ) : null}
-            </p>
+            <dt>Name</dt>
+            <dd>{displayName(auth)}</dd>
           </div>
-        </div>
-      </header>
+          <div>
+            <dt>Email</dt>
+            <dd>{auth.email}</dd>
+          </div>
+          <div>
+            <dt>Role</dt>
+            <dd>
+              {roleWord || 'Not known yet'}
+              <span class="wb-facts-note">An administrator changes roles on the People screen.</span>
+            </dd>
+          </div>
+        </dl>
+      </section>
 
       <section class="wb-panel">
         <h2 class="wb-panel-title">About you</h2>
         <form class="wb-form" onSubmit={saveProfile}>
-          <Field label="Name" hint="What colleagues see beside your changes.">
+          <Field label="Name" hint="What colleagues see beside your work.">
             {(props) => (
               <Input
                 {...props}
@@ -106,11 +132,12 @@ export function Account() {
               />
             )}
           </Field>
-          <Field label="Title" hint="Optional.">
+          <Field label="Title" hint="Optional. Shown on the People screen.">
             {(props) => (
               <Input
                 {...props}
                 value={title}
+                autocomplete="organization-title"
                 onInput={(event) => setTitle((event.currentTarget as HTMLInputElement).value)}
               />
             )}
@@ -128,13 +155,8 @@ export function Account() {
 
       <section class="wb-panel">
         <h2 class="wb-panel-title">Theme</h2>
-        <p class="wb-prose">Remembered in this browser only.</p>
-        <Segmented<ThemeChoice>
-          label="Theme"
-          value={theme.choice}
-          onValue={theme.set}
-          options={THEMES}
-        />
+        <p class="wb-prose">Kept in this browser only.</p>
+        <Segmented<ThemeChoice> label="Theme" value={theme.choice} onValue={theme.set} options={THEMES} />
       </section>
 
       <section class="wb-panel">
@@ -163,7 +185,7 @@ export function Account() {
             )}
           </Field>
           <div class="wb-form-actions">
-            <Button type="submit" variant="primary" busy={savingPassword} disabled={!password}>
+            <Button type="submit" variant="secondary" busy={savingPassword} disabled={!password}>
               Change password
             </Button>
           </div>
@@ -172,28 +194,12 @@ export function Account() {
 
       <section class="wb-panel">
         <h2 class="wb-panel-title">Sessions</h2>
-        <p class="wb-prose">
-          Signing out everywhere ends every signed-in browser and phone, including this one.
-        </p>
+        <p class="wb-prose">Signing out everywhere ends every signed-in browser and phone, this one included.</p>
         <div class="wb-form-actions">
-          <Button
-            variant="secondary"
-            onClick={async () => {
-              const result = await signOut('local');
-              if (result.ok) navigate('/login', { replace: true });
-              else toast.bad(result.error?.message ?? 'That did not work.');
-            }}
-          >
+          <Button variant="secondary" onClick={() => void leave()}>
             Sign out
           </Button>
-          <Button
-            variant="danger"
-            onClick={async () => {
-              const result = await signOut('global');
-              if (result.ok) navigate('/login', { replace: true });
-              else toast.bad(result.error?.message ?? 'That did not work.');
-            }}
-          >
+          <Button variant="danger" onClick={() => void signOutEverywhere()}>
             Sign out everywhere
           </Button>
         </div>

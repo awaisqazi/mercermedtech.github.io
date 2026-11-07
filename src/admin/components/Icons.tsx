@@ -336,3 +336,38 @@ export const IconFilter = (props: IconProps) => (
     <path d="M4.5 6h15M7.5 12h9M10.5 18h3" />
   </Svg>
 );
+
+/* ---- v2: the five places, and the stepper ---- */
+
+export const IconTasks = (props: IconProps) => (
+  <Svg {...props}>
+    <rect x="4" y="4" width="16" height="16" rx="3" />
+    <path d="m8.5 12 2.5 2.5 4.5-5" />
+  </Svg>
+);
+
+export const IconActivity = (props: IconProps) => (
+  <Svg {...props}>
+    <path d="M3 12h4l2.5-6 5 12 2.5-6h4" />
+  </Svg>
+);
+
+export const IconMinus = (props: IconProps) => (
+  <Svg {...props}>
+    <path d="M5 12h14" />
+  </Svg>
+);
+
+export const IconCalendar = (props: IconProps) => (
+  <Svg {...props}>
+    <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+    <path d="M3.5 10h17M8 3v4M16 3v4" />
+  </Svg>
+);
+
+export const IconLock = (props: IconProps) => (
+  <Svg {...props}>
+    <rect x="5" y="10.5" width="14" height="10" rx="2" />
+    <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
+  </Svg>
+);

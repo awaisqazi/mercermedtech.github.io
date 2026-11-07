@@ -4,7 +4,7 @@
  * that would always fail.
  */
 import { useState } from 'preact/hooks';
-import { requestPasswordReset, signIn } from '../lib/auth';
+import { INACTIVE_MESSAGE, clearInactive, requestPasswordReset, signIn, useAuth } from '../lib/auth';
 import { navigate, takeDestination } from '../lib/router';
 import { toast } from '../lib/toasts';
 import { AuthShell } from '../components/AppShell';
@@ -13,6 +13,7 @@ import { Field, Input } from '../components/Field';
 import { IconEye, IconEyeOff } from '../components/Icons';
 
 export function Login() {
+  const auth = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [show, setShow] = useState(false);
@@ -46,6 +47,7 @@ export function Login() {
       return;
     }
     setBusy(true);
+    clearInactive();
     const result = await signIn(email, password);
     setBusy(false);
     if (result.ok) {
@@ -84,6 +86,16 @@ export function Login() {
         mode === 'forgot'
           ? 'We will email a link that lets you choose a new one.'
           : undefined
+      }
+      notice={
+        auth.inactive && !error ? (
+          <div class="wb-notice wb-notice-warn" role="status">
+            <div>
+              <p class="wb-notice-title">You have been signed out</p>
+              <p class="wb-notice-body">{INACTIVE_MESSAGE}</p>
+            </div>
+          </div>
+        ) : null
       }
       footer={
         <p class="wb-auth-note">

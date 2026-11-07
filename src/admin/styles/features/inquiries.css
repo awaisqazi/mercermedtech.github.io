@@ -1,0 +1,6 @@
+/* ==========================================================================
+   Inbox
+   Styles for features/inquiries: the inbox list, its filters, the inquiry drawer.
+   Owned by the Inbox feature alone, scoped under `.wb`, and built only from
+   the tokens and pieces in ../workbench.css (read its header first).
+   ========================================================================== */

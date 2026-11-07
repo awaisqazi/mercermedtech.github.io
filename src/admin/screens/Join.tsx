@@ -13,7 +13,7 @@ import { joinWithInvite, previewInvite } from '../lib/auth';
 import { MIN_PASSWORD } from '../lib/config';
 import { navigate } from '../lib/router';
 import { formatDateLong } from '../lib/format';
-import { GLOBAL_ROLE_LABEL, type InvitePreview } from '../lib/types';
+import type { InvitePreview } from '../lib/types';
 import { toast } from '../lib/toasts';
 import { AuthShell } from '../components/AppShell';
 import { Button, LinkButton } from '../components/Button';
@@ -103,17 +103,20 @@ export function Join({ token }: { token: string }) {
     );
   }
 
-  const roleWord = preview.role ? GLOBAL_ROLE_LABEL[preview.role].toLowerCase() : 'member';
+  // "an Instructor" reads oddly; the role name is a noun, so lower-case it
+  // unless it is all capitals (an abbreviation someone chose on purpose).
+  const roleName = preview.role_name?.trim() ?? '';
+  const roleWord = roleName && roleName !== roleName.toUpperCase() ? roleName.toLowerCase() : roleName;
+  const article = /^[aeiou]/i.test(roleWord) ? 'an' : 'a';
+  const invitedAs = roleWord ? ` as ${article} ${roleWord}` : '';
 
   return (
     <AuthShell
       title="Set up your account"
       subtitle={
-        preview.role === 'owner'
-          ? 'You are setting up the workspace as its owner.'
-          : preview.inviter && preview.inviter !== 'A teammate'
-            ? `${preview.inviter} invited you as ${/^[aeiou]/.test(roleWord) ? 'an' : 'a'} ${roleWord}.`
-            : `You have been invited as ${/^[aeiou]/.test(roleWord) ? 'an' : 'a'} ${roleWord}.`
+        preview.inviter && preview.inviter !== 'A teammate'
+          ? `${preview.inviter} invited you to the workspace${invitedAs}.`
+          : `You have been invited to the workspace${invitedAs}.`
       }
       footer={
         preview.expires_at ? (

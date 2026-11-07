@@ -26,21 +26,26 @@
  *                   no deadline of its own. The app must still reach a screen
  *                   a person can act on.
  *  4. rest-stall    A made-up live session, and the REST endpoint answered by
- *                   nobody. This is the owner's screenshot: signed in, on
- *                   #/p/<slug>/overview, skeleton forever. The project screen
- *                   must give up and offer Retry.
+ *                   nobody. This is the owner's old screenshot: signed in,
+ *                   skeleton forever. The workspace must say it is still
+ *                   trying, then give up and offer Try again.
  *  5. skeleton-fps  Frames drawn over three seconds while the loading skeleton
  *                   is on screen, because a shimmer that repaints badly reads
  *                   as "the whole thing lags".
  *  6. demo-screens  The signed-in screens, through `#/demo`: the whole app
  *                   against the in-memory fixture (src/admin/demo). Visits
- *                   Today, Plan, a task, the Board, Reports, a report,
- *                   Partners, a partner, Numbers and its editor, About, the
- *                   activity drawer, the rail and the Settings menu, at a
- *                   laptop size and a phone size. Fails on any page error,
- *                   any missing screen, and any request to Supabase at all:
- *                   the demo must never touch the network. `--screens=<dir>`
- *                   saves a PNG of each.
+ *                   Home, Tasks (list, board, a task drawer, new task),
+ *                   Hours (week, the Log hours dialog, team), Inbox, People,
+ *                   a person, Settings (projects, roles), Activity, Account,
+ *                   an old v1 address, and the rail or the phone More sheet,
+ *                   at a laptop size and a phone size. Every screen must show
+ *                   its page title. A step's second selector (a drawer, a
+ *                   dialog, the board) is required once that screen is
+ *                   built; until then it is reported as "not built yet"
+ *                   rather than failed. Fails on any page error, any missing
+ *                   screen, and any request to Supabase at all: the demo must
+ *                   never touch the network. `--screens=<dir>` saves a PNG of
+ *                   each.
  *
  * No account is used and none is needed: every session in here is fabricated
  * locally and every Supabase host request is intercepted, so nothing ever
@@ -294,6 +299,8 @@ const SIGN_IN_FORM = 'input[autocomplete="current-password"]';
 const RETRY_BUTTON = '[data-wb-retry]';
 const BOOT_SKELETON = '.wb-boot-frame .wb-skeleton';
 const PROJECT_SKELETON = '.wb-page .wb-skeleton';
+/** The workspace screen the stall scenarios open. */
+const STALL_ADDRESS = '#/tasks';
 const SLOW_NOTE = '[data-wb-slow]';
 
 const SCENARIOS = {
@@ -400,7 +407,7 @@ const SCENARIOS = {
       [fakeSession({ expired: false })]
     );
     const start = Date.now();
-    await page.goto(`${origin}/admin/#/p/smoke-test/overview`, { waitUntil: 'commit' });
+    await page.goto(`${origin}/admin/${STALL_ADDRESS}`, { waitUntil: 'commit' });
 
     // Both numbers are measured from the navigation, not from each other.
     const slowMs = await timeTo(page, SLOW_NOTE, 9_000);
@@ -437,7 +444,7 @@ const SCENARIOS = {
       },
       [fakeSession({ expired: false })]
     );
-    await page.goto(`${origin}/admin/#/p/smoke-test/overview`, { waitUntil: 'commit' });
+    await page.goto(`${origin}/admin/${STALL_ADDRESS}`, { waitUntil: 'commit' });
     await page.waitForSelector(PROJECT_SKELETON, { timeout: 10_000 }).catch(() => undefined);
     const frames = await measureFps(page, 3_000);
     return {
@@ -452,43 +459,49 @@ const SCENARIOS = {
   async 'demo-screens'(page, origin) {
     const record = instrument(page);
     const base = `${origin}/admin/#/demo`;
-    const project = '/p/sample-grant';
     const shots = [];
     const problems = [];
+    const pending = [];
     const { mkdir } = await import('node:fs/promises');
     if (SCREENS) await mkdir(SCREENS, { recursive: true });
-    // The Board step leaves "board" remembered; every load starts on List.
+    // A remembered view (the Tasks board) or a narrowed rail must not leak
+    // from one step into the next.
     await page.addInitScript(() => {
       try {
-        localStorage.removeItem('wb.taskview');
+        for (const key of Object.keys(localStorage)) if (key.startsWith('wb.') && key !== 'wb.theme') localStorage.removeItem(key);
+        sessionStorage.removeItem('wb.demo.as');
       } catch {
         /* private mode */
       }
     });
 
-    // name, address, what must be on screen, and what to do first.
+    const TITLE = '.wb-page-head .wb-page-title';
+
+    // name, address, the selector that must show, and the one that shows once
+    // the feature is built (null when the title is the whole check).
     const STEPS = [
-      ['today', '/today', '[data-section="team"] .wb-team-row'],
-      ['plan-list', `${project}/plan`, '.wb-row .wb-row-title'],
-      ['task-modal', `${project}/plan?task=demo-task-01`, '.wb-modal .wb-props'],
-      ['board', `${project}/plan`, '.wb-board-column', async () => page.click('.wb-segment:has-text("Board")')],
-      ['reports', `${project}/reports`, '.wb-tl-row.is-next'],
-      ['report-modal', `${project}/reports?report=demo-report-07`, '.wb-modal .wb-checklist'],
-      ['report-precheck', `${project}/reports?report=demo-report-07&check=1`, '.wb-modal .wb-precheck'],
-      ['partners', `${project}/partners`, '.wb-list-row'],
-      ['partner-modal', `${project}/partners?partner=demo-partner-02`, '.wb-modal .wb-props'],
-      ['numbers', `${project}/numbers`, '.wb-measure'],
-      ['edit-numbers-outcomes', `${project}/numbers?edit=outcomes`, '.wb-modal .wb-funnel'],
-      ['edit-numbers-budget', `${project}/numbers?edit=budget`, '.wb-modal .wb-budget-table'],
-      ['about', `${project}/plan?about=start`, '.wb-about .wb-about-heading'],
-      ['about-rulebook', `${project}/overview`, '.wb-about .wb-about-heading'],
-      ['activity-drawer', `${project}/plan?activity=1`, '.wb-modal .wb-activity-person'],
-      ['old-address-outcomes', `${project}/outcomes`, '.wb-card-panel.is-focused, .wb-measure'],
+      ['home', '', TITLE, null],
+      ['tasks-list', '/tasks', TITLE, '[data-wb-tasks-list]'],
+      ['tasks-board', '/tasks?view=board', TITLE, '[data-wb-tasks-board]'],
+      ['task-drawer', '/tasks?task=demo-task-01', TITLE, '.wb-drawer'],
+      ['task-new', '/tasks?new=1', TITLE, '.wb-modal, .wb-drawer'],
+      ['hours-week', '/hours', TITLE, null],
+      ['hours-log', '/hours?log=1', TITLE, '.wb-modal'],
+      ['hours-team', '/hours/team', TITLE, null],
+      ['inbox', '/inbox', TITLE, null],
+      ['inbox-item', '/inbox?item=demo-inquiry-1', TITLE, '.wb-drawer'],
+      ['people', '/people', TITLE, null],
+      ['person', '/people/demo-person-sam', TITLE, null],
+      ['settings-projects', '/settings', TITLE, null],
+      ['settings-roles', '/settings/roles', TITLE, null],
+      ['activity', '/activity', TITLE, null],
+      ['account', '/account', TITLE, '.wb-facts'],
+      ['old-address', '/p/sample-grant/plan', TITLE, null],
     ];
 
     const SIZES = [
       ['desktop', 1280, 900],
-      ['phone', 390, 844],
+      ['phone', 375, 812],
     ];
 
     for (const [size, width, height] of SIZES) {
@@ -496,24 +509,29 @@ const SCENARIOS = {
       const steps = [
         ...STEPS,
         size === 'desktop'
-          ? ['rail-other-projects', `${project}/plan`, '.wb-rail-projects', async () => page.click('.wb-rail-group-head')]
-          : ['more-sheet', `${project}/plan`, '.wb-more-list', async () => page.click('.wb-bottom-link:has-text("More")')],
-        size === 'desktop'
-          ? ['settings-menu', `${project}/plan`, '.wb-menu', async () => page.click('.wb-rail-tool[aria-label="Settings"]')]
-          : ['project-menu', `${project}/plan`, '.wb-menu', async () => page.click('.wb-project-bar [aria-label="Project menu"]')],
+          ? ['rail', '/tasks', '.wb-rail .wb-rail-link.is-active', null]
+          : ['more-sheet', '/tasks', TITLE, '.wb-more-list', async () => page.click('.wb-bottom-link:has-text("More")')],
       ];
-      for (const [name, address, selector, act] of steps) {
-        // A fresh load per screen, so every one starts from the fixture (the
-        // init script below also puts the Plan back on its List view).
+      for (const [name, address, selector, built, act] of steps) {
+        // A fresh load per screen, so every one starts from the fixture.
         await page.goto('about:blank');
         await page.goto(`${base}${address}`, { waitUntil: 'load' });
         try {
-          await page.waitForSelector('.wb-row, .wb-board, .wb-today, .wb-timeline, .wb-list, .wb-numbers', {
-            timeout: 8_000,
-          });
-          if (act) await act();
           await page.waitForSelector(selector, { timeout: 8_000, state: 'visible' });
-          await page.waitForTimeout(350);
+          if (act) await act();
+          if (built) {
+            const shown = await page
+              .waitForSelector(built, { timeout: act ? 4_000 : 2_500, state: 'visible' })
+              .then(() => true)
+              .catch(() => false);
+            if (!shown) {
+              // A placeholder screen is not a failure; a broken built one is.
+              const placeholder = await page.locator('.wb-empty-title:has-text("being built")').count();
+              if (placeholder) pending.push(`${size} ${name}`);
+              else throw new Error(`${built} never appeared`);
+            }
+          }
+          await page.waitForTimeout(300);
           if (SCREENS) {
             const file = `${SCREENS}/${size}-${name}.png`;
             await page.screenshot({ path: file });
@@ -526,10 +544,12 @@ const SCENARIOS = {
     }
 
     const leaked = record.requests.length;
+    const total = SIZES.length * (STEPS.length + 1);
     return {
       pass: problems.length === 0 && record.pageErrors.length === 0 && leaked === 0,
       detail: {
-        screens: `${SIZES.length * (STEPS.length + 2) - problems.length} of ${SIZES.length * (STEPS.length + 2)} reached`,
+        screens: `${total - problems.length} of ${total} reached`,
+        notBuiltYet: pending.length ? pending.join(', ') : 'none',
         supabaseRequests: `${leaked} (must be 0)`,
         problems: problems.length ? problems.join(' | ') : 'none',
         saved: SCREENS ? `${shots.length} screenshots in ${SCREENS}` : 'not saved (pass --screens=<dir>)',

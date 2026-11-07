@@ -1,66 +1,53 @@
 /**
  * The frame every signed-in screen sits in.
  *
- * The portal revolves around one project, so the rail is built around it:
+ * Desktop: a left rail, 232px, collapsible to icons.
  *
  *   [logo]
- *   Home project          its name, then Plan · Reports · Partners · Numbers
- *   Other projects        folded away; the open one shows its own sections;
- *                         archived ones behind a second fold; "All projects"
- *   Today · People · Account
- *   footer                you (sign out, theme) · Settings (new project,
- *                         import) · narrow the rail
+ *   Home · Tasks · Hours · Inbox · People · Settings
+ *                     (Inbox only with inquiries.view, with the count of new
+ *                     ones; Settings only with projects.manage or roles.manage)
+ *   who is here now   presence, from the workspace channel
+ *   you               avatar, name, role · theme · sign out · narrow the rail
  *
- * Phone: a top bar, and a bottom bar with the open project's sections plus
- * "More", which opens a sheet with everything else. The brand is the school
- * logo, never a text wordmark; the lockup gradient is only the 3px rule along
- * the top of this shell and of the sign-in frame.
+ * Phone: a top bar (logo mark, the page title, one action the screen hands
+ * over through PhoneAction) and a bottom bar (Home · Tasks · Hours · More);
+ * More opens a sheet with everything else.
+ *
+ * The split hairline (Med teal, then Tech indigo, hard stop) along the very
+ * top of the shell and the logo are the whole brand presence.
  */
 import { createContext, type ComponentChildren } from 'preact';
 import { useContext, useEffect, useState } from 'preact/hooks';
-import { APP_NAME, APP_SUBTITLE } from '../lib/config';
-import { displayName, isAdmin, signOut, useAuth } from '../lib/auth';
-import { href, navigate, useRoute } from '../lib/router';
+import { APP_NAME } from '../lib/config';
+import { displayName, roleName, signOut, useAuth } from '../lib/auth';
+import { href, navigate, useRoute, type RouteName } from '../lib/router';
 import { useTheme } from '../lib/theme';
-import { GLOBAL_ROLE_LABEL, type Project } from '../lib/types';
 import { toast } from '../lib/toasts';
-import { openGlobalDialog, useGlobalDialog } from '../lib/ui';
-import {
-  TABS,
-  TAB_LABEL,
-  clearProjectList,
-  loadProjectList,
-  pickPrimary,
-  useProjectList,
-  type TabKey,
-} from '../lib/projects';
-import { NewProjectDialog } from '../screens/NewProjectDialog';
-import { ImportDialog } from '../screens/ImportDialog';
-import { Avatar } from './Avatar';
+import { useShellChrome } from '../lib/ui';
+import { useCan, useCanAny, useMyRole } from '../lib/perms';
+import { closeWorkspace, setPresence, useNewInquiryCount, usePresence, useWorkspace } from '../lib/workspace';
+import { Avatar, AvatarStack } from './Avatar';
 import { Button } from './Button';
-import { Menu, type MenuItem } from './Menu';
 import { Modal } from './Modal';
+import { ConnectionBanner } from './SchemaNotice';
 import {
   IconAccount,
-  IconChart,
+  IconActivity,
+  IconBell,
   IconChevron,
-  IconChevronDown,
-  IconDocument,
+  IconClock,
+  IconHome,
   IconMenu,
   IconMoon,
   IconPeople,
-  IconPlan,
-  IconPlus,
-  IconProjects,
   IconSettings,
   IconSignOut,
   IconSun,
-  IconToday,
-  IconUpload,
+  IconTasks,
 } from './Icons';
 
 const RAIL_KEY = 'wb.rail';
-const OTHERS_KEY = 'wb.rail.others';
 
 /**
  * The school logo, resolved by the Astro page and handed to the island as a
@@ -77,9 +64,9 @@ export interface Brand {
 export const BrandContext = createContext<Brand>({ src: '', width: 366, height: 120 });
 
 /**
- * `mark` crops the lockup down to the badge on its left, for the narrow rail.
- * The badge occupies the first 550 of the 1830 source pixels, which is the
- * 11 / 12 box the stylesheet gives it.
+ * `mark` crops the lockup down to the badge on its left, for the narrow rail
+ * and the phone top bar. The badge is the first 550 of the 1830 source
+ * pixels, which is the box the stylesheet gives `.wb-logo-mark`.
  */
 export function Logo({ height, mark = false }: { height: number; mark?: boolean }) {
   const brand = useContext(BrandContext);
@@ -98,19 +85,11 @@ export function Logo({ height, mark = false }: { height: number; mark?: boolean 
   );
   if (!mark) return image;
   return (
-    <span class="wb-logo-mark" style={{ height: `${height}px` }}>
+    <span class="wb-logo-mark" style={{ height: `${height}px`, width: `${Math.round(width * (550 / 1830))}px` }}>
       {image}
     </span>
   );
 }
-
-export const TAB_ICON: Record<TabKey, ComponentChildren> = {
-  plan: <IconPlan />,
-  reports: <IconDocument />,
-  partners: <IconPeople />,
-  numbers: <IconChart />,
-  notes: <IconDocument />,
-};
 
 function remembered(key: string, fallback: boolean): boolean {
   try {
@@ -129,296 +108,184 @@ function remember(key: string, value: boolean): void {
   }
 }
 
-/** Sign out, then the sign-in screen. */
-async function leave(): Promise<void> {
+/** Sign out, close the workspace, then the sign-in screen. */
+export async function leave(): Promise<void> {
   const result = await signOut();
-  if (!result.ok && result.error) toast.bad(result.error.message);
-  else {
-    clearProjectList();
-    navigate('/login', { replace: true });
+  if (!result.ok && result.error) {
+    toast.bad(result.error.message);
+    return;
   }
+  closeWorkspace();
+  navigate('/login', { replace: true });
+}
+
+interface Place {
+  key: string;
+  label: string;
+  path: string;
+  icon: ComponentChildren;
+  /** Route names that light this place up. */
+  routes: RouteName[];
+  count?: number;
 }
 
 export function AppShell({ children }: { children: ComponentChildren }) {
   const auth = useAuth();
   const route = useRoute();
   const theme = useTheme();
-  const admin = isAdmin(auth);
-  const list = useProjectList();
-  const dialog = useGlobalDialog();
+  const chrome = useShellChrome();
+  const workspace = useWorkspace();
+  const role = useMyRole();
+  const presence = usePresence();
+  const newInquiries = useNewInquiryCount();
+  const showInbox = useCan('inquiries.view');
+  const showSettings = useCanAny('projects.manage', 'roles.manage');
   const [collapsed, setCollapsed] = useState(() => remembered(RAIL_KEY, false));
-  const [othersOpen, setOthersOpen] = useState(() => remembered(OTHERS_KEY, false));
-  const [archivedOpen, setArchivedOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
   useEffect(() => remember(RAIL_KEY, collapsed), [collapsed]);
-  useEffect(() => remember(OTHERS_KEY, othersOpen), [othersOpen]);
 
-  // The project list drives the rail and the home redirect. Read it once per
-  // signed-in person; the screens that change it ask for it again.
+  // Moving anywhere closes the phone sheet, and tells the others where we are.
   useEffect(() => {
-    if (auth.userId) void loadProjectList();
-  }, [auth.userId]);
+    setMoreOpen(false);
+    setPresence({ where: route.name });
+  }, [route.path]);
 
-  // Moving anywhere closes the phone sheet.
-  useEffect(() => setMoreOpen(false), [route.path]);
-
-  const projects = list.projects;
-  const primary = pickPrimary(projects);
-  const currentSlug = route.name === 'project' ? route.params.slug ?? '' : '';
-  const currentTab = route.params.tab ?? 'plan';
-  const current = projects.find((project) => project.slug === currentSlug) ?? null;
-  const others = projects.filter((project) => project.status === 'active' && project.id !== primary?.id);
-  const archived = projects.filter((project) => project.status === 'archived');
-
-  // The open project always shows, even when it lives in a folded group.
-  useEffect(() => {
-    if (current && current.id !== primary?.id) {
-      if (current.status === 'archived') setArchivedOpen(true);
-      else setOthersOpen(true);
-    }
-  }, [current?.id, primary?.id]);
-
-  const toggleTheme: MenuItem = {
-    key: 'theme',
-    label: theme.dark ? 'Switch to the light theme' : 'Switch to the dark theme',
-    icon: theme.dark ? <IconSun size={16} /> : <IconMoon size={16} />,
-    onSelect: theme.toggle,
+  const home: Place = { key: 'home', label: 'Home', path: '/', icon: <IconHome />, routes: ['home'] };
+  const tasks: Place = { key: 'tasks', label: 'Tasks', path: '/tasks', icon: <IconTasks />, routes: ['tasks'] };
+  const hours: Place = { key: 'hours', label: 'Hours', path: '/hours', icon: <IconClock />, routes: ['hours', 'hours-team'] };
+  const inbox: Place = {
+    key: 'inbox',
+    label: 'Inbox',
+    path: '/inbox',
+    icon: <IconBell />,
+    routes: ['inbox'],
+    count: newInquiries,
   };
+  const people: Place = { key: 'people', label: 'People', path: '/people', icon: <IconPeople />, routes: ['people', 'person'] };
+  const settings: Place = { key: 'settings', label: 'Settings', path: '/settings', icon: <IconSettings />, routes: ['settings'] };
+  const activity: Place = { key: 'activity', label: 'Activity', path: '/activity', icon: <IconActivity />, routes: ['activity'] };
+  const account: Place = { key: 'account', label: 'Account', path: '/account', icon: <IconAccount />, routes: ['account'] };
 
-  const accountMenu: MenuItem[] = [
-    {
-      key: 'account',
-      label: 'Account',
-      icon: <IconAccount size={16} />,
-      onSelect: () => navigate('/account'),
-    },
-    toggleTheme,
-    {
-      key: 'signout',
-      label: 'Sign out',
-      icon: <IconSignOut size={16} />,
-      divider: true,
-      onSelect: () => void leave(),
-    },
-  ];
+  const rail: Place[] = [home, tasks, hours, ...(showInbox ? [inbox] : []), people, ...(showSettings ? [settings] : [])];
+  const bottom: Place[] = [home, tasks, hours];
+  const more: Place[] = [...(showInbox ? [inbox] : []), people, activity, ...(showSettings ? [settings] : []), account];
 
-  /** New project and Import: used rarely, so they live here. */
-  const settingsMenu: MenuItem[] = [
-    {
-      key: 'all',
-      label: 'All projects',
-      icon: <IconProjects size={16} />,
-      onSelect: () => navigate('/projects'),
-    },
-    {
-      key: 'new',
-      label: 'New project',
-      icon: <IconPlus size={16} />,
-      disabled: !admin,
-      hint: admin ? undefined : 'Administrators only',
-      divider: true,
-      onSelect: () => openGlobalDialog('new-project'),
-    },
-    {
-      key: 'import',
-      label: 'Import a project from a file',
-      icon: <IconUpload size={16} />,
-      disabled: !admin,
-      hint: admin ? undefined : 'Administrators only',
-      onSelect: () => openGlobalDialog('import'),
-    },
-    { ...toggleTheme, divider: true },
-  ];
+  const isActive = (place: Place) => place.routes.includes(route.name);
+  const moreActive = more.some(isActive);
+  const others = presence.filter((peer) => peer.user_id !== auth.userId);
+  const name = displayName(auth);
+  const roleWord = role?.name ?? roleName(auth);
 
-  const person = (
-    <span class="wb-account-text">
-      <span class="wb-account-name">{displayName(auth)}</span>
-      <span class="wb-account-role">
-        {auth.profile ? GLOBAL_ROLE_LABEL[auth.profile.role] : 'Signed in'}
+  const countLabel = (place: Place) =>
+    place.count ? (
+      <span class="wb-nav-count">
+        <span class="wb-sr">, </span>
+        {place.count}
+        <span class="wb-sr"> new</span>
       </span>
-    </span>
-  );
-
-  const railLink = (key: string, label: string, path: string, icon: ComponentChildren, active: boolean) => (
-    <li key={key}>
-      <a
-        class={`wb-rail-link${active ? ' is-active' : ''}`}
-        href={href(path)}
-        aria-current={active ? 'page' : undefined}
-        title={collapsed ? label : undefined}
-      >
-        <span class="wb-rail-icon">{icon}</span>
-        <span class="wb-rail-label">{label}</span>
-      </a>
-    </li>
-  );
-
-  /** A project's own sections, under its name. */
-  const sections = (project: Project) => (
-    <ul class="wb-rail-sub" aria-label={`${project.name} sections`}>
-      {TABS[project.kind].map((tab) =>
-        railLink(
-          `${project.id}-${tab}`,
-          TAB_LABEL[tab],
-          `/p/${project.slug}/${tab}`,
-          TAB_ICON[tab],
-          project.slug === currentSlug && currentTab === tab
-        )
-      )}
-    </ul>
-  );
-
-  const projectLink = (project: Project) => (
-    <li key={project.id}>
-      <a
-        class={`wb-rail-project-link${project.slug === currentSlug ? ' is-current' : ''}`}
-        href={href(`/p/${project.slug}/plan`)}
-        data-track={project.track}
-        title={collapsed ? project.name : undefined}
-      >
-        <span class="wb-rail-swatch" aria-hidden="true" />
-        <span class="wb-rail-label">{project.name}</span>
-      </a>
-      {project.slug === currentSlug && !collapsed ? sections(project) : null}
-    </li>
-  );
-
-  /* The bottom bar follows the open project, or home when none is open. */
-  const barProject = current ?? primary;
-  const barTabs = barProject ? TABS[barProject.kind] : [];
+    ) : null;
 
   return (
     <div class={`wb-shell${collapsed ? ' is-collapsed' : ''}`}>
-      <div class="wb-topline" aria-hidden="true" />
+      <div class="wb-split" aria-hidden="true" />
+      <a class="wb-skip" href="#wb-main">
+        Skip to the page
+      </a>
 
       {/* Phone: top bar */}
       <header class="wb-topbar">
-        <a class="wb-topbar-brand" href={href('/')} title={APP_SUBTITLE}>
-          <Logo height={26} />
+        <a class="wb-topbar-brand" href={href('/')} aria-label={`${APP_NAME}, home`}>
+          <Logo height={28} mark />
         </a>
-        {barProject ? <span class="wb-topbar-project">{barProject.name}</span> : null}
-        <Menu
-          align="right"
-          items={accountMenu}
-          trigger={(props) => (
-            <button type="button" class="wb-account-button" aria-label="Your account" {...props}>
-              <Avatar id={auth.userId} name={auth.profile?.full_name} email={auth.email} size={32} />
-            </button>
-          )}
-        />
+        <p class="wb-topbar-title">{chrome.title}</p>
+        <div class="wb-topbar-action">
+          {chrome.action ? (
+            <Button variant="primary" size="sm" icon={chrome.action.icon} onClick={chrome.action.onClick}>
+              {chrome.action.label}
+            </Button>
+          ) : null}
+        </div>
       </header>
 
       {/* Desktop: left rail */}
       <nav class="wb-rail" aria-label="Main">
-        <a class="wb-rail-brand" href={href('/')} title={APP_SUBTITLE}>
-          {collapsed ? (
-            <Logo height={30} mark />
-          ) : (
-            <>
-              <Logo height={32} />
-              <span class="wb-rail-brand-caption">Workbench</span>
-            </>
-          )}
+        <a class="wb-rail-brand" href={href('/')} aria-label={`${APP_NAME}, home`}>
+          {collapsed ? <Logo height={30} mark /> : <Logo height={34} />}
         </a>
 
-        <div class="wb-rail-scroll">
-          {primary ? (
-            <section class="wb-rail-home" data-track={primary.track} aria-label="Home project">
-              <a
-                class={`wb-rail-home-name${primary.slug === currentSlug ? ' is-current' : ''}`}
-                href={href(`/p/${primary.slug}/plan`)}
-                title={collapsed ? primary.name : undefined}
-              >
-                <span class="wb-rail-swatch" aria-hidden="true" />
-                <span class="wb-rail-label">{primary.name}</span>
-              </a>
-              {sections(primary)}
-            </section>
-          ) : null}
-
-          {others.length || archived.length ? (
-            <section class="wb-rail-group">
-              <button
-                type="button"
-                class="wb-rail-group-head"
-                aria-expanded={othersOpen}
-                onClick={() => setOthersOpen((open) => !open)}
-                title={collapsed ? 'Other projects' : undefined}
-              >
-                <span class="wb-rail-icon">
-                  <IconProjects />
-                </span>
-                <span class="wb-rail-label">Other projects</span>
-                <span class="wb-rail-count wb-mono">{others.length}</span>
-                <IconChevronDown size={14} class={`wb-rail-caret${othersOpen ? ' wb-flip-y' : ''}`} />
-              </button>
-              {othersOpen && !collapsed ? (
-                <ul class="wb-rail-projects">
-                  {others.map(projectLink)}
-                  {archived.length ? (
-                    <li>
-                      <button
-                        type="button"
-                        class="wb-rail-archived"
-                        aria-expanded={archivedOpen}
-                        onClick={() => setArchivedOpen((open) => !open)}
-                      >
-                        Archived <span class="wb-mono">{archived.length}</span>
-                        <IconChevronDown size={13} class={archivedOpen ? 'wb-flip-y' : ''} />
-                      </button>
-                      {archivedOpen ? <ul class="wb-rail-projects">{archived.map(projectLink)}</ul> : null}
-                    </li>
-                  ) : null}
-                  <li>
-                    <a class="wb-rail-all" href={href('/projects')}>
-                      All projects
-                    </a>
-                  </li>
-                </ul>
-              ) : null}
-            </section>
-          ) : null}
-
-          <ul class="wb-rail-nav">
-            {railLink('today', 'Today', '/today', <IconToday />, route.name === 'today')}
-            {admin ? railLink('people', 'People', '/people', <IconPeople />, route.name === 'people') : null}
-            {railLink('account', 'Account', '/account', <IconAccount />, route.name === 'account')}
-            {!others.length && !archived.length
-              ? railLink('projects', 'All projects', '/projects', <IconProjects />, route.name === 'projects')
-              : null}
-          </ul>
-        </div>
+        <ul class="wb-rail-nav">
+          {rail.map((place) => {
+            const active = isActive(place);
+            return (
+              <li key={place.key}>
+                <a
+                  class={`wb-rail-link${active ? ' is-active' : ''}`}
+                  href={href(place.path)}
+                  aria-current={active ? 'page' : undefined}
+                  title={collapsed ? place.label : undefined}
+                >
+                  <span class="wb-rail-icon">{place.icon}</span>
+                  <span class="wb-rail-label">{place.label}</span>
+                  {countLabel(place)}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
 
         <div class="wb-rail-foot">
-          <Menu
-            align="left"
-            placement="up"
-            items={accountMenu}
-            trigger={(props) => (
-              <button type="button" class="wb-rail-account" {...props}>
-                <Avatar id={auth.userId} name={auth.profile?.full_name} email={auth.email} size={28} />
-                {person}
-              </button>
-            )}
-          />
+          {others.length && !collapsed ? (
+            <div class="wb-rail-here">
+              <span class="wb-rail-here-label">Here now</span>
+              <AvatarStack
+                label="Here now"
+                size={24}
+                max={6}
+                activeIds={others.map((peer) => peer.user_id)}
+                people={others.map((peer) => ({ id: peer.user_id, name: peer.name }))}
+              />
+            </div>
+          ) : null}
+
+          <a
+            class={`wb-rail-person${route.name === 'account' ? ' is-active' : ''}`}
+            href={href('/account')}
+            aria-current={route.name === 'account' ? 'page' : undefined}
+            title={collapsed ? `${name}, account` : undefined}
+          >
+            <Avatar id={auth.userId} name={auth.profile?.full_name} email={auth.email} size={30} />
+            <span class="wb-rail-person-text">
+              <span class="wb-rail-person-name">{name}</span>
+              {roleWord ? <span class="wb-rail-person-role">{roleWord}</span> : null}
+            </span>
+          </a>
+
           <div class="wb-rail-tools">
-            <Menu
-              align="left"
-              placement="up"
-              label="Settings"
-              items={settingsMenu}
-              trigger={(props) => (
-                <button type="button" class="wb-rail-tool" aria-label="Settings" title="Settings" {...props}>
-                  <IconSettings />
-                </button>
-              )}
-            />
             <button
               type="button"
               class="wb-rail-tool"
+              onClick={theme.toggle}
+              aria-label={theme.dark ? 'Use the light theme' : 'Use the dark theme'}
+              title={theme.dark ? 'Light theme' : 'Dark theme'}
+            >
+              {theme.dark ? <IconSun size={17} /> : <IconMoon size={17} />}
+            </button>
+            <button
+              type="button"
+              class="wb-rail-tool"
+              onClick={() => void leave()}
+              aria-label="Sign out"
+              title="Sign out"
+            >
+              <IconSignOut size={17} />
+            </button>
+            <button
+              type="button"
+              class="wb-rail-tool wb-rail-collapse"
               onClick={() => setCollapsed((value) => !value)}
               aria-label={collapsed ? 'Widen the sidebar' : 'Narrow the sidebar'}
+              aria-pressed={collapsed}
               title={collapsed ? 'Widen the sidebar' : 'Narrow the sidebar'}
             >
               <IconChevron size={16} class={collapsed ? '' : 'wb-flip'} />
@@ -427,156 +294,115 @@ export function AppShell({ children }: { children: ComponentChildren }) {
         </div>
       </nav>
 
-      <main class="wb-main" id="wb-main">
+      <main class="wb-main" id="wb-main" tabIndex={-1}>
+        {workspace.connection === 'reconnecting' || workspace.connection === 'offline' ? (
+          <ConnectionBanner state={workspace.connection} />
+        ) : null}
         <div class="wb-main-inner">{children}</div>
       </main>
 
       {/* Phone: bottom bar */}
       <nav class="wb-bottombar" aria-label="Main">
-        {barProject
-          ? barTabs.map((tab) => {
-              const active = route.name === 'project' && barProject.slug === currentSlug && currentTab === tab;
-              return (
-                <a
-                  key={tab}
-                  class={`wb-bottom-link${active ? ' is-active' : ''}`}
-                  href={href(`/p/${barProject.slug}/${tab}`)}
-                  aria-current={active ? 'page' : undefined}
-                >
-                  <span class="wb-bottom-icon">{TAB_ICON[tab]}</span>
-                  <span class="wb-bottom-label">{TAB_LABEL[tab]}</span>
-                </a>
-              );
-            })
-          : [
-              <a
-                key="today"
-                class={`wb-bottom-link${route.name === 'today' ? ' is-active' : ''}`}
-                href={href('/today')}
-              >
-                <span class="wb-bottom-icon">
-                  <IconToday />
-                </span>
-                <span class="wb-bottom-label">Today</span>
-              </a>,
-            ]}
+        {bottom.map((place) => {
+          const active = isActive(place);
+          return (
+            <a
+              key={place.key}
+              class={`wb-bottom-link${active ? ' is-active' : ''}`}
+              href={href(place.path)}
+              aria-current={active ? 'page' : undefined}
+            >
+              <span class="wb-bottom-icon">{place.icon}</span>
+              <span class="wb-bottom-label">{place.label}</span>
+            </a>
+          );
+        })}
         <button
           type="button"
-          class={`wb-bottom-link${moreOpen || (route.name !== 'project' && route.name !== 'today') ? ' is-active' : ''}`}
+          class={`wb-bottom-link${moreOpen || moreActive ? ' is-active' : ''}`}
           aria-haspopup="dialog"
           aria-expanded={moreOpen}
           onClick={() => setMoreOpen(true)}
         >
           <span class="wb-bottom-icon">
             <IconMenu />
+            {showInbox && newInquiries ? <span class="wb-bottom-dot" aria-hidden="true" /> : null}
           </span>
           <span class="wb-bottom-label">More</span>
         </button>
       </nav>
 
       <Modal open={moreOpen} title="More" onClose={() => setMoreOpen(false)} size="sm" class="wb-more" initialFocus="panel">
+        <div class="wb-more-person">
+          <Avatar id={auth.userId} name={auth.profile?.full_name} email={auth.email} size={36} />
+          <span class="wb-rail-person-text">
+            <span class="wb-rail-person-name">{name}</span>
+            {roleWord ? <span class="wb-rail-person-role">{roleWord}</span> : null}
+          </span>
+        </div>
         <ul class="wb-more-list">
-          <li>
-            <a class="wb-more-link" href={href('/today')}>
-              <IconToday /> Today
-            </a>
-          </li>
-          {others.map((project) => (
-            <li key={project.id}>
-              <a class="wb-more-link" href={href(`/p/${project.slug}/plan`)} data-track={project.track}>
-                <span class="wb-rail-swatch" aria-hidden="true" /> {project.name}
+          {more.map((place) => (
+            <li key={place.key}>
+              <a
+                class={`wb-more-link${isActive(place) ? ' is-active' : ''}`}
+                href={href(place.path)}
+                aria-current={isActive(place) ? 'page' : undefined}
+              >
+                <span class="wb-rail-icon">{place.icon}</span>
+                <span class="wb-rail-label">{place.label}</span>
+                {countLabel(place)}
               </a>
             </li>
           ))}
-          {primary && current && current.id !== primary.id ? (
-            <li>
-              <a class="wb-more-link" href={href(`/p/${primary.slug}/plan`)} data-track={primary.track}>
-                <span class="wb-rail-swatch" aria-hidden="true" /> {primary.name}
-              </a>
-            </li>
-          ) : null}
-          <li>
-            <a class="wb-more-link" href={href('/projects')}>
-              <IconProjects /> All projects
-            </a>
-          </li>
-          {admin ? (
-            <li>
-              <a class="wb-more-link" href={href('/people')}>
-                <IconPeople /> People
-              </a>
-            </li>
-          ) : null}
-          <li>
-            <a class="wb-more-link" href={href('/account')}>
-              <IconAccount /> Account
-            </a>
-          </li>
         </ul>
         <div class="wb-more-tools">
-          {admin ? (
-            <>
-              <Button variant="secondary" icon={<IconPlus size={16} />} onClick={() => openGlobalDialog('new-project')}>
-                New project
-              </Button>
-              <Button variant="secondary" icon={<IconUpload size={16} />} onClick={() => openGlobalDialog('import')}>
-                Import a project
-              </Button>
-            </>
-          ) : null}
-          <Button variant="quiet" icon={theme.dark ? <IconSun size={16} /> : <IconMoon size={16} />} onClick={theme.toggle}>
-            {theme.dark ? 'Light theme' : 'Dark theme'}
+          <Button variant="secondary" icon={theme.dark ? <IconSun size={16} /> : <IconMoon size={16} />} onClick={theme.toggle}>
+            {theme.dark ? 'Use the light theme' : 'Use the dark theme'}
           </Button>
           <Button variant="quiet" icon={<IconSignOut size={16} />} onClick={() => void leave()}>
             Sign out
           </Button>
         </div>
       </Modal>
-
-      <NewProjectDialog
-        open={dialog === 'new-project'}
-        onClose={() => {
-          openGlobalDialog(null);
-          void loadProjectList();
-        }}
-      />
-      <ImportDialog
-        open={dialog === 'import'}
-        onClose={() => {
-          openGlobalDialog(null);
-          void loadProjectList();
-        }}
-      />
     </div>
   );
 }
 
-/** The centred frame the sign-in, join and reset screens sit in. */
+/**
+ * The frame the sign-in, join and reset screens sit in: paper, the split
+ * hairline along the top, and one white panel inside the bracket.
+ */
 export function AuthShell({
   title,
   subtitle,
+  notice,
   children,
   footer,
 }: {
   title: string;
   subtitle?: string;
+  /** A message above the form, e.g. why the person was signed out. */
+  notice?: ComponentChildren;
   children: ComponentChildren;
   footer?: ComponentChildren;
 }) {
   const theme = useTheme();
   return (
     <div class="wb-auth">
-      <div class="wb-auth-topline" aria-hidden="true" />
-      <div class="wb-auth-panel">
-        <div class="wb-auth-brand">
-          <Logo height={56} />
-          <p class="wb-auth-sub">Workbench · staff workspace</p>
+      <div class="wb-split" aria-hidden="true" />
+      <main class="wb-auth-main">
+        <div class="wb-auth-panel wb-bracket">
+          <div class="wb-auth-brand">
+            <Logo height={52} />
+            <p class="wb-auth-sub">{APP_NAME}</p>
+          </div>
+          <h1 class="wb-auth-title">{title}</h1>
+          {subtitle ? <p class="wb-auth-lead">{subtitle}</p> : null}
+          {notice}
+          {children}
         </div>
-        <h1 class="wb-auth-title">{title}</h1>
-        {subtitle ? <p class="wb-auth-lead">{subtitle}</p> : null}
-        {children}
-      </div>
-      {footer ? <div class="wb-auth-footer">{footer}</div> : null}
+        {footer ? <div class="wb-auth-footer">{footer}</div> : null}
+      </main>
       <Button
         class="wb-auth-theme"
         variant="quiet"
@@ -584,9 +410,8 @@ export function AuthShell({
         onClick={theme.toggle}
         icon={theme.dark ? <IconSun size={16} /> : <IconMoon size={16} />}
       >
-        {theme.dark ? 'Light' : 'Dark'}
+        {theme.dark ? 'Light theme' : 'Dark theme'}
       </Button>
-      <p class="wb-auth-name">{APP_NAME}</p>
     </div>
   );
 }

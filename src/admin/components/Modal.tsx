@@ -1,11 +1,9 @@
 /**
- * The one overlay every detail view uses: a task, a report, a partner, the
- * About pages, the activity drawer, the numbers editors, and (through
- * `Dialog`) every form.
+ * The centred overlay: every form (through `Dialog`), the confirm, the phone
+ * More sheet. The task drawer is `Drawer`, which shares the keyboard and focus
+ * handling below through `useOverlay`.
  *
- *  - centred panel by default; `side` makes it a drawer on the right from
- *    1100px up, where there is room to keep the list in view beside it;
- *  - a full-screen sheet on a phone, whatever it is on a desktop;
+ *  - centred panel by default; a full-screen sheet on a phone;
  *  - Escape closes the top-most one only, focus moves in on open and back to
  *    whatever had it on close, Tab stays inside, and the page behind does not
  *    scroll.
@@ -30,8 +28,6 @@ export interface ModalProps {
   /** Things beside the close button: avatars, a menu, a toggle. */
   actions?: ComponentChildren;
   size?: 'sm' | 'md' | 'lg' | 'xl';
-  /** A drawer on the right on a wide screen. */
-  side?: boolean;
   hideClose?: boolean;
   /** Forms want the first field; reading views want the panel itself. */
   initialFocus?: 'first' | 'panel';
@@ -44,28 +40,27 @@ const FOCUSABLE =
 /** Open overlays, bottom first. Only the last one listens to the keyboard. */
 const stack: string[] = [];
 
-export function Modal({
+/**
+ * Keyboard and focus for anything that sits over the page: focus moves in on
+ * open and back to whatever had it on close, Tab stays inside, Escape closes
+ * the top-most overlay only, and the page behind does not scroll.
+ */
+export function useOverlay({
   open,
-  title,
-  label,
-  description,
+  id,
+  panel,
   onClose,
-  children,
-  footer,
-  actions,
-  size = 'md',
-  side = false,
-  hideClose = false,
   initialFocus = 'first',
-  class: className,
-}: ModalProps) {
-  const panel = useRef<HTMLDivElement>(null);
-  const id = useId();
-  const titleId = `${id}-title`;
-  const descriptionId = `${id}-desc`;
-  const closeRef = useRef(onClose);
-  closeRef.current = onClose;
-
+  bodySelector,
+}: {
+  open: boolean;
+  id: string;
+  panel: { current: HTMLElement | null };
+  onClose: { current: () => void };
+  initialFocus?: 'first' | 'panel';
+  /** Where "first" looks for a field, so the close button is skipped. */
+  bodySelector: string;
+}): void {
   useEffect(() => {
     if (!open) return undefined;
     stack.push(id);
@@ -73,7 +68,7 @@ export function Modal({
     const node = panel.current;
 
     if (initialFocus === 'first') {
-      const first = [...(node?.querySelectorAll<HTMLElement>(`.wb-modal-body ${FOCUSABLE}`) ?? [])][0];
+      const first = [...(node?.querySelectorAll<HTMLElement>(`${bodySelector} ${FOCUSABLE}`) ?? [])][0];
       (first ?? node)?.focus();
     } else {
       node?.focus();
@@ -96,7 +91,7 @@ export function Modal({
           }
         }
         event.stopPropagation();
-        closeRef.current();
+        onClose.current();
         return;
       }
       if (event.key !== 'Tab' || !node) return;
@@ -127,16 +122,40 @@ export function Modal({
     // `onClose` is read through a ref so a parent re-render does not re-run this.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, id]);
+}
+
+export function Modal({
+  open,
+  title,
+  label,
+  description,
+  onClose,
+  children,
+  footer,
+  actions,
+  size = 'md',
+  hideClose = false,
+  initialFocus = 'first',
+  class: className,
+}: ModalProps) {
+  const panel = useRef<HTMLDivElement>(null);
+  const id = useId();
+  const titleId = `${id}-title`;
+  const descriptionId = `${id}-desc`;
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+
+  useOverlay({ open, id, panel, onClose: closeRef, initialFocus, bodySelector: '.wb-modal-body' });
 
   if (!open) return null;
 
   return (
     <div
-      class={`wb-modal-overlay${side ? ' is-side' : ''}`}
+      class="wb-modal-overlay"
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
     >
       <div
-        class={`wb-modal wb-modal-${size}${side ? ' is-side' : ''}${className ? ` ${className}` : ''}`}
+        class={`wb-modal wb-modal-${size}${className ? ` ${className}` : ''}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby={label ? undefined : titleId}

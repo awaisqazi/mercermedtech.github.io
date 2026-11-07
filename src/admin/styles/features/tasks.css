@@ -1,0 +1,6 @@
+/* ==========================================================================
+   Tasks
+   Styles for features/tasks: list, board, filters, the task drawer, checklist, comments, history.
+   Owned by the Tasks feature alone, scoped under `.wb`, and built only from
+   the tokens and pieces in ../workbench.css (read its header first).
+   ========================================================================== */

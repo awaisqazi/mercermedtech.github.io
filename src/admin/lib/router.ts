@@ -4,21 +4,27 @@
  * GitHub Pages serves static files and cannot rewrite unknown paths onto one
  * app shell, so the whole portal lives at /admin/ and the route is in the hash:
  *
- *   #/                     the home project's Plan (see projects.ts)
- *   #/today                your work, what is due, the team, what changed
- *   #/login                sign in
- *   #/join/<token>         accept an invitation
- *   #/reset                set a new password
- *   #/projects             every project, as a list
- *   #/p/<slug>             project, default tab (Plan)
- *   #/p/<slug>/<tab>       project, named tab: plan, reports, partners, numbers
- *                          (general projects: plan, notes). Modals live in the
- *                          query: ?task=<id>, ?report=<id>, ?partner=<id>,
- *                          ?about=<section>, ?activity=1, ?edit=outcomes|budget
- *   #/people               members and invitations (administrators)
+ *   #/                     Home
+ *   #/tasks                Tasks. Query: view=list|board, scope=mine|all,
+ *                          project=<id>, person=<id>, status=<s>, q=<text>;
+ *                          task=<id> opens the drawer, new=1 the new-task form
+ *   #/hours                My hours, one week. Query: week=YYYY-MM-DD (the
+ *                          Monday), log=1 opens Log hours, entry=<id> edits one
+ *   #/hours/team           Everyone's hours. Query: month=YYYY-MM, person=<id>,
+ *                          project=<id>
+ *   #/inbox                the public forms' responses. Query: item=<id>
+ *                          opens the drawer; status=, source= filter
+ *   #/people               the directory, and invitations
+ *   #/people/<id>          one person
+ *   #/activity             everything that changed
+ *   #/settings             Projects tab; #/settings/roles the Roles tab
  *   #/account              your own settings
+ *   #/login  #/join/<token>  #/reset
  *   #/demo/...             any of the above against the in-memory fixture
  *                          (src/admin/demo), for review without an account
+ *
+ * The v1 addresses (#/today, #/p/<slug>/..., #/projects) are recognised and
+ * sent to #/ so an old bookmark lands somewhere useful instead of a 404.
  *
  * Supabase also puts its own recovery parameters in the hash
  * (`#access_token=...&type=recovery`). Anything that does not start with `#/`
@@ -30,14 +36,20 @@ import { DEMO, DEMO_PREFIX } from '../demo/mode';
 
 export type RouteName =
   | 'home'
-  | 'today'
+  | 'tasks'
+  | 'hours'
+  | 'hours-team'
+  | 'inbox'
+  | 'people'
+  | 'person'
+  | 'activity'
+  | 'settings'
+  | 'account'
   | 'login'
   | 'join'
   | 'reset'
-  | 'projects'
-  | 'project'
-  | 'people'
-  | 'account'
+  /** A v1 address: AdminApp replaces it with #/. */
+  | 'legacy'
   | 'unknown';
 
 export interface Route {
@@ -94,8 +106,34 @@ export function parseRoute(hash: string): Route {
     case undefined:
       name = 'home';
       break;
-    case 'today':
-      name = 'today';
+    case 'tasks':
+      if (!segments[1]) name = 'tasks';
+      break;
+    case 'hours':
+      if (!segments[1]) name = 'hours';
+      else if (segments[1] === 'team' && !segments[2]) name = 'hours-team';
+      break;
+    case 'inbox':
+      if (!segments[1]) name = 'inbox';
+      break;
+    case 'people':
+      if (!segments[1]) name = 'people';
+      else if (!segments[2]) {
+        name = 'person';
+        params.id = segments[1];
+      }
+      break;
+    case 'activity':
+      if (!segments[1]) name = 'activity';
+      break;
+    case 'settings':
+      if (!segments[1] || segments[1] === 'projects' || segments[1] === 'roles') {
+        name = 'settings';
+        params.tab = segments[1] === 'roles' ? 'roles' : 'projects';
+      }
+      break;
+    case 'account':
+      name = 'account';
       break;
     case 'login':
       name = 'login';
@@ -103,27 +141,16 @@ export function parseRoute(hash: string): Route {
     case 'reset':
       name = 'reset';
       break;
-    case 'projects':
-      name = 'projects';
-      break;
-    case 'people':
-      name = 'people';
-      break;
-    case 'account':
-      name = 'account';
-      break;
     case 'join':
       if (segments[1]) {
         name = 'join';
         params.token = segments[1];
       }
       break;
+    case 'today':
+    case 'projects':
     case 'p':
-      if (segments[1]) {
-        name = 'project';
-        params.slug = segments[1];
-        if (segments[2]) params.tab = segments[2];
-      }
+      name = 'legacy';
       break;
     default:
       name = 'unknown';
@@ -175,7 +202,7 @@ export interface NavigateOptions {
   query?: Record<string, string | number | null | undefined>;
 }
 
-/** Builds a hash href, for `<a href={href('/p/acme/tasks')}>`. */
+/** Builds a hash href, for `<a href={href('/tasks', { view: 'board' })}>`. */
 export function href(path: string, query?: NavigateOptions['query']): string {
   const bare = path.startsWith('/') ? path : `/${path}`;
   const clean = DEMO ? `${DEMO_PREFIX}${bare === '/' ? '' : bare}` : bare;
@@ -207,6 +234,21 @@ export function navigate(path: string, options: NavigateOptions = {}): void {
 export function setQuery(query: NavigateOptions['query']): void {
   const route = getRoute();
   navigate(route.path, { query, replace: true });
+}
+
+/**
+ * Changes some query keys and keeps the rest: `patchQuery({ task: id })` opens
+ * a drawer without losing the filters, `patchQuery({ task: null })` closes it.
+ * A drawer or dialog opened this way is pushed (Back closes it); a filter
+ * change passes `replace` so Back does not walk through every chip click.
+ */
+export function patchQuery(
+  patch: Record<string, string | number | null | undefined>,
+  options: { replace?: boolean } = {}
+): void {
+  const route = getRoute();
+  const query: Record<string, string | number | null | undefined> = { ...route.query, ...patch };
+  navigate(route.path, { query, replace: options.replace });
 }
 
 /** Where to send someone after they sign in, remembered across the redirect. */

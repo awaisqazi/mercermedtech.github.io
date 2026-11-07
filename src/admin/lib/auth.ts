@@ -14,7 +14,7 @@ import { LAST_SEEN_INTERVAL_MS, LOAD_DEADLINE_MS, MIN_PASSWORD, resetRedirect } 
 import { observable, useObservable } from './observable';
 import { withDeadline } from './deadline';
 import { toAppError, logError, type AppError } from './errors';
-import type { GlobalRole, InvitePreview, Profile } from './types';
+import { OWNER_ROLE_KEY, type InvitePreview, type Profile, type Role } from './types';
 
 export interface AuthState {
   /** false until the SDK has told us whether there is a stored session. */
@@ -22,6 +22,18 @@ export interface AuthState {
   userId: string | null;
   email: string | null;
   profile: Profile | null;
+  /**
+   * The signed-in person's role row, read straight after the profile so the
+   * Account screen and the permission checks work before the workspace store
+   * has loaded. The workspace copy wins once it exists (see perms.ts).
+   */
+  role: Role | null;
+  /**
+   * True when the account exists but has been switched off (or its profile is
+   * hidden from it, which the v2 policies do for an inactive person). The
+   * session is dropped and the sign-in screen says why.
+   */
+  inactive: boolean;
   /** Set when the profile could not be loaded (for example before migration). */
   profileError: AppError | null;
   /** True while a recovery link is being turned into a password change. */
@@ -44,6 +56,8 @@ const initial: AuthState = {
   userId: null,
   email: null,
   profile: null,
+  role: null,
+  inactive: false,
   profileError: null,
   recovery: false,
   stalled: false,
@@ -62,13 +76,14 @@ export function useAuth(): AuthState {
 
 /* ---------------------------------------------------------------- helpers */
 
-export function isAdmin(state: AuthState = store.get()): boolean {
-  const role = state.profile?.role;
-  return role === 'admin' || role === 'owner';
+/** True for the owner role. Roles are rows now, so the test is on the key. */
+export function isOwner(state: AuthState = store.get()): boolean {
+  return state.role?.key === OWNER_ROLE_KEY;
 }
 
-export function isOwner(state: AuthState = store.get()): boolean {
-  return state.profile?.role === 'owner';
+/** The name of the signed-in person's role, for the rail and Account. */
+export function roleName(state: AuthState = store.get()): string {
+  return state.role?.name ?? '';
 }
 
 export function displayName(state: AuthState = store.get()): string {
@@ -106,11 +121,26 @@ async function loadProfile(userId: string, force = false): Promise<void> {
       return;
     }
     const profile = (data as Profile | null) ?? null;
+
+    /*
+     * No row, or a row marked inactive, means the account has been switched
+     * off: the v2 policies only let an active person read profiles at all, so
+     * an inactive one usually sees nothing. Either way the session is dropped
+     * here rather than leaving a shell that every request will refuse.
+     */
+    if (!profile || profile.active === false) {
+      await dropInactiveSession();
+      return;
+    }
+
+    const role = profile.role_id ? await loadRole(profile.role_id) : null;
     const firstRead = visitCapturedFor !== userId;
     if (firstRead) visitCapturedFor = userId;
     store.update((state) => ({
       ...state,
       profile,
+      role,
+      inactive: false,
       profileError: null,
       lastVisit: firstRead ? (profile?.last_seen_at ?? null) : state.lastVisit,
     }));
@@ -122,6 +152,34 @@ async function loadProfile(userId: string, force = false): Promise<void> {
   } finally {
     if (inFlightProfile?.work === work) inFlightProfile = null;
   }
+}
+
+/**
+ * One role row. A failure is not fatal: before the v2 migration there is no
+ * `roles` table, and the workspace store reports that case on its own.
+ */
+async function loadRole(roleId: string): Promise<Role | null> {
+  try {
+    const { data, error } = await supabase.from('roles').select('*').eq('id', roleId).maybeSingle();
+    if (error) {
+      logError('loadRole', error);
+      return null;
+    }
+    return (data as Role | null) ?? null;
+  } catch (error) {
+    logError('loadRole', error);
+    return null;
+  }
+}
+
+async function dropInactiveSession(): Promise<void> {
+  try {
+    await supabase.auth.signOut({ scope: 'local' });
+  } catch (error) {
+    logError('signOut inactive', error);
+  }
+  visitCapturedFor = null;
+  store.set({ ...initial, ready: true, inactive: true });
 }
 
 /** Re-reads the signed-in user's own profile row. */
@@ -174,6 +232,9 @@ export function startAuth(): void {
       userId: user?.id ?? null,
       email: user?.email ?? null,
       profile: user?.id === previousId ? state.profile : null,
+      role: user?.id === previousId ? state.role : null,
+      // A fresh sign-in clears the notice; the sign-out that set it does not.
+      inactive: user ? false : state.inactive,
       profileError: null,
       recovery: event === 'PASSWORD_RECOVERY' ? true : state.recovery,
     }));
@@ -300,11 +361,16 @@ export async function signIn(email: string, password: string): Promise<Result> {
     });
     if (error) return fail(error);
     await settleProfile();
+    if (store.get().inactive) return fail({ message: INACTIVE_MESSAGE });
     return ok;
   } catch (error) {
     return fail(error);
   }
 }
+
+/** What the sign-in screen says to someone whose account is switched off. */
+export const INACTIVE_MESSAGE =
+  'This account is switched off. Ask an administrator if you think that is a mistake.';
 
 export async function signOut(scope: 'local' | 'global' = 'local'): Promise<Result> {
   try {
@@ -324,20 +390,20 @@ export async function previewInvite(token: string): Promise<InvitePreview> {
     const { data, error } = await supabase.rpc('invite_preview', { p_token: token });
     if (error) {
       logError('invite_preview', error);
-      return { valid: false, email: null, role: null, inviter: null, expires_at: null };
+      return { valid: false, email: null, role_name: null, inviter: null, expires_at: null };
     }
     // The function returns a single row; PostgREST may hand it back as one.
     const row = (Array.isArray(data) ? data[0] : data) as Partial<InvitePreview> | null;
     return {
       valid: Boolean(row?.valid),
       email: row?.email ?? null,
-      role: (row?.role as GlobalRole | null) ?? null,
+      role_name: row?.role_name ?? null,
       inviter: row?.inviter ?? null,
       expires_at: row?.expires_at ?? null,
     };
   } catch (error) {
     logError('invite_preview', error);
-    return { valid: false, email: null, role: null, inviter: null, expires_at: null };
+    return { valid: false, email: null, role_name: null, inviter: null, expires_at: null };
   }
 }
 
@@ -430,6 +496,11 @@ export async function updateOwnProfile(patch: {
   } catch (error) {
     return fail(error);
   }
+}
+
+/** Forgets the "account switched off" notice once it has been read. */
+export function clearInactive(): void {
+  store.update((state) => (state.inactive ? { ...state, inactive: false } : state));
 }
 
 /** Clears the "you arrived here from a recovery link" flag. */

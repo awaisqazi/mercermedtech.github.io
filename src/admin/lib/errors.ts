@@ -124,7 +124,7 @@ export function toAppError(input: unknown, context?: string): AppError {
 
   if (permission) {
     return {
-      message: 'You do not have permission to do that. Ask a manager of this project.',
+      message: 'Your role does not allow that. Ask an administrator if you need it.',
       permission: true,
       missingSchema: false,
       offline: false,
@@ -191,9 +191,9 @@ function plainMessage(raw: string, code: string, context?: string): string {
 }
 
 function duplicateMessage(raw: string, context?: string): string {
-  if (raw.includes('projects_slug')) return 'A project already uses that short name. Pick another.';
-  if (raw.includes('reports_project_id_period')) return 'There is already a report for that month.';
-  if (raw.includes('project_docs')) return 'A note with that short name already exists in this section.';
+  if (raw.includes('projects_code')) return 'A project already uses that code. Pick another.';
+  if (raw.includes('roles_key')) return 'A role already uses that short name. Pick another.';
+  if (raw.includes('hours_months')) return 'That month is already closed.';
   return context ? `That ${context} already exists.` : 'That already exists.';
 }
 

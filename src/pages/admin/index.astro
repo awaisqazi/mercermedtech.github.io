@@ -4,7 +4,7 @@
  *
  * This page deliberately does NOT use the marketing BaseLayout: no header,
  * no footer, no language switch, no SEO metadata. It is a single-page app
- * shell that hash-routes itself (#/login, #/p/<slug>/<tab>, ...) so it works
+ * shell that hash-routes itself (#/login, #/tasks, #/hours, ...) so it works
  * on static hosting with no server rewrites.
  *
  * English only and noindex,nofollow: the portal is behind a login and has no
@@ -15,9 +15,17 @@
 import { getImage } from 'astro:assets';
 import logo from '../../assets/images/logo-modern.png';
 import AdminApp from '../../admin/AdminApp';
-import '../../admin/styles/admin.css';
-import '../../admin/styles/admin-polish.css';
-import '../../admin/styles/admin-ux.css';
+import '../../styles/fonts.css';
+import '../../admin/styles/workbench.css';
+/* One file per feature, so the screens can be styled in parallel without
+   two people editing one file. Order matches src/admin/features/. */
+import '../../admin/styles/features/home.css';
+import '../../admin/styles/features/tasks.css';
+import '../../admin/styles/features/hours.css';
+import '../../admin/styles/features/inquiries.css';
+import '../../admin/styles/features/people.css';
+import '../../admin/styles/features/settings.css';
+import '../../admin/styles/features/activity.css';
 
 /*
  * The island is `client:only`, so nothing inside it can import the PNG and get
@@ -46,14 +54,13 @@ const logoImage = await getImage({
     <meta name="referrer" content="same-origin" />
     <meta name="color-scheme" content="light dark" />
 
-    <!-- The same two faces the public site uses, so the portal reads as the
-         same house. Numbers use the system mono stack, no webfont needed. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- The same two faces the public site uses (Fraunces for titles and big
+         numerals, Plus Jakarta Sans for the rest), served from this site
+         (public/fonts, @font-face in src/styles/fonts.css) and preloaded so
+         they arrive with the HTML, as BaseLayout does. No third-party
+         request. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/fraunces-latin.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/plus-jakarta-sans-latin.woff2" crossorigin />
 
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 

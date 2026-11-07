@@ -31,7 +31,7 @@ export function SchemaNotice({
   const body = error.missingSchema
     ? `The Workbench is connected, but the tables it needs are not there yet. An administrator needs to run the migration${what ? ` before ${what} will work` : ''}.`
     : error.permission
-      ? 'Ask an administrator to add you, or to give you a higher role on this project.'
+      ? 'Your role does not include this. Ask an administrator if you need it.'
       : // "Cannot reach" covers both a connection that is gone and one that
         // simply never answered, and those want different sentences, so the
         // error's own wording is used rather than a single guess at which.
@@ -66,7 +66,7 @@ export function SlowNotice({ what = 'This' }: { what?: string }) {
   );
 }
 
-/** The thin strip along the top of a project while the socket is down. */
+/** The thin strip above the page while the live connection is down. */
 export function ConnectionBanner({ state }: { state: 'reconnecting' | 'offline' }) {
   return (
     <div class="wb-reconnect" role="status">

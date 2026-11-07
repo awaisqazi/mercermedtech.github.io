@@ -1,0 +1,6 @@
+/* ==========================================================================
+   Hours
+   Styles for features/hours: My week, the Log hours dialog, entry rows, Team, month close.
+   Owned by the Hours feature alone, scoped under `.wb`, and built only from
+   the tokens and pieces in ../workbench.css (read its header first).
+   ========================================================================== */

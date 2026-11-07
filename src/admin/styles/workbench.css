@@ -1,0 +1,2559 @@
+/* ==========================================================================
+   MMT Workbench
+   Everything the staff portal looks like, apart from the feature screens'
+   own pieces (styles/features/*.css). Scoped under `.wb` so nothing here can
+   reach the public pages, which keep their own tokens in src/styles.
+
+   The "Two paths" language of the public site, turned into a work tool
+   (docs/workbench-v2-plan.md, section 9):
+     - paper page, white panels, 1px warm rules, one 2px ink rule per screen;
+     - 8px radius on controls, 12px on panels and the drawer;
+     - a shadow only on things that float (menu, dialog, toast, drawer);
+     - Fraunces for page titles and big numerals, Plus Jakarta Sans for the
+       rest, never uppercase or letter-spaced;
+     - Med teal and Tech indigo only as a project's mark and in the split
+       hairline along the top; semantic colours always next to a word;
+     - the bracket, drawn in CSS, as the one motif;
+     - one motion scale, 160ms ease-out, and none at all for anyone who asks.
+
+   Laid out at 375px first; the desktop rail arrives at 900px.
+
+   Contents
+     1  Document and boot
+     2  Tokens: light and dark
+     3  Primitives: type, focus, utilities, the bracket
+     4  Controls: buttons, fields, selects, checks, stepper, picker
+     5  Shell: split hairline, rail, phone bars, More sheet, auth frame
+     6  Surfaces: pages, headers, panels, lists, tables, facts
+     7  Overlays: modal, drawer, menu, popover, toasts, notices
+     8  Pieces: status, priority, project mark, progress, avatar, chips,
+        tabs, skeletons, empty state, demo ribbon
+     9  Motion and reduced motion
+   ========================================================================== */
+
+/* ---------------------------------------------------- 1  Document, boot -- */
+
+.wb-body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f6f3ee;
+  color: #161a21;
+  font-family: 'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-wb-theme='light']) body.wb-body {
+    background: #161a21;
+    color: #e9e6e0;
+  }
+}
+
+html[data-wb-theme='dark'] body.wb-body {
+  background: #161a21;
+  color: #e9e6e0;
+}
+
+body.wb-no-scroll {
+  overflow: hidden;
+}
+
+.wb-boot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 60vh;
+  font-size: 0.9rem;
+  color: #4d5a67;
+}
+
+.wb-boot-logo {
+  display: block;
+  width: auto;
+  height: 40px;
+}
+
+.wb-boot-text {
+  margin: 0;
+}
+
+.wb-boot-frame {
+  max-width: 420px;
+  margin: 20vh auto;
+  padding: 0 1rem;
+}
+
+/* ------------------------------------------------------------ 2  Tokens -- */
+
+.wb {
+  /* Surfaces */
+  --paper: #f6f3ee;
+  --paper-deep: #ede8df;
+  --panel: #ffffff;
+  --rule: #d6cfc3;
+  --rule-strong: #161a21;
+  /* Field borders need 3:1 against white to be seen (WCAG 1.4.11). */
+  --field-border: #8f887d;
+  --hover: #efebe4;
+  --overlay: rgba(22, 26, 33, 0.42);
+
+  /* Ink */
+  --ink: #161a21;
+  --muted: #4d5a67;
+  --label: #5d6874;
+  --on-ink: #f6f3ee;
+
+  /* Colour as structure: a project's mark and the split hairline only. */
+  --med: #0b5f5a;
+  --med-text: #006b64;
+  --tech: #243b9e;
+  --tech-text: #2b44a8;
+  --org: #161a21;
+  --split-med: #00a69c;
+  --split-tech: #3b5bdb;
+
+  /* Semantic, always beside a word */
+  --good: #1a7f52;
+  --bad: #b3261e;
+  --soon: #9a6207;
+
+  /* Shape and depth */
+  --radius: 8px;
+  --radius-panel: 12px;
+  --shadow: 0 12px 32px rgba(22, 26, 33, 0.14), 0 2px 6px rgba(22, 26, 33, 0.08);
+
+  /* Type. Each face is followed by its metric-matched fallback (fonts.css). */
+  --font-display: 'Fraunces', 'Fraunces Fallback', Georgia, serif;
+  --font-body: 'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', Arial, sans-serif;
+
+  /* Motion: one easing, one duration. */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 160ms;
+
+  /* Layout */
+  --gutter: 16px;
+  --rail: 232px;
+  --rail-narrow: 68px;
+  --topbar: 56px;
+  --bottombar: 64px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* The bracket takes the colour of what it sits on. */
+  --bracket: var(--ink);
+
+  color: var(--ink);
+  background: var(--paper);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+/* Dark, by system preference unless the switch says light ... */
+@media (prefers-color-scheme: dark) {
+  .wb:not([data-theme='light']) {
+    --paper: #161a21;
+    --paper-deep: #1b2028;
+    --panel: #1f242c;
+    --rule: #333a45;
+    --rule-strong: #e9e6e0;
+    --field-border: #6c7380;
+    --hover: #272d36;
+    --overlay: rgba(0, 0, 0, 0.6);
+    --ink: #e9e6e0;
+    --muted: #b8b4ac;
+    --label: #a7a39b;
+    --on-ink: #161a21;
+    --med: #3cc4b8;
+    --med-text: #6fd6cc;
+    --tech: #8b9dff;
+    --tech-text: #a9b7ff;
+    --org: #e9e6e0;
+    --good: #5ec98d;
+    --bad: #f08a83;
+    --soon: #e6b45c;
+    --shadow: 0 14px 36px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+}
+
+/* ... and by the switch, whatever the system says. */
+.wb[data-theme='dark'] {
+  --paper: #161a21;
+  --paper-deep: #1b2028;
+  --panel: #1f242c;
+  --rule: #333a45;
+  --rule-strong: #e9e6e0;
+  --field-border: #6c7380;
+  --hover: #272d36;
+  --overlay: rgba(0, 0, 0, 0.6);
+  --ink: #e9e6e0;
+  --muted: #b8b4ac;
+  --label: #a7a39b;
+  --on-ink: #161a21;
+  --med: #3cc4b8;
+  --med-text: #6fd6cc;
+  --tech: #8b9dff;
+  --tech-text: #a9b7ff;
+  --org: #e9e6e0;
+  --good: #5ec98d;
+  --bad: #f08a83;
+  --soon: #e6b45c;
+  --shadow: 0 14px 36px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* A project's track, for its mark. */
+.wb [data-track='med'] {
+  --track: var(--med);
+  --track-text: var(--med-text);
+}
+.wb [data-track='tech'] {
+  --track: var(--tech);
+  --track-text: var(--tech-text);
+}
+.wb [data-track='org'] {
+  --track: var(--org);
+  --track-text: var(--ink);
+}
+
+/* -------------------------------------------------------- 3  Primitives -- */
+
+/* Element defaults sit in :where() so any class, however plain, wins over
+   them: a button's own colour must never lose to "buttons inherit". */
+
+.wb *,
+.wb *::before,
+.wb *::after {
+  box-sizing: border-box;
+}
+
+:where(.wb) h1,
+:where(.wb) h2,
+:where(.wb) h3,
+:where(.wb) h4 {
+  margin: 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+:where(.wb) h2 {
+  font-size: 1rem;
+}
+
+:where(.wb) h3 {
+  font-size: 0.95rem;
+}
+
+:where(.wb) p,
+:where(.wb) dl,
+:where(.wb) dd,
+:where(.wb) figure {
+  margin: 0;
+}
+
+:where(.wb) ul,
+:where(.wb) ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:where(.wb) a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+:where(.wb) a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:where(.wb) button {
+  font: inherit;
+  color: inherit;
+}
+
+.wb :focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.wb input:focus-visible,
+.wb textarea:focus-visible,
+.wb select:focus-visible {
+  outline-offset: 0;
+}
+
+.wb strong {
+  font-weight: 700;
+}
+
+/* Numbers that line up in a column. */
+.wb-mono,
+.wb-num-col {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Big numerals: the week total, a task count. */
+.wb-numeral {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-optical-sizing: auto;
+  font-variation-settings: 'SOFT' 30;
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.wb-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.wb-icon {
+  flex: none;
+  display: block;
+}
+
+.wb-flip {
+  transform: rotate(180deg);
+}
+
+.wb-flip-y {
+  transform: rotate(180deg);
+}
+
+.wb-spacer {
+  flex: 1;
+}
+
+.wb-prose {
+  color: var(--muted);
+  max-width: 64ch;
+}
+
+.wb-meta {
+  color: var(--label);
+  font-size: 13px;
+}
+
+.wb-hint {
+  margin: 0.35rem 0 0;
+  color: var(--label);
+  font-size: 13px;
+}
+
+.wb-error {
+  margin: 0.35rem 0 0;
+  color: var(--bad);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Late, or close enough to it to matter: always words, never colour alone. */
+.wb .is-overdue {
+  color: var(--bad);
+}
+.wb .is-soon {
+  color: var(--soon);
+}
+.wb .is-good {
+  color: var(--good);
+}
+
+.wb-linkish {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+  text-align: left;
+}
+
+.wb-linkish:hover {
+  text-decoration-thickness: 2px;
+}
+
+.wb-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wb-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wb-skip {
+  position: absolute;
+  left: 8px;
+  top: -60px;
+  z-index: 100;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--on-ink) !important;
+  text-decoration: none !important;
+}
+
+.wb-skip:focus {
+  top: 8px;
+}
+
+/*
+   The bracket: the portal's one motif, drawn in CSS (two three-sided boxes),
+   never typed as a character. On inline text it hugs the words; on a block
+   (the sign-in panel) the arms run the full height of its edges. At most once
+   per screen: the sign-in panel, the empty state, the week total.
+*/
+.wb-bracket {
+  --arm: 0.38em;
+  --weight: 2px;
+  position: relative;
+  display: inline-block;
+  padding: 0.05em calc(var(--arm) + 0.3em);
+}
+
+.wb-bracket::before,
+.wb-bracket::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--arm);
+  border: var(--weight) solid var(--bracket);
+  pointer-events: none;
+}
+
+.wb-bracket::before {
+  left: 0;
+  border-right: 0;
+}
+
+.wb-bracket::after {
+  right: 0;
+  border-left: 0;
+}
+
+/* A bracketed block: arms in the panel's margins, not over its content. */
+div.wb-bracket,
+section.wb-bracket {
+  --arm: 14px;
+  display: block;
+}
+
+/* ---------------------------------------------------------- 4  Controls -- */
+
+.wb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.1;
+  text-decoration: none !important;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.wb-btn-sm {
+  min-height: 36px;
+  padding: 0 0.75rem;
+  font-size: 14px;
+}
+
+.wb-btn-icon {
+  width: 44px;
+  padding: 0;
+}
+
+.wb-btn-sm.wb-btn-icon {
+  width: 36px;
+}
+
+.wb-btn-full {
+  width: 100%;
+}
+
+/* One primary per screen: ink, with paper words. */
+.wb-btn-primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--on-ink);
+}
+
+.wb-btn-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ink) 86%, var(--paper));
+}
+
+.wb-btn-secondary {
+  background: var(--paper);
+  border-color: var(--rule);
+  color: var(--ink);
+}
+
+.wb-btn-secondary:hover:not(:disabled) {
+  border-color: var(--field-border);
+  background: var(--hover);
+}
+
+.wb-btn-quiet {
+  background: transparent;
+  color: var(--ink);
+}
+
+.wb-btn-quiet:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.wb-btn-danger {
+  background: var(--bad);
+  border-color: var(--bad);
+  color: #ffffff;
+}
+
+.wb[data-theme='dark'] .wb-btn-danger {
+  color: #161a21;
+}
+
+.wb-btn-danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--bad) 85%, #000);
+}
+
+.wb-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wb-btn.is-busy {
+  cursor: progress;
+}
+
+.wb-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: wb-spin 0.7s linear infinite;
+}
+
+@keyframes wb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fields */
+.wb-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wb-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.wb-field {
+  display: block;
+  min-width: 0;
+}
+
+.wb-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--label);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wb-required {
+  color: var(--bad);
+}
+
+.wb-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  /* 16px keeps iOS from zooming into the field. */
+  font-size: 16px;
+}
+
+.wb-input::placeholder {
+  color: var(--label);
+}
+
+.wb-input:focus {
+  border-color: var(--ink);
+  outline: 2px solid var(--ink);
+  outline-offset: -1px;
+}
+
+.wb-input:disabled,
+.wb-input[readonly] {
+  background: var(--paper);
+  color: var(--muted);
+}
+
+.wb-textarea {
+  min-height: 6rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.wb-field.is-invalid .wb-input,
+.wb-input[aria-invalid='true'] {
+  border-color: var(--bad);
+}
+
+.wb-input-affix {
+  position: relative;
+  display: flex;
+}
+
+.wb-input-affix .wb-input {
+  padding-right: 2.75rem;
+}
+
+.wb-affix-button {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--label);
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.wb-affix-button:hover {
+  color: var(--ink);
+  background: var(--hover);
+}
+
+.wb-check {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-height: 32px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.wb-check input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0.15rem 0 0;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+
+/* Native select, with our chevron. */
+.wb-select-wrap {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.wb-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 2.1rem 0 0.75rem;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+.wb-select-sm {
+  min-height: 36px;
+  font-size: 14px;
+}
+
+.wb-select:disabled {
+  background: var(--paper);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.wb-select-chevron {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  width: 15px;
+  height: 15px;
+  color: var(--label);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Live fields (save as you go) */
+.wb-live {
+  display: block;
+  min-width: 0;
+}
+
+.wb-live.is-saving .wb-input,
+.wb-live.is-saving .wb-select {
+  border-style: dashed;
+}
+
+.wb-live-hint {
+  margin-top: 0.3rem;
+  color: var(--soon);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Copyable value */
+.wb-copy-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.wb-copy-row .wb-input {
+  min-width: 0;
+}
+
+/* Date with shortcuts */
+.wb-date-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.wb-date-shortcut {
+  min-height: 32px;
+  padding: 0 0.65rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--paper);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.wb-date-shortcut:hover {
+  background: var(--hover);
+}
+
+.wb-date-shortcut.is-active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+/* Quarter-hour stepper */
+.wb-stepper {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.wb-stepper:focus-within {
+  outline: 2px solid var(--ink);
+  outline-offset: -1px;
+}
+
+.wb-stepper-button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.wb-stepper-button:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.wb-stepper-button:disabled {
+  color: var(--label);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.wb-stepper-button:first-child {
+  border-right: 1px solid var(--rule);
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.wb-stepper-button:last-child {
+  border-left: 1px solid var(--rule);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.wb .wb-stepper-input {
+  width: 4.5rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.wb .wb-stepper-input:focus {
+  outline: 0;
+}
+
+.wb-stepper-unit {
+  display: flex;
+  align-items: center;
+  padding: 0 0.6rem 0 0.15rem;
+  color: var(--label);
+}
+
+/* Person picker */
+.wb-picker {
+  position: relative;
+  min-width: 0;
+}
+
+.wb-picker-button {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius);
+  background: var(--panel);
+  text-align: left;
+  cursor: pointer;
+}
+
+.wb-picker-button:hover:not(:disabled) {
+  background: var(--hover);
+}
+
+.wb-picker-button:disabled {
+  background: var(--paper);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.wb-picker-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wb-picker-caret {
+  color: var(--label);
+}
+
+.wb-picker-none-mark {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 1px dashed var(--field-border);
+  border-radius: 50%;
+}
+
+.wb-picker-pop {
+  position: absolute;
+  z-index: 40;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 240px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  animation: wb-pop var(--dur) var(--ease);
+}
+
+.wb-picker-search {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 0.6rem;
+  border-bottom: 1px solid var(--rule);
+  color: var(--label);
+}
+
+.wb-picker-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 42px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+}
+
+.wb-picker-input:focus {
+  outline: 0;
+}
+
+.wb-picker-list {
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 0.3rem;
+}
+
+.wb-picker-option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.wb-picker-option.is-highlighted {
+  background: var(--hover);
+}
+
+.wb-picker-option.is-selected {
+  font-weight: 700;
+}
+
+.wb-picker-option-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.wb-picker-option-sub {
+  color: var(--label);
+  font-size: 13px;
+}
+
+.wb-picker-empty {
+  padding: 0.75rem 0.5rem;
+  color: var(--label);
+}
+
+/* ------------------------------------------------------------- 5  Shell -- */
+
+/* The split hairline: Med teal then Tech indigo, hard stop, never a blend. */
+.wb-split {
+  position: fixed;
+  z-index: 80;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--split-med) 0 50%, var(--split-tech) 50% 100%);
+}
+
+.wb-logo {
+  display: block;
+  width: auto;
+  max-width: 100%;
+}
+
+/* The badge on the left of the lockup, for the narrow rail and phone bar. */
+.wb-logo-mark {
+  display: block;
+  overflow: hidden;
+}
+
+.wb-logo-mark .wb-logo {
+  max-width: none;
+}
+
+.wb-shell {
+  min-height: 100vh;
+}
+
+/* Phone first: top bar, page, bottom bar. */
+.wb-topbar {
+  position: sticky;
+  z-index: 30;
+  top: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  height: calc(var(--topbar) + 3px);
+  padding: 3px var(--gutter) 0;
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+}
+
+.wb-topbar-brand {
+  display: block;
+}
+
+.wb-topbar-title {
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wb-topbar-action {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.wb-rail {
+  display: none;
+}
+
+.wb-main {
+  display: block;
+  min-width: 0;
+  padding-bottom: calc(var(--bottombar) + var(--safe-bottom) + 24px);
+}
+
+.wb-main:focus {
+  outline: 0;
+}
+
+.wb-main-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 1rem var(--gutter) 0;
+}
+
+.wb-bottombar {
+  position: fixed;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  height: calc(var(--bottombar) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  border-top: 1px solid var(--rule);
+  background: var(--panel);
+}
+
+.wb-bottom-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  border: 0;
+  background: none;
+  color: var(--label);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+.wb-bottom-link.is-active {
+  color: var(--ink);
+}
+
+.wb-bottom-link.is-active .wb-bottom-label {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+
+.wb-bottom-icon {
+  position: relative;
+}
+
+.wb-bottom-dot {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--panel);
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+/* The More sheet */
+.wb-more-person {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.wb-more-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.wb-more-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 52px;
+  border-bottom: 1px solid var(--rule);
+  font-weight: 600;
+  text-decoration: none !important;
+}
+
+.wb-more-link.is-active {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 0.3em;
+}
+
+.wb-more-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.wb-nav-count {
+  margin-left: auto;
+  min-width: 1.5rem;
+  padding: 0 0.35rem;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--on-ink);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Desktop: the rail. */
+@media (min-width: 900px) {
+  .wb-topbar,
+  .wb-bottombar {
+    display: none;
+  }
+
+  .wb-rail {
+    position: fixed;
+    z-index: 20;
+    top: 3px;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    width: var(--rail);
+    padding: 1.25rem 0.75rem 0.75rem;
+    border-right: 1px solid var(--rule);
+    background: var(--paper);
+  }
+
+  .wb-shell.is-collapsed .wb-rail {
+    width: var(--rail-narrow);
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+  }
+
+  .wb-main {
+    margin-left: var(--rail);
+    padding-top: 3px;
+    padding-bottom: 3rem;
+  }
+
+  .wb-shell.is-collapsed .wb-main {
+    margin-left: var(--rail-narrow);
+  }
+
+  .wb-main-inner {
+    padding: 2rem 2.5rem 0;
+  }
+}
+
+.wb-rail-brand {
+  display: block;
+  padding: 0 0.5rem 1.5rem;
+}
+
+.wb-shell.is-collapsed .wb-rail-brand {
+  padding: 0 0 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.wb-rail-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.wb-rail-link {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 42px;
+  padding: 0 0.7rem;
+  border-radius: var(--radius);
+  color: var(--muted) !important;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.wb-rail-link:hover {
+  background: var(--hover);
+  color: var(--ink) !important;
+}
+
+.wb-rail-link.is-active {
+  background: var(--panel);
+  box-shadow: inset 0 0 0 1px var(--rule);
+  color: var(--ink) !important;
+}
+
+.wb-rail-icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+}
+
+.wb-shell.is-collapsed .wb-rail-link {
+  justify-content: center;
+  padding: 0;
+}
+
+.wb-shell.is-collapsed .wb-rail-label,
+.wb-shell.is-collapsed .wb-rail-person-text {
+  display: none;
+}
+
+/* Collapsed: the count sits on the icon's corner. */
+.wb-shell.is-collapsed .wb-rail-link {
+  position: relative;
+}
+
+.wb-shell.is-collapsed .wb-rail-link .wb-nav-count {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 1.15rem;
+  line-height: 1.15rem;
+  font-size: 11px;
+}
+
+.wb-rail-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.wb-rail-here {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0 0.5rem;
+}
+
+.wb-rail-here-label {
+  color: var(--label);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wb-rail-person {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--radius);
+  text-decoration: none !important;
+}
+
+.wb-rail-person:hover,
+.wb-rail-person.is-active {
+  background: var(--hover);
+}
+
+.wb-shell.is-collapsed .wb-rail-person {
+  justify-content: center;
+  padding: 0.3rem 0;
+}
+
+.wb-rail-person-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.wb-rail-person-name {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wb-rail-person-role {
+  color: var(--label);
+  font-size: 13px;
+}
+
+.wb-rail-tools {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.wb-shell.is-collapsed .wb-rail-tools {
+  flex-direction: column;
+  align-items: center;
+}
+
+.wb-rail-tool {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.wb-rail-tool:hover {
+  background: var(--hover);
+  color: var(--ink);
+}
+
+.wb-rail-collapse {
+  margin-left: auto;
+}
+
+.wb-shell.is-collapsed .wb-rail-collapse {
+  margin-left: 0;
+}
+
+/* Sign in, join, reset */
+.wb-auth {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 3px var(--gutter) 2rem;
+}
+
+.wb-auth-main {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding-top: clamp(2.5rem, 10vh, 6rem);
+}
+
+.wb-auth-panel {
+  padding: 2rem 1.75rem 1.75rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  background: var(--panel);
+}
+
+/* The bracket around the sign-in panel sits just outside its border. */
+.wb-auth-panel.wb-bracket {
+  --arm: 12px;
+  overflow: visible;
+}
+
+.wb-auth-panel.wb-bracket::before {
+  left: -12px;
+  top: 18px;
+  bottom: 18px;
+}
+
+.wb-auth-panel.wb-bracket::after {
+  right: -12px;
+  top: 18px;
+  bottom: 18px;
+}
+
+/* A phone has a 16px gutter: keep the arms inside it. */
+@media (max-width: 479px) {
+  .wb-auth-panel.wb-bracket {
+    --arm: 8px;
+    padding: 1.75rem 1.25rem 1.5rem;
+  }
+
+  .wb-auth-panel.wb-bracket::before {
+    left: -9px;
+  }
+
+  .wb-auth-panel.wb-bracket::after {
+    right: -9px;
+  }
+}
+
+.wb-auth-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.wb-auth-sub {
+  color: var(--label);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wb-auth-title {
+  margin-bottom: 0.5rem !important;
+  font-family: var(--font-display) !important;
+  font-size: 1.75rem !important;
+  font-weight: 600 !important;
+  line-height: 1.1 !important;
+}
+
+.wb-auth-lead {
+  margin-bottom: 1.25rem;
+  color: var(--muted);
+}
+
+.wb-auth-panel .wb-form {
+  margin-top: 1.25rem;
+}
+
+.wb-auth-panel .wb-notice {
+  margin-top: 1rem;
+}
+
+.wb-auth-footer {
+  margin-top: 1.25rem;
+  padding: 0 0.25rem;
+}
+
+.wb-auth-note {
+  color: var(--label);
+  font-size: 13px;
+}
+
+.wb-auth-theme {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+/* ---------------------------------------------------------- 6  Surfaces -- */
+
+.wb-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.wb-page-narrow {
+  max-width: 640px;
+}
+
+/* The one heavy rule on a screen is under its header. */
+.wb-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 2px solid var(--rule-strong);
+}
+
+.wb-page-titles {
+  min-width: 0;
+}
+
+.wb .wb-page-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-variation-settings: 'SOFT' 30;
+  font-size: clamp(1.75rem, 4.5vw, 2.4rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.wb-page-count {
+  color: var(--label);
+  font-variant-numeric: tabular-nums;
+}
+
+.wb-page-lead {
+  margin-top: 0.35rem;
+  color: var(--muted);
+}
+
+.wb-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wb-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  background: var(--panel);
+}
+
+.wb .wb-panel-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* A titled block on the page itself, no box: a heading over a hairline. */
+.wb-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.wb-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.wb .wb-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Two columns from the desktop up: Home, a person. */
+.wb-cols {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 1000px) {
+  .wb-cols {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+/* A ruled list: rows on hairlines, the whole row a target. */
+.wb-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.wb-list > li,
+.wb-row {
+  border-bottom: 1px solid var(--rule);
+}
+
+.wb-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 52px;
+  padding: 0.55rem 0.25rem;
+}
+
+.wb-row-button {
+  width: 100%;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+a.wb-row,
+.wb-row-button {
+  color: inherit !important;
+  text-decoration: none !important;
+  transition: background-color var(--dur) var(--ease);
+}
+
+a.wb-row:hover,
+.wb-row-button:hover {
+  background: var(--hover);
+}
+
+.wb-row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.wb-row-title {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+
+.wb-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  color: var(--label);
+  font-size: 13px;
+}
+
+/* A real table on a desktop, stacked rows on a phone. */
+.wb-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.wb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.wb-table th,
+.wb-table td {
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+.wb-table thead th {
+  border-bottom: 2px solid var(--rule-strong);
+  color: var(--label);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wb-table .is-num {
+  text-align: right;
+}
+
+@media (max-width: 719px) {
+  .wb-table.is-stacking thead {
+    display: none;
+  }
+
+  .wb-table.is-stacking tr {
+    display: block;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .wb-table.is-stacking td {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.2rem 0;
+    border: 0;
+  }
+
+  .wb-table.is-stacking td::before {
+    content: attr(data-label);
+    color: var(--label);
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+/* Label and value rows on hairlines. */
+.wb-facts {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.wb-facts > div {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.wb-facts > div:last-child {
+  border-bottom: 0;
+}
+
+.wb-facts dt {
+  color: var(--label);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.wb-facts dd {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.wb-facts-note {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--label);
+  font-size: 13px;
+}
+
+.wb-account-card {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.wb-account-card .wb-facts {
+  flex: 1;
+}
+
+.wb-gate-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding-top: 0.5rem;
+}
+
+/* ---------------------------------------------------------- 7  Overlays -- */
+
+.wb-modal-overlay,
+.wb-drawer-overlay {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: flex;
+  background: var(--overlay);
+  animation: wb-fade var(--dur) var(--ease);
+}
+
+.wb-modal-overlay {
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* Phone first: a sheet that fills the screen. */
+.wb-modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 100%;
+  height: 100%;
+  background: var(--panel);
+  outline: 0;
+  animation: wb-rise var(--dur) var(--ease);
+}
+
+.wb-modal-head,
+.wb-drawer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem var(--gutter) 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.wb-modal-heading,
+.wb-drawer-heading {
+  flex: 1;
+  min-width: 0;
+  padding-top: 0.45rem;
+}
+
+.wb .wb-modal-title,
+.wb .wb-drawer-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.wb-modal-description {
+  margin-top: 0.25rem;
+  color: var(--muted);
+}
+
+.wb-modal-actions,
+.wb-drawer-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.wb-modal-body,
+.wb-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1rem var(--gutter) 1.25rem;
+}
+
+.wb-modal-foot,
+.wb-drawer-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem var(--gutter) calc(0.75rem + var(--safe-bottom));
+  border-top: 1px solid var(--rule);
+}
+
+@media (min-width: 720px) {
+  .wb-modal-overlay {
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .wb-modal {
+    height: auto;
+    max-height: min(88vh, 900px);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow);
+  }
+
+  .wb-modal-sm {
+    max-width: 440px;
+  }
+  .wb-modal-md {
+    max-width: 560px;
+  }
+  .wb-modal-lg {
+    max-width: 760px;
+  }
+  .wb-modal-xl {
+    max-width: 980px;
+  }
+
+  .wb-modal-head,
+  .wb-modal-body,
+  .wb-modal-foot {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* The drawer: full screen on a phone, a right panel from 720px. */
+.wb-drawer-overlay {
+  justify-content: flex-end;
+}
+
+.wb-drawer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--panel);
+  outline: 0;
+  animation: wb-slide var(--dur) var(--ease);
+}
+
+@media (min-width: 720px) {
+  .wb-drawer-overlay {
+    padding: 0.5rem;
+  }
+
+  .wb-drawer {
+    width: min(600px, 100%);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow);
+  }
+
+  .wb-drawer-head,
+  .wb-drawer-body,
+  .wb-drawer-foot {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* Menus and popovers */
+.wb-menu-wrap,
+.wb-popover-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.wb-menu,
+.wb-popover {
+  position: absolute;
+  z-index: 45;
+  top: calc(100% + 4px);
+  min-width: 220px;
+  padding: 0.3rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  animation: wb-pop var(--dur) var(--ease);
+}
+
+.wb-menu-right,
+.wb-popover-right {
+  right: 0;
+}
+
+.wb-menu-left,
+.wb-popover-left {
+  left: 0;
+}
+
+.wb-menu-up {
+  top: auto;
+  bottom: calc(100% + 4px);
+}
+
+.wb-popover {
+  padding: 0.75rem;
+}
+
+.wb-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 42px;
+  padding: 0.35rem 0.6rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.wb-menu-item:hover,
+.wb-menu-item:focus-visible {
+  background: var(--hover);
+  outline: 0;
+}
+
+.wb-menu-item.is-danger {
+  color: var(--bad);
+}
+
+.wb-menu-item:disabled {
+  color: var(--label);
+  cursor: not-allowed;
+}
+
+.wb-menu-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.wb-menu-hint {
+  color: var(--label);
+  font-size: 13px;
+}
+
+.wb-menu-divider {
+  height: 1px;
+  margin: 0.3rem 0;
+  border: 0;
+  background: var(--rule);
+}
+
+.wb-menu-empty {
+  padding: 0.5rem;
+  color: var(--label);
+}
+
+/* Toasts */
+.wb-toasts {
+  position: fixed;
+  z-index: 90;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: calc(var(--bottombar) + var(--safe-bottom) + 12px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+@media (min-width: 900px) {
+  .wb-toasts {
+    left: auto;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    width: 380px;
+  }
+}
+
+.wb-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.75rem 0.5rem 0.75rem 0.85rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  pointer-events: auto;
+  animation: wb-rise var(--dur) var(--ease);
+}
+
+.wb-toast-icon {
+  padding-top: 0.15rem;
+}
+
+.wb-toast-good .wb-toast-icon {
+  color: var(--good);
+}
+.wb-toast-warn .wb-toast-icon {
+  color: var(--soon);
+}
+.wb-toast-bad .wb-toast-icon {
+  color: var(--bad);
+}
+.wb-toast-info .wb-toast-icon {
+  color: var(--label);
+}
+
+.wb-toast-body {
+  flex: 1;
+  padding-top: 0.05rem;
+}
+
+/* Notices: a plain panel, the icon in the tone, never a coloured side bar. */
+.wb-notice {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  background: var(--panel);
+}
+
+.wb-notice-icon {
+  padding-top: 0.15rem;
+  color: var(--soon);
+}
+
+.wb .wb-notice-title {
+  font-weight: 700;
+}
+
+.wb-notice-body {
+  margin-top: 0.2rem;
+  color: var(--muted);
+}
+
+.wb-notice-action {
+  margin-top: 0.75rem;
+}
+
+.wb-boot-notice {
+  max-width: 560px;
+  margin: 1.5rem auto 0;
+}
+
+.wb-slow-note {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.wb-reconnect {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem var(--gutter);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper-deep);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.wb-reconnect-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--soon);
+}
+
+/* ------------------------------------------------------------ 8  Pieces -- */
+
+/* Status: a 7px dot and the word. */
+.wb-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.wb-status-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--label);
+}
+
+.wb-status-todo .wb-status-dot {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--label);
+}
+.wb-status-doing .wb-status-dot {
+  background: var(--ink);
+}
+.wb-status-blocked .wb-status-dot {
+  background: var(--bad);
+}
+.wb-status-blocked .wb-status-word {
+  color: var(--bad);
+}
+.wb-status-done .wb-status-dot {
+  background: var(--good);
+}
+
+/* Priority: a word in ink, only when it is not normal. */
+.wb-priority {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.wb-priority-urgent {
+  font-weight: 800;
+}
+
+/* A project's code with its track square. */
+.wb-project-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.wb-project-square {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--track, var(--ink));
+}
+
+.wb-project-code {
+  font-weight: 700;
+  color: var(--track-text, var(--ink));
+  letter-spacing: 0.01em;
+}
+
+.wb-project-name {
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+}
+
+/* Progress: a thin bar and words. */
+.wb-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.wb-progress-track {
+  position: relative;
+  flex: 1;
+  min-width: 64px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--rule);
+}
+
+.wb-progress.is-compact .wb-progress-track {
+  flex: none;
+  width: 48px;
+  min-width: 0;
+}
+
+.wb-progress-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--ink);
+  transform-origin: left center;
+  transition: transform var(--dur) var(--ease);
+}
+
+.wb-progress.is-full .wb-progress-fill {
+  background: var(--good);
+}
+
+/* Avatars: initials on a tint of the person's own colour. */
+.wb-avatar {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  font-weight: 700;
+  line-height: 1;
+  user-select: none;
+}
+
+.wb-avatar.is-active {
+  border-color: currentColor;
+}
+
+.wb-avatar-stack {
+  display: inline-flex;
+  align-items: center;
+}
+
+.wb-avatar-stack .wb-avatar + .wb-avatar {
+  margin-left: -6px;
+  box-shadow: 0 0 0 2px var(--paper);
+}
+
+.wb-avatar-more {
+  background: var(--paper-deep);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* "Here now": a small dot beside a name. */
+.wb-here {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--good);
+}
+
+/* Chips and filter toggles: square-ish, never pills. */
+.wb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 28px;
+  padding: 0 0.55rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.wb-chip-toggle {
+  min-height: 36px;
+  padding: 0 0.75rem;
+  cursor: pointer;
+}
+
+.wb-chip-toggle:hover {
+  background: var(--hover);
+}
+
+.wb-chip-toggle.is-active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.wb-chip-good {
+  color: var(--good);
+}
+.wb-chip-warn {
+  color: var(--soon);
+}
+.wb-chip-crit {
+  color: var(--bad);
+}
+.wb-chip-quiet {
+  color: var(--label);
+}
+
+.wb-chip-count {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+/* Tabs: links with an ink underline. */
+.wb-tabs {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--rule);
+  scrollbar-width: none;
+}
+
+.wb-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  border-bottom: 2px solid transparent;
+  color: var(--muted) !important;
+  font-weight: 600;
+  text-decoration: none !important;
+  white-space: nowrap;
+}
+
+.wb-tab:hover {
+  color: var(--ink) !important;
+}
+
+.wb-tab.is-active {
+  border-bottom-color: var(--ink);
+  color: var(--ink) !important;
+}
+
+.wb-tab-count {
+  color: var(--label);
+  font-size: 13px;
+}
+
+/* Segmented control: a view switch. */
+.wb-segmented {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+
+.wb-segment {
+  min-height: 36px;
+  padding: 0 0.85rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wb-segment:hover {
+  color: var(--ink);
+}
+
+.wb-segment.is-active {
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+/* Skeletons */
+.wb-skeleton {
+  display: block;
+  background: var(--paper-deep);
+  animation: wb-breathe 1.4s ease-in-out infinite;
+}
+
+.wb-skeleton-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.wb-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.wb-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  background: var(--panel);
+}
+
+/* Empty state: a bracketed line in Fraunces and one sentence. */
+.wb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 2rem 0.25rem;
+}
+
+.wb-empty.is-quiet {
+  padding: 0.75rem 0;
+}
+
+.wb .wb-empty-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.wb-empty.is-quiet .wb-empty-title {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.wb-empty-body {
+  max-width: 52ch;
+  color: var(--muted);
+}
+
+.wb-empty-action {
+  margin-top: 0.4rem;
+}
+
+.wb-empty-bad .wb-empty-title {
+  color: var(--bad);
+}
+
+/* The demo ribbon */
+.wb-demo-ribbon {
+  position: fixed;
+  z-index: 70;
+  left: 50%;
+  top: 3px;
+  margin: 0;
+  padding: 0.15rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-top: 0;
+  border-radius: 0 0 6px 6px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.wb-demo-more {
+  display: none;
+}
+
+/* On a phone the top bar has no room to spare: sit above the bottom bar. */
+@media (max-width: 899px) {
+  .wb-demo-ribbon {
+    left: 0;
+    top: auto;
+    bottom: calc(var(--bottombar) + var(--safe-bottom));
+    border: 1px solid var(--rule);
+    border-left: 0;
+    border-bottom: 0;
+    border-radius: 0 6px 0 0;
+    transform: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .wb-demo-more {
+    display: inline;
+  }
+}
+
+/* --------------------------------------------------------------- 9  Motion -- */
+
+@keyframes wb-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes wb-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes wb-slide {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+
+@keyframes wb-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes wb-breathe {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* Anyone who has asked for less movement gets none of it. */
+@media (prefers-reduced-motion: reduce) {
+  .wb *,
+  .wb *::before,
+  .wb *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

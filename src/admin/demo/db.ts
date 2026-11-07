@@ -1,19 +1,31 @@
 /**
  * The demo's in-memory database: runs the queries `client.ts` records against
- * the fixture, writes the changes back into it, logs activity the way the
- * database trigger does, and replays every change to any open realtime
+ * the fixture, writes the changes back into it, does the few things the real
+ * triggers do (audit stamps, `done_at`, checklist progress, the closed-month
+ * and 24-hours-a-day refusals), logs activity in the same shapes the
+ * database trigger writes, and replays every change to any open realtime
  * channel. A reload starts again from the fixture.
  *
- * Two other people are "here" in the primary project, so presence shows up,
- * and the first time you open a task one of them changes its due date a few
- * seconds later, so the "someone else changed this" toast can be seen too.
+ * Reads are narrowed the way row level security narrows them for the demo
+ * persona: without hours.view_all you see only your own hours, without
+ * inquiries.view no inbox, without people.manage no invitations. That is
+ * enough to review the permission gating with `#/demo?as=member`; it is not a
+ * copy of the policies, which live in the migration.
+ *
+ * Two colleagues are "here", so presence shows, and the first time you open
+ * a task one of them changes its due date a few seconds later, so the
+ * "someone else changed this" toast can be seen too.
  */
-import { buildFixture, ME, PRIMARY_ID, SAM, ROBIN } from './fixture';
+import { buildFixture, PAT, ROBIN, SAM } from './fixture';
+import { DEMO_PERSONA } from './mode';
 import type { DemoFilter, DemoQuery } from './types';
 
 type Row = Record<string, unknown>;
 
 const db = buildFixture() as unknown as Record<string, Row[]>;
+
+/** Who the demo is signed in as. */
+const ME = DEMO_PERSONA === 'member' ? SAM : DEMO_PERSONA === 'finance' ? ROBIN : PAT;
 
 /** Pretend to be a network: short enough to feel instant, long enough to be async. */
 const LATENCY_MS = 60;
@@ -26,8 +38,25 @@ const nowIso = () => new Date().toISOString();
 
 /* --------------------------------------------------------------- auth --- */
 
+function myProfile(): Row | undefined {
+  return (db.profiles ?? []).find((row) => row.id === ME);
+}
+
+function myPermissions(): string[] {
+  const role = (db.roles ?? []).find((row) => row.id === myProfile()?.role_id);
+  if (!role) return [];
+  if (role.key === 'owner') return ['*'];
+  return (role.permissions as string[]) ?? [];
+}
+
+const allowed = (key: string) => {
+  const permissions = myPermissions();
+  return permissions.includes('*') || permissions.includes(key);
+};
+
 export function demoSession() {
   const now = Math.floor(Date.now() / 1000);
+  const profile = myProfile();
   return {
     access_token: 'demo',
     refresh_token: 'demo',
@@ -38,18 +67,33 @@ export function demoSession() {
       id: ME,
       aud: 'authenticated',
       role: 'authenticated',
-      email: 'pat@example.invalid',
+      email: String(profile?.email ?? 'demo@example.invalid'),
       app_metadata: {},
-      user_metadata: { full_name: 'Pat Example' },
+      user_metadata: { full_name: String(profile?.full_name ?? 'Demo') },
       created_at: nowIso(),
     },
   };
 }
 
-export async function rpc(name: string, _args?: Record<string, unknown>) {
+export async function rpc(name: string, args?: Record<string, unknown>) {
   await wait();
   if (name === 'invite_preview') {
-    return { data: { valid: false }, error: null, status: 200 };
+    const invite = (db.invitations ?? []).find(
+      (row) => row.token === args?.p_token && !row.accepted_at && !row.revoked_at
+    );
+    if (!invite) return { data: { valid: false }, error: null, status: 200 };
+    const role = (db.roles ?? []).find((row) => row.id === invite.role_id);
+    return {
+      data: {
+        valid: true,
+        email: invite.email ?? null,
+        role_name: role?.name ?? null,
+        inviter: nameOf(invite.invited_by),
+        expires_at: invite.expires_at,
+      },
+      error: null,
+      status: 200,
+    };
   }
   return { data: nowIso(), error: null, status: 200 };
 }
@@ -92,6 +136,15 @@ function matches(row: Row, filter: DemoFilter): boolean {
   }
 }
 
+/** What the demo persona may read, mirroring the shape of the real policies. */
+function visible(table: string, row: Row): boolean {
+  if (table === 'time_entries') return row.user_id === ME || allowed('hours.view_all');
+  if (table === 'inquiries') return allowed('inquiries.view');
+  if (table === 'invitations') return allowed('people.manage');
+  if (table === 'activity' && row.subject_id && row.subject_id !== ME) return allowed('hours.view_all');
+  return true;
+}
+
 function pick(row: Row, columns: string): Row {
   if (!columns || columns.trim() === '*') return { ...row };
   const out: Row = {};
@@ -112,10 +165,31 @@ function result(query: DemoQuery, rows: Row[]) {
   return { data: copy, error: null, count: copy.length, status: 200 };
 }
 
+/** A refusal shaped like the one Postgres raises from a trigger. */
+class Refused extends Error {
+  code: string;
+  constructor(message: string, code = 'P0001') {
+    super(message);
+    this.code = code;
+  }
+}
+
 export async function execute(query: DemoQuery) {
   await wait();
+  try {
+    return run(query);
+  } catch (error) {
+    if (error instanceof Refused) {
+      return { data: null, error: { message: error.message, code: error.code }, status: 400 };
+    }
+    throw error;
+  }
+}
+
+function run(query: DemoQuery) {
   const table = db[query.table] ?? (db[query.table] = []);
-  const hits = () => table.filter((row) => query.filters.every((filter) => matches(row, filter)));
+  const hits = () =>
+    table.filter((row) => visible(query.table, row) && query.filters.every((filter) => matches(row, filter)));
 
   switch (query.action) {
     case 'select': {
@@ -153,10 +227,12 @@ export async function execute(query: DemoQuery) {
 
     case 'delete': {
       const gone = hits();
+      for (const row of gone) guard(query.table, row, null);
       db[query.table] = table.filter((row) => !gone.includes(row));
       for (const row of gone) {
-        logActivity(query.table, 'deleted', row, null);
-        emit(query.table, 'DELETE', {}, { id: row.id, project_id: row.project_id });
+        logActivity(query.table, query.table === 'hours_months' ? 'reopened' : 'deleted', row, null);
+        emit(query.table, 'DELETE', {}, { ...row });
+        if (query.table === 'task_items') syncProgress(String(row.task_id));
       }
       return { data: null, error: null, status: 204 };
     }
@@ -166,92 +242,141 @@ export async function execute(query: DemoQuery) {
   }
 }
 
-const AUDITED = new Set(['tasks', 'reports', 'partners', 'project_state', 'project_docs', 'projects']);
+/* ------------------------------------------------------------ triggers --- */
 
-function insert(tableName: string, values: Row): Row {
-  const now = nowIso();
-  const row: Row = { ...defaultsFor(tableName), ...values };
-  if (tableName !== 'project_state' && tableName !== 'project_members' && row.id === undefined) {
-    row.id = tableName === 'activity' ? nextActivityId++ : newId(tableName);
-  }
-  row.created_at = row.created_at ?? now;
-  if (AUDITED.has(tableName)) {
-    row.updated_at = now;
-    row.created_by = ME;
-    row.updated_by = ME;
-  }
-  if (tableName === 'comments') row.user_id = ME;
-  (db[tableName] ?? (db[tableName] = [])).push(row);
-  logActivity(tableName, tableName === 'comments' ? 'commented' : 'created', null, row);
-  emit(tableName, 'INSERT', row, {});
-  return row;
-}
+const AUDITED = new Set(['projects', 'tasks', 'task_items', 'time_entries']);
 
-function update(tableName: string, row: Row, patch: Row, by: string = ME): Row {
-  const before = { ...row };
-  Object.assign(row, patch);
-  if (AUDITED.has(tableName)) {
-    row.updated_at = nowIso();
-    row.updated_by = by;
+const monthOf = (date: unknown) => `${String(date).slice(0, 7)}-01`;
+const monthClosed = (date: unknown) => (db.hours_months ?? []).some((row) => String(row.month).slice(0, 10) === monthOf(date));
+
+/** The refusals the real triggers make, for the cases a reviewer will try. */
+function guard(tableName: string, before: Row | null, after: Row | null): void {
+  if (tableName !== 'time_entries') return;
+  for (const row of [before, after]) {
+    if (row && monthClosed(row.work_date) && !allowed('hours.close')) {
+      throw new Refused('That month is closed. Ask finance to reopen it if an entry needs to change.');
+    }
   }
-  logActivity(tableName, 'updated', before, row, by);
-  emit(tableName, 'UPDATE', row, before);
-  return row;
+  if (after) {
+    const total = (db.time_entries ?? [])
+      .filter((row) => row !== before && row.user_id === after.user_id && row.work_date === after.work_date)
+      .reduce((sum, row) => sum + Number(row.hours), 0);
+    if (total + Number(after.hours) > 24) {
+      throw new Refused('That would be more than 24 hours on one day.');
+    }
+  }
 }
 
 function defaultsFor(tableName: string): Row {
   switch (tableName) {
     case 'tasks':
       return {
-        ws: '',
+        project_id: null,
+        description: '',
         status: 'todo',
-        pri: 'normal',
-        horizon: 'now',
+        priority: 'normal',
+        assignee_id: null,
         due: null,
-        owner: '',
-        assignee: null,
-        why: '',
-        done_when: '',
-        notes: '',
-        recurring: '',
-        sources: [],
+        progress: 0,
+        done_at: null,
         sort: 0,
       };
-    case 'partners':
-      return { county: '', kind: '', stage: 'not_contacted', contact: '', next_step: '', notes: '', referrals: 0, sort: 0 };
-    case 'reports':
-      return { covers: '', kind: 'monthly', status: 'not_started', checks: {}, amount: null, submitted_on: null, notes: '', sources: [] };
+    case 'task_items':
+      return { done: false, sort: 0 };
     case 'projects':
-      return { summary: '', status: 'active', config: {}, kind: 'general', track: 'org' };
+      return { summary: '', status: 'active', track: 'org', lead_id: null, sort: 100 };
+    case 'roles':
+      return { description: '', permissions: [], is_system: false, sort: 100, key: `role_${nextId}` };
+    case 'invitations':
+      return {
+        token: `demo-${Math.random().toString(36).slice(2, 12)}${Math.random().toString(36).slice(2, 12)}`,
+        email: null,
+        note: null,
+        expires_at: new Date(Date.now() + 14 * 86_400_000).toISOString(),
+        accepted_at: null,
+        accepted_by: null,
+        revoked_at: null,
+      };
+    case 'hours_months':
+      return { note: '', closed_at: nowIso() };
     default:
       return {};
   }
+}
+
+function insert(tableName: string, values: Row): Row {
+  const now = nowIso();
+  const row: Row = { ...defaultsFor(tableName), ...values };
+  if (tableName === 'activity') row.id = nextActivityId++;
+  else if (tableName !== 'hours_months' && row.id === undefined) row.id = newId(tableName);
+  row.created_at = row.created_at ?? now;
+  if (AUDITED.has(tableName)) {
+    row.updated_at = now;
+    row.created_by = ME;
+    row.updated_by = ME;
+  }
+  if (tableName === 'roles') row.updated_at = now;
+  if (tableName === 'task_comments') row.user_id = ME;
+  if (tableName === 'hours_months') row.closed_by = ME;
+  if (tableName === 'tasks' && row.status === 'done') row.done_at = now;
+  guard(tableName, null, row);
+  (db[tableName] ?? (db[tableName] = [])).push(row);
+  logActivity(
+    tableName,
+    tableName === 'task_comments' ? 'commented' : tableName === 'hours_months' ? 'closed' : 'created',
+    null,
+    row
+  );
+  emit(tableName, 'INSERT', row, {});
+  if (tableName === 'task_items') syncProgress(String(row.task_id));
+  return row;
+}
+
+function update(tableName: string, row: Row, patch: Row, by: string = ME): Row {
+  const before = { ...row };
+  guard(tableName, before, { ...row, ...patch });
+  Object.assign(row, patch);
+  if (AUDITED.has(tableName) || tableName === 'inquiries') {
+    row.updated_at = nowIso();
+    row.updated_by = by;
+  }
+  if (tableName === 'roles') row.updated_at = nowIso();
+  if (tableName === 'tasks' && before.status !== row.status) row.done_at = row.status === 'done' ? nowIso() : null;
+  logActivity(tableName, 'updated', before, row, by);
+  emit(tableName, 'UPDATE', row, before);
+  if (tableName === 'task_items') syncProgress(String(row.task_id));
+  return row;
+}
+
+/** A task with a checklist takes its progress from it, as the trigger does. */
+function syncProgress(taskId: string): void {
+  const task = (db.tasks ?? []).find((row) => row.id === taskId);
+  if (!task) return;
+  const items = (db.task_items ?? []).filter((row) => row.task_id === taskId);
+  if (!items.length) return;
+  const progress = Math.round((items.filter((row) => row.done).length / items.length) * 100);
+  if (progress === task.progress) return;
+  const before = { ...task };
+  task.progress = progress;
+  emit('tasks', 'UPDATE', task, before);
 }
 
 /* ----------------------------------------------------------- activity --- */
 
 const LABEL: Record<string, string> = {
   todo: 'To do',
-  doing: 'Doing',
+  doing: 'In progress',
   blocked: 'Blocked',
   done: 'Done',
-  critical: 'Critical',
-  high: 'High',
   normal: 'Normal',
-  now: 'Now',
-  next: 'Next',
-  later: 'Later',
-  not_started: 'Not started',
-  preparing: 'Preparing',
-  submitted: 'Submitted',
-  returned: 'Returned',
-  approved: 'Approved',
-  paid: 'Paid',
-  not_contacted: 'Not contacted',
+  high: 'High',
+  urgent: 'Urgent',
+  new: 'New',
   contacted: 'Contacted',
-  meeting_held: 'Meeting held',
-  referring: 'Referring',
-  paused: 'Paused',
+  enrolled: 'Enrolled',
+  closed: 'Closed',
+  active: 'Active',
+  archived: 'Archived',
 };
 
 const label = (value: unknown) => LABEL[String(value)] ?? (value === null || value === '' ? 'none' : String(value));
@@ -265,13 +390,21 @@ function fmtDay(value: unknown): string {
   });
 }
 
+function fmtHours(value: unknown): string {
+  return `${Number(Number(value).toFixed(2))} h`;
+}
+
 const ENTITY: Record<string, string> = {
   tasks: 'task',
-  reports: 'report',
-  partners: 'partner',
-  project_state: 'state',
-  comments: 'comment',
-  project_docs: 'doc',
+  task_items: 'task_item',
+  task_comments: 'comment',
+  time_entries: 'time_entry',
+  projects: 'project',
+  profiles: 'profile',
+  roles: 'role',
+  invitations: 'invitation',
+  hours_months: 'month',
+  inquiries: 'inquiry',
 };
 
 function nameOf(id: unknown): string {
@@ -279,62 +412,124 @@ function nameOf(id: unknown): string {
   return String(profile?.full_name ?? 'someone');
 }
 
+function codeOf(projectId: unknown): string {
+  const project = (db.projects ?? []).find((row) => row.id === projectId);
+  return project ? String(project.code) : '';
+}
+
+function titleOf(taskId: unknown): string {
+  const task = (db.tasks ?? []).find((row) => row.id === taskId);
+  return task ? String(task.title) : 'a task';
+}
+
+function roleNameOf(roleId: unknown): string {
+  const role = (db.roles ?? []).find((row) => row.id === roleId);
+  return role ? String(role.name) : 'another role';
+}
+
+function monthWords(value: unknown): string {
+  const [year, month] = String(value).split('-').map(Number);
+  return new Date(year!, (month ?? 1) - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+}
+
+/** One human line per change, in the same words the database trigger uses. */
+function describe(tableName: string, action: string, before: Row | null, after: Row | null): string {
+  const row = (after ?? before)!;
+  if (action === 'commented') return `Commented on "${titleOf(row.task_id)}"`;
+  if (action === 'closed') return `Closed ${monthWords(row.month)}`;
+  if (action === 'reopened') return `Reopened ${monthWords(row.month)}`;
+
+  if (action === 'created') {
+    switch (tableName) {
+      case 'tasks':
+        return `Created "${row.title}"`;
+      case 'task_items':
+        return `Added "${row.text}" to the checklist`;
+      case 'time_entries': {
+        const code = codeOf(row.project_id);
+        return `Logged ${fmtHours(row.hours)}${code ? ` on ${code}` : ''}`;
+      }
+      case 'projects':
+        return `Created project ${row.code}`;
+      case 'roles':
+        return `Created the role ${row.name}`;
+      case 'invitations':
+        return `Invited someone as ${roleNameOf(row.role_id)}`;
+      default:
+        return 'Added';
+    }
+  }
+
+  if (action === 'deleted') {
+    switch (tableName) {
+      case 'tasks':
+        return `Deleted "${row.title}"`;
+      case 'task_items':
+        return `Removed "${row.text}" from the checklist`;
+      case 'task_comments':
+        return `Deleted a comment on "${titleOf(row.task_id)}"`;
+      case 'time_entries':
+        return `Removed ${fmtHours(row.hours)} from ${fmtDay(row.work_date)}`;
+      case 'roles':
+        return `Deleted the role ${row.name}`;
+      case 'invitations':
+        return 'Withdrew an invitation';
+      default:
+        return 'Removed';
+    }
+  }
+
+  if (!before || !after) return '';
+  const changed = Object.keys(after).filter(
+    (key) =>
+      !['updated_at', 'updated_by', 'created_at', 'created_by', 'sort', 'done_at', 'last_seen_at'].includes(key) &&
+      JSON.stringify(before[key]) !== JSON.stringify(after[key])
+  );
+  if (!changed.length) return '';
+  const parts: string[] = [];
+  for (const key of changed) {
+    if (tableName === 'task_items' && key === 'done') parts.push(`${after.done ? 'Ticked' : 'Unticked'} "${after.text}"`);
+    else if (tableName === 'task_items' && key === 'text') parts.push(`Renamed a step to "${after.text}"`);
+    else if (key === 'title') parts.push(`Renamed to "${after.title}"`);
+    else if (key === 'status') parts.push(`Status: ${label(before.status)} → ${label(after.status)}`);
+    else if (key === 'priority') parts.push(`Priority: ${label(before.priority)} → ${label(after.priority)}`);
+    else if (key === 'due') parts.push(`Due: ${fmtDay(before.due)} → ${fmtDay(after.due)}`);
+    else if (key === 'progress' && tableName === 'tasks') parts.push(`Progress: ${before.progress}% → ${after.progress}%`);
+    else if (key === 'assignee_id') parts.push(after.assignee_id ? `Assigned to ${nameOf(after.assignee_id)}` : 'Unassigned');
+    else if (key === 'project_id') parts.push(after.project_id ? `Moved to ${codeOf(after.project_id)}` : 'Took off its project');
+    else if (key === 'role_id') parts.push(`Changed ${nameOf(after.id)} to ${roleNameOf(after.role_id)}`);
+    else if (key === 'active') parts.push(after.active ? `Reactivated ${nameOf(after.id)}` : `Deactivated ${nameOf(after.id)}`);
+    else if (key === 'permissions') parts.push(`Changed what ${after.name} allows`);
+    else if (key === 'revoked_at') parts.push('Withdrew an invitation');
+    else if (key === 'task_id' && tableName === 'inquiries') parts.push(after.task_id ? `Made the task "${titleOf(after.task_id)}"` : 'Unlinked the task');
+    else if (key === 'hours') parts.push(`Hours: ${fmtHours(before.hours)} → ${fmtHours(after.hours)}`);
+    else if (key === 'notes') parts.push('Edited the notes');
+    else if (key === 'description') parts.push('Edited the description');
+    else parts.push('Edited details');
+  }
+  return [...new Set(parts)].join(' · ');
+}
+
 function logActivity(tableName: string, action: string, before: Row | null, after: Row | null, by: string = ME): void {
   const entity = ENTITY[tableName];
   if (!entity) return;
-  const row = after ?? before!;
-  const projectId = row.project_id as string | undefined;
-  if (!projectId) return;
-
-  let summary = '';
-  if (action === 'created') {
-    summary =
-      tableName === 'tasks'
-        ? `Added "${row.title}"`
-        : tableName === 'partners'
-          ? `Added partner ${row.name}`
-          : tableName === 'reports'
-            ? `Added report ${row.period}`
-            : 'Added';
-  } else if (action === 'deleted') {
-    summary = tableName === 'tasks' ? `Removed "${row.title}"` : `Removed ${String(row.name ?? row.period ?? row.title ?? '')}`;
-  } else if (action === 'commented') {
-    summary = 'Commented';
-  } else if (before && after) {
-    const changed = Object.keys(after).filter(
-      (key) =>
-        !['updated_at', 'updated_by', 'created_at', 'created_by', 'sort'].includes(key) &&
-        JSON.stringify(before[key]) !== JSON.stringify(after[key])
-    );
-    if (!changed.length) return;
-    const parts: string[] = [];
-    for (const key of changed) {
-      if (key === 'title') parts.push(`Renamed to "${after.title}"`);
-      else if (['status', 'pri', 'horizon', 'stage'].includes(key)) {
-        const name = { status: 'Status', pri: 'Priority', horizon: 'Horizon', stage: 'Stage' }[key];
-        parts.push(`${name}: ${label(before[key])} → ${label(after[key])}`);
-      } else if (key === 'due' || key === 'submitted_on') {
-        parts.push(`${key === 'due' ? 'Due' : 'Submitted'}: ${fmtDay(before[key])} → ${fmtDay(after[key])}`);
-      } else if (key === 'assignee') {
-        parts.push(after.assignee ? `Assigned to ${nameOf(after.assignee)}` : 'Unassigned');
-      } else if (key === 'referrals') parts.push(`Referrals: ${before.referrals} → ${after.referrals}`);
-      else if (key === 'checks') parts.push('Updated the checklist');
-      else if (key === 'amount') parts.push('Changed the amount');
-      else if (key === 'data') parts.push(after.key === 'budget' ? 'Updated what has been billed' : 'Updated the outcome numbers');
-      else if (key === 'notes') parts.push('Edited notes');
-      else if (key === 'sources') parts.push('Edited sources');
-      else parts.push('Edited details');
-    }
-    summary = [...new Set(parts)].join(' · ');
+  // last_seen_at moves on every visit; the real trigger ignores it too.
+  if (tableName === 'profiles' && before && after) {
+    const keys = Object.keys(after).filter((key) => JSON.stringify(before[key]) !== JSON.stringify(after[key]));
+    if (keys.every((key) => key === 'last_seen_at')) return;
   }
+  const summary = describe(tableName, action, before, after);
   if (!summary) return;
-
+  const row = (after ?? before)!;
+  const taskId =
+    tableName === 'tasks' ? row.id : tableName === 'task_items' || tableName === 'task_comments' ? row.task_id : null;
   const entry: Row = {
     id: nextActivityId++,
-    project_id: projectId,
-    user_id: by,
+    actor_id: by,
     entity,
-    entity_id: tableName === 'project_state' ? projectId : (row.id ?? null),
+    entity_id: tableName === 'hours_months' ? null : (row.id ?? null),
+    task_id: taskId ?? null,
+    subject_id: tableName === 'time_entries' ? (row.user_id ?? null) : null,
     action,
     summary,
     created_at: nowIso(),
@@ -360,13 +555,14 @@ export function attachChannel(entry: Attached): () => void {
 }
 
 function emit(table: string, eventType: 'INSERT' | 'UPDATE' | 'DELETE', next: Row, old: Row): void {
+  // Realtime is filtered by RLS too: a row you cannot read never arrives.
+  const row = eventType === 'DELETE' ? old : next;
+  if (!visible(table, row)) return;
   const payload = { eventType, new: { ...next }, old: { ...old }, table, schema: 'public' };
-  const projectId = String(next.project_id ?? old.project_id ?? '');
   window.setTimeout(() => {
     for (const channel of channels) {
       for (const listener of channel.listeners) {
         if (listener.table !== table) continue;
-        if (listener.filter && listener.filter !== `project_id=eq.${projectId}`) continue;
         try {
           listener.callback(payload);
         } catch {
@@ -381,14 +577,14 @@ function emit(table: string, eventType: 'INSERT' | 'UPDATE' | 'DELETE', next: Ro
 
 const presence = new Map<string, Row>();
 const peers: Row[] = [
-  { user_id: SAM, name: 'Sam Sample', tab: 'plan', editing: '' },
-  { user_id: ROBIN, name: 'Robin Test', tab: 'reports', editing: '' },
-];
+  { user_id: SAM, name: 'Sam Sample', where: 'tasks' },
+  { user_id: ROBIN, name: 'Robin Test', where: 'hours-team' },
+].filter((peer) => peer.user_id !== ME);
 
 export function presenceState(topic: string): Record<string, Row[]> {
   const out: Record<string, Row[]> = {};
   for (const [key, meta] of presence) out[key] = [meta];
-  if (topic === `project:${PRIMARY_ID}`) {
+  if (topic === 'workspace') {
     for (const peer of peers) out[String(peer.user_id)] = [peer];
   }
   return out;
@@ -401,12 +597,13 @@ export function trackPresence(key: string, meta: Row): void {
   for (const channel of channels) channel.onPresence();
 
   // The first task somebody opens gets a visit and an edit from a colleague.
-  const editing = String(meta.editing ?? '');
-  if (!simulated && editing.startsWith('task:')) {
+  const where = String(meta.where ?? '');
+  const colleague = peers[0];
+  if (!simulated && colleague && where.startsWith('task:')) {
     simulated = true;
-    const taskId = editing.slice(5);
+    const taskId = where.slice(5);
     window.setTimeout(() => {
-      peers[0]!.editing = editing;
+      colleague.where = where;
       for (const channel of channels) channel.onPresence();
     }, 2500);
     window.setTimeout(() => {
@@ -415,7 +612,7 @@ export function trackPresence(key: string, meta: Row): void {
       const due = task.due ? new Date(`${task.due}T12:00:00`) : new Date();
       due.setDate(due.getDate() + 3);
       const next = `${due.getFullYear()}-${String(due.getMonth() + 1).padStart(2, '0')}-${String(due.getDate()).padStart(2, '0')}`;
-      update('tasks', task, { due: next }, SAM);
+      update('tasks', task, { due: next }, String(colleague.user_id));
     }, 6000);
   }
 }

@@ -1,101 +1,161 @@
 /**
- * Row shapes for every table in the `public` schema, plus the JSON payloads
- * stored inside them. These mirror `supabase/migrations/0001_admin_portal.sql`
- * (written by another engineer) and ARCHITECTURE.md. Nothing project-specific
- * belongs here: `ProjectConfig` describes the *shape* of a grant's settings,
- * never the values of any actual grant.
+ * Row shapes for the v2 workspace tables, the permission catalogue, and the
+ * label maps every screen shares.
+ *
+ * Column names follow `docs/workbench-v2-plan.md` section 4 word for word,
+ * which is also what `supabase/migrations/0002_workspace.sql` creates. When the
+ * two disagree, the migration is the truth and this file is the bug.
+ *
+ * Nothing here describes real people or real work: the repository is public.
  */
 
 /* ------------------------------------------------------------------ enums */
 
-export type GlobalRole = 'owner' | 'admin' | 'member';
-export type ProjectRole = 'manager' | 'editor' | 'viewer';
-export type ProjectKind = 'grant' | 'general';
 export type Track = 'med' | 'tech' | 'org';
 export type ProjectStatus = 'active' | 'archived';
-
 export type TaskStatus = 'todo' | 'doing' | 'blocked' | 'done';
-export type TaskPriority = 'critical' | 'high' | 'normal';
-export type Horizon = 'now' | 'next' | 'later';
+export type TaskPriority = 'normal' | 'high' | 'urgent';
 
-export type ReportKind = 'monthly' | 'closeout';
-export type ReportStatus =
-  | 'not_started'
-  | 'preparing'
-  | 'submitted'
-  | 'returned'
-  | 'approved'
-  | 'paid';
+export type ActivityEntity =
+  | 'task'
+  | 'task_item'
+  | 'comment'
+  | 'time_entry'
+  | 'project'
+  | 'profile'
+  | 'role'
+  | 'invitation'
+  | 'month'
+  | 'inquiry';
 
-export type PartnerStage =
-  | 'not_contacted'
-  | 'contacted'
-  | 'meeting_held'
-  | 'referring'
-  | 'paused';
+export type ActivityAction = 'created' | 'updated' | 'deleted' | 'commented' | 'closed' | 'reopened';
 
-export type CommentEntity = 'task' | 'report' | 'partner' | 'doc';
-export type ActivityAction = 'created' | 'updated' | 'deleted' | 'commented';
-
-/** Tables the project store keeps in memory and subscribes to. */
-export type ContentTable =
+/** The nine tables the workspace store loads and the realtime channel carries. */
+export type WorkspaceTable =
+  | 'roles'
+  | 'profiles'
+  | 'projects'
   | 'tasks'
-  | 'reports'
-  | 'partners'
-  | 'project_state'
-  | 'project_docs'
-  | 'comments'
+  | 'task_items'
+  | 'task_comments'
+  | 'time_entries'
+  | 'hours_months'
   | 'activity';
 
-/* ------------------------------------------------------- shared JSON bits */
-
-export type SourceKind = 'onedrive' | 'gdrive' | 'gmail' | 'web' | 'other';
+/* ---------------------------------------------------------- permissions */
 
 /**
- * A pointer to where an original document lives. The portal never hosts files;
- * it only remembers where to look.
+ * The fixed permission catalogue. The database holds the same list in a
+ * `check` constraint on `roles.permissions`; adding a key means changing both.
  */
-export interface Source {
-  kind: SourceKind;
-  name: string;
-  where: string;
-  note?: string;
+export const PERMISSION_KEYS = [
+  'tasks.create',
+  'tasks.assign',
+  'tasks.edit_any',
+  'tasks.delete',
+  'hours.log',
+  'hours.view_all',
+  'hours.edit_any',
+  'hours.close',
+  'hours.export',
+  'projects.manage',
+  'people.manage',
+  'roles.manage',
+  'inquiries.view',
+  'inquiries.manage',
+] as const;
+
+export type Permission = (typeof PERMISSION_KEYS)[number];
+
+export interface PermissionInfo {
+  key: Permission;
+  /** The group heading in the role editor. */
+  group: 'Tasks' | 'Hours' | 'Inbox' | 'Workspace';
+  /** One sentence, read beside the checkbox: "Lets you ..." is implied. */
+  sentence: string;
 }
 
-/** A block of a document body. Text is plain; `**bold**` is the only markup. */
-export type DocBlock =
-  | { t: 'p'; text: string }
-  | { t: 'h'; text: string }
-  | { t: 'ul'; items: string[] }
-  | { t: 'kv'; rows: Array<[string, string]> }
-  | { t: 'note'; text: string };
+/** Section 3 of the plan, in catalogue order. */
+export const PERMISSIONS: readonly PermissionInfo[] = [
+  {
+    key: 'tasks.create',
+    group: 'Tasks',
+    sentence: 'Create tasks (you may always edit tasks you created or are assigned to)',
+  },
+  {
+    key: 'tasks.assign',
+    group: 'Tasks',
+    sentence: 'Assign tasks to other people (anyone may take an unassigned task themselves)',
+  },
+  { key: 'tasks.edit_any', group: 'Tasks', sentence: "Edit, move and close anyone's task" },
+  { key: 'tasks.delete', group: 'Tasks', sentence: 'Delete any task (without it: only tasks you created)' },
+  { key: 'hours.log', group: 'Hours', sentence: 'Log your own hours' },
+  { key: 'hours.view_all', group: 'Hours', sentence: "See everyone's hours and the team views" },
+  { key: 'hours.edit_any', group: 'Hours', sentence: "Edit or delete anyone's entries" },
+  { key: 'hours.close', group: 'Hours', sentence: 'Close a month (freezes its entries) and reopen it' },
+  { key: 'hours.export', group: 'Hours', sentence: 'Download hours as CSV' },
+  { key: 'projects.manage', group: 'Workspace', sentence: 'Create, edit and archive projects' },
+  { key: 'people.manage', group: 'Workspace', sentence: 'Invite people, change their role, deactivate accounts' },
+  { key: 'roles.manage', group: 'Workspace', sentence: 'Create roles and change what they allow' },
+  {
+    key: 'inquiries.view',
+    group: 'Inbox',
+    sentence: "See the inbox, including the person's name and contact details",
+  },
+  {
+    key: 'inquiries.manage',
+    group: 'Inbox',
+    sentence: "Change an inquiry's status, assign it, write notes, make a task from it",
+  },
+];
 
-export type DocBlockType = DocBlock['t'];
+/** The seven roles the migration seeds (`roles.key`). Only `owner` is a system role. */
+export const SEEDED_ROLE_KEYS = [
+  'owner',
+  'administrator',
+  'technology_lead',
+  'instructor',
+  'course_designer',
+  'finance',
+  'member',
+] as const;
+
+export type SeededRoleKey = (typeof SEEDED_ROLE_KEYS)[number];
+
+/** What a new invitation offers unless someone picks otherwise. */
+export const DEFAULT_ROLE_KEY: SeededRoleKey = 'member';
+export const OWNER_ROLE_KEY: SeededRoleKey = 'owner';
 
 /* ------------------------------------------------------------------- rows */
+
+export interface Role {
+  id: string;
+  key: string;
+  name: string;
+  description: string;
+  permissions: Permission[];
+  is_system: boolean;
+  sort: number;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface Profile {
   id: string;
   email: string | null;
   full_name: string | null;
   title: string | null;
-  role: GlobalRole;
+  role_id: string;
+  active: boolean;
   created_at: string;
   last_seen_at: string | null;
-}
-
-/** One project grant carried on an invitation. */
-export interface ProjectGrant {
-  project_id: string;
-  role: ProjectRole;
 }
 
 export interface Invitation {
   id: string;
   token: string;
   email: string | null;
-  role: GlobalRole;
-  project_grants: ProjectGrant[];
+  role_id: string;
   note: string | null;
   invited_by: string | null;
   created_at: string;
@@ -105,54 +165,45 @@ export interface Invitation {
   revoked_at: string | null;
 }
 
-/** What `invite_preview(token)` returns to an anonymous visitor. */
+/** What `invite_preview(token)` returns to a visitor who is not signed in. */
 export interface InvitePreview {
   valid: boolean;
   email: string | null;
-  role: GlobalRole | null;
+  role_name: string | null;
   inviter: string | null;
   expires_at: string | null;
 }
 
 export interface Project {
   id: string;
-  slug: string;
   name: string;
-  kind: ProjectKind;
+  /** 2 to 6 capitals: 'DLT', 'WEB'. Shown in lists instead of the name. */
+  code: string;
   track: Track;
-  summary: string | null;
+  summary: string;
   status: ProjectStatus;
-  config: ProjectConfig;
+  lead_id: string | null;
+  sort: number;
   created_by: string | null;
+  updated_by: string | null;
   created_at: string;
   updated_at: string;
-}
-
-export interface ProjectMember {
-  project_id: string;
-  user_id: string;
-  role: ProjectRole;
-  added_by: string | null;
-  created_at: string;
 }
 
 export interface Task {
   id: string;
-  project_id: string;
+  project_id: string | null;
   title: string;
-  ws: string;
+  /** Plain text; `**bold**` is the only markup. */
+  description: string;
   status: TaskStatus;
-  pri: TaskPriority;
-  horizon: Horizon;
+  priority: TaskPriority;
+  assignee_id: string | null;
+  /** A calendar date, `YYYY-MM-DD`. */
   due: string | null;
-  /** Free-text owner label, kept alongside the linked assignee. */
-  owner: string;
-  assignee: string | null;
-  why: string;
-  done_when: string;
-  notes: string;
-  recurring: string;
-  sources: Source[];
+  /** 0 to 100, manual. The checklist fraction wins when there is a checklist. */
+  progress: number;
+  done_at: string | null;
   sort: number;
   created_by: string | null;
   updated_by: string | null;
@@ -160,226 +211,101 @@ export interface Task {
   updated_at: string;
 }
 
-export interface Report {
+export interface TaskItem {
   id: string;
-  project_id: string;
-  /** The month the report is DUE, as `YYYY-MM`. */
-  period: string;
-  due: string | null;
-  covers: string | null;
-  kind: ReportKind;
-  status: ReportStatus;
-  /** Keyed by `config.report_checks[].key`. */
-  checks: Record<string, boolean>;
-  amount: number | null;
-  submitted_on: string | null;
-  notes: string;
-  sources: Source[];
-  updated_by: string | null;
-  updated_at: string;
-}
-
-export interface Partner {
-  id: string;
-  project_id: string;
-  name: string;
-  county: string;
-  kind: string;
-  stage: PartnerStage;
-  contact: string;
-  next_step: string;
-  notes: string;
-  referrals: number;
+  task_id: string;
+  text: string;
+  done: boolean;
   sort: number;
+  created_by: string | null;
   updated_by: string | null;
-  updated_at: string;
-}
-
-/** A free-form bag of numbers per project, keyed (`metrics`, `budget`, …). */
-export interface ProjectStateRow {
-  project_id: string;
-  key: string;
-  data: Record<string, unknown>;
-  updated_by: string | null;
-  updated_at: string;
-}
-
-export interface ProjectDoc {
-  id: string;
-  project_id: string;
-  /** `about` · `rulebook` · `notes` · `notes:<tab>` */
-  section: string;
-  slug: string;
-  title: string;
-  body: DocBlock[];
-  sources: Source[];
-  sort: number;
-  updated_by: string | null;
-  updated_at: string;
-}
-
-export interface Comment {
-  id: string;
-  project_id: string;
-  entity: CommentEntity;
-  entity_id: string;
-  body: string;
-  user_id: string;
   created_at: string;
+  updated_at: string;
+}
+
+export interface TaskComment {
+  id: string;
+  task_id: string;
+  user_id: string;
+  body: string;
+  created_at: string;
+}
+
+export interface TimeEntry {
+  id: string;
+  user_id: string;
+  /** `YYYY-MM-DD`. */
+  work_date: string;
+  /** Quarter hours: 0.25 to 24. */
+  hours: number;
+  project_id: string | null;
+  task_id: string | null;
+  summary: string;
+  created_by: string | null;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** A row means the month is closed. `month` is the first of the month. */
+export interface HoursMonth {
+  month: string;
+  closed_by: string | null;
+  closed_at: string;
+  note: string;
 }
 
 export interface ActivityRow {
   id: number;
-  project_id: string;
-  user_id: string | null;
-  entity: string;
+  actor_id: string | null;
+  entity: ActivityEntity;
   entity_id: string | null;
+  task_id: string | null;
+  /**
+   * The person a row is about: the entry's user on time_entry rows, null
+   * elsewhere. The database hides other people's hours activity from anyone
+   * without hours.view_all, so the client never filters on it.
+   */
+  subject_id: string | null;
   action: ActivityAction;
   summary: string;
   created_at: string;
 }
 
-/* ------------------------------------------------- project configuration */
-
-export interface WorkstreamDef {
-  key: string;
-  label: string;
-}
-
-export interface ReportCheckDef {
-  key: string;
-  label: string;
-  /**
-   * A one-word name for the toggle in the reports table, where the full label
-   * is too wide to sit in a cell. Optional: when it is missing one is derived
-   * from the label, and the full label stays on the control as its title and
-   * accessible name.
-   */
-  short?: string;
-}
-
-export interface BudgetLineDef {
-  id: string;
-  label: string;
-  category: string;
-  amount: number;
-}
-
-export interface BudgetCategoryDef {
-  name: string;
-  total: number;
-  rule: 'flex' | 'decrease_only';
-}
-
-export interface FunnelStepDef {
-  key: string;
-  label: string;
-}
+/** Where an inquiry came from: one of the three public forms. */
+export type InquirySource = 'inquiry' | 'dlt_signup' | 'dlt_interest';
+export type InquiryStatus = 'new' | 'contacted' | 'enrolled' | 'closed';
 
 /**
- * Everything the grant views need, so that nothing about any particular grant
- * is hardcoded in this public repo. Every field is optional: a project may be
- * set up gradually, and a `general` project carries almost none of it.
+ * A copy of one public form response (Google Forms stays the record). The
+ * Worker inserts it through `ingest_form_response`; everything from `source`
+ * to `fields` is immutable afterwards.
  */
-export interface ProjectConfig {
-  funder?: string;
-  contract_no?: string;
-  award?: number;
-  /** `YYYY-MM-DD` */
-  term_start?: string;
-  term_end?: string;
-  targets?: Record<string, number>;
-  milestones?: Record<string, string>;
-  workstreams?: WorkstreamDef[];
-  counties?: string[];
-  partner_kinds?: string[];
-  report_checks?: ReportCheckDef[];
-  budget_lines?: BudgetLineDef[];
-  budget_categories?: BudgetCategoryDef[];
-  funnel?: FunnelStepDef[];
-  [key: string]: unknown;
-}
-
-/* ------------------------------------------------------- import / export */
-
-/** A row as it appears in an import file: no ids, no audit columns. */
-export type TaskImport = Partial<
-  Pick<
-    Task,
-    | 'title'
-    | 'ws'
-    | 'status'
-    | 'pri'
-    | 'horizon'
-    | 'due'
-    | 'owner'
-    | 'why'
-    | 'done_when'
-    | 'notes'
-    | 'recurring'
-    | 'sources'
-    | 'sort'
-  >
->;
-
-export type ReportImport = Partial<
-  Pick<
-    Report,
-    | 'period'
-    | 'due'
-    | 'covers'
-    | 'kind'
-    | 'status'
-    | 'checks'
-    | 'amount'
-    | 'submitted_on'
-    | 'notes'
-    | 'sources'
-  >
->;
-
-export type PartnerImport = Partial<
-  Pick<
-    Partner,
-    | 'name'
-    | 'county'
-    | 'kind'
-    | 'stage'
-    | 'contact'
-    | 'next_step'
-    | 'notes'
-    | 'referrals'
-    | 'sort'
-  >
->;
-
-export type DocImport = Partial<
-  Pick<ProjectDoc, 'section' | 'slug' | 'title' | 'body' | 'sources' | 'sort'>
->;
-
-export interface ProjectFileHeader {
-  slug: string;
+export interface Inquiry {
+  id: string;
+  source: InquirySource;
+  received_at: string;
+  lang: 'en' | 'es';
+  /** The page path the form was on. */
+  page: string;
   name: string;
-  kind: ProjectKind;
-  track?: Track;
-  summary?: string;
-  config?: ProjectConfig;
+  /** Phone and/or email on one line. */
+  contact: string;
+  /** Every answer, in form order. */
+  fields: Array<{ k: string; v: string }>;
+  status: InquiryStatus;
+  assignee_id: string | null;
+  notes: string;
+  task_id: string | null;
+  updated_by: string | null;
+  updated_at: string | null;
 }
 
-/** The `mmt-project/1` interchange file, used by both import and export. */
-export interface ProjectFile {
-  format: 'mmt-project/1';
-  project: ProjectFileHeader;
-  tasks?: TaskImport[];
-  reports?: ReportImport[];
-  partners?: PartnerImport[];
-  state?: Record<string, Record<string, unknown>>;
-  docs?: DocImport[];
-}
+/* ----------------------------------------------------------------- labels */
 
-export const PROJECT_FILE_FORMAT = 'mmt-project/1';
-
-/* --------------------------------------------------------- display names */
+export const TASK_STATUSES: readonly TaskStatus[] = ['todo', 'doing', 'blocked', 'done'];
+export const TASK_PRIORITIES: readonly TaskPriority[] = ['normal', 'high', 'urgent'];
+export const TRACKS: readonly Track[] = ['med', 'tech', 'org'];
 
 export const STATUS_LABEL: Record<TaskStatus, string> = {
   todo: 'To do',
@@ -389,70 +315,47 @@ export const STATUS_LABEL: Record<TaskStatus, string> = {
 };
 
 export const PRIORITY_LABEL: Record<TaskPriority, string> = {
-  critical: 'Critical',
-  high: 'High',
   normal: 'Normal',
+  high: 'High',
+  urgent: 'Urgent',
 };
 
-export const HORIZON_LABEL: Record<Horizon, string> = {
-  now: 'Now',
-  next: 'Next',
-  later: 'Later',
+export const TRACK_LABEL: Record<Track, string> = {
+  med: 'Med',
+  tech: 'Tech',
+  org: 'Org',
 };
 
-export const REPORT_STATUS_LABEL: Record<ReportStatus, string> = {
-  not_started: 'Not started',
-  preparing: 'Preparing',
-  submitted: 'Submitted',
-  returned: 'Returned',
-  approved: 'Approved',
-  paid: 'Paid',
+export const PROJECT_STATUS_LABEL: Record<ProjectStatus, string> = {
+  active: 'Active',
+  archived: 'Archived',
 };
 
-export const PARTNER_STAGE_LABEL: Record<PartnerStage, string> = {
-  not_contacted: 'Not contacted',
+export const ACTIVITY_ENTITY_LABEL: Record<ActivityEntity, string> = {
+  task: 'Task',
+  task_item: 'Checklist',
+  comment: 'Comment',
+  time_entry: 'Hours',
+  project: 'Project',
+  profile: 'Person',
+  role: 'Role',
+  invitation: 'Invitation',
+  month: 'Month close',
+  inquiry: 'Inquiry',
+};
+
+export const INQUIRY_SOURCES: readonly InquirySource[] = ['inquiry', 'dlt_signup', 'dlt_interest'];
+export const INQUIRY_STATUSES: readonly InquiryStatus[] = ['new', 'contacted', 'enrolled', 'closed'];
+
+export const INQUIRY_SOURCE_LABEL: Record<InquirySource, string> = {
+  inquiry: 'Contact form',
+  dlt_signup: 'DLT sign-up',
+  dlt_interest: 'DLT interest',
+};
+
+export const INQUIRY_STATUS_LABEL: Record<InquiryStatus, string> = {
+  new: 'New',
   contacted: 'Contacted',
-  meeting_held: 'Meeting held',
-  referring: 'Referring',
-  paused: 'Paused',
+  enrolled: 'Enrolled',
+  closed: 'Closed',
 };
-
-export const GLOBAL_ROLE_LABEL: Record<GlobalRole, string> = {
-  owner: 'Owner',
-  admin: 'Administrator',
-  member: 'Member',
-};
-
-export const PROJECT_ROLE_LABEL: Record<ProjectRole, string> = {
-  manager: 'Manager',
-  editor: 'Editor',
-  viewer: 'Viewer',
-};
-
-export const SOURCE_KIND_LABEL: Record<SourceKind, string> = {
-  onedrive: 'OneDrive',
-  gdrive: 'Google Drive',
-  gmail: 'Email',
-  web: 'Web',
-  other: 'Other',
-};
-
-export const TASK_STATUSES: TaskStatus[] = ['todo', 'doing', 'blocked', 'done'];
-export const TASK_PRIORITIES: TaskPriority[] = ['critical', 'high', 'normal'];
-export const HORIZONS: Horizon[] = ['now', 'next', 'later'];
-export const REPORT_STATUSES: ReportStatus[] = [
-  'not_started',
-  'preparing',
-  'submitted',
-  'returned',
-  'approved',
-  'paid',
-];
-export const PARTNER_STAGES: PartnerStage[] = [
-  'not_contacted',
-  'contacted',
-  'meeting_held',
-  'referring',
-  'paused',
-];
-export const SOURCE_KINDS: SourceKind[] = ['onedrive', 'gdrive', 'gmail', 'web', 'other'];

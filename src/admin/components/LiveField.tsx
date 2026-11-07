@@ -8,7 +8,7 @@
  * typed. A read-only viewer gets a disabled control, not a hidden one.
  */
 import type { JSX } from 'preact';
-import { useLiveField, type WritableTable } from '../lib/store';
+import { useLiveField, type WritableTable } from '../lib/workspace';
 import { toast } from '../lib/toasts';
 import { Select, type Option } from './Select';
 
