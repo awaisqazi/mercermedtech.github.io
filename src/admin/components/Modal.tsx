@@ -68,7 +68,11 @@ export function useOverlay({
     const node = panel.current;
 
     if (initialFocus === 'first') {
-      const first = [...(node?.querySelectorAll<HTMLElement>(`${bodySelector} ${FOCUSABLE}`) ?? [])][0];
+      // FOCUSABLE is a comma list: every alternative needs the body prefix.
+      const scoped = FOCUSABLE.split(',')
+        .map((part) => `${bodySelector} ${part.trim()}`)
+        .join(',');
+      const first = node?.querySelector<HTMLElement>(scoped);
       (first ?? node)?.focus();
     } else {
       node?.focus();

@@ -10,8 +10,8 @@
  *   who is here now   presence, from the workspace channel
  *   you               avatar, name, role · theme · sign out · narrow the rail
  *
- * Phone: a top bar (logo mark, the page title, one action the screen hands
- * over through PhoneAction) and a bottom bar (Home · Tasks · Hours · More);
+ * Phone: a top bar (logo mark, one action the screen hands over through
+ * PhoneAction; the page names itself in its own header) and a bottom bar (Home · Tasks · Hours · More);
  * More opens a sheet with everything else.
  *
  * The split hairline (Med teal, then Tech indigo, hard stop) along the very
@@ -25,6 +25,7 @@ import { href, navigate, useRoute, type RouteName } from '../lib/router';
 import { useTheme } from '../lib/theme';
 import { toast } from '../lib/toasts';
 import { useShellChrome } from '../lib/ui';
+import { DEMO } from '../demo/mode';
 import { useCan, useCanAny, useMyRole } from '../lib/perms';
 import { closeWorkspace, setPresence, useNewInquiryCount, usePresence, useWorkspace } from '../lib/workspace';
 import { Avatar, AvatarStack } from './Avatar';
@@ -145,6 +146,11 @@ export function AppShell({ children }: { children: ComponentChildren }) {
 
   useEffect(() => remember(RAIL_KEY, collapsed), [collapsed]);
 
+  // The tab title follows the page, on every width.
+  useEffect(() => {
+    document.title = chrome.title ? `${chrome.title} · ${APP_NAME}` : APP_NAME;
+  }, [chrome.title]);
+
   // Moving anywhere closes the phone sheet, and tells the others where we are.
   useEffect(() => {
     setMoreOpen(false);
@@ -195,10 +201,16 @@ export function AppShell({ children }: { children: ComponentChildren }) {
 
       {/* Phone: top bar */}
       <header class="wb-topbar">
-        <a class="wb-topbar-brand" href={href('/')} aria-label={`${APP_NAME}, home`}>
-          <Logo height={28} mark />
-        </a>
-        <p class="wb-topbar-title">{chrome.title}</p>
+        <div class="wb-topbar-id">
+          <a class="wb-topbar-brand" href={href('/')} aria-label={`${APP_NAME}, home`}>
+            <Logo height={28} mark />
+          </a>
+          {DEMO ? (
+            <span class="wb-topbar-demo" aria-hidden="true">
+              Demo
+            </span>
+          ) : null}
+        </div>
         <div class="wb-topbar-action">
           {chrome.action ? (
             <Button variant="primary" size="sm" icon={chrome.action.icon} onClick={chrome.action.onClick}>

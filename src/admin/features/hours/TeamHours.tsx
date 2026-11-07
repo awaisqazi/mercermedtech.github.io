@@ -7,6 +7,7 @@
 import { useMemo, useState } from 'preact/hooks';
 import { Avatar } from '../../components/Avatar';
 import { Button } from '../../components/Button';
+import { ConfirmDialog } from '../../components/ConfirmDialog';
 import { EmptyState } from '../../components/EmptyState';
 import { IconChevron, IconDownload, IconLock } from '../../components/Icons';
 import { PageHeader } from '../../components/PageHeader';
@@ -31,10 +32,12 @@ import {
   totalsByProject,
   weeksOfMonth,
 } from '../../lib/hours';
+import { toast } from '../../lib/toasts';
 import { useCan } from '../../lib/perms';
 import { patchQuery, useRoute } from '../../lib/router';
 import type { Profile, Project, TimeEntry } from '../../lib/types';
 import {
+  deleteEntry,
   nameOf,
   refetch,
   useMonthClosed,
@@ -44,8 +47,9 @@ import {
   useTimeEntries,
 } from '../../lib/workspace';
 import { HoursTabs } from './HoursTabs';
+import { LogDialog } from './LogDialog';
 import { MonthClose } from './MonthClose';
-import { dayWording, readMonth } from './shared';
+import { dayWording, dayWordingLong, readMonth } from './shared';
 
 export function TeamHours() {
   const allowed = useCan('hours.view_all');
@@ -64,6 +68,7 @@ export function TeamHours() {
 function TeamMonth() {
   const route = useRoute();
   const canExport = useCan('hours.export');
+  const canEditAny = useCan('hours.edit_any');
   const thisMonth = monthKey(new Date());
   const month = readMonth(route.query.month) ?? thisMonth;
   const bounds = useMemo(() => monthBounds(month), [month]);
@@ -79,6 +84,20 @@ function TeamMonth() {
   const { entries, loading, error } = useTimeEntries({ from: bounds.from, to: bounds.to });
 
   const [open, setOpen] = useState<ReadonlySet<string>>(new Set());
+  const [editing, setEditing] = useState<TimeEntry | null>(null);
+  const [deleting, setDeleting] = useState<TimeEntry | null>(null);
+  const [busy, setBusy] = useState(false);
+  const canChange = canEditAny && !closedRow;
+
+  const confirmDelete = async () => {
+    if (!deleting) return;
+    setBusy(true);
+    const result = await deleteEntry(deleting.id);
+    setBusy(false);
+    if (!result.ok) return;
+    toast.good('Entry deleted.');
+    setDeleting(null);
+  };
 
   const projectMap = useMemo(() => new Map<string, Project>(projects.map((p) => [p.id, p])), [projects]);
   const taskMap = useMemo(() => new Map(tasks.map((t) => [t.id, t])), [tasks]);
@@ -334,6 +353,27 @@ function TeamMonth() {
                                     ) : null}
                                     <span class="hours-entry-summary">{entry.summary}</span>
                                   </span>
+                                  {canChange ? (
+                                    <span class="hours-detail-actions">
+                                      <Button
+                                        variant="quiet"
+                                        size="sm"
+                                        aria-label={`Edit ${personName(id)}'s hours on ${dayWording(entry.work_date)}`}
+                                        onClick={() => setEditing(entry)}
+                                      >
+                                        Edit
+                                      </Button>
+                                      <Button
+                                        variant="quiet"
+                                        size="sm"
+                                        class="hours-delete"
+                                        aria-label={`Delete ${personName(id)}'s hours on ${dayWording(entry.work_date)}`}
+                                        onClick={() => setDeleting(entry)}
+                                      >
+                                        Delete
+                                      </Button>
+                                    </span>
+                                  ) : null}
                                 </li>
                               );
                             })}
@@ -388,6 +428,31 @@ function TeamMonth() {
           </section>
         </>
       )}
+
+      {editing ? (
+        <LogDialog
+          key={editing.id}
+          entry={editing}
+          initialDate={editing.work_date}
+          onClose={() => setEditing(null)}
+          onSaved={() => undefined}
+        />
+      ) : null}
+      <ConfirmDialog
+        open={Boolean(deleting)}
+        tone="danger"
+        busy={busy}
+        title="Delete this entry?"
+        body={
+          deleting
+            ? `${personName(deleting.user_id)}: ${formatHoursNumber(deleting.hours)} h on ${dayWordingLong(deleting.work_date)}. ${deleting.summary}`
+            : undefined
+        }
+        confirmLabel="Delete entry"
+        cancelLabel="Keep it"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleting(null)}
+      />
     </div>
   );
 }

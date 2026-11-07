@@ -22,8 +22,11 @@ export function Checklist({ taskId, editable }: { taskId: string; editable: bool
   const progress = useTaskProgress(taskId);
   const [draft, setDraft] = useState('');
   const [announce, setAnnounce] = useState('');
+  const [renaming, setRenaming] = useState<string | null>(null);
+  const [renameDraft, setRenameDraft] = useState('');
   const input = useRef<HTMLInputElement>(null);
   const list = useRef<HTMLUListElement>(null);
+  const settled = useRef(false);
 
   const add = async (event: Event) => {
     event.preventDefault();
@@ -53,6 +56,26 @@ export function Checklist({ taskId, editable }: { taskId: string; editable: bool
     }, 0);
   };
 
+  const startRename = (item: TaskItem) => {
+    settled.current = false;
+    setRenameDraft(item.text);
+    setRenaming(item.id);
+  };
+
+  const refocusRename = (itemId: string) => {
+    window.setTimeout(() => list.current?.querySelector<HTMLElement>(`[data-item="${itemId}"] .wb-checklist-rename`)?.focus(), 0);
+  };
+
+  const commitRename = (item: TaskItem) => {
+    if (settled.current) return;
+    settled.current = true;
+    const text = renameDraft.trim();
+    setRenaming(null);
+    if (!text || text === item.text) return;
+    void updateRow('task_items', item.id, { text });
+    setAnnounce(`Step renamed to ${text}.`);
+  };
+
   const remove = (item: TaskItem) => {
     void deleteRow('task_items', item.id);
     setAnnounce(`${item.text} deleted.`);
@@ -71,17 +94,64 @@ export function Checklist({ taskId, editable }: { taskId: string; editable: bool
         <ul class="wb-checklist" ref={list}>
           {items.map((item, index) => (
             <li key={item.id} class={`wb-checklist-item${item.done ? ' is-done' : ''}`} data-item={item.id}>
-              <label class="wb-check wb-checklist-check">
+              {renaming === item.id ? (
                 <input
-                  type="checkbox"
-                  checked={item.done}
-                  disabled={!editable}
-                  onChange={(event) => void toggleItem(item.id, (event.currentTarget as HTMLInputElement).checked)}
+                  class="wb-input wb-checklist-edit"
+                  type="text"
+                  aria-label="Step text"
+                  value={renameDraft}
+                  maxLength={300}
+                  ref={(node) => node?.focus()}
+                  onInput={(event) => setRenameDraft((event.currentTarget as HTMLInputElement).value)}
+                  onBlur={() => commitRename(item)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      commitRename(item);
+                      refocusRename(item.id);
+                    } else if (event.key === 'Escape') {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      settled.current = true;
+                      setRenaming(null);
+                      refocusRename(item.id);
+                    }
+                  }}
                 />
-                <span class="wb-checklist-text">{item.text}</span>
-              </label>
+              ) : (
+                <label class="wb-check wb-checklist-check">
+                  <input
+                    type="checkbox"
+                    checked={item.done}
+                    disabled={!editable}
+                    onChange={(event) => void toggleItem(item.id, (event.currentTarget as HTMLInputElement).checked)}
+                  />
+                  <span
+                    class={`wb-checklist-text${editable ? ' is-editable' : ''}`}
+                    onClick={
+                      editable
+                        ? (event) => {
+                            event.preventDefault();
+                            startRename(item);
+                          }
+                        : undefined
+                    }
+                  >
+                    {item.text}
+                  </span>
+                </label>
+              )}
               {editable ? (
                 <span class="wb-checklist-tools">
+                  <Button
+                    variant="quiet"
+                    size="sm"
+                    class="wb-checklist-rename"
+                    aria-label={`Edit ${item.text}`}
+                    onClick={() => startRename(item)}
+                  >
+                    Edit
+                  </Button>
                   <Button
                     variant="quiet"
                     size="sm"

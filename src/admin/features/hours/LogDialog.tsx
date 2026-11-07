@@ -20,6 +20,7 @@ import type { Project, Task, TimeEntry } from '../../lib/types';
 import {
   deleteEntry,
   logHours,
+  nameOf,
   updateEntry,
   useMonthClosed,
   useProjects,
@@ -34,6 +35,9 @@ export interface LogDialogProps {
   entry: TimeEntry | null;
   /** The date a new entry starts on. */
   initialDate: string;
+  /** Preselected for a new entry, from `task=` and `project=` in the address. */
+  initialTaskId?: string | null;
+  initialProjectId?: string | null;
   onClose: () => void;
   /** Called with the date that was saved, so the week can follow it. */
   onSaved: (date: string) => void;
@@ -42,7 +46,7 @@ export interface LogDialogProps {
 const SUMMARY_MAX = 1000;
 const FORM_ID = 'hours-log-form';
 
-export function LogDialog({ entry, initialDate, onClose, onSaved }: LogDialogProps) {
+export function LogDialog({ entry, initialDate, initialTaskId = null, initialProjectId = null, onClose, onSaved }: LogDialogProps) {
   const me = useAuth().userId;
   const owner = entry?.user_id ?? me ?? undefined;
   const allProjects = useProjects();
@@ -50,8 +54,15 @@ export function LogDialog({ entry, initialDate, onClose, onSaved }: LogDialogPro
 
   const [date, setDate] = useState<string | null>(entry?.work_date ?? initialDate);
   const [hours, setHours] = useState<number>(entry?.hours ?? 1);
-  const [projectId, setProjectId] = useState<string | null>(entry?.project_id ?? null);
-  const [taskId, setTaskId] = useState<string | null>(entry?.task_id ?? null);
+  const startTask = entry ? entry.task_id : (allTasks.find((row) => row.id === initialTaskId)?.id ?? null);
+  const startProject = entry
+    ? entry.project_id
+    : (allProjects.find((row) => row.id === initialProjectId)?.id ??
+      allTasks.find((row) => row.id === startTask)?.project_id ??
+      null);
+  const [projectId, setProjectId] = useState<string | null>(startProject ?? null);
+  const [taskId, setTaskId] = useState<string | null>(startTask ?? null);
+  const someoneElse = Boolean(entry && me && entry.user_id !== me);
   const [summary, setSummary] = useState(entry?.summary ?? '');
   const [tried, setTried] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -179,6 +190,7 @@ export function LogDialog({ entry, initialDate, onClose, onSaved }: LogDialogPro
         }
       >
         <form id={FORM_ID} class="wb-form hours-form" onSubmit={save} onKeyDown={onFormKeyDown} noValidate>
+          {someoneElse && entry ? <p class="wb-meta hours-owner">These are {nameOf(entry.user_id)}'s hours.</p> : null}
           <div class="hours-form-row">
             <DateInput
               label="Date"

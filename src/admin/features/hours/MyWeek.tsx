@@ -2,7 +2,7 @@
  * My week: seven days, each with its entries and a total, the week total in
  * Fraunces inside the bracket, and the one primary button on the screen.
  *
- * Address: #/hours?week=YYYY-MM-DD (the Monday) &log=1 &date=YYYY-MM-DD &entry=<id>
+ * Address: #/hours?week=YYYY-MM-DD (the Monday) &log=1 &date=YYYY-MM-DD &entry=<id> &task=<id> &project=<id>
  */
 import { useEffect, useMemo } from 'preact/hooks';
 import { Button } from '../../components/Button';
@@ -76,7 +76,7 @@ export function MyWeek() {
 
   const goToWeek = (monday: string | null) => patchQuery({ week: monday }, { replace: true });
   const openLog = (date?: string) => patchQuery({ log: 1, entry: null, date: date ?? null });
-  const closeDialog = () => patchQuery({ log: null, entry: null, date: null });
+  const closeDialog = () => patchQuery({ log: null, entry: null, date: null, task: null, project: null });
   const afterSave = (date: string) => {
     const savedWeek = weekStart(date);
     if (savedWeek !== bounds.from) patchQuery({ week: savedWeek === thisWeek ? null : savedWeek }, { replace: true });
@@ -210,6 +210,8 @@ export function MyWeek() {
           key={editable?.id ?? `new-${initialDate}`}
           entry={editable}
           initialDate={initialDate}
+          initialTaskId={route.query.task || null}
+          initialProjectId={route.query.project || null}
           onClose={closeDialog}
           onSaved={afterSave}
         />

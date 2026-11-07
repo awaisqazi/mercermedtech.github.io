@@ -432,6 +432,35 @@ const time_entries: TimeEntry[] = [];
   }
 }
 
+// Today always has entries for all three people, whatever the weekday, so
+// "Today on the team" is never empty. Generated entries for today are replaced.
+{
+  const today = day(0);
+  const mine: Array<[string, number, string, string | null, string]> = [
+    [PAT, 2.5, PROJECT_TECH, 'demo-task-07', 'Moved quiz 3 questions to the new format'],
+    [SAM, 3, PROJECT_MED, 'demo-task-01', 'Compared quotes for blood pressure cuffs'],
+    [ROBIN, 1.5, PROJECT_ORG, null, 'Checked hours entries for missing summaries'],
+  ];
+  for (let index = time_entries.length - 1; index >= 0; index -= 1) {
+    if (time_entries[index]!.work_date === today) time_entries.splice(index, 1);
+  }
+  mine.forEach(([person, hours, project, task, summary], index) => {
+    time_entries.push({
+      id: `demo-entry-today-${index + 1}`,
+      user_id: person,
+      work_date: today,
+      hours,
+      project_id: project,
+      task_id: task,
+      summary,
+      created_by: person,
+      updated_by: person,
+      created_at: at(0, 9),
+      updated_at: at(0, 9),
+    });
+  });
+}
+
 /** Last month is closed, so its entries show the lock. */
 const hours_months: HoursMonth[] = [
   { month: firstOfMonth(-1), closed_by: ROBIN, closed_at: at(-new Date().getDate() + 3, 10), note: 'Checked against the timesheets.' },

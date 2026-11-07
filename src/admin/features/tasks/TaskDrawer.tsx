@@ -31,6 +31,7 @@ import { PriorityWord, StatusDot } from '../../components/StatusDot';
 import { useAuth } from '../../lib/auth';
 import { formatDateLong, relativeTime, fullTime } from '../../lib/format';
 import { formatHours } from '../../lib/hours';
+import { href } from '../../lib/router';
 import { roleAllows, useCan, useMyRole } from '../../lib/perms';
 import { toast } from '../../lib/toasts';
 import {
@@ -157,7 +158,7 @@ function TaskDetail({ task }: { task: Task }) {
         <TaskFields task={task} editable={editable} />
         <Description task={task} editable={editable} />
         <Checklist taskId={task.id} editable={editable} />
-        <HoursLine taskId={task.id} />
+        <HoursLine task={task} />
         <CommentList taskId={task.id} />
         <History taskId={task.id} />
         <p class="wb-meta wb-task-made">
@@ -498,7 +499,9 @@ function Description({ task, editable }: { task: Task; editable: boolean }) {
 
 /* -------------------------------------------------------------- hours --- */
 
-function HoursLine({ taskId }: { taskId: string }) {
+function HoursLine({ task }: { task: Task }) {
+  const taskId = task.id;
+  const canLog = useCan('hours.log');
   const hours = useHoursOnTask(taskId);
   // Without hours.view_all the database only hands over your own entries.
   const everyone = useCan('hours.view_all');
@@ -509,6 +512,11 @@ function HoursLine({ taskId }: { taskId: string }) {
           {everyone ? 'Hours logged' : 'Your hours on this task'}
         </h3>
         <span class="wb-task-hours-figure wb-mono">{hours > 0 ? formatHours(hours) : 'None yet'}</span>
+        {canLog ? (
+          <a class="wb-task-hours-log" href={href('/hours', { log: 1, task: task.id, project: task.project_id })}>
+            Log hours
+          </a>
+        ) : null}
       </div>
     </section>
   );

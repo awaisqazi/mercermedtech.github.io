@@ -442,6 +442,14 @@
   font-weight: 600;
 }
 
+.wb-task-hours-log {
+  margin-left: auto;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .wb-task-made {
   padding-top: 0.25rem;
 }
@@ -474,6 +482,16 @@
 
 .wb-checklist-text {
   overflow-wrap: anywhere;
+}
+
+.wb-checklist-text.is-editable {
+  cursor: text;
+}
+
+.wb-checklist-edit {
+  flex: 1;
+  min-width: 0;
+  margin: 0.35rem 0;
 }
 
 .wb-checklist-item.is-done .wb-checklist-text {
