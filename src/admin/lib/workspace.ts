@@ -133,11 +133,11 @@
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { supabase } from './supabase';
-import { ACTIVITY_PAGE, LOAD_DEADLINE_MS, SLOW_LOAD_MS } from './config';
+import { ACTIVITY_PAGE, CLOCK_SKEW_RETRY_MS, LOAD_DEADLINE_MS, SLOW_LOAD_MS } from './config';
 import { withDeadline } from './deadline';
 import { observable, sameArray, useObservable } from './observable';
 import { getAuth, refreshProfile, resumeSession } from './auth';
-import { logError, toAppError, type AppError } from './errors';
+import { isClockSkewError, logError, toAppError, type AppError } from './errors';
 import { timed } from './timing';
 import { toast } from './toasts';
 import { monthStart, sumHours, weekBounds, weekStrip } from './hours';
@@ -600,27 +600,38 @@ export async function openWorkspace(userId: string | null = getAuth().userId): P
   teardownChannel();
   store.set({ ...EMPTY, status: 'loading', connection: 'connecting' });
   startSlowTimer(token);
-  try {
-    const loaded = await withDeadline(fetchEverything(), LOAD_DEADLINE_MS);
-    if (token !== loadToken) return;
-    stopSlowTimer();
-    store.update((state) => ({
-      ...state,
-      ...loaded,
-      status: 'ready',
-      error: null,
-      slow: false,
-      activityDone: loaded.activity.length < ACTIVITY_PAGE,
-    }));
-    loadedAt = Date.now();
-    void refreshInquiries();
-    subscribe();
-  } catch (error) {
-    if (token !== loadToken) return;
-    stopSlowTimer();
-    const appError = toAppError(error);
-    logError('openWorkspace', error);
-    store.update((state) => ({ ...state, status: statusFor(appError), error: appError, slow: false, connection: 'idle' }));
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      const loaded = await withDeadline(fetchEverything(), LOAD_DEADLINE_MS);
+      if (token !== loadToken) return;
+      stopSlowTimer();
+      store.update((state) => ({
+        ...state,
+        ...loaded,
+        status: 'ready',
+        error: null,
+        slow: false,
+        activityDone: loaded.activity.length < ACTIVITY_PAGE,
+      }));
+      loadedAt = Date.now();
+      void refreshInquiries();
+      subscribe();
+      return;
+    } catch (error) {
+      if (token !== loadToken) return;
+      if (attempt === 0 && isClockSkewError(error)) {
+        // A token refreshed a moment ago can read as "issued at future" to the
+        // API for about a second. One quiet retry, before showing anything.
+        await new Promise((resolve) => setTimeout(resolve, CLOCK_SKEW_RETRY_MS));
+        if (token !== loadToken) return;
+        continue;
+      }
+      stopSlowTimer();
+      const appError = toAppError(error);
+      logError('openWorkspace', error);
+      store.update((state) => ({ ...state, status: statusFor(appError), error: appError, slow: false, connection: 'idle' }));
+      return;
+    }
   }
 }
 

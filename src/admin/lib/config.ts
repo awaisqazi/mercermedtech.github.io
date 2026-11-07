@@ -49,6 +49,9 @@ export const LOAD_DEADLINE_MS = 12_000;
 /** How long a load may take before the screen admits it is taking a while. */
 export const SLOW_LOAD_MS = 4_000;
 
+/** The pause before the one quiet retry of a load the API refused for clock skew. */
+export const CLOCK_SKEW_RETRY_MS = 1_500;
+
 /** Absolute URL for an invitation, for the copy button on the People screen. */
 export function joinLink(token: string): string {
   const origin = typeof window === 'undefined' ? '' : window.location.origin;

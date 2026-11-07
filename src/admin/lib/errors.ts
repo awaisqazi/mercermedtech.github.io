@@ -210,6 +210,16 @@ export function isMissingSchemaError(input: unknown): boolean {
   return toAppError(input).missingSchema;
 }
 
+/**
+ * PostgREST refusing a token whose "issued at" is a moment ahead of its own
+ * clock (PGRST303). It happens right after a refresh when Supabase's auth and
+ * API nodes disagree by a second; the same request a moment later goes through.
+ */
+export function isClockSkewError(input: unknown): boolean {
+  const error = asError(input);
+  return error.code === 'PGRST303' || (error.message || '').toLowerCase().includes('issued at future');
+}
+
 /** Logs the original for a developer without ever showing it to the user. */
 export function logError(where: string, input: unknown): void {
   if (typeof console !== 'undefined') console.error(`[workbench] ${where}`, input);
