@@ -4,3 +4,530 @@
    Owned by the Hours feature alone, scoped under `.wb`, and built only from
    the tokens and pieces in ../workbench.css (read its header first).
    ========================================================================== */
+
+/* Hours */
+
+.wb .hours-page {
+  gap: 1.25rem;
+}
+
+/* The Log hours button lives in the phone top bar below the rail's width. */
+@media (max-width: 899px) {
+  .wb .hours-log-button {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------- week head --- */
+
+.wb .hours-week-head,
+.wb .hours-month-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+
+.wb .hours-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wb .hours-week-label {
+  margin-left: 0.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.wb .hours-total {
+  --arm: 12px;
+  display: block;
+  padding: 0.35rem 1.6rem 0.4rem;
+}
+
+.wb .hours-total-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.wb .hours-total-number {
+  font-size: 3.25rem;
+}
+
+.wb .hours-total-unit {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------- days --- */
+
+.wb .hours-days {
+  display: grid;
+  gap: 0;
+  grid-template-columns: minmax(0, 1fr);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.wb .hours-day {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0.75rem 0 0.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.wb .hours-day-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.35rem;
+}
+
+.wb .hours-day-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.wb .hours-day-date {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.wb .hours-day-today {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 2px;
+}
+
+.wb .hours-day-total {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.wb .hours-day-total.is-zero {
+  color: var(--label);
+  font-weight: 500;
+}
+
+.wb .hours-day.is-today {
+  border-top: 2px solid var(--rule-strong);
+}
+
+.wb .hours-entries {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.wb .hours-entries > li {
+  border-top: 1px solid var(--rule);
+}
+
+.wb .hours-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 48px;
+  padding: 0.55rem 0.25rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.wb button.hours-entry:hover {
+  background: var(--hover);
+}
+
+.wb .hours-entry.is-closed {
+  cursor: default;
+}
+
+.wb .hours-entry-hours {
+  flex: none;
+  min-width: 3.5rem;
+  font-weight: 700;
+}
+
+.wb .hours-entry-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.wb .hours-entry-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.6rem;
+  color: var(--label);
+  font-size: 13px;
+}
+
+.wb .hours-entry-task {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.wb .hours-entry-summary {
+  overflow-wrap: anywhere;
+}
+
+.wb .hours-entry-closed {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.wb .hours-day-add {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.3rem;
+  min-height: 36px;
+  margin-top: 0.15rem;
+  padding: 0 0.25rem;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wb .hours-day-add:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+@media (min-width: 1100px) {
+  .wb .hours-days {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0 0.75rem;
+  }
+
+  .wb .hours-day-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+  }
+
+  .wb .hours-day-total {
+    font-size: 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  .wb .hours-day-total.is-zero {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+
+  .wb .hours-entry {
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-left: 0;
+  }
+
+  .wb .hours-entry-hours {
+    min-width: 0;
+  }
+}
+
+/* ------------------------------------------------------------- dialog --- */
+
+.wb .hours-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wb .hours-form-row {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 520px) {
+  .wb .hours-form-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.wb .hours-delete {
+  margin-right: auto;
+  color: var(--bad);
+}
+
+.wb .hours-task-sub {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.wb .hours-close-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* --------------------------------------------------------------- team --- */
+
+.wb .hours-month-head {
+  align-items: center;
+}
+
+.wb .hours-month-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-right: auto;
+}
+
+.wb .hours-month-name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.wb .hours-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wb .hours-state.is-closed {
+  color: var(--ink);
+}
+
+.wb .hours-month-note {
+  flex-basis: 100%;
+}
+
+.wb .hours-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+}
+
+.wb .hours-filters .wb-picker {
+  min-width: 220px;
+}
+
+.wb .hours-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 200px;
+}
+
+@media (max-width: 519px) {
+  .wb .hours-filters .wb-picker,
+  .wb .hours-filter {
+    flex: 1 1 100%;
+  }
+}
+
+.wb .hours-month-total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+}
+
+.wb .hours-month-number {
+  font-size: 2.75rem;
+}
+
+.wb .hours-table .is-zero {
+  color: var(--label);
+}
+
+.wb .hours-table .hours-total-cell {
+  font-weight: 700;
+}
+
+.wb .hours-table th[scope='row'] {
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.wb .hours-table tfoot th,
+.wb .hours-table tfoot td {
+  border-bottom: 0;
+  font-weight: 700;
+}
+
+@media (min-width: 720px) {
+  .wb .hours-table tfoot th,
+  .wb .hours-table tfoot td {
+    border-top: 2px solid var(--rule-strong);
+  }
+}
+
+.wb .hours-person-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0.25rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.wb .hours-person-toggle:hover {
+  background: var(--hover);
+}
+
+.wb .hours-person-caret {
+  flex: none;
+  transition: transform var(--dur) var(--ease);
+}
+
+.wb .hours-person-caret.is-open {
+  transform: rotate(90deg);
+}
+
+.wb .hours-person-count {
+  margin-left: auto;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.wb .hours-detail-cell {
+  padding: 0 0 0.75rem 2.1rem;
+  background: var(--paper);
+}
+
+.wb .hours-detail {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.wb .hours-detail-item {
+  display: grid;
+  grid-template-columns: 6.5rem 3.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.5rem 0.5rem 0.5rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-weight: 400;
+}
+
+.wb .hours-detail-date {
+  color: var(--muted);
+}
+
+.wb .hours-detail-hours {
+  font-weight: 700;
+}
+
+.wb .hours-detail-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.wb .hours-projects {
+  max-width: 640px;
+}
+
+.wb .hours-project-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 4.5rem;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.6rem 0.25rem;
+}
+
+.wb .hours-project-hours {
+  font-size: 1.4rem;
+  text-align: right;
+}
+
+@media (max-width: 719px) {
+  .wb .hours-table.is-stacking tfoot tr {
+    border-top: 2px solid var(--rule-strong);
+    border-bottom: 0;
+  }
+
+  .wb .hours-table.is-stacking th[scope='row'] {
+    display: block;
+    padding: 0 0 0.25rem;
+    border: 0;
+  }
+
+  .wb .hours-table.is-stacking tfoot th {
+    padding-top: 0.5rem;
+  }
+
+  .wb .hours-table.is-stacking .hours-detail-row,
+  .wb .hours-table.is-stacking .hours-detail-cell {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .wb .hours-table.is-stacking .hours-detail-cell::before {
+    content: none;
+  }
+
+  .wb .hours-table.is-stacking td.is-zero {
+    display: none;
+  }
+
+  .wb .hours-table.is-stacking td.hours-total-cell {
+    display: flex;
+    margin-top: 0.15rem;
+    padding-top: 0.3rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .wb .hours-detail-item {
+    grid-template-columns: 4.5rem 3rem minmax(0, 1fr);
+    gap: 0.5rem;
+    font-size: 14px;
+  }
+}

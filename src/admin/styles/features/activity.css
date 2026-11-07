@@ -4,3 +4,119 @@
    Owned by the Activity feature alone, scoped under `.wb`, and built only from
    the tokens and pieces in ../workbench.css (read its header first).
    ========================================================================== */
+
+/* Activity */
+
+.act-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+}
+
+.act-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1 1 10rem;
+  max-width: 16rem;
+}
+
+.act-filter-label {
+  color: var(--label);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.act-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 760px;
+}
+
+.act-day {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.wb .act-day-title {
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--rule-strong);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.act-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-height: 52px;
+  padding: 0.65rem 0.25rem;
+  color: inherit;
+}
+
+.wb a.act-row {
+  color: inherit;
+  text-decoration: none;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.wb a.act-row:hover {
+  background: var(--hover);
+}
+
+.act-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.act-text {
+  overflow-wrap: anywhere;
+}
+
+.act-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.85rem;
+  color: var(--label);
+  font-size: 13px;
+}
+
+/* "Since you were here": a heavy rule with the words on it. Newer rows are above. */
+.wb-list > li.act-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 0 0.6rem;
+  border-bottom: 0;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.act-divider::after {
+  content: '';
+  flex: 1;
+  border-top: 2px solid var(--rule-strong);
+}
+
+.act-nothing-new {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.act-foot {
+  display: flex;
+  max-width: 760px;
+}
+
+.act-done {
+  color: var(--label);
+  font-size: 14px;
+}

@@ -4,3 +4,243 @@
    Owned by the Home feature alone, scoped under `.wb`, and built only from
    the tokens and pieces in ../workbench.css (read its header first).
    ========================================================================== */
+
+/* Home */
+
+.wb .hm-page {
+  gap: 1.25rem;
+}
+
+.hm-cols {
+  gap: 2rem;
+}
+
+.hm-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-width: 0;
+}
+
+.hm-count,
+.hm-range {
+  color: var(--label);
+  font-size: 13px;
+}
+
+/* A task or activity line: the whole row is the target. */
+.hm-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 52px;
+  padding: 0.55rem 0.25rem;
+  color: inherit;
+}
+
+.wb a.hm-row {
+  color: inherit;
+  text-decoration: none;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.wb a.hm-row:hover {
+  background: var(--hover);
+}
+
+.hm-row-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.hm-row-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.hm-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.85rem;
+  color: var(--label);
+  font-size: 13px;
+}
+
+.hm-row-meta .is-overdue,
+.hm-row-meta .is-soon {
+  font-weight: 600;
+}
+
+.hm-unassigned {
+  flex: none;
+  color: var(--label);
+  font-size: 13px;
+}
+
+.hm-more {
+  font-size: 14px;
+}
+
+/* This week */
+
+.hm-week {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.hm-week-total {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  min-height: 44px;
+}
+
+.wb .hm-week-number {
+  color: var(--ink);
+  font-size: 2.6rem;
+}
+
+.hm-week-unit {
+  color: var(--label);
+  font-size: 13px;
+}
+
+.hm-strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.hm-strip-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0;
+  border-left: 1px solid var(--rule);
+}
+
+.hm-strip-day:first-child {
+  border-left: 0;
+}
+
+.hm-strip-name {
+  color: var(--label);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hm-strip-hours {
+  min-height: 1.6em;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.hm-strip-hours.is-zero {
+  color: var(--label);
+  font-weight: 400;
+}
+
+.hm-strip-day.is-today .hm-strip-name {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
+}
+
+/* Today on the team */
+
+.hm-person {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.7rem 0.25rem;
+}
+
+.hm-person-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.hm-person-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.6rem;
+}
+
+.hm-person-name {
+  font-weight: 600;
+}
+
+.hm-person-hours {
+  margin-left: auto;
+  font-weight: 600;
+}
+
+.hm-here {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--label);
+  font-size: 13px;
+}
+
+.hm-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.hm-entries li {
+  overflow-wrap: anywhere;
+}
+
+.hm-entry-code {
+  margin-right: 0.45rem;
+  color: var(--label);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hm-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Recently */
+
+.hm-recent {
+  align-items: flex-start;
+  min-height: 0;
+}
+
+.hm-recent-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.hm-recent-text {
+  overflow-wrap: anywhere;
+}
+
+.hm-recent-time {
+  color: var(--label);
+  font-size: 13px;
+}

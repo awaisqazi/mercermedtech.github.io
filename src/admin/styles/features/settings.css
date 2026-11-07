@@ -4,3 +4,236 @@
    Owned by the Settings feature alone, scoped under `.wb`, and built only from
    the tokens and pieces in ../workbench.css (read its header first).
    ========================================================================== */
+
+/* Settings */
+
+/* A select in one of this screen's dialogs fills its row, like the text fields. */
+.wb-form .wb-select-wrap {
+  display: flex;
+  width: 100%;
+}
+
+.wb-settings-panel {
+  gap: 1rem;
+}
+
+/* A sentence of what the tab is for, with the tab's one primary beside it. */
+.wb-settings-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+}
+
+.wb-settings-bar .wb-prose {
+  flex: 1 1 22rem;
+}
+
+/* On a phone the primary lives in the top bar. */
+@media (max-width: 899px) {
+  .wb-settings-bar .wb-btn-primary {
+    display: none;
+  }
+}
+
+/* Projects */
+.wb-project-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem 0.25rem;
+}
+
+.wb-project-code-cell {
+  flex: none;
+}
+
+.wb-project-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.wb-project-title {
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.wb-project-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.9rem;
+  color: var(--label);
+  font-size: 13px;
+}
+
+.wb-project-lead {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.wb-project-summary {
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.wb-project-actions,
+.wb-role-actions {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (min-width: 720px) {
+  .wb-project-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .wb-project-code-cell {
+    width: 5.5rem;
+  }
+}
+
+/* The project dialog: two short fields side by side once there is room. */
+.wb-form-pair {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 560px) {
+  .wb-form-pair {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.wb-input-code {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Roles */
+.wb-role-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 0.25rem;
+}
+
+.wb-role-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.wb-role-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.wb-role-desc {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.wb-role-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.9rem;
+  color: var(--label);
+  font-size: 13px;
+}
+
+@media (min-width: 720px) {
+  .wb-role-row {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+.wb-role-delete {
+  color: var(--bad);
+}
+
+/* The permission checklist: groups on a hairline, a sentence beside each box. */
+.wb-perm-sets {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.wb-perm-intro {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.wb-perm-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0.6rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.wb-perm-legend {
+  float: left;
+  width: 100%;
+  margin: 0 0 0.35rem;
+  padding: 0;
+  font-weight: 700;
+}
+
+.wb-perm-legend + .wb-perm {
+  clear: both;
+}
+
+.wb-perm {
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  padding: 0.2rem 0;
+}
+
+.wb-perm-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.wb-perm-sentence {
+  overflow-wrap: anywhere;
+}
+
+.wb-perm-key {
+  color: var(--label);
+  font-size: 12px;
+}
+
+.wb-perm-group:disabled .wb-perm,
+.wb-perm-group:disabled .wb-perm input {
+  cursor: default;
+}
+
+.wb-perm-group:disabled .wb-perm-sentence {
+  color: var(--muted);
+}

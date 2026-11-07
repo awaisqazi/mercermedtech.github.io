@@ -4,3 +4,325 @@
    Owned by the People feature alone, scoped under `.wb`, and built only from
    the tokens and pieces in ../workbench.css (read its header first).
    ========================================================================== */
+
+/* People */
+
+/* A select in one of this screen's dialogs fills its row, like the text fields. */
+.wb-form .wb-select-wrap {
+  display: flex;
+  width: 100%;
+}
+
+/* On a phone the Invite button lives in the top bar. */
+@media (max-width: 899px) {
+  .wb-people .wb-page-actions .wb-btn-primary {
+    display: none;
+  }
+}
+
+.wb-people-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* A directory row: the person (a link) and, for people.manage, controls. */
+.wb-person {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.wb-person.is-inactive .wb-person-main {
+  opacity: 0.75;
+}
+
+.wb-person-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.7rem 0.25rem;
+  color: inherit !important;
+  text-decoration: none !important;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.wb-person-main:hover {
+  background: var(--hover);
+}
+
+.wb-person-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.wb-person-name {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+
+.wb-person-you {
+  color: var(--label);
+  font-weight: 400;
+}
+
+.wb-person-title,
+.wb-person-meta {
+  overflow: hidden;
+  color: var(--label);
+  font-size: 13px;
+  text-overflow: ellipsis;
+}
+
+.wb-person-side {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  max-width: 40%;
+  font-size: 13px;
+  text-align: right;
+}
+
+.wb-person-role {
+  overflow: hidden;
+  max-width: 100%;
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+
+.wb-person-count {
+  color: var(--label);
+}
+
+.wb-person-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.25rem 0.7rem 3.35rem;
+}
+
+.wb-person-controls .wb-select-wrap {
+  min-width: 11rem;
+}
+
+/* Desktop: the controls sit on the row's right instead of under it. */
+@media (min-width: 900px) {
+  .wb-person {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .wb-person-main {
+    flex: 1;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .wb-person-side {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 1.25rem;
+    max-width: none;
+  }
+
+  .wb-person-role {
+    min-width: 8rem;
+    text-align: left;
+  }
+
+  .wb-person-controls {
+    flex: none;
+    justify-content: flex-end;
+    padding: 0.5rem 0.25rem;
+    min-width: 20rem;
+  }
+}
+
+/* "Here now": a 7px dot and the words, never colour alone. */
+.wb-presence-here {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--good);
+  font-weight: 600;
+}
+
+.wb-presence-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--good);
+}
+
+.wb-presence-away {
+  color: var(--label);
+}
+
+/* A folded group: Deactivated. */
+.wb-people-fold {
+  border-top: 1px solid var(--rule);
+}
+
+.wb-people-fold-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.6rem 0.25rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wb-people-fold[open] .wb-people-fold-summary {
+  border-bottom: 1px solid var(--rule);
+}
+
+/* Invitations */
+.wb-people-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  color: var(--muted);
+}
+
+.wb-invite {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.7rem 0.25rem;
+}
+
+.wb-invite-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.wb-invite-who {
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.wb-invite-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.9rem;
+  color: var(--label);
+  font-size: 13px;
+}
+
+.wb-invite-expired {
+  color: var(--bad);
+  font-weight: 600;
+}
+
+.wb-invite-note {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.wb-invite-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wb-invite-link {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 36px;
+  font-size: 13px;
+}
+
+.wb-invite-done {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 720px) {
+  .wb-invite {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .wb-invite-actions {
+    flex: none;
+    justify-content: flex-end;
+  }
+
+  .wb-invite-link {
+    width: 22rem;
+  }
+}
+
+/* A person */
+.wb-person-page .wb-cols {
+  gap: 2rem 3rem;
+}
+
+.wb-person-side-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  min-width: 0;
+}
+
+.wb-person-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.wb-person-late {
+  color: var(--bad);
+  font-weight: 600;
+}
+
+.wb-person-more {
+  font-size: 13px;
+}
+
+.wb-person-total {
+  font-size: 1.4rem;
+}
+
+.wb-person-entry {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.6rem 0.25rem;
+}
+
+.wb-person-entry-date {
+  color: var(--label);
+  font-size: 13px;
+}
+
+.wb-person-entry-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.wb-person-entry-hours {
+  font-weight: 600;
+  white-space: nowrap;
+}

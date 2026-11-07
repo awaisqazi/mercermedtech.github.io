@@ -4,3 +4,264 @@
    Owned by the Inbox feature alone, scoped under `.wb`, and built only from
    the tokens and pieces in ../workbench.css (read its header first).
    ========================================================================== */
+
+/* Inbox */
+
+.wb-inbox-filters {
+  align-items: stretch;
+}
+
+/* Search takes a full line on a phone, then shares the row. */
+.wb .wb-inbox-search {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.wb-inbox-filters .wb-select-wrap {
+  flex: 1 1 8.5rem;
+  min-width: 0;
+}
+
+.wb-inbox-filters .wb-select {
+  width: 100%;
+}
+
+@media (min-width: 720px) {
+  .wb .wb-inbox-search {
+    flex: 0 1 18rem;
+  }
+
+  .wb-inbox-filters .wb-select-wrap {
+    flex: 0 0 auto;
+  }
+}
+
+.wb-inbox-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.wb-inbox-section-head {
+  padding-bottom: 0;
+}
+
+.wb-inbox-fold {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0.25rem;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.wb-inbox-fold:hover .wb-section-title {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.wb-inbox-chevron {
+  flex: none;
+  color: var(--label);
+  transition: transform var(--dur) var(--ease);
+}
+
+.wb-inbox-chevron.is-open {
+  transform: rotate(90deg);
+}
+
+.wb-inbox-section-count {
+  color: var(--label);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.wb-inbox-none {
+  margin: 0;
+  padding: 0.75rem 0.25rem;
+  color: var(--muted);
+}
+
+.wb-inbox-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'main person'
+    'contact person';
+  align-items: center;
+  gap: 0.1rem 0.75rem;
+}
+
+.wb-inbox-row.is-current {
+  background: var(--hover);
+}
+
+.wb-inbox-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+}
+
+.wb-inbox-meta {
+  align-items: center;
+}
+
+.wb-inbox-source {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.wb-inbox-contact {
+  grid-area: contact;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wb-inbox-person {
+  grid-area: person;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+}
+
+@media (min-width: 720px) {
+  .wb-inbox-row {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) 26px;
+    grid-template-areas: 'main contact person';
+    gap: 0 1rem;
+  }
+
+  .wb-inbox-contact {
+    font-size: inherit;
+  }
+}
+
+.wb-inbox-older {
+  display: flex;
+  justify-content: center;
+}
+
+/* The drawer */
+
+.wb-inq {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.wb-inq-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.9rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.wb-inq-meta > span:first-child {
+  font-weight: 600;
+}
+
+.wb-inq-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.wb .wb-inq-heading {
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.wb-inq-fields > div {
+  grid-template-columns: 7rem minmax(0, 1fr);
+}
+
+@media (max-width: 400px) {
+  .wb-inq-fields > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.1rem;
+  }
+}
+
+.wb-inq-value {
+  white-space: pre-wrap;
+}
+
+.wb-inq-quiet {
+  margin: 0;
+  color: var(--muted);
+}
+
+.wb-inq-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.wb-inq-controls .wb-select-wrap,
+.wb-inq-controls .wb-select {
+  width: 100%;
+}
+
+.wb-inq-person {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wb-inq-task {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+}
+
+.wb-inq-task .wb-label {
+  margin: 0;
+}
+
+.wb-inbox-task {
+  display: inline-flex;
+  align-items: center;
+}
+
+.wb-inq-activity {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wb-inq-activity > li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.wb-inq-activity > li:last-child {
+  border-bottom: 0;
+}
+
+.wb-inq-when {
+  color: var(--label);
+  font-size: 13px;
+}
