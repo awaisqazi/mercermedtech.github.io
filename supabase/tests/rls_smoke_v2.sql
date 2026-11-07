@@ -34,6 +34,49 @@ begin;
 -- -----------------------------------------------------------------------------
 set local request.jwt.claims = '';
 
+-- The carry-over, checked before this script adds anything. Every legacy
+-- project and task has its v2 row with the same id (right after the
+-- migration that makes the counts equal), priorities map critical to urgent,
+-- high to high and normal to normal, and every project code is well formed.
+do $$
+declare
+  n int;
+begin
+  select count(*) into n from public.legacy_projects lp
+   where not exists (select 1 from public.projects p where p.id = lp.id);
+  if n <> 0 then
+    raise exception 'FAIL c1: % legacy projects were not carried over', n;
+  end if;
+
+  select count(*) into n from public.legacy_tasks lt
+   where not exists (select 1 from public.tasks t where t.id = lt.id);
+  if n <> 0 then
+    raise exception 'FAIL c2: % legacy tasks were not carried over', n;
+  end if;
+
+  if (select count(*) from public.tasks) <> (select count(*) from public.legacy_tasks) then
+    raise notice 'Note: tasks and legacy_tasks differ in count; expected once people use v2';
+  end if;
+  if (select count(*) from public.projects) <> (select count(*) from public.legacy_projects) then
+    raise notice 'Note: projects and legacy_projects differ in count; expected once people use v2';
+  end if;
+
+  select count(*) into n
+    from public.legacy_tasks lt
+    join public.tasks t on t.id = lt.id
+   where t.priority is distinct from
+         case lt.pri when 'critical' then 'urgent' when 'high' then 'high' else 'normal' end;
+  if n <> 0 then
+    raise exception 'FAIL c3: % carried tasks have the wrong priority', n;
+  end if;
+
+  select count(*) into n from public.projects p where not (p.code ~ '^[A-Z0-9]{2,6}$');
+  if n <> 0 then
+    raise exception 'FAIL c4: % project codes are malformed', n;
+  end if;
+end;
+$$;
+
 update public.roles set permissions = array['tasks.create', 'tasks.assign', 'tasks.edit_any',
   'tasks.delete', 'hours.log', 'hours.view_all', 'hours.edit_any', 'hours.close',
   'hours.export', 'projects.manage', 'people.manage', 'roles.manage',
@@ -44,6 +87,9 @@ update public.roles set permissions = array['tasks.create', 'tasks.assign', 'hou
  where key = 'finance';
 update public.roles set permissions = array['tasks.create', 'hours.log']
  where key = 'member';
+update public.roles set permissions = array['tasks.create', 'tasks.assign', 'hours.log',
+  'inquiries.view']
+ where key = 'instructor';
 
 insert into public.invitations (id, token, role_id, note, expires_at)
 select v.id, v.token, r.id, 'rls test', now() + interval '1 day'
@@ -52,7 +98,8 @@ select v.id, v.token, r.id, 'rls test', now() + interval '1 day'
     ('0d000000-0000-4000-8000-000000000002'::uuid, 'rlstest-finance-000000000000000002',   'finance'),
     ('0d000000-0000-4000-8000-000000000003'::uuid, 'rlstest-member-00000000000000000003',  'member'),
     ('0d000000-0000-4000-8000-000000000004'::uuid, 'rlstest-admin-00000000000000000004',   'administrator'),
-    ('0d000000-0000-4000-8000-000000000005'::uuid, 'rlstest-unused-00000000000000000005',  'member')
+    ('0d000000-0000-4000-8000-000000000005'::uuid, 'rlstest-unused-00000000000000000005',  'member'),
+    ('0d000000-0000-4000-8000-000000000006'::uuid, 'rlstest-instructor-0000000000000006',  'instructor')
   ) as v(id, token, role_key)
   join public.roles r on r.key = v.role_key;
 
@@ -74,7 +121,9 @@ select '00000000-0000-0000-0000-000000000000', v.id,
     ('0b000000-0000-4000-8000-000000000003'::uuid, 'rls-member@example.test',
      'rlstest-member-00000000000000000003', 'Test Member'),
     ('0b000000-0000-4000-8000-000000000004'::uuid, 'rls-admin@example.test',
-     'rlstest-admin-00000000000000000004', 'Test Admin')
+     'rlstest-admin-00000000000000000004', 'Test Admin'),
+    ('0b000000-0000-4000-8000-000000000005'::uuid, 'rls-instructor@example.test',
+     'rlstest-instructor-0000000000000006', 'Test Instructor')
   ) as v(id, email, token, full_name);
 
 -- See the header: on a database with an owner, the test owner arrives as an
@@ -90,10 +139,11 @@ declare
 begin
   select count(*) into n from public.profiles
    where id in ('0b000000-0000-4000-8000-000000000001', '0b000000-0000-4000-8000-000000000002',
-                '0b000000-0000-4000-8000-000000000003', '0b000000-0000-4000-8000-000000000004')
+                '0b000000-0000-4000-8000-000000000003', '0b000000-0000-4000-8000-000000000004',
+                '0b000000-0000-4000-8000-000000000005')
      and active;
-  if n <> 4 then
-    raise exception 'FAIL 0a: the signup trigger made % of 4 active profiles', n;
+  if n <> 5 then
+    raise exception 'FAIL 0a: the signup trigger made % of 5 active profiles', n;
   end if;
 
   select r.key into k from public.profiles p join public.roles r on r.id = p.role_id
@@ -173,7 +223,12 @@ insert into public.tasks (id, project_id, title, status, assignee_id, created_by
    '0b000000-0000-4000-8000-000000000001'),
   ('0c000000-0000-4000-8000-000000000003', '0a000000-0000-4000-8000-000000000001',
    'Task for finance', 'todo', '0b000000-0000-4000-8000-000000000002',
-   '0b000000-0000-4000-8000-000000000001');
+   '0b000000-0000-4000-8000-000000000001'),
+  ('0c000000-0000-4000-8000-000000000005', '0a000000-0000-4000-8000-000000000001',
+   'Second unassigned task', 'todo', null, '0b000000-0000-4000-8000-000000000001'),
+  ('0c000000-0000-4000-8000-000000000006', '0a000000-0000-4000-8000-000000000001',
+   'Member made it, finance holds it', 'todo', '0b000000-0000-4000-8000-000000000002',
+   '0b000000-0000-4000-8000-000000000003');
 
 -- A known ingest secret for this transaction only (the rollback restores the real one).
 select public.set_ingest_secret('rls-smoke-secret-00000000000000000000');
@@ -353,6 +408,39 @@ begin
     raise exception 'FAIL 3h: the member could not take an unassigned task';
   end if;
 
+  -- taking is all a take may do: no other field moves with it
+  begin
+    update public.tasks
+       set assignee_id = '0b000000-0000-4000-8000-000000000003', title = 'Taken and renamed'
+     where id = '0c000000-0000-4000-8000-000000000005';
+    raise exception 'FAIL 3h2: taking a task also changed its title';
+  exception when insufficient_privilege then null;
+  end;
+
+  begin
+    update public.tasks
+       set assignee_id = '0b000000-0000-4000-8000-000000000003', progress = 50
+     where id = '0c000000-0000-4000-8000-000000000005';
+    raise exception 'FAIL 3h3: taking a task also changed its progress';
+  exception when insufficient_privilege then null;
+  end;
+
+  -- without tasks.assign, a task cannot be taken from the person holding it,
+  -- not even by the person who made it
+  begin
+    update public.tasks set assignee_id = '0b000000-0000-4000-8000-000000000003'
+     where id = '0c000000-0000-4000-8000-000000000006';
+    raise exception 'FAIL 3h4: the member took a task away from its assignee';
+  exception when insufficient_privilege then null;
+  end;
+
+  update public.tasks set assignee_id = '0b000000-0000-4000-8000-000000000003'
+   where id = '0c000000-0000-4000-8000-000000000003';
+  get diagnostics n = row_count;
+  if n <> 0 then
+    raise exception 'FAIL 3h5: the member took a task assigned to someone else';
+  end if;
+
   -- edit one assigned to them
   update public.tasks set status = 'doing'
    where id = '0c000000-0000-4000-8000-000000000002';
@@ -414,6 +502,14 @@ begin
   insert into public.task_comments (task_id, user_id, body)
   values ('0c000000-0000-4000-8000-000000000003', '0b000000-0000-4000-8000-000000000003',
           'A member may comment.');
+
+  -- comments are immutable
+  begin
+    update public.task_comments set body = 'Edited'
+     where task_id = '0c000000-0000-4000-8000-000000000003';
+    raise exception 'FAIL 3o2: a comment was edited';
+  exception when insufficient_privilege then null;
+  end;
 
   -- roles and people
   begin
@@ -494,6 +590,13 @@ begin
   if n < 1 then
     raise exception 'FAIL 4c: closing the month wrote no "Closed March 2000" line';
   end if;
+
+  -- hours.view_all also opens the hours lines in the feed
+  select count(*) into n from public.activity a
+   where a.entity = 'time_entry' and a.subject_id = '0b000000-0000-4000-8000-000000000003';
+  if n < 1 then
+    raise exception 'FAIL 4d: finance cannot read the member''s hours lines in the feed';
+  end if;
 end;
 $$;
 
@@ -535,6 +638,20 @@ begin
   if n <> 0 then
     raise exception 'FAIL 5d: the member reads % of finance''s entries', n;
   end if;
+
+  -- nor finance's hours lines in the feed, while still seeing their own
+  select count(*) into n from public.activity a
+   where a.entity = 'time_entry'
+     and a.subject_id is distinct from '0b000000-0000-4000-8000-000000000003';
+  if n <> 0 then
+    raise exception 'FAIL 5e: the member reads % hours lines about other people', n;
+  end if;
+
+  select count(*) into n from public.activity a
+   where a.entity = 'time_entry' and a.subject_id = '0b000000-0000-4000-8000-000000000003';
+  if n < 1 then
+    raise exception 'FAIL 5f: the member cannot read their own hours lines';
+  end if;
 end;
 $$;
 
@@ -573,8 +690,27 @@ begin
   exception when insufficient_privilege then null;
   end;
 
-  insert into public.invitations (role_id, note)
-  values ((select r.id from public.roles r where r.key = 'member'), 'rls test');
+  -- the link is made by the database, whatever the client sends
+  insert into public.invitations (id, token, role_id, note)
+  values ('0d000000-0000-4000-8000-0000000000a1', 'client-chosen-token-00000000000001',
+          (select r.id from public.roles r where r.key = 'member'), 'rls test');
+  select count(*) into n from public.invitations
+   where id = '0d000000-0000-4000-8000-0000000000a1'
+     and token <> 'client-chosen-token-00000000000001'
+     and token ~ '^[0-9a-f]{48}$';
+  if n <> 1 then
+    raise exception 'FAIL 6c2: a client chose its own invitation token';
+  end if;
+
+  -- revoked is final
+  update public.invitations set revoked_at = now()
+   where id = '0d000000-0000-4000-8000-0000000000a1';
+  begin
+    update public.invitations set revoked_at = null
+     where id = '0d000000-0000-4000-8000-0000000000a1';
+    raise exception 'FAIL 6c3: a revoked invitation was brought back';
+  exception when insufficient_privilege then null;
+  end;
 
   begin
     update public.profiles set active = false where id = '0b000000-0000-4000-8000-000000000001';
@@ -651,6 +787,31 @@ begin
     raise exception 'FAIL 7g: what the person sent was edited';
   exception when insufficient_privilege then null;
   end;
+end;
+$$;
+
+
+-- -----------------------------------------------------------------------------
+-- The instructor: inquiries.view, not inquiries.manage
+-- -----------------------------------------------------------------------------
+reset role;
+set local request.jwt.claims = '{"sub":"0b000000-0000-4000-8000-000000000005","role":"authenticated"}';
+set local role authenticated;
+
+do $$
+declare
+  n int;
+begin
+  select count(*) into n from public.inquiries i where i.name = 'Test Person';
+  if n <> 1 then
+    raise exception 'FAIL 7h: the instructor, with inquiries.view, cannot read the inbox';
+  end if;
+
+  update public.inquiries set status = 'closed' where name = 'Test Person';
+  get diagnostics n = row_count;
+  if n <> 0 then
+    raise exception 'FAIL 7i: the instructor, without inquiries.manage, updated an inquiry';
+  end if;
 end;
 $$;
 
@@ -745,6 +906,18 @@ begin
      or has_function_privilege('service_role', 'public.set_ingest_secret(text)', 'EXECUTE')
   then
     raise exception 'FAIL 9c: someone other than postgres can execute set_ingest_secret';
+  end if;
+
+  if has_table_privilege('service_role', 'public.ingest_secrets', 'SELECT') then
+    raise exception 'FAIL 9c2: service_role can read ingest_secrets';
+  end if;
+
+  if to_regclass('realtime.messages') is not null and (
+       select count(*) from pg_catalog.pg_policies pol
+        where pol.schemaname = 'realtime' and pol.tablename = 'messages'
+          and pol.policyname in ('mmt_workspace_read', 'mmt_workspace_write')) <> 2
+  then
+    raise exception 'FAIL 9c3: the workspace channel policies are missing on realtime.messages';
   end if;
 
   -- trigger functions are not callable by clients

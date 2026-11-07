@@ -215,21 +215,22 @@ language sql
 immutable
 set search_path = ''
 as $fn$
+  -- Sorted, like guard_role() stores roles.permissions, so the two compare equal.
   select array[
-    'tasks.create',
-    'tasks.assign',
-    'tasks.edit_any',
-    'tasks.delete',
+    'hours.close',
+    'hours.edit_any',
+    'hours.export',
     'hours.log',
     'hours.view_all',
-    'hours.edit_any',
-    'hours.close',
-    'hours.export',
-    'projects.manage',
-    'people.manage',
-    'roles.manage',
+    'inquiries.manage',
     'inquiries.view',
-    'inquiries.manage'
+    'people.manage',
+    'projects.manage',
+    'roles.manage',
+    'tasks.assign',
+    'tasks.create',
+    'tasks.delete',
+    'tasks.edit_any'
   ]::text[];
 $fn$;
 
@@ -284,7 +285,10 @@ update public.roles r
    set permissions = public.permission_catalogue(),
        is_system   = true
  where r.key = 'owner'
-   and (r.permissions is distinct from public.permission_catalogue() or not r.is_system);
+   and (array(select e from unnest(r.permissions) as u(e) order by e)
+          is distinct from
+        array(select e from unnest(public.permission_catalogue()) as u(e) order by e)
+        or not r.is_system);
 
 
 -- =============================================================================
@@ -457,12 +461,20 @@ create table if not exists public.activity (
                                'profile', 'role', 'invitation', 'month', 'inquiry')),
   entity_id  uuid,
   task_id    uuid,
+  subject_id uuid references public.profiles (id) on delete set null,
   action     text not null
              check (action in ('created', 'updated', 'deleted', 'commented',
                                'closed', 'reopened')),
   summary    text not null check (char_length(summary) between 1 and 300),
   created_at timestamptz not null default now()
 );
+
+-- subject_id: the person a row is about. Set for time_entry rows (the entry's
+-- owner), so the feed shows hours lines only to that person and to
+-- hours.view_all. Null elsewhere. Added separately so an earlier dry run of
+-- this file without the column is brought up to date.
+alter table public.activity
+  add column if not exists subject_id uuid references public.profiles (id) on delete set null;
 
 
 -- =============================================================================
@@ -493,6 +505,8 @@ create index if not exists activity_created_idx
   on public.activity (created_at desc);
 create index if not exists activity_task_created_idx
   on public.activity (task_id, created_at desc);
+create index if not exists activity_subject_created_idx
+  on public.activity (subject_id, created_at desc);
 
 create index if not exists profiles_role_id_idx
   on public.profiles (role_id);
@@ -1024,10 +1038,16 @@ create policy hours_months_delete on public.hours_months
   using ((select public.has_perm('hours.close')));
 
 -- --- activity: read-only for clients -----------------------------------------
+-- Hours lines follow the time_entries rule: your own, or hours.view_all.
 drop policy if exists activity_select on public.activity;
 create policy activity_select on public.activity
   for select to authenticated
-  using ((select public.has_profile()));
+  using (
+    (select public.has_profile())
+    and (entity <> 'time_entry'
+         or subject_id = (select auth.uid())
+         or (select public.has_perm('hours.view_all')))
+  );
 
 
 -- =============================================================================
@@ -1426,6 +1446,8 @@ begin
     if v_uid is null then
       return new;
     end if;
+    -- The link is always made here, never chosen by the client.
+    new.token       := encode(extensions.gen_random_bytes(24), 'hex');
     new.invited_by  := v_uid;
     new.created_at  := now();
     new.accepted_at := null;
@@ -1433,6 +1455,10 @@ begin
   else
     if v_uid is null then
       return new;
+    end if;
+    if old.revoked_at is not null and new.revoked_at is distinct from old.revoked_at then
+      raise exception 'A revoked invitation stays revoked. Make a new one instead.'
+        using errcode = '42501';
     end if;
     if new.token          is distinct from old.token
        or new.invited_by  is distinct from old.invited_by
@@ -1478,8 +1504,10 @@ declare
   v_internal boolean := public.current_uid() is null or pg_trigger_depth() > 1;
   v_total    integer;
   v_done     integer;
-  v_ignore   constant text[] := array['assignee_id', 'updated_at', 'updated_by',
-                                      'progress', 'done_at'];
+  -- Columns a take may move. progress is not one of them: the checklist
+  -- recompute above has already run, so any other change to it came from
+  -- the client.
+  v_ignore   constant text[] := array['assignee_id', 'updated_at', 'updated_by', 'done_at'];
 begin
   if tg_op = 'INSERT' then
     if new.status = 'done' then
@@ -1864,6 +1892,7 @@ declare
   v_code    text;
   v_hours   text;
   v_for     text := '';
+  v_subject uuid;
 begin
   if tg_op <> 'INSERT' and pg_trigger_depth() > 1 then
     return null;
@@ -2003,8 +2032,9 @@ begin
 
   -- ----------------------------------------------------------- time_entries --
   elsif tg_table_name = 'time_entries' then
-    v_entity := 'time_entry';
-    v_hours  := trim_scale((v_row ->> 'hours')::numeric)::text || ' h';
+    v_entity  := 'time_entry';
+    v_subject := nullif(v_row ->> 'user_id', '')::uuid;
+    v_hours   := trim_scale((v_row ->> 'hours')::numeric)::text || ' h';
 
     if (v_row ->> 'user_id')::uuid is distinct from v_uid then
       v_for := ' for ' || coalesce(public.display_name((v_row ->> 'user_id')::uuid), 'someone');
@@ -2190,8 +2220,13 @@ begin
     v_uid := null;
   end if;
 
-  insert into public.activity (actor_id, entity, entity_id, task_id, action, summary)
-  values (v_uid, v_entity, v_eid, v_task, v_action, left(v_summary, 300));
+  if v_subject is not null
+     and not exists (select 1 from public.profiles p where p.id = v_subject) then
+    v_subject := null;
+  end if;
+
+  insert into public.activity (actor_id, entity, entity_id, task_id, subject_id, action, summary)
+  values (v_uid, v_entity, v_eid, v_task, v_subject, v_action, left(v_summary, 300));
 
   if random() < 0.02 then
     delete from public.activity a

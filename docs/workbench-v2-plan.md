@@ -208,6 +208,8 @@ activity            -- written only by SECURITY DEFINER triggers; self-prunes to
   entity text not null              -- 'task' | 'task_item' | 'comment' | 'time_entry' | 'project' | 'profile' | 'role' | 'invitation' | 'month'
   entity_id uuid null
   task_id uuid null                 -- set for task, task_item and comment rows, so a task's history is one query
+  subject_id uuid null -> profiles  -- the person a row is about: the entry's user_id on time_entry rows, else null.
+                                    -- activity_select hides time_entry rows about other people unless hours.view_all
   action text not null check in ('created','updated','deleted','commented','closed','reopened')
   summary text not null             -- one human line: 'Status: To do → In progress', 'Logged 2.5 h on DLT'
   created_at
